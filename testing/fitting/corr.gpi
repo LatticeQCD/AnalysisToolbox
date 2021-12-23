@@ -1,0 +1,6 @@
+f(x)=A*cosh(m*(x-32))
+A=1
+m=1
+set log y
+fit f(x) "jack.tmp" u 1:2:3 yerror via A,m
+plot f(x), "jack.tmp" u 1:2:3 w e 
