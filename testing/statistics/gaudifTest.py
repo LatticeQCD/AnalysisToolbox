@@ -1,5 +1,12 @@
-from latqcdtools.statistics import gaudif
-import latqcdtools.logger as logger
+#
+# gaudifTest.py
+#
+# D. Clarke
+#
+# Simple test for the Gaussian difference test (Z-test).
+#
+from latqcdtools.statistics.statistics import gaudif
+import latqcdtools.base.logger as logger
 
 eps=1e-7
 
@@ -17,8 +24,8 @@ q12=gaudif(x1,e1,x2,e2)
 q13=gaudif(x1,e1,x3,e3)
 q14=gaudif(x1,e1,x4,e4)
 
-# Results produced by software of "Markov Chain Monte Carlo Simulations and
-# Their Statistical Analysis, World Scientific, Singapore, 2004.
+# Results produced by software of "Markov Chain Monte Carlo Simulations and Their Statistical Analysis, World
+# Scientific, Singapore, 2004.
 q12control=0.4387984
 q13control=0.5559897
 q14control=0.4056413

@@ -1,6 +1,12 @@
-from latqcdtools.statistics import getTauInt
-from latqcdtools.plotting import *
-from latqcdtools.tools import print_results
+#
+# testautocor.py
+#
+# D. Clarke
+#
+# Simple test for the getTauInt method to calculate integrated autocorrelation times.
+#
+from latqcdtools.statistics.statistics import getTauInt
+from latqcdtools.base.check import print_results
 
 nt = 48
 nbins = 8
@@ -24,10 +30,3 @@ TESTtau_inte = 5.9003840732043
 TESTbias     = 4.79395572142051
 
 print_results( [TESTitpick,TESTtau_int,TESTtau_inte,TESTbias],[itpick,tau_int,tau_inte,tau_intbias], None, None, "tau_int", 1e-4 )
-
-latexify()
-set_params(xlabel="Chain Step", ylabel="$\\tau_{\\rm int}$")
-plot_file('acor.d', 1, 2, 3, color=colors[1], marker=markers_1[1])
-plt.savefig("tau_int.pdf")
-plt.show()
-plt.close()

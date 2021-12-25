@@ -1,8 +1,5 @@
-latqcdtools/__pycache__/*
-testing/__pycache__/*
 testing/corr_fitting/*
 testing/extrapolation/*
-testing/lattice_params/__pycache__/*
-testing/logging/__pycache__/*
-testing/plotting/*.pdf
 testing/smoothingSpline/*
+*.pyc
+*.pdf

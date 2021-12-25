@@ -99,18 +99,6 @@ def susz(data):
     return res
 
 
-''' Check whether two values are equal. Use especially when comparing to 0. '''
-def rel_check(a, b, prec=1e-6, abs_prec = 1e-14):
-    return math.isclose(a, b, rel_tol=prec, abs_tol = abs_prec)
-
-
-''' Return a boolean array that checks element-wise whether a numpy array
-    arr is equal to a scalar scal. ''' 
-def rel_checkArrayScalar(arr, scal, prec=1e-6, abs_prec = 1e-14):
-    comparisonArray = scal * np.ones(arr.shape)
-    return np.isclose(arr, comparisonArray, prec, abs_prec)
-
-
 ''' import module with a given path. Works with python 3.5+ '''
 def import_lib(path, module_name):
     spec = importlib.util.spec_from_file_location(module_name, path)
@@ -182,13 +170,6 @@ def get_numb_params(func, x = 1, args = (), expand = True):
         raise IndexError("Function does not work with up to 1000 parameters")
 
 
-''' Uneccessary with Python 3.5. Past cluster had Python 3.4 '''
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
-
-
 def timeout(func, args=(), kwargs={}, timeout_duration=300):
     manager = multiprocessing.Manager()
     return_dict = manager.dict()
@@ -214,62 +195,3 @@ def timeout(func, args=(), kwargs={}, timeout_duration=300):
         raise TimeoutError("Time out for " + str(func))
     return return_dict["ret"]
 
-
-def print_results(res, res_true, res_err=None, res_err_true=None, text="", prec=1e-4):
-    """Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
-    if you like. Carries out with precision prec."""
-    test = True
-
-    try:
-        res[0]
-    except (IndexError, TypeError):
-        res = [res]
-
-    try:
-        res_true[0]
-    except (IndexError, TypeError):
-        res_true = [res_true]
-
-    if res_err is not None:
-        try:
-            res_err[0]
-        except (IndexError, TypeError):
-            res_err = [res_err]
-
-    if res_err_true is not None:
-        try:
-            res_err_true[0]
-        except (IndexError, TypeError):
-            res_err_true = [res_err_true]
-
-    for i in range(len(res)):
-        if not rel_check(res[i], res_true[i], prec):
-            test = False
-            print("res[" + str(i) + "] = " + str(res[i])
-                  + " != res_true[" + str(i) + "] = " + str(res_true[i]))
-        if res_err is not None and res_err_true is not None:
-            if not rel_check(res_err[i], res_err_true[i], prec):
-                test = False
-                print("res_err[" + str(i) + "] = " + str(res_err[i])
-                      + " != res_err_true[" + str(i) + "] = " + str(res_err_true[i]))
-
-    if test:
-        logger.TBPass(text + "\n")
-    else:
-        logger.TBFail(text + "\n")
-
-
-class timer:
-
-    """A class to facilitate doing rudimentary timings in the Toolbox."""
-
-    def __init__(self):
-        print("\n  Timer initialized.\n")
-        self._tstart = time.time()
-        self._tend   = self._tstart
-
-    def printTiming(self):
-        self._tstart = self._tend
-        self._tend   = time.time()
-        timing = self._tend - self._tstart
-        print("  Time to finish: %6.4f [s]" % timing)
