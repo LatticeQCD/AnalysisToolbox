@@ -9,7 +9,7 @@ Here are a few basic guidelines to follow when making a contribution to the Tool
 - If you are making a new module, please try to avoid the `from X import *` construction, as it makes it difficult to tell where function methods are truly coming from. In your main script it is of course fine. The problem with modules is just that other people may want to use them and add to them, and for that they need to understand where all the methods are defined.
 
 
-# logger.py
+# Terminal Output 
 
 There is a dedicated logger. Its methods take arguments the same way the `print` function does. Certain methods output in colored font, for example `warn` and `TBError`. For example
 ```python

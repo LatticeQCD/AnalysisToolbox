@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curve Fitting &mdash; AnalysisToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plotting" href="02_plotting.html" />
+    <link rel="prev" title="Data Analysis Modules" href="dataAnalysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01_contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Curve Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_statistics.html">Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_jackknife.html">Jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_bootstrap.html">Bootstrap</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03_physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dataAnalysis.html">Data Analysis Modules</a> &raquo;</li>
+      <li>Curve Fitting</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/02_dataAnalysis/01_curveFitting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="curve-fitting">
+<h1>Curve Fitting<a class="headerlink" href="#curve-fitting" title="Permalink to this headline"></a></h1>
+<p>There are many ways to fit a curve. There are strategies that minimize <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span>
+for when you know the functional form ahead of time, splines for when you don’t, and other methods.
+The AnalysisToolbox includes some routines that are helpful for this purpose.</p>
+<section id="chi-2-minimization">
+<h2><span class="math notranslate nohighlight">\(\chi^2\)</span> minimization<a class="headerlink" href="#chi-2-minimization" title="Permalink to this headline"></a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">latqcdtools/fitting.py</span></code> one finds a <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> class for carrying out fits. After constructing
+a <code class="docutils literal notranslate"><span class="pre">fitter</span></code> object, one can then use the associated methods to try various kinds of fits. These
+are generally wrappers from <code class="docutils literal notranslate"><span class="pre">scipy.optimize</span></code>. An easy example is given in
+<code class="docutils literal notranslate"><span class="pre">testing/fitting/simple_example.py</span></code>.</p>
+<div class="toggle admonition">
+<p class="admonition-title">simple_example.py</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.readin</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.fitting</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Example of a simple 3-parameter quadratic fit.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">fit_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c</span>
+
+<span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span> <span class="o">=</span> <span class="n">read_in</span><span class="p">(</span><span class="s2">&quot;wurf.dat&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">fitter</span> <span class="o">=</span> <span class="n">Fitter</span><span class="p">(</span><span class="n">fit_func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">expand</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+<span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">chi_dof</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">try_fit</span><span class="p">(</span><span class="n">start_params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">algorithms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;levenberg&#39;</span><span class="p">,</span> <span class="s1">&#39;curve_fit&#39;</span><span class="p">],</span>
+                                             <span class="n">ret_pcov</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; a , b,  c : &quot;</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ae, be, ce: &quot;</span><span class="p">,</span><span class="n">res_err</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chi2/d.o.f.: &quot;</span><span class="p">,</span><span class="n">chi_dof</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       pcov: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">pcov</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">fitter</span><span class="o">.</span><span class="n">plot_fit</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>If one would rather use gnuplot to fit for some reason, there is also in <code class="docutils literal notranslate"><span class="pre">fitting.py</span></code> a python
+wrapper (<code class="docutils literal notranslate"><span class="pre">fit_gnuplot</span></code>) for passing fitting commands to gnuplot. An example of how to use this
+is given in <code class="docutils literal notranslate"><span class="pre">testing/fitting/test_fit_gnuplot</span></code>.</p>
+<p><strong>IMPORTANT: The functions that you pass to these fitting routines have to be able to handle arrays!</strong>
+E.g. you pass it <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">x1,</span> <span class="pre">...,</span> <span class="pre">xN]</span></code> and get back <code class="docutils literal notranslate"><span class="pre">[f(x0),</span> <span class="pre">f(x1),</span> <span class="pre">...,</span> <span class="pre">f(xN)]</span></code>. It is written this
+way to force better performance; if it were a typical loop it would be slow. If you are having
+trouble figuring out how to write your function in a way to handle arrays, a good starting point
+can be to use <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vectorize.html">np.vectorize</a>.</p>
+<section id="levenberg">
+<h3>Levenberg<a class="headerlink" href="#levenberg" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm">Levenberg-Marquardt</a>
+algorithm seems to be pretty popular. It varies between Newton-Raphson and steepest descent.
+Normally one needs to know also the derivative of the to-be-fitted function. One can carry out
+such an “exact” Levenberg-Marquardt by passing the gradient and hessian fit functions to <code class="docutils literal notranslate"><span class="pre">do_fit</span></code>.
+However the AnalysisToolbox also gives you the option not to pass the gradient; in this case the
+gradient will be estimated numerically. Examples of the exact and numerical are respectively
+shown below.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Levenberg_example.py</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c</span>
+
+<span class="k">def</span> <span class="nf">grad_fit_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">hess_fit_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+<span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span> <span class="o">=</span> <span class="n">read_in</span><span class="p">(</span><span class="s2">&quot;wurf.dat&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Exact Levenberg</span>
+<span class="n">fitter</span> <span class="o">=</span> <span class="n">Fitter</span><span class="p">(</span><span class="n">fit_func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">grad</span> <span class="o">=</span> <span class="n">grad_fit_func</span><span class="p">,</span> <span class="n">hess</span> <span class="o">=</span> <span class="n">hess_fit_func</span><span class="p">,</span>
+                        <span class="n">func_sup_numpy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">chi_dof</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">do_fit</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;levenberg&quot;</span><span class="p">,</span> <span class="n">start_params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Numerical Levenberg</span>
+<span class="n">fitter</span> <span class="o">=</span> <span class="n">fitting</span><span class="o">.</span><span class="n">Fitter</span><span class="p">(</span><span class="n">fit_func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">func_sup_numpy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">chi_dof</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">do_fit</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;levenberg&quot;</span><span class="p">,</span> <span class="n">start_params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="other-algorithms">
+<h3>Other algorithms<a class="headerlink" href="#other-algorithms" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fitting.py</span></code> also has wrappers for several algorithms implemented in <code class="docutils literal notranslate"><span class="pre">scipy.optimize</span></code>. These include</p>
+<ul class="simple">
+<li><p>L-BFGS-B</p></li>
+<li><p>TNC</p></li>
+<li><p>Powell</p></li>
+<li><p>COBYLA</p></li>
+<li><p>SLSQP</p></li>
+</ul>
+<p>If one does not specify an algorithm, the <code class="docutils literal notranslate"><span class="pre">try_fit</span></code> method will attempt all of them and return the
+result of whichever one had the best <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span></p>
+</section>
+</section>
+<section id="splines">
+<h2>Splines<a class="headerlink" href="#splines" title="Permalink to this headline"></a></h2>
+<p>There are several methods in the toolbox to fit a 1D spline to some <code class="docutils literal notranslate"><span class="pre">xdata</span></code> and <code class="docutils literal notranslate"><span class="pre">ydata</span></code>, possibly
+with y-error bars <code class="docutils literal notranslate"><span class="pre">edata</span></code>. These can be found in <code class="docutils literal notranslate"><span class="pre">latcqdtools/spline_interpolate.py</span></code>. One of the
+most straightforward methods is <code class="docutils literal notranslate"><span class="pre">bspline</span></code>, which can be called as, e.g.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">xspline</span><span class="p">,</span> <span class="n">yspline</span><span class="p">,</span> <span class="n">yespline</span> <span class="o">=</span> <span class="n">bspline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="mf">0.0</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The outputs <code class="docutils literal notranslate"><span class="pre">xspline</span></code>, <code class="docutils literal notranslate"><span class="pre">yspline</span></code>, and <code class="docutils literal notranslate"><span class="pre">yespline</span></code> are <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays that together make the graph
+of the spline along with its error bands. <code class="docutils literal notranslate"><span class="pre">xmin</span></code> and <code class="docutils literal notranslate"><span class="pre">xmax</span></code> specify the range over which the data
+should be fit, and <code class="docutils literal notranslate"><span class="pre">order</span></code> is the order of the spline.</p>
+<p>Other options for fitting splines to data include <code class="docutils literal notranslate"><span class="pre">bspline_sci</span></code> and <code class="docutils literal notranslate"><span class="pre">LSQbspline_sci</span></code>, which are
+wrappers for the <code class="docutils literal notranslate"><span class="pre">scipy</span></code> method <code class="docutils literal notranslate"><span class="pre">UnivariateSpline</span></code> and <code class="docutils literal notranslate"><span class="pre">LSQUnivariateSpline</span></code>, respectively. However
+these two methods will not return an error band automatically, which means you need some way to
+assign errors yourself. If you need access to the spline itself, your best bet is to use
+<code class="docutils literal notranslate"><span class="pre">UnivariateSpline</span></code> and <code class="docutils literal notranslate"><span class="pre">LSQUnivariateSpline</span></code> directly, as these return the spline function.</p>
+<section id="fitting-constrained-splines">
+<h3>Fitting constrained splines<a class="headerlink" href="#fitting-constrained-splines" title="Permalink to this headline"></a></h3>
+<p>A simple example on how to fit a constrained spline (e.g. to some correlator data) is provided
+in the following:</p>
+<div class="toggle admonition">
+<p class="admonition-title">spline_example.py</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">latqcdtools</span> <span class="kn">import</span> <span class="n">spline_interpolate</span>
+<span class="kn">from</span> <span class="nn">latqcdtools</span> <span class="kn">import</span> <span class="n">fitting</span>
+<span class="kn">from</span> <span class="nn">latqcdtools</span> <span class="kn">import</span> <span class="n">plotting</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+
+<span class="c1">#Define the spline function with unknown coefficients. Constraint: at x=0.5 the 1st derivate shall be 0. The highest degree polynomial for order=4 is x^3.</span>
+<span class="n">myknots</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">]</span> <span class="c1">#Note: It is possible to let the fitter fit the knot positions by including them in the params array (see below, e.g. knots=params[0:2], coeffs=params[2:])</span>
+<span class="n">myorder</span><span class="o">=</span><span class="mi">4</span>
+<span class="k">def</span> <span class="nf">mysplinefunc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">spline_interpolate</span><span class="o">.</span><span class="n">constraint_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="n">myknots</span><span class="p">,</span> <span class="n">coeffs</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">base_point</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">myorder</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+
+<span class="c1">#our correlator data</span>
+<span class="n">xdata</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0688</span><span class="p">,</span> <span class="mf">0.1085</span><span class="p">,</span> <span class="mf">0.1616</span><span class="p">,</span> <span class="mf">0.2247</span><span class="p">,</span> <span class="mf">0.2914</span><span class="p">,</span> <span class="mf">0.3571</span><span class="p">,</span> <span class="mf">0.4178</span><span class="p">,</span> <span class="mf">0.4527</span><span class="p">]</span>
+<span class="n">ydata</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0098</span><span class="p">,</span> <span class="mf">1.3194</span><span class="p">,</span> <span class="mf">1.9954</span><span class="p">,</span> <span class="mf">2.3360</span><span class="p">,</span> <span class="mf">2.6893</span><span class="p">,</span> <span class="mf">2.9958</span><span class="p">,</span> <span class="mf">3.4421</span><span class="p">,</span> <span class="mf">3.5319</span><span class="p">]</span>
+
+<span class="c1">#The spline has (order+nknots) parameters. This simply sets each start parameter to 1.</span>
+<span class="n">mystart_params</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">myknots</span><span class="p">)</span><span class="o">+</span><span class="n">myorder</span><span class="p">)]</span>
+
+<span class="n">fitter</span> <span class="o">=</span> <span class="n">fitting</span><span class="o">.</span><span class="n">Fitter</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">mysplinefunc</span><span class="p">,</span> <span class="n">xdata</span><span class="o">=</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="o">=</span><span class="n">ydata</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fitparams</span><span class="p">,</span> <span class="n">fitparams_err</span><span class="p">,</span> <span class="n">chi_dof</span><span class="p">,</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">do_fit</span><span class="p">(</span><span class="n">start_params</span> <span class="o">=</span> <span class="n">mystart_params</span><span class="p">,</span> <span class="n">ret_pcov</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> 
+
+<span class="c1">#Visualize the results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fitparams</span><span class="p">)</span> 
+<span class="nb">print</span><span class="p">(</span><span class="n">fitparams_err</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chi_dof</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+
+<span class="n">plotting</span><span class="o">.</span><span class="n">plot_dots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">)</span>
+<span class="n">plotting</span><span class="o">.</span><span class="n">plot_func</span><span class="p">(</span><span class="n">mysplinefunc</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">fitparams</span><span class="p">,),</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lattice QCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

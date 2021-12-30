@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'AnalysisToolbox'
-copyright = '2021, Hauke Sandmeyer'
-author = 'Hauke Sandmeyer'
+copyright = '2021, Lattice QCD'
+author = 'Lattice QCD'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'

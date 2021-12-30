@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handling Lattice Parameters &mdash; AnalysisToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Statistical Physics" href="01_statisticalPhysics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01_contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02_dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_statisticalPhysics.html">Statistical Physics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Handling Lattice Parameters</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
+      <li>Handling Lattice Parameters</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/03_physicsAnalysis/02_latticeParameters.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="handling-lattice-parameters">
+<h1>Handling Lattice Parameters<a class="headerlink" href="#handling-lattice-parameters" title="Permalink to this headline"></a></h1>
+<p>In lattice calculations we are always analyzing configurations, which depends on <span class="math notranslate nohighlight">\(m_l\)</span>, <span class="math notranslate nohighlight">\(m_s\)</span>,
+<span class="math notranslate nohighlight">\(\beta\)</span>, <span class="math notranslate nohighlight">\(N_\sigma\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>. Usually the parameter combination is succinctly incorporated
+into the parameter name as, e.g. <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">latticeParams</span></code> class collects all this information into one object, and contains some useful
+methods, for example the ability to convert one of these parameter strings into its corresponding
+float value. To instantiate this object, use</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lp</span> <span class="o">=</span> <span class="n">latticeParams</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mass_l</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">mass_s</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">beta</span></code> and the quark masses are input strings coming from <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code>. You can
+then, for instance get the float value corresponding to the string <code class="docutils literal notranslate"><span class="pre">6390</span></code> using</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lp</span><span class="o">.</span><span class="n">getBeta</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>There is also a method to get the <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code> string, <code class="docutils literal notranslate"><span class="pre">getcparams</span></code>. You can also get
+the lattice spacing in [fm] and temperature in [MeV] using <code class="docutils literal notranslate"><span class="pre">geta</span></code> and <code class="docutils literal notranslate"><span class="pre">getT</span></code>, respectively.
+Finally <code class="docutils literal notranslate"><span class="pre">paramSummary()</span></code> prints a nice summary of all parameters going into your calculation
+to the screen.</p>
+<p>There are always quark mass tables, which are implemented as dictionaries. Generally when we do
+our lattice calculations, we move along a line of constant physics where the ratio <span class="math notranslate nohighlight">\(m_s/m_l\)</span> is
+fixed, and <span class="math notranslate nohighlight">\(m_s\)</span> is fixed at its physical value. Hence if you know this ratio, <span class="math notranslate nohighlight">\(\beta\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>,
+both quark masses are determined. For instance a small <span class="math notranslate nohighlight">\(N_\tau=12\)</span> dictionary at the time of
+this writing is</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">quarkMassNt12</span><span class="p">:</span>
+
+  <span class="sd">&quot;&quot;&quot;Lookup tables for Nt=12, Nf=2+1 flavors.&quot;&quot;&quot;</span>
+
+  <span class="n">Table27</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;6794&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;00167&#39;</span><span class="p">,</span><span class="s1">&#39;0450&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;6850&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;00157&#39;</span><span class="p">,</span><span class="s1">&#39;0424&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;6910&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;00148&#39;</span><span class="p">,</span><span class="s1">&#39;0401&#39;</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lattice QCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

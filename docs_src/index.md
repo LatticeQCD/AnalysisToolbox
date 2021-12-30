@@ -8,4 +8,6 @@ The AnalysisToolbox is a collection of Python tools written for statistical data
 maxdepth: 1
 ---
 01_contributions/contributions.md
+02_dataAnalysis/dataAnalysis.md
+03_physicsAnalysis/physicsAnalysis.md
 ```

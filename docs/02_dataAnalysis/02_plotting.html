@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plotting &mdash; AnalysisToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Statistics" href="03_statistics.html" />
+    <link rel="prev" title="Curve Fitting" href="01_curveFitting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../01_contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_curveFitting.html">Curve Fitting</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_statistics.html">Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_jackknife.html">Jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_bootstrap.html">Bootstrap</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03_physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dataAnalysis.html">Data Analysis Modules</a> &raquo;</li>
+      <li>Plotting</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/02_dataAnalysis/02_plotting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="plotting">
+<h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline"></a></h1>
+<section id="making-plots">
+<h2>Making Plots<a class="headerlink" href="#making-plots" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">analysistoolbox</span></code> also has some wrappers for Matplotlib, which allow you to make Matplotlib
+plots easily using python. All of them can be found in <code class="docutils literal notranslate"><span class="pre">analysistoolbox/latqcdtools/plotting.py</span></code>.
+It is recommended to use this module because you can add all the power and flexibility of python
+to your plotting routines.</p>
+</section>
+<section id="the-basics">
+<h2>The basics<a class="headerlink" href="#the-basics" title="Permalink to this headline"></a></h2>
+<p>You probably want to get started quickly, so here’s a minimal example. <strong>Please be mindful of the
+order of the commands.</strong></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latexify</span><span class="p">()</span>
+<span class="n">plot_file</span><span class="p">(</span><span class="s1">&#39;susceptibility.d&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$56^3</span><span class="se">\\</span><span class="s1">times8~~m_s/m_l=80$&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="n">markers_1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">set_params</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;T [MeV]&quot;</span><span class="p">,</span>
+           <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;$N_s^3</span><span class="se">\\</span><span class="s2">,</span><span class="se">\\</span><span class="s2">chi^{</span><span class="se">\\</span><span class="s2">rm</span><span class="si">{bare}</span><span class="s2">}$&quot;</span><span class="p">,</span>
+           <span class="n">title</span> <span class="o">=</span><span class="s2">&quot;$N_</span><span class="se">\\</span><span class="s2">tau=8$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;susceptibility.pdf&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The above python code will create a plot using the data in <code class="docutils literal notranslate"><span class="pre">susceptibility.d</span></code>, save it in
+<code class="docutils literal notranslate"><span class="pre">susceptibility.pdf</span></code>, and also show the plot to you. Let us go through each line. You probably
+noticed that the labels and titles use <span class="math notranslate nohighlight">\(\LaTeX\)</span> syntax. In order for this to work, a call to</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latexify</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>is needed at the beginning. In addition to using nice <span class="math notranslate nohighlight">\(\LaTeX\)</span> font this command also automatically
+puts the axes in scientific notation if that would look better. I recommend that you always use this
+command in your plots. The command</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_params</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>lets you specify things needed for every plot such as titles and axis labels. The <code class="docutils literal notranslate"><span class="pre">set_params</span></code>
+command should always come <em>after</em> your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> calls and <em>before</em> your <code class="docutils literal notranslate"><span class="pre">plt.savefig</span></code> and
+<code class="docutils literal notranslate"><span class="pre">plt.show</span></code> calls. Somehow the <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> seems to overwrite the <code class="docutils literal notranslate"><span class="pre">set_params</span></code>. For a full list
+of parameters have a look at this module. The command</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">xcol</span><span class="p">,</span> <span class="n">ycol</span><span class="p">,</span> <span class="n">xecol</span><span class="p">,</span> <span class="n">yecol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is what adds the data to the plot. The arguments <code class="docutils literal notranslate"><span class="pre">xcol</span></code>, <code class="docutils literal notranslate"><span class="pre">ycol</span></code>, <code class="docutils literal notranslate"><span class="pre">xecol</span></code>, and <code class="docutils literal notranslate"><span class="pre">yecol</span></code> are the column
+numbers of the data file for the x-data, y-data, x error data, and y error data, respectively. After
+this there follows some optional arguments. The <code class="docutils literal notranslate"><span class="pre">marker</span></code> is the symbol used to mark the data on the
+plot, and the <code class="docutils literal notranslate"><span class="pre">color</span></code> is the color of those markers. There are 8 colors in the <code class="docutils literal notranslate"><span class="pre">colors</span></code> list;
+other possible colors to use are given in the module. There are 11 markers in the <code class="docutils literal notranslate"><span class="pre">markers</span></code> list,
+and since this module is based on Matplotlib, you find other possibilities for markers
+<a class="reference external" href="https://matplotlib.org/api/markers_api.html">here</a>. The last two commands are self-explanatory.
+In case you wish to change the style of your plot, this can be accomplished with the</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;dots&#39;</span>
+</pre></div>
+</div>
+<p>option in your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> arguments. The allowed styles include <code class="docutils literal notranslate"><span class="pre">dots</span></code>, <code class="docutils literal notranslate"><span class="pre">lines</span></code>, <code class="docutils literal notranslate"><span class="pre">fill</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">band</span></code>. <strong>Just as a friendly tip: If you use a style other than <code class="docutils literal notranslate"><span class="pre">dots</span></code>, which is the default,
+you may need to use <code class="docutils literal notranslate"><span class="pre">marker=None</span></code> or <code class="docutils literal notranslate"><span class="pre">marker=','</span></code> to suppress the data points. This will be
+necessary if the data points are close enough together and larger than the line itself.</strong></p>
+<p>Again since we want to be able to plot quickly within python scripts, you might find yourself in
+a situation where you want to plot list elements rather than a file. As a minimal example, one can
+use</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_dots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">yedata</span><span class="o">=</span><span class="n">edata</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>instead of <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> to plot the list <code class="docutils literal notranslate"><span class="pre">ydata</span></code> with its error bars <code class="docutils literal notranslate"><span class="pre">edata</span></code> against <code class="docutils literal notranslate"><span class="pre">xdata</span></code>.
+Other plot style options besides <code class="docutils literal notranslate"><span class="pre">plot_dots</span></code> include <code class="docutils literal notranslate"><span class="pre">plot_lines</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_fill</span></code>, and <code class="docutils literal notranslate"><span class="pre">plot_band</span></code>.</p>
+<p>If you are using a single python script to plot multiple files, python will remember the labels
+from the last plot for some reason. Thankfully there is a command which addresses this problem:
+After you have written your code to generate some plot <code class="docutils literal notranslate"><span class="pre">plot1</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">clear_legend_labels()</span></code>
+before your code to generate <code class="docutils literal notranslate"><span class="pre">plot2</span></code>. This will reset the legend and generate your correct
+plot as expected.</p>
+</section>
+<section id="some-options-you-might-commonly-require">
+<h2>Some options you might commonly require<a class="headerlink" href="#some-options-you-might-commonly-require" title="Permalink to this headline"></a></h2>
+<section id="changing-axis-ranges">
+<h3>Changing axis ranges<a class="headerlink" href="#changing-axis-ranges" title="Permalink to this headline"></a></h3>
+<p>The ranges of plots are chosen automatically, but this automatic choice may not always suit your
+purposes. In this can you can use the commands</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_xmin</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">set_xmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">set_ymin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">set_ymax</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to set the x-range to lie in the interval [-1,1] and the y-range to lie in the interval [-2,2].
+Please note that the axis ranges are NOT controlled by <code class="docutils literal notranslate"><span class="pre">set_params</span></code>. <code class="docutils literal notranslate"><span class="pre">set_params</span></code> does have, for
+example, the parameter <code class="docutils literal notranslate"><span class="pre">xmin</span></code>, but the parameter <code class="docutils literal notranslate"><span class="pre">xmin</span></code> contained in <code class="docutils literal notranslate"><span class="pre">set_params</span></code> controls only
+what data is used for the plot, and does not control the plot range directly. Please also put
+these commands after <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> but before <code class="docutils literal notranslate"><span class="pre">plt.savefig</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.show</span></code>.</p>
+</section>
+<section id="changing-the-location-of-the-legend">
+<h3>Changing the location of the legend<a class="headerlink" href="#changing-the-location-of-the-legend" title="Permalink to this headline"></a></h3>
+<p>The legend position is normally chosen automatically, but you may have other ideas. The
+<code class="docutils literal notranslate"><span class="pre">legendpos</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">set_params</span></code> can be used to adjust the position of the legend.
+For example</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">legendpos</span> <span class="o">=</span>  <span class="mi">5</span>
+</pre></div>
+</div>
+<p>will put the legend on the right, within the boundary of the plot. A full list of positions that
+lie within the boundary of the plot can be found in the plotting module. You may need to put the
+legend outside of the plot. In that case use</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">legendpos</span> <span class="o">=</span>  <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to put the legend on the right, outside the plot, at the bottom. You can increase the second
+coordinate to put the legend higher up.</p>
+</section>
+<section id="vertical-and-horizontal-lines-bands">
+<h3>Vertical and horizontal lines; bands<a class="headerlink" href="#vertical-and-horizontal-lines-bands" title="Permalink to this headline"></a></h3>
+<p>Sometimes you may wish to add a vertical or horizontal line to indicate the position of some
+important quantity. These can be created with, for example</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You also have the option of making them dashed using <code class="docutils literal notranslate"><span class="pre">linestyle=&quot;dashed&quot;</span></code>. You may also want
+to create an error band or something like this. Matplotlib also has a nice command for this,
+namely</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhspan</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> arguments are used to specify the width of the band, and 0 &lt; <code class="docutils literal notranslate"><span class="pre">alpha</span></code> &lt; 1
+is the opacity. If you have a file with data and error bars, and you would like to plot these as
+error bands, you can use</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;fill&#39;</span>
+</pre></div>
+</div>
+<p>as an argument to your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> command.</p>
+</section>
+<section id="changing-the-size-of-the-plot">
+<h3>Changing the size of the plot<a class="headerlink" href="#changing-the-size-of-the-plot" title="Permalink to this headline"></a></h3>
+<p>Maybe you have a computer with high resolution, the image might come up rather small when you
+<code class="docutils literal notranslate"><span class="pre">plt.show()</span></code>. To fix this, you can use <code class="docutils literal notranslate"><span class="pre">latexify</span></code> to specify the width, height, and text size of
+your figure as, for example <code class="docutils literal notranslate"><span class="pre">latexify(fig_width=40,fig_height=28,font_size=18)</span></code>.</p>
+</section>
+<section id="printing-only-an-inset-to-pdf">
+<h3>Printing only an inset to pdf<a class="headerlink" href="#printing-only-an-inset-to-pdf" title="Permalink to this headline"></a></h3>
+<p>When you use <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> to look at your figure, a small region in the graph may catch your
+interest, and you might zoom in on that. It is possible to print this inset to pdf.
+Use</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the relative order of <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.savefig()</span></code> has changed.</p>
+</section>
+<section id="adding-a-text-box">
+<h3>Adding a text box<a class="headerlink" href="#adding-a-text-box" title="Permalink to this headline"></a></h3>
+<p>Do you have a preliminary result, which requires you to write PRELIMINARY in? You can accomplish
+this with</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xcoordinate</span><span class="p">,</span> <span class="n">ycoordinate</span><span class="p">,</span> <span class="s1">&#39;PRELIMINARY&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">xcoordinate</span></code> and <code class="docutils literal notranslate"><span class="pre">ycoordinate</span></code> are measured according to the axes themselves; for example if
+my x-axis is temperature and I want to put the text at 150 [MeV], I just set <code class="docutils literal notranslate"><span class="pre">xcoordinate=150</span></code>.
+Further options for <code class="docutils literal notranslate"><span class="pre">text</span></code> can be found
+<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html">here</a>.</p>
+</section>
+<section id="rescaling-an-axis">
+<h3>Rescaling an axis<a class="headerlink" href="#rescaling-an-axis" title="Permalink to this headline"></a></h3>
+<p>We need to do this pretty often, for example when changing from lattice units to physical units. To
+rescale the x-axis by a factor 2, pass to your <code class="docutils literal notranslate"><span class="pre">plot_</span></code> command <code class="docutils literal notranslate"><span class="pre">xscale=2</span></code>. <code class="docutils literal notranslate"><span class="pre">yscale</span></code> rescales the y-axis.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lattice QCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -22,6 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Analysis Modules" href="../02_dataAnalysis/dataAnalysis.html" />
     <link rel="prev" title="Contributions" href="contributions.html" /> 
 </head>
 
@@ -43,9 +44,11 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="contributions.html">Contributions</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Writing Code for the ToolBox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#logger-py">logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#terminal-output">Terminal Output</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../02_dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03_physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
 </ul>
 
         </div>
@@ -85,8 +88,8 @@
 <li><p>If you are making a new module, please try to avoid the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">X</span> <span class="pre">import</span> <span class="pre">*</span></code> construction, as it makes it difficult to tell where function methods are truly coming from. In your main script it is of course fine. The problem with modules is just that other people may want to use them and add to them, and for that they need to understand where all the methods are defined.</p></li>
 </ul>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="logger-py">
-<h1>logger.py<a class="headerlink" href="#logger-py" title="Permalink to this headline"></a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="terminal-output">
+<h1>Terminal Output<a class="headerlink" href="#terminal-output" title="Permalink to this headline"></a></h1>
 <p>There is a dedicated logger. Its methods take arguments the same way the <code class="docutils literal notranslate"><span class="pre">print</span></code> function does. Certain methods output in colored font, for example <code class="docutils literal notranslate"><span class="pre">warn</span></code> and <code class="docutils literal notranslate"><span class="pre">TBError</span></code>. For example</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Example warning text.&quot;</span><span class="p">)</span>
@@ -105,7 +108,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Hauke Sandmeyer.</p>
+    <p>&#169; Copyright 2021, Lattice QCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
