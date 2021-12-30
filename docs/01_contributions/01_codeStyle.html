@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing Code for the ToolBox &mdash; AnalysisToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Contributions" href="contributions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="contributions.html">Contributions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing Code for the ToolBox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logger-py">logger.py</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="contributions.html">Contributions</a> &raquo;</li>
+      <li>Writing Code for the ToolBox</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/01_contributions/01_codeStyle.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="writing-code-for-the-toolbox">
+<h1>Writing Code for the ToolBox<a class="headerlink" href="#writing-code-for-the-toolbox" title="Permalink to this headline"></a></h1>
+<p>Here are a few basic guidelines to follow when making a contribution to the ToolBox:</p>
+<ul class="simple">
+<li><p>Please write documentation (like this one) for any new module that you make.</p></li>
+<li><p>Please write a test for each new feature you implement. We keep our tests in <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/testing</span></code>.</p></li>
+<li><p>Utilize the <code class="docutils literal notranslate"><span class="pre">logger</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/logger.py</span></code>.</p></li>
+<li><p>If you would like to make your python script an executable (e.g. by using <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span></code>) you should add the line <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/env</span> <span class="pre">python3</span></code> at the beginning of your script.</p></li>
+<li><p>If you are writing a method, and you want to put a comment explaining what the method generally does and how to use it, you should include it as a docstring. (You can find an explanation of docstrings “here”:https://www.programiz.com/python-programming/docstrings .) An advantage to using these is that people can easily learn about your function by calling <code class="docutils literal notranslate"><span class="pre">help(functionName)</span></code>.</p></li>
+<li><p>If you are making a new module, please try to avoid the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">X</span> <span class="pre">import</span> <span class="pre">*</span></code> construction, as it makes it difficult to tell where function methods are truly coming from. In your main script it is of course fine. The problem with modules is just that other people may want to use them and add to them, and for that they need to understand where all the methods are defined.</p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="logger-py">
+<h1>logger.py<a class="headerlink" href="#logger-py" title="Permalink to this headline"></a></h1>
+<p>There is a dedicated logger. Its methods take arguments the same way the <code class="docutils literal notranslate"><span class="pre">print</span></code> function does. Certain methods output in colored font, for example <code class="docutils literal notranslate"><span class="pre">warn</span></code> and <code class="docutils literal notranslate"><span class="pre">TBError</span></code>. For example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Example warning text.&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">TBError</span><span class="p">(</span><span class="s2">&quot;Something major went wrong! This method automatically exits.&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">TBFail</span><span class="p">(</span><span class="s2">&quot;Something went wrong. Use this for red text without exiting.&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">TBPass</span><span class="p">(</span><span class="s2">&quot;Your test passed! Use this for green text.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Hauke Sandmeyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

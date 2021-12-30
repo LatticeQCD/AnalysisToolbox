@@ -7,6 +7,7 @@
 # Bernd Berg, Markov Chain Monte Carlo and their Statistical Analysis, World Scientific, 2004, ISBN=978-981-3106-37-6:
 #     gaudif, jackknifeFrom, tauint, tauintj, getTauInt
 #
+import mpmath
 import numpy as np
 import latqcdtools.base.logger as logger
 
@@ -98,7 +99,7 @@ def gaudif(x1,e1,x2,e2):
 
 
 def jackknifeFrom(x):
-    """Create jackknife data from float list. The number of bins is the number of data. Adapted from Berg.
+    """Create jackknife data from float list. The number of bins is the number of data.
 
     INPUT:
        x--List of data.
@@ -113,9 +114,8 @@ def jackknifeFrom(x):
     return xj
 
 
-def tauint(nt,ts,xhat=None):
-    """Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time
-    separation. Adapted from Berg.
+def tauint(nt,ts,xhat = None):
+    """Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
 
     INPUT:
          nt--The largest you think tau_int could be.
@@ -155,12 +155,11 @@ def tauint(nt,ts,xhat=None):
     return acint
 
 
-def tauintj(nt,nbins,ts,xhat=None):
+def tauintj(nt,nbins,ts,xhat = None):
     """Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
-    Adapted from Berg.
 
     INPUT:
-          nt--The largest you think tau_int could be.
+          nt--The largest nt at which you think your estimate for tau_int could lie.
        nbins--The number of jackknife bins.
           ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
               time translation invariance holds. List must be in order of markov chain generation
@@ -210,7 +209,20 @@ def tauintj(nt,nbins,ts,xhat=None):
     return acintj
 
 
-def getTauInt(ts, nbins, tpickMax, acoutfileName='acor.d'):
+def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d'):
+    """Given a time series, return estimates for the integrated autocorrelation time and its error.
+
+    INPUT:
+         tpickMax--The largest nt at which you think your estimate for tau_int could lie.
+            nbins--The number of jackknife bins.
+               ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
+                   time translation invariance holds. List must be in order of markov chain generation
+
+    OUTPUT:
+          tau_int--Estimate for integrated autocorrelation time.
+         tau_inte--Its (jackknife) error bar.
+      tau_intbias--Its bias.
+           itpick--The Monte Carlo separation at which this method found its estimate for tau_int."""
 
     acoutfile=open(acoutfileName,'w')
 
