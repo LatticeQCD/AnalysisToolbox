@@ -1,5 +1,10 @@
 # Statistics 
 
+A collection of useful methods for statistics calculations can be found in
+```Python
+import latqcdtools.statistics.statistics
+```
+
 ## Mean, median, and error 
 There are wrappers for `np.mean` and `np.median` called `std_mean` 
 and `std_median`. The advantage of using the wrappers is that you don't have to specify the Axis. 

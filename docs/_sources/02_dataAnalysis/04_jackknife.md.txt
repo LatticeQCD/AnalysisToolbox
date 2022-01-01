@@ -1,5 +1,9 @@
 # Jackknife 
 
+To generate jackknife error bars, please use the module
+```Python
+import latqcdtools.statistics.jackknife
+```
 The central method of this file is the `jackknife` method. A call to
 ```Python
 jackknife(func, data, numb_blocks=20, conf_axis=1, args=(), cov=False)
@@ -38,7 +42,8 @@ AbsPmean, AbsPerr = jackknife(suscA, [ReP, ImP], 32, 1)
 ```
 Note that these Polyakov loop examples are meant to be instructional. A complete set of functions 
 measuring Polyakov loop observables is given in `polyakovTools.py`, described in part in the part
-of the documentation for [[analysistoolbox:Physics]] modules. **WARNING:** Although the `jackknife` 
+of the documentation for [physics](../03_physicsAnalysis/physicsAnalysis.md) modules. 
+**WARNING:** Although the `jackknife` 
 method is very general, one thing that cannot be done is passing a lambda function. This is because 
 the `jackknife` is parallelized using `concurrent.futures`, which is not able to pickle 
 lambda functions.

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Writing Code for the ToolBox &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Logging &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data Analysis Modules" href="../02_dataAnalysis/dataAnalysis.html" />
-    <link rel="prev" title="Contributions" href="contributions.html" /> 
+    <link rel="prev" title="Documenting your code" href="03_documentation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="contributions.html">Contributions</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing Code for the ToolBox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#terminal-output">Terminal Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_testing.html">Writing Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_git.html">How to do pull requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_documentation.html">Documenting your code</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Logging</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../02_dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
@@ -66,9 +68,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="contributions.html">Contributions</a> &raquo;</li>
-      <li>Writing Code for the ToolBox</li>
+      <li>Logging</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/01_contributions/01_codeStyle.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/01_contributions/04_logging.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -76,26 +78,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="writing-code-for-the-toolbox">
-<h1>Writing Code for the ToolBox<a class="headerlink" href="#writing-code-for-the-toolbox" title="Permalink to this headline"></a></h1>
-<p>Here are a few basic guidelines to follow when making a contribution to the ToolBox:</p>
-<ul class="simple">
-<li><p>Please write documentation (like this one) for any new module that you make.</p></li>
-<li><p>Please write a test for each new feature you implement. We keep our tests in <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/testing</span></code>.</p></li>
-<li><p>Utilize the <code class="docutils literal notranslate"><span class="pre">logger</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/logger.py</span></code>.</p></li>
-<li><p>If you would like to make your python script an executable (e.g. by using <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span></code>) you should add the line <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/env</span> <span class="pre">python3</span></code> at the beginning of your script.</p></li>
-<li><p>If you are writing a method, and you want to put a comment explaining what the method generally does and how to use it, you should include it as a docstring. (You can find an explanation of docstrings “here”:https://www.programiz.com/python-programming/docstrings .) An advantage to using these is that people can easily learn about your function by calling <code class="docutils literal notranslate"><span class="pre">help(functionName)</span></code>.</p></li>
-<li><p>If you are making a new module, please try to avoid the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">X</span> <span class="pre">import</span> <span class="pre">*</span></code> construction, as it makes it difficult to tell where function methods are truly coming from. In your main script it is of course fine. The problem with modules is just that other people may want to use them and add to them, and for that they need to understand where all the methods are defined.</p></li>
-</ul>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="terminal-output">
-<h1>Terminal Output<a class="headerlink" href="#terminal-output" title="Permalink to this headline"></a></h1>
-<p>There is a dedicated logger. Its methods take arguments the same way the <code class="docutils literal notranslate"><span class="pre">print</span></code> function does. Certain methods output in colored font, for example <code class="docutils literal notranslate"><span class="pre">warn</span></code> and <code class="docutils literal notranslate"><span class="pre">TBError</span></code>. For example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
-<span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Example warning text.&quot;</span><span class="p">)</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="logging">
+<h1>Logging<a class="headerlink" href="#logging" title="Permalink to this headline"></a></h1>
+<p>There is a dedicated logger in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
+</pre></div>
+</div>
+<p>Its methods take arguments the same way the <code class="docutils literal notranslate"><span class="pre">print</span></code> function does. Certain methods output in colored font, for
+example <code class="docutils literal notranslate"><span class="pre">warn</span></code> and <code class="docutils literal notranslate"><span class="pre">TBError</span></code>. For instance</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Example warning text.&quot;</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">TBError</span><span class="p">(</span><span class="s2">&quot;Something major went wrong! This method automatically exits.&quot;</span><span class="p">)</span>
-<span class="n">logger</span><span class="o">.</span><span class="n">TBFail</span><span class="p">(</span><span class="s2">&quot;Something went wrong. Use this for red text without exiting.&quot;</span><span class="p">)</span>
-<span class="n">logger</span><span class="o">.</span><span class="n">TBPass</span><span class="p">(</span><span class="s2">&quot;Your test passed! Use this for green text.&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">TBFail</span><span class="p">(</span><span class="s2">&quot;Something went wrong. Use this for shiny red text without exiting.&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">TBPass</span><span class="p">(</span><span class="s2">&quot;Your test passed! Use this for shiny green text.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

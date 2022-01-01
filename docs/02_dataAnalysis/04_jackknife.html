@@ -83,6 +83,10 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="jackknife">
 <h1>Jackknife<a class="headerlink" href="#jackknife" title="Permalink to this headline"></a></h1>
+<p>To generate jackknife error bars, please use the module</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.jackknife</span>
+</pre></div>
+</div>
 <p>The central method of this file is the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> method. A call to</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">cov</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -120,7 +124,8 @@ accomplish this using 32 jackknife blocks with, for instance,</p>
 </div>
 <p>Note that these Polyakov loop examples are meant to be instructional. A complete set of functions
 measuring Polyakov loop observables is given in <code class="docutils literal notranslate"><span class="pre">polyakovTools.py</span></code>, described in part in the part
-of the documentation for [[analysistoolbox:Physics]] modules. <strong>WARNING:</strong> Although the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code>
+of the documentation for <a class="reference internal" href="../03_physicsAnalysis/physicsAnalysis.html"><span class="doc std std-doc">physics</span></a> modules.
+<strong>WARNING:</strong> Although the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code>
 method is very general, one thing that cannot be done is passing a lambda function. This is because
 the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> is parallelized using <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code>, which is not able to pickle
 lambda functions.</p>

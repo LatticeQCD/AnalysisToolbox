@@ -86,8 +86,11 @@
 <section id="making-plots">
 <h2>Making Plots<a class="headerlink" href="#making-plots" title="Permalink to this headline"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">analysistoolbox</span></code> also has some wrappers for Matplotlib, which allow you to make Matplotlib
-plots easily using python. All of them can be found in <code class="docutils literal notranslate"><span class="pre">analysistoolbox/latqcdtools/plotting.py</span></code>.
-It is recommended to use this module because you can add all the power and flexibility of python
+plots easily using python. All of them can be found in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.plotting</span>
+</pre></div>
+</div>
+<p>It is recommended to use this module because you can add all the power and flexibility of python
 to your plotting routines.</p>
 </section>
 <section id="the-basics">
@@ -197,7 +200,7 @@ important quantity. These can be created with, for example</p>
 <p>You also have the option of making them dashed using <code class="docutils literal notranslate"><span class="pre">linestyle=&quot;dashed&quot;</span></code>. You may also want
 to create an error band or something like this. Matplotlib also has a nice command for this,
 namely</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axhspan</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>

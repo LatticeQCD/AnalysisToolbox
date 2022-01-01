@@ -7,9 +7,12 @@ The AnalysisToolbox includes some routines that are helpful for this purpose.
 
 ## $\chi^2$ minimization
 
-In `latqcdtools/fitting.py` one finds a `Fitter` class for carrying out fits. After constructing 
-a `fitter` object, one can then use the associated methods to try various kinds of fits. These 
-are generally wrappers from `scipy.optimize`. An easy example is given in 
+In the module
+```Python
+import latqcdtools.statistics.fitting
+``` 
+one finds a `Fitter` class for carrying out fits. After constructing a `fitter` object, one can then use the associated 
+methods to try various kinds of fits. These are generally wrappers from `scipy.optimize`. An easy example is given in 
 `testing/fitting/simple_example.py`.
 
 ````{admonition} simple_example.py

@@ -3,7 +3,10 @@
 ## Making Plots
 
 The `analysistoolbox` also has some wrappers for Matplotlib, which allow you to make Matplotlib 
-plots easily using python. All of them can be found in `analysistoolbox/latqcdtools/plotting.py`. 
+plots easily using python. All of them can be found in 
+```Python
+import latqcdtools.base.plotting
+```
 It is recommended to use this module because you can add all the power and flexibility of python 
 to your plotting routines.
 
@@ -116,7 +119,7 @@ plt.axhline(y=0, color=colors[0])
 You also have the option of making them dashed using `linestyle="dashed"`. You may also want 
 to create an error band or something like this. Matplotlib also has a nice command for this, 
 namely
-```
+```Python
 plt.axvspan(xmin, xmax, alpha=0.5, color=colors[0])
 plt.axhspan(ymin, ymax, alpha=0.5, color=colors[0])
 ```

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Analysis Modules &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>How to do pull requests &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Curve Fitting" href="01_curveFitting.html" />
-    <link rel="prev" title="Logging" href="../01_contributions/04_logging.html" /> 
+    <link rel="next" title="Documenting your code" href="03_documentation.html" />
+    <link rel="prev" title="Writing Tests" href="01_testing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,15 +42,14 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../01_contributions/contributions.html">Contributions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Analysis Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="01_curveFitting.html">Curve Fitting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_plotting.html">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_statistics.html">Statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_jackknife.html">Jackknife</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_bootstrap.html">Bootstrap</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="contributions.html">Contributions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_testing.html">Writing Tests</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to do pull requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_documentation.html">Documenting your code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_logging.html">Logging</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../02_dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../03_physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
 </ul>
 
@@ -68,9 +67,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Data Analysis Modules</li>
+          <li><a href="contributions.html">Contributions</a> &raquo;</li>
+      <li>How to do pull requests</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/02_dataAnalysis/dataAnalysis.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/01_contributions/02_git.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -78,21 +78,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="data-analysis-modules">
-<h1>Data Analysis Modules<a class="headerlink" href="#data-analysis-modules" title="Permalink to this headline"></a></h1>
-<p>The AnalysisToolbox contains many modules useful for general data analysis. These include
-methods for computing jackknife and bootstrap error bars for arbitrary functions of data,
-as well as methods for curve fitting and wrappers for plotting.</p>
-<p>Here are some more detailed articles:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="01_curveFitting.html">Curve Fitting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_plotting.html">Plotting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_statistics.html">Statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_jackknife.html">Jackknife</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_bootstrap.html">Bootstrap</a></li>
-</ul>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-do-pull-requests">
+<h1>How to do pull requests<a class="headerlink" href="#how-to-do-pull-requests" title="Permalink to this headline"></a></h1>
+<p>You just finished your feature branch and want to merge it with the main. Please follow this procedure to make sure
+that nothing has been broken:</p>
+<ol class="simple">
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span> <span class="pre">main</span> <span class="pre">feature</span></code>.</p></li>
+<li><p>Run all the tests. Please make sure that every single test passes.</p></li>
+<li><p>Once every single test passes, you can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span> <span class="pre">feature</span> <span class="pre">main</span></code>.</p></li>
+<li><p>Finally you are ready to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>. This will create a pull request.</p></li>
+<li><p>It is helpful if you say a few words about your feature branch in the pull request. Moreover you should emphasize that you followed the procedure listed here.</p></li>
+<li><p>One of us will then approve your request, assuming we don’t find anything strange.
+Congratulations! You are now a contributor!</p></li>
+</ol>
 </section>
 
 

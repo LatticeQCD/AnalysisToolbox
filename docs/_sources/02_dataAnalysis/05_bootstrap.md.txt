@@ -5,8 +5,11 @@ against an independent variable, here called $r$. Sometimes it is not clear what
 for $r$ is. For example Debye masses can be extracted by fitting to an exponential that is only valid 
 for long distances, and there can be ambiguity in selecting an $r_{\text{min}}$. In such a case, one 
 may obtain multiple estimates $m(r_{\text{min}})$ for different $r_{\text{min}}$ that are all similar 
-to each other and highly correlated. The Gaussian bootstrap allows one to obtain an average and error 
-bar under these circumstances. The method
+to each other and highly correlated. The Gaussian bootstrap, found in
+```Python
+import latqcdtools.statistics.bootstr
+```
+allows one to obtain an average and error bar under these circumstances. The method
 ```Python
 avg, err = bootstr_add_dist(data, errors, nstat = 1000, plot_hist = False)
 ```
