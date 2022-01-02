@@ -16,8 +16,7 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
 
 
 def rel_checkArrayScalar(arr, scal, prec = 1e-6, abs_prec = 1e-14):
-    """ Return a boolean array that checks element-wise whether a numpy array
-        arr is equal to a scalar scal. """
+    """ Return a boolean array that checks element-wise whether a numpy array arr is equal to a scalar scal. """
     comparisonArray = scal * np.ones(arr.shape)
     return np.isclose(arr, comparisonArray, prec, abs_prec)
 

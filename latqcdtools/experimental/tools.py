@@ -11,14 +11,6 @@ import math, sys, time, multiprocessing
 import latqcdtools.logger as logger
 
 
-def check_numpy(*data):
-    data=list(data)
-    for i in range(len(data)):
-        if isinstance(data[i], (list, tuple)):
-            data[i] = np.array(data[i])
-    return tuple(data)
-
-
 def remove_nan(*data, test_cols = None):
     new_data = [[] for i in data ]
     if test_cols is None:

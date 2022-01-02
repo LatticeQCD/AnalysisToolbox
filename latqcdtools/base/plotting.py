@@ -1,10 +1,15 @@
+#
+# plotting.py
+#
+# H. Sandmeyer
+#
+
 import matplotlib as mpl
 import socket
 from matplotlib.ticker import AutoMinorLocator
-from latqcdtools.tools import check_numpy
-from latqcdtools.autoscale import auto_range
-from latqcdtools.statistics import error_prop_func, norm_cov
-import latqcdtools.logger as logger
+from latqcdtools.base.autoscale import auto_range
+from latqcdtools.statistics.statistics import error_prop_func, norm_cov
+import latqcdtools.base.logger as logger
 import math as math
 if (socket.gethostname().startswith("gt") or socket.gethostname().startswith("gx")
         or socket.gethostname().startswith("p0")):
@@ -18,6 +23,14 @@ import itertools
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 import matplotlib.colors as cl
+
+
+def check_numpy(*data):
+    data=list(data)
+    for i in range(len(data)):
+        if isinstance(data[i], (list, tuple)):
+            data[i] = np.array(data[i])
+    return tuple(data)
 
 
 """Collection of functions for plotting different data sets using the matplotlib"""

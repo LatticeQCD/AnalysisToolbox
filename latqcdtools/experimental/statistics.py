@@ -33,13 +33,6 @@ def mean_and_std_dev(data, axis=0):
 
 
 
-def norm_cov(cov):
-    """Normalize a covariance matrix to create the correlation matrix."""
-    res = np.zeros((len(cov), len(cov[0])))
-    for i in range(len(cov)):
-        for j in range(len(cov[0])):
-            res[i][j] = cov[i][j] / np.sqrt((cov[j][j] * cov[i][i]))
-    return np.array(res)
 
 
 def rem_norm_corr(corr, edata):
@@ -52,46 +45,9 @@ def rem_norm_corr(corr, edata):
 
 
 
-def error_prop(func, means, errors, grad=None, use_diff = True, args=()):
-    mean = func(means, *args)
-    errors = np.asarray(errors)
-    try:
-        # Test if we got a covariance matrix
-        errors[0][0]
-    except:
-        errors = np.diag(errors ** 2)
-    if type(mean) is tuple:
-        raise TypeError("Tuples are not supported for error propagation")
-
-    if grad is not None:
-        grad = grad(means, *args)
-    else:
-        if use_diff:
-            grad = diff_jac(means, func, args).transpose()
-        else:
-            grad = tools.alg_jac(means, func, args).transpose()
-    error = 0
-    try:
-        for i in range(len(grad)):
-            for j in range(len(grad)):
-                error += grad[i] * grad[j] * errors[i, j]
-        error = np.sqrt(error)
-    except TypeError:
-        error += abs(grad * errors[0])
-    return mean, error
 
 
 
-# Function to calculate error propagation for plotting
-def error_prop_func(x, func, means, errors, grad=None, use_diff = True, args=()):
-    # For fitting or plotting we expect the first argument of func to be x instead of params.
-    # Therefore we have to change the order using this wrapper
-    wrap_func = lambda p, *args: func(x, *(tuple(p) + tuple(args)))
-    if grad is not None:
-        wrap_grad = lambda p, *grad_args: grad(x, *(tuple(p) + tuple(grad_args)))
-    else:
-        wrap_grad = None
-    return error_prop(wrap_func, means, errors, wrap_grad, use_diff, args)[1]
 
 
 

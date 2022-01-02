@@ -1,14 +1,22 @@
-#!/usr/bin/env python3
+#
+# printErrorBars.py
+#
+# H. Sandmeyer
+#
+# Methods for printing measurements with error bars as they typically appear in lattice publications. The default is
+# 2 significant digits on an error bar in parentheses: measurement = X.XXXX(YY)
+#
 import math
-import latqcdtools.logger as logger
+import latqcdtools.base.logger as logger
 
-# get the exponent of a number to base 10
+
 def get_exp(param):
+    """ Get the exponent of a number to base 10. """
     return math.floor( math.log(abs(param))/math.log(10) )
 
 
-# get the string of a number + error 1.234567+-0.324456 -> 12.34(33) (numb_err_dig = 2)
 def get_err_str(param, param_err, numb_err_dig=2):
+    """ Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). """
 
     if numb_err_dig < 1:
         logger.TBError("Number of error digits has to be larger than 0!")
@@ -72,8 +80,8 @@ def get_err_str(param, param_err, numb_err_dig=2):
         return "%s(%s)" % (param_str, err_str)
 
 
-# Express the number with a exponent. The multiplication icon can be changed
 def get_err_str_exp(param, param_err, exp, numb_err_dig=1, multicon="x"):
+    """ Express the number with a exponent. The multiplication icon can be changed. """
     if exp == 0:
         return get_err_str(param, param_err, numb_err_dig)
     param /= pow(10, exp)
@@ -81,8 +89,8 @@ def get_err_str_exp(param, param_err, exp, numb_err_dig=1, multicon="x"):
     return "%s%s10^%i" % (get_err_str(param, param_err, numb_err_dig), multicon, exp)
 
 
-# Automatically express the number with an exponent. The multiplication icon can be changed
 def get_err_str_auto(param, param_err, numb_err_dig=1, mulicon="x"):
+    """ Automatically express the number with an exponent. The multiplication icon can be changed. """
     exp = get_exp(param)
     exp_err = get_exp(param_err)
     if exp_err > exp:
@@ -92,11 +100,11 @@ def get_err_str_auto(param, param_err, numb_err_dig=1, mulicon="x"):
     return get_err_str_exp(param, param_err, exp, numb_err_dig, mulicon)
 
 
-# Express the number with an exponent in latex
 def get_err_str_exp_tex(param, param_err, exp, numb_err_dig=1):
+    """ Express the number with an exponent in LaTeX. """
     return "$%s$" % get_err_str_exp(param, param_err, exp, numb_err_dig, "\\cdot ")
 
 
-# Automatically express the number with an exponent in latex
 def get_err_str_auto_tex(param, param_err, numb_err_dig=1):
+    """ Automatically express the number with an exponent in LaTeX. """
     return "$%s$" % get_err_str_auto(param, param_err, numb_err_dig, "\\cdot ")

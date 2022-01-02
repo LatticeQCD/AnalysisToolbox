@@ -10,6 +10,7 @@
 import mpmath
 import numpy as np
 import latqcdtools.base.logger as logger
+import latqcdtools.base.num_deriv as numDeriv
 
 
 def reduce_tuple(func):
@@ -68,6 +69,15 @@ def calc_cov(data):
     return (1 / (len(data) - 1)) * res
 
 
+def norm_cov(cov):
+    """Normalize a covariance matrix to create the correlation matrix."""
+    res = np.zeros((len(cov), len(cov[0])))
+    for i in range(len(cov)):
+        for j in range(len(cov[0])):
+            res[i][j] = cov[i][j] / np.sqrt((cov[j][j] * cov[i][i]))
+    return np.array(res)
+
+
 @reduce_tuple
 def dev_by_dist(data, axis = 0):
     """Calculate the distance between the median and 68% quantiles. Returns the larger of the two distances. This
@@ -80,6 +90,47 @@ def dev_by_dist(data, axis = 0):
     idx_up = int(numb_data / 2 + 0.68 * numb_data / 2)
     sorted_data = np.sort(data - median, axis = 0)
     return np.max(np.abs([sorted_data[idx_dn], sorted_data[idx_up]]), axis = 0)
+
+
+def error_prop(func, means, errors, grad=None, use_diff = True, args=()):
+    mean = func(means, *args)
+    errors = np.asarray(errors)
+    try:
+        # Test if we got a covariance matrix
+        errors[0][0]
+    except:
+        errors = np.diag(errors ** 2)
+    if type(mean) is tuple:
+        raise TypeError("Tuples are not supported for error propagation")
+
+    if grad is not None:
+        grad = grad(means, *args)
+    else:
+        if use_diff:
+            grad = numDeriv.diff_jac(means, func, args).transpose()
+        else:
+            grad = numDeriv.alg_jac(means, func, args).transpose()
+    error = 0
+    try:
+        for i in range(len(grad)):
+            for j in range(len(grad)):
+                error += grad[i] * grad[j] * errors[i, j]
+        error = np.sqrt(error)
+    except TypeError:
+        error += abs(grad * errors[0])
+    return mean, error
+
+
+def error_prop_func(x, func, means, errors, grad=None, use_diff = True, args=()):
+    """ Function to calculate error propagation for plotting. """
+    # For fitting or plotting we expect the first argument of func to be x instead of params.
+    # Therefore we have to change the order using this wrapper
+    wrap_func = lambda p, *args: func(x, *(tuple(p) + tuple(args)))
+    if grad is not None:
+        wrap_grad = lambda p, *grad_args: grad(x, *(tuple(p) + tuple(grad_args)))
+    else:
+        wrap_grad = None
+    return error_prop(wrap_func, means, errors, wrap_grad, use_diff, args)[1]
 
 
 def gaudif(x1,e1,x2,e2):
