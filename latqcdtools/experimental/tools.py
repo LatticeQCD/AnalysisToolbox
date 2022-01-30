@@ -8,7 +8,7 @@
 import numpy as np
 import importlib.util
 import math, sys, time, multiprocessing
-import latqcdtools.logger as logger
+import latqcdtools.base.logger as logger
 
 
 def remove_nan(*data, test_cols = None):

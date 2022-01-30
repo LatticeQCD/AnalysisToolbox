@@ -1,24 +1,18 @@
 from scipy.optimize import curve_fit, fmin_bfgs
-from latqcdtools.optimize import minimize
+from latqcdtools.experimental.optimize import minimize
 import numpy as np
 from scipy.linalg import inv, det
-import latqcdtools.logger as logger
-try:
-    # mpmath is library that allows for floating point arithmetic with arbitrary precision. For
-    # error computation we need very high precision in some cases.
-    import mpmath as mpm
-    mpm.mp.dps = 100 # Set precision to 100 digits.
-    mpmath_avail = True
-except ImportError:
-    logger.warn("mpmath not found. Error computation is likely to fail!")
-    mpmath_avail = False
-from latqcdtools.statistics import error_prop_func, norm_cov
-from latqcdtools.plotting import plot_func, save_func, latexify, plot_cov, plot_dots, init_notex, plot_eig
+import latqcdtools.base.logger as logger
+import mpmath as mpm
+mpm.mp.dps = 100  # Set precision to 100 digits.
+mpmath_avail = True
+from latqcdtools.statistics.statistics import error_prop_func, norm_cov
+from latqcdtools.base.plotting import plot_func, save_func, latexify, plot_cov, plot_dots, init_notex, plot_eig
 from inspect import signature
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import subprocess, traceback
-from latqcdtools.num_deriv import alg_fit_grad, alg_fit_hess, diff_fit_grad, diff_fit_hess, alg_jac, diff_jac
+from latqcdtools.base.num_deriv import diff_fit_grad, diff_fit_hess
 
 
 class NotAvailableError(Exception):
@@ -613,15 +607,6 @@ class Fitter:
             self._saved_params = np.ones(self._numb_params)
 
 
-
-
-    """Algorithmic gradient using algopy"""
-    def alg_grad(self, x, params):
-        return alg_fit_grad(x, params, self._func, self._args)
-        
-    """Algorithmic Hessian using algopy"""
-    def alg_hess(self, x, params):
-        return alg_fit_hess(x, params, self._func, self._args)
 
     """Numerical gradient using the difference quotient"""
     def num_grad(self, x, params):

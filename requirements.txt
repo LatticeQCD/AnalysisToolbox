@@ -7,6 +7,8 @@ mpmath
 matplotlib
 sklearn
 colorama
+lmfit
+sympy==1.19
 
 # For the Documentation
 alabaster==0.7.12

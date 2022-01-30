@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from latqcdtools.readin import *
-from latqcdtools.fitting import *
+from latqcdtools.experimental.readin import *
+from latqcdtools.experimental.fitting import *
 
 print("\n Example of a simple 3-parameter quadratic fit.\n")
 

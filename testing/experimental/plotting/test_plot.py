@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from latqcdtools.readin import *
-from latqcdtools.plotting import *
+from latqcdtools.experimental.readin import *
+from latqcdtools.base.plotting import *
 
 
 latexify()

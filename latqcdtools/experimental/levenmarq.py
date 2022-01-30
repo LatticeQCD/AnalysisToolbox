@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import inv
-from latqcdtools.num_deriv import alg_grad, diff_grad, alg_hess, diff_hess
+from latqcdtools.experimental.num_deriv import alg_fit_grad, diff_fit_grad, alg_fit_hess, diff_fit_hess
 
 
 def func(a):
