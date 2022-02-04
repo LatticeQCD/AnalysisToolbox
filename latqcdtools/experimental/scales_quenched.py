@@ -1,14 +1,14 @@
-# 
-# scales_quenched.py                                                               
-# 
-# L. Mazur, D. Clarke 
 #
-# A collection of scales and related functions for pure SU(3) configurations. 
-# 
+# scales_quenched.py
+#
+# L. Mazur, D. Clarke
+#
+# A collection of scales and related functions for pure SU(3) configurations.
+#
 import numpy as np
-from latqcdtools.tools import fm_to_GeVinv, GeVinv_to_fm
-from latqcdtools.scales_hisq import r1_MILC_2010
-import latqcdtools.logger as logger
+from latqcdtools.experimental.tools import fm_to_GeVinv, GeVinv_to_fm
+from latqcdtools.experimental.scales_hisq import r1_MILC_2010
+import latqcdtools.base.logger as logger
 
 
 
@@ -25,14 +25,14 @@ def r0_div_a(beta):
     c2=19.21
     c3=-5.25217
     c4=0.606828
-    return np.exp( (beta/(12*b0)+b1/(2.*b0**2)*np.log(6*b0/beta)) 
+    return np.exp( (beta/(12*b0)+b1/(2.*b0**2)*np.log(6*b0/beta))
                    * (1+c1/beta+c2/beta**2)/(1+c3/beta+c4/beta**2) )
 
 
 # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
 # Use r1=0.3106 from MILC. arXiv:1012.0868.
 def r0_hQCD_2014(units):
-    r0_fm = 1.5092*r1_MILC_2010("fm") # about 0.469 
+    r0_fm = 1.5092*r1_MILC_2010("fm") # about 0.469
     if units=="fm":
       return r0_fm
     elif units=="GeVinv":
