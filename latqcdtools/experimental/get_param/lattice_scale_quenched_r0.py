@@ -2,8 +2,8 @@
 
 import latqcdtools.experimental.solve as solve
 import latqcdtools.experimental.scales_quenched as sq
-import numpy as np
-import argparse, sys
+import argparse
+import sys
 
 parser = argparse.ArgumentParser()
 
@@ -14,7 +14,8 @@ args = parser.parse_args()
 
 
 def get_T_GeV(beta, nt):
-    return 1./(nt * sq.a_r0_invGeV(beta))
+    return 1. / (nt * sq.a_r0_invGeV(beta))
+
 
 def get_Tc_GeV():
     r0Tc = 0.7457
@@ -25,19 +26,20 @@ def search_beta(T_GeV, nt):
     return solve.solve(get_T_GeV, T_GeV, 5.7, 7.8, 1e-12, nt)
 
 
-Tc=get_Tc_GeV()
-nt=args.nt
+if __name__ == '__main__':
+    Tc = get_Tc_GeV()
+    nt = args.nt
 
-if args.T and args.nt:
-    T=args.T
-    beta = search_beta(args.T, args.nt)
-elif args.beta and args.nt:
-    T=get_T_GeV(args.beta, args.nt)
-    beta = args.beta
-else:
-    print("Usage " + sys.argv[0] + " --nt nt --beta beta --T T")
-    sys.exit(-1)
+    if args.T and args.nt:
+        T = args.T
+        beta = search_beta(args.T, args.nt)
+    elif args.beta and args.nt:
+        T = get_T_GeV(args.beta, args.nt)
+        beta = args.beta
+    else:
+        print("Usage " + sys.argv[0] + " --nt nt --beta beta --T T")
+        sys.exit(-1)
 
-print("Beta: %f \t T: %fGeV\t T/T_c: %f \t nt: %i \tr_0/a: %f\t a: %f 1/GeV\ta: %f fm\t ""1/a: %f GeV"
-        "\t T_c: %fGeV" % (beta, T, T / Tc, nt, sq.r0_div_a(beta), sq.a_r0_invGeV(beta), sq.a_r0_fm(beta),
-                           1 / sq.a_r0_invGeV(beta), Tc))
+    print("Beta: %f \t T: %fGeV\t T/T_c: %f \t nt: %i \tr_0/a: %f\t a: %f 1/GeV\ta: %f fm\t ""1/a: %f GeV"
+          "\t T_c: %fGeV" % (beta, T, T / Tc, nt, sq.r0_div_a(beta), sq.a_r0_invGeV(beta), sq.a_r0_fm(beta),
+                             1 / sq.a_r0_invGeV(beta), Tc))
