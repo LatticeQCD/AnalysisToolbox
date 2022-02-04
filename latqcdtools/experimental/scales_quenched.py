@@ -13,11 +13,11 @@ import latqcdtools.base.logger as logger
 
 
 ''' r0 scales '''
+r0_phys_GeV= 0.469/0.1973269718  # TODO: add source
 
 
-
-# Based on https://arxiv.org/pdf/1503.05652.pdf
-# Latest update at 2017/07/08 by Hiroshi Ohno
+# Fit ansatz from https://arxiv.org/pdf/1503.05652.pdf
+# Coefficients from https://arxiv.org/abs/1709.07612
 def r0_div_a(beta):
     b0=11./(4*np.pi)**2
     b1=102/(4*np.pi)**4

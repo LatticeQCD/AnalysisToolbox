@@ -1,13 +1,13 @@
-# 
-# scales_hisq.py                                                               
-# 
-# L. Mazur, D. Clarke 
-# 
-# A collection of scales and related functions for Nf=2+1 HISQ configurations. 
-# 
+#
+# scales_hisq.py
+#
+# L. Mazur, D. Clarke
+#
+# A collection of scales and related functions for Nf=2+1 HISQ configurations.
+#
 import numpy as np
-from latqcdtools.tools import GeVinv_to_fm, MeV_to_fminv, fm_to_GeVinv, fm_to_MeVinv
-import latqcdtools.logger as logger
+from latqcdtools.experimental.tools import GeVinv_to_fm, MeV_to_fminv, fm_to_GeVinv, fm_to_MeVinv
+import latqcdtools.base.logger as logger
 
 
 def beta_func(beta):
@@ -131,7 +131,7 @@ def a_r1_fm_2014(beta):
 
 # r1 taken from MILC 2010. arXiv:1012.0868.
 def r1_MILC_2010(units):
-    r1fm=0.3106 
+    r1fm=0.3106
     if units=="fm":
       return r1fm
     elif units=="MeVinv":

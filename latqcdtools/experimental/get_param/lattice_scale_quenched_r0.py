@@ -39,5 +39,5 @@ else:
     sys.exit(-1)
 
 print("Beta: %f \t T: %fGeV\t T/T_c: %f \t nt: %i \tr_0/a: %f\t a: %f 1/GeV\ta: %f fm\t ""1/a: %f GeV"
-        "\t T_c: %fGeV" % (beta, T, T / Tc, nt, np.exp(sq.ln_r0(beta)), sq.a_r0_invGeV(beta), sq.a_r0_fm(beta),
+        "\t T_c: %fGeV" % (beta, T, T / Tc, nt, sq.r0_div_a(beta), sq.a_r0_invGeV(beta), sq.a_r0_fm(beta),
                            1 / sq.a_r0_invGeV(beta), Tc))
