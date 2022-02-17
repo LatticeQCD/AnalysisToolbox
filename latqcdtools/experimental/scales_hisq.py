@@ -6,7 +6,7 @@
 # A collection of scales and related functions for Nf=2+1 HISQ configurations.
 #
 import numpy as np
-from latqcdtools.experimental.tools import GeVinv_to_fm, MeV_to_fminv, fm_to_GeVinv, fm_to_MeVinv
+import latqcdtools.experimental.tools as tools
 import latqcdtools.base.logger as logger
 
 
@@ -17,15 +17,12 @@ def beta_func(beta):
     return (b0 * 10 / beta) ** (-b1 / (2 * b0 ** 2)) * np.exp(-beta / (20 * b0))
 
 
-''' f_K scales '''
+def allton_type_ansatz(beta, c0, c2, d2):
+    return (c0 * beta_func(beta) + c2 * (10 / beta) * beta_func(beta) ** 3) / \
+           (1 + d2 * (10 / beta) * beta_func(beta) ** 2)
 
 
-def a_times_fk_2012(beta):
-    c0fk = 7.65667
-    c2fk = 32911.0
-    d2fk = 2388.0
-    return (c0fk * beta_func(beta) + c2fk * 10. / beta * beta_func(beta) ** 3) / \
-           (1 + d2fk * 10. / beta * beta_func(beta) ** 2)
+# ===================================================== f_K scales
 
 
 # 10.1103/PhysRevD.104.074512
@@ -33,8 +30,7 @@ def a_times_fk_2021(beta):
     c0fk = 7.486
     c2fk = 41935.0
     d2fk = 3273.0
-    return (c0fk * beta_func(beta) + c2fk * 10. / beta * beta_func(beta) ** 3) / \
-           (1 + d2fk * 10. / beta * beta_func(beta) ** 2)
+    return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
 
 # 10.1103/PhysRevD.100.094510
@@ -42,26 +38,14 @@ def a_times_fk_2014(beta):
     c0fk = 7.49415
     c2fk = 46049.0
     d2fk = 3671.0
-    return (c0fk * beta_func(beta) + c2fk * 10. / beta * beta_func(beta) ** 3) / \
-           (1 + d2fk * 10. / beta * beta_func(beta) ** 2)
+    return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
 
-def a_fk_invGeV_2012(beta):
-    fKexpnew = 156.1
-    return (a_times_fk_2012(beta) * np.sqrt(2.) * 1000) / fKexpnew
-
-
-def a_fk_fm_2012(beta):
-    return GeVinv_to_fm(a_fk_invGeV_2012(beta))
-
-
-def a_fk_invGeV_2014(beta):
-    fKexpnew = 156.1
-    return (a_times_fk_2014(beta) * np.sqrt(2.) * 1000) / fKexpnew
-
-
-def a_fk_fm_2014(beta):
-    return GeVinv_to_fm(a_fk_invGeV_2014(beta))
+def a_times_fk_2012(beta):
+    c0fk = 7.65667
+    c2fk = 32911.0
+    d2fk = 2388.0
+    return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
 
 def a_fk_invGeV_2021(beta):
@@ -69,8 +53,26 @@ def a_fk_invGeV_2021(beta):
     return (a_times_fk_2021(beta) * np.sqrt(2.) * 1000) / fKexpnew
 
 
+def a_fk_invGeV_2014(beta):
+    fKexpnew = 156.1
+    return (a_times_fk_2014(beta) * np.sqrt(2.) * 1000) / fKexpnew
+
+
+def a_fk_invGeV_2012(beta):
+    fKexpnew = 156.1
+    return (a_times_fk_2012(beta) * np.sqrt(2.) * 1000) / fKexpnew
+
+
 def a_fk_fm_2021(beta):
-    return GeVinv_to_fm(a_fk_invGeV_2021(beta))
+    return tools.GeVinv_to_fm(a_fk_invGeV_2021(beta))
+
+
+def a_fk_fm_2014(beta):
+    return tools.GeVinv_to_fm(a_fk_invGeV_2014(beta))
+
+
+def a_fk_fm_2012(beta):
+    return tools.GeVinv_to_fm(a_fk_invGeV_2012(beta))
 
 
 # Experimental Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001
@@ -80,7 +82,7 @@ def fk_PDG_2018(units):
     if units == "MeV":
         return fkMeV
     elif units == "fminv":
-        return MeV_to_fminv(fkMeV)
+        return tools.MeV_to_fminv(fkMeV)
     else:
         logger.TBError("Invalid unit specification for fk.")
 
@@ -92,12 +94,12 @@ def fk_PDG_2012(units):
     if units == "MeV":
         return fkMeV
     elif units == "fminv":
-        return MeV_to_fminv(fkMeV)
+        return tools.MeV_to_fminv(fkMeV)
     else:
         logger.TBError("Invalid unit specification for fk.")
 
 
-''' r1 scales '''
+# ====================================================== r1 scales
 
 
 # https://arxiv.org/pdf/2107.10011.pdf
@@ -106,8 +108,17 @@ def a_div_r1_2021(beta):
     c0 = 43.16
     c2 = 339472
     d2 = 5452.0
-    return (c0 * beta_func(beta) + c2 * (10 / beta) * beta_func(beta) ** 3) / \
-           (1 + d2 * (10 / beta) * beta_func(beta) ** 2)
+    return allton_type_ansatz(beta, c0, c2, d2)
+
+
+# https://arxiv.org/pdf/1710.05024.pdf
+def a_div_r1_2018(beta):
+    if beta < 7.030 or beta > 8.4:
+        logger.warn("beta out of fit range [7.030, 8.400]")
+    c0 = 43.1
+    c2 = 343236.0
+    d2 = 5514.0
+    return allton_type_ansatz(beta, c0, c2, d2)
 
 
 # https://arxiv.org/pdf/1407.6387.pdf
@@ -115,8 +126,7 @@ def a_div_r1_2014(beta):
     c0 = 43.1
     c2 = 343236.0
     d2 = 5514.0
-    return (c0 * beta_func(beta) + c2 * (10 / beta) * beta_func(beta) ** 3) / \
-           (1 + d2 * (10 / beta) * beta_func(beta) ** 2)
+    return allton_type_ansatz(beta, c0, c2, d2)
 
 
 # https://arxiv.org/pdf/1111.1710.pdf
@@ -124,24 +134,23 @@ def a_div_r1_2012(beta):
     c0 = 44.06
     c2 = 272102.0
     d2 = 4281.0
-    return (c0 * beta_func(beta) + c2 * (10 / beta) * beta_func(beta) ** 3) / \
-           (1 + d2 * (10 / beta) * beta_func(beta) ** 2)
-
-
-def a_r1_invGeV_2012(beta):
-    return fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1_2012(beta))
-
-
-def a_r1_fm_2012(beta):
-    return r1_MILC_2010("fm") * a_div_r1_2012(beta)
+    return allton_type_ansatz(beta, c0, c2, d2)
 
 
 def a_r1_invGeV_2014(beta):
-    return fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1_2014(beta))
+    return tools.fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1_2014(beta))
+
+
+def a_r1_invGeV_2012(beta):
+    return tools.fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1_2012(beta))
 
 
 def a_r1_fm_2014(beta):
     return r1_MILC_2010("fm") * a_div_r1_2014(beta)
+
+
+def a_r1_fm_2012(beta):
+    return r1_MILC_2010("fm") * a_div_r1_2012(beta)
 
 
 # r1 taken from MILC 2010. arXiv:1012.0868.
@@ -150,14 +159,14 @@ def r1_MILC_2010(units):
     if units == "fm":
         return r1fm
     elif units == "MeVinv":
-        return fm_to_MeVinv(r1fm)
+        return tools.fm_to_MeVinv(r1fm)
     elif units == "GeVinv":
-        return fm_to_GeVinv(r1fm)
+        return tools.fm_to_GeVinv(r1fm)
     else:
         logger.TBError("Invalid unit specification for r1.")
 
 
-''' strange quark mass: line of constant physics '''
+# ================================================= strange quark mass: line of constant physics
 
 
 # fit take from 1407.6387v2
