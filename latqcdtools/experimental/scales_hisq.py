@@ -25,54 +25,47 @@ def allton_type_ansatz(beta, c0, c2, d2):
 # ===================================================== f_K scales
 
 
-# 10.1103/PhysRevD.104.074512
-def a_times_fk_2021(beta):
-    c0fk = 7.486
-    c2fk = 41935.0
-    d2fk = 3273.0
+def a_times_fk(beta: float, year):
+
+    # 10.1103/PhysRevD.104.074512
+    if str(year) == "2021":
+        c0fk = 7.486
+        c2fk = 41935.0
+        d2fk = 3273.0
+
+    # 10.1103/PhysRevD.100.094510
+    elif str(year) == "2014":
+        c0fk = 7.49415
+        c2fk = 46049.0
+        d2fk = 3671.0
+
+    elif str(year) == "2012":
+        c0fk = 7.65667
+        c2fk = 32911.0
+        d2fk = 2388.0
+
+    else:
+        logger.TBError("No fit parameters for ", str(year))
+        return
+
     return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
 
-# 10.1103/PhysRevD.100.094510
-def a_times_fk_2014(beta):
-    c0fk = 7.49415
-    c2fk = 46049.0
-    d2fk = 3671.0
-    return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
+def a_fk_invGeV(beta: float, year):
+    if str(year) == "2021":
+        fKexpnew = 155.7
+    elif str(year) == "2014" or str(year) == "2012":
+        fKexpnew = 156.1
+    else:
+        logger.TBError("No fit parameters for ", str(year))
+        return
+
+    return (a_times_fk(beta, year) * np.sqrt(2.) * 1000) / fKexpnew
 
 
-def a_times_fk_2012(beta):
-    c0fk = 7.65667
-    c2fk = 32911.0
-    d2fk = 2388.0
-    return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
+def a_fk_fm(beta, year):
+    return tools.GeVinv_to_fm(a_fk_invGeV(beta, year))
 
-
-def a_fk_invGeV_2021(beta):
-    fKexpnew = 155.7
-    return (a_times_fk_2021(beta) * np.sqrt(2.) * 1000) / fKexpnew
-
-
-def a_fk_invGeV_2014(beta):
-    fKexpnew = 156.1
-    return (a_times_fk_2014(beta) * np.sqrt(2.) * 1000) / fKexpnew
-
-
-def a_fk_invGeV_2012(beta):
-    fKexpnew = 156.1
-    return (a_times_fk_2012(beta) * np.sqrt(2.) * 1000) / fKexpnew
-
-
-def a_fk_fm_2021(beta):
-    return tools.GeVinv_to_fm(a_fk_invGeV_2021(beta))
-
-
-def a_fk_fm_2014(beta):
-    return tools.GeVinv_to_fm(a_fk_invGeV_2014(beta))
-
-
-def a_fk_fm_2012(beta):
-    return tools.GeVinv_to_fm(a_fk_invGeV_2012(beta))
 
 
 # Experimental Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001
