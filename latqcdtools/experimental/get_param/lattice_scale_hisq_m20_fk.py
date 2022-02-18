@@ -6,12 +6,12 @@ import latqcdtools.experimental.tools as tools
 import latqcdtools.experimental.scales_hisq as sh
 
 
-def get_T_GeV(beta, nt):
-    return 1. / (nt * sh.a_fk_invGeV(beta, args.year))
+def get_T_GeV(beta, nt, suppress_warnings=False):
+    return 1. / (nt * sh.a_fk_invGeV(beta, args.year, suppress_warnings))
 
 
 def search_beta(T_GeV, nt):
-    return solve.solve(get_T_GeV, T_GeV, 5.9, 7.8, 10e-12, nt)
+    return solve.solve(get_T_GeV, T_GeV, 1, 15, 10e-12, nt, True)
 
 
 if __name__ == '__main__':
