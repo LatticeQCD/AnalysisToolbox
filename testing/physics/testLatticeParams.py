@@ -1,4 +1,4 @@
-from latqcdtools.lattice_params import *
+from latqcdtools.physics.lattice_params import *
 
 import params
 

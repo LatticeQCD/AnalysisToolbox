@@ -1,15 +1,15 @@
 # 
 # lattice_params.py
 # 
-# D. Clarke, 2 Mar 2021 
+# D. Clarke
 # 
-# Class to handle input parameters of lattice configs. 
+# Class to handle input parameters of lattice configs. This is in particular for use with the HotQCD collaboration.
 #
-from latqcdtools.tools import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.scales_hisq import fk_PDG_2012, r1_MILC_2010, a_div_r1_2014, a_times_fk_2014
-from latqcdtools.scales_quenched import r0_div_a, r0_hQCD_2014
 import numpy as np
-import latqcdtools.logger as logger
+import latqcdtools.base.logger as logger
+from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
+from latqcdtools.physics.scales_hisq import fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk
+from latqcdtools.physics.scales_quenched import r0_div_a, r0_hQCD_2014
 
 
 def massRatioToMasses(msml, Nt, cbeta):
@@ -70,9 +70,9 @@ class latticeParams:
     # a in [fm]
     def geta(self):
         if self.scale=='fk':
-            return MeVinv_to_fm( a_times_fk_2014(self.beta)/self.fK )
+            return MeVinv_to_fm( a_times_fk(self.beta,2021)/self.fK )
         elif self.scale=='r1':
-            return a_div_r1_2014(self.beta)*self.r1
+            return a_div_r1(self.beta,2021)*self.r1
         elif self.scale=='r0':
             return self.r0/r0_div_a(self.beta)
 

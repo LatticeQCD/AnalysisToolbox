@@ -6,7 +6,7 @@
 # A collection of scales and related functions for Nf=2+1 HISQ configurations.
 #
 import numpy as np
-import latqcdtools.experimental.tools as tools
+from latqcdtools.physics.unitConversions import GeVinv_to_fm, MeV_to_fminv, fm_to_GeVinv, fm_to_MeVinv
 import latqcdtools.base.logger as logger
 
 
@@ -57,6 +57,7 @@ def a_times_fk(beta: float, year, suppress_warnings=False):
 
     else:
         logger.TBError("No fit parameters for ", str(year))
+
     return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
 
@@ -73,7 +74,7 @@ def a_fk_invGeV(beta: float, year, suppress_warnings=False):
 
 
 def a_fk_fm(beta, year):
-    return tools.GeVinv_to_fm(a_fk_invGeV(beta, year))
+    return GeVinv_to_fm(a_fk_invGeV(beta, year))
 
 
 # Experimental Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001
@@ -83,7 +84,7 @@ def fk_PDG_2018(units):
     if units == "MeV":
         return fkMeV
     elif units == "fminv":
-        return tools.MeV_to_fminv(fkMeV)
+        return MeV_to_fminv(fkMeV)
     else:
         logger.TBError("Invalid unit specification for fk.")
 
@@ -95,7 +96,7 @@ def fk_PDG_2012(units):
     if units == "MeV":
         return fkMeV
     elif units == "fminv":
-        return tools.MeV_to_fminv(fkMeV)
+        return MeV_to_fminv(fkMeV)
     else:
         logger.TBError("Invalid unit specification for fk.")
 
@@ -140,7 +141,7 @@ def a_div_r1(beta, year, suppress_warnings=False):
 
 
 def a_r1_invGeV(beta, year, suppress_warnings=False):
-    return tools.fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1(beta, year, suppress_warnings))
+    return fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1(beta, year, suppress_warnings))
 
 
 def a_r1_fm(beta, year, suppress_warnings=False):
@@ -153,9 +154,9 @@ def r1_MILC_2010(units):
     if units == "fm":
         return r1fm
     elif units == "MeVinv":
-        return tools.fm_to_MeVinv(r1fm)
+        return fm_to_MeVinv(r1fm)
     elif units == "GeVinv":
-        return tools.fm_to_GeVinv(r1fm)
+        return fm_to_GeVinv(r1fm)
     else:
         logger.TBError("Invalid unit specification for r1.")
 
@@ -163,7 +164,7 @@ def r1_MILC_2010(units):
 # ================================================= strange quark mass: line of constant physics
 
 
-# fit take from 1407.6387v2
+# fit taken from 1407.6387v2
 def r1_times_ms_2014(beta):
     nf = 3
     b0 = (11 - 2 * nf / 3) / (4 * np.pi) ** 2

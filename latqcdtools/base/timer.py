@@ -19,4 +19,4 @@ class timer:
         self._tstart = self._tend
         self._tend   = time.time()
         timing = self._tend - self._tstart
-        print("  Time to finish: %6.4f [s]" % timing)
+        print("  Time to finish: %12.8f [s]" % timing)

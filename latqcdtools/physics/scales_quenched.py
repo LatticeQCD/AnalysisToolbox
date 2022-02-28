@@ -6,10 +6,9 @@
 # A collection of scales and related functions for pure SU(3) configurations.
 #
 import numpy as np
-from latqcdtools.experimental.tools import fm_to_GeVinv, GeVinv_to_fm
-from latqcdtools.experimental.scales_hisq import r1_MILC_2010
 import latqcdtools.base.logger as logger
-
+from latqcdtools.physics.unitConversions import fm_to_GeVinv, GeVinv_to_fm
+from latqcdtools.physics.scales_hisq import r1_MILC_2010
 
 
 ''' r0 scales '''
