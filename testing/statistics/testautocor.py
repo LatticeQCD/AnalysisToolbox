@@ -29,4 +29,4 @@ TESTtau_int  = 18.24028851979112
 TESTtau_inte = 5.9003840732043
 TESTbias     = 4.79395572142051
 
-print_results( [TESTitpick,TESTtau_int,TESTtau_inte,TESTbias],[itpick,tau_int,tau_inte,tau_intbias], None, None, "tau_int", 1e-4 )
+print_results( [TESTitpick,TESTtau_int,TESTtau_inte,TESTbias],[itpick,tau_int,tau_inte,tau_intbias], None, None, "tau_int", 1e-14 )

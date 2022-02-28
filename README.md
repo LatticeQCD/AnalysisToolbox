@@ -1,6 +1,8 @@
 # AnalysisToolbox
 
-The AnalysisToolbox is a collection of Python tools that can be used for data analysis, with an aim in particular toward lattice QCD.
+The AnalysisToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
+particular toward lattice QCD. The Analysistoolbox is used especially by the HotQCD collaboration, so
+it also includes some methods complying with their conventions.
 
 ## Prerequisites
 
@@ -20,14 +22,18 @@ For your convenience, these packages can be installed via
 pip install -r requirements.txt
 ```
 
-Additionally you need to have python3 somewhere in your $PATH. To do this, you have to define the environment variable PYTHONPATH containing the path to the root folder of this project; e.g. add the line<pre><code class="shell">export PYTHONPATH="${PYTHONPATH}:/path/to/your/AnalysisToolbox/"
-</code></pre>to your .bashrc.
+Additionally you need to have python3 somewhere in your $PATH. To do this, you have to define the environment variable 
+PYTHONPATH containing the path to the root folder of this project; e.g. add the 
+```shell
+export PYTHONPATH="${PYTHONPATH}:/path/to/your/AnalysisToolbox/"
+```
 
 
 
 ## Documentation
 
-Please check out [the documentation](https://latticeqcd.github.io/AnalysisToolbox) to learn how to use the AnalysisToolbox.
+Please check out [the documentation](https://latticeqcd.github.io/AnalysisToolbox) to learn how to use the 
+AnalysisToolbox.
 
 
 ## Getting help and bug report
@@ -42,7 +48,9 @@ If none of the above cases apply, you may also send an email to dclarke(at)physi
 
 ## Contributors
 
-[H. Sandmeyer](https://github.com/hsandmeyer), [L. Altenkort](https://github.com/luhuhis), [D. Clarke](https://github.com/clarkedavida), [L. Mazur](https://github.com/lukas-mazur), [C. Schmidt](https://github.com/schmidt74), [H.-T. Shu](https://github.com/haitaoshu), T. Ueding
+[H. Sandmeyer](https://github.com/hsandmeyer), [L. Altenkort](https://github.com/luhuhis), 
+[D. Clarke](https://github.com/clarkedavida), [L. Mazur](https://github.com/lukas-mazur), 
+[C. Schmidt](https://github.com/schmidt74), [H.-T. Shu](https://github.com/haitaoshu), T. Ueding
 
 
 ## Acknowledgment

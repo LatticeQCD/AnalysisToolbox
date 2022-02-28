@@ -32,6 +32,8 @@ cd ..
 
 cd physics
 runTestRoutine testLatticeParams.py
+runTestRoutine testPolyakovTools.py
+runTestRoutine testScales.py
 cd ..
 
 

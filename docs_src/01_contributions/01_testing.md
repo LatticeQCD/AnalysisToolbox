@@ -1,5 +1,13 @@
 # Writing Tests
 
+With each new module you write, please add a test. All the tests for the AnalysisToolbox can be found in the
+`testing` folder. Once you have written your test, add a line for it to `testing/runTests.bash`.
+If you make any changes to the code, call
+```shell
+bash runTests.bash
+```
+from the `testing` folder to make sure nothing is broken.
+
 There are a couple modules that assist with testing. The module
 ```Python
 import latqcdtools.base.check
