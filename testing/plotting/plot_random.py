@@ -1,7 +1,13 @@
-#!/usr/bin/env python3
+# 
+# plot_random.py                                                               
+# 
+# H. Sandmeyer
+# 
+# Quick plot of a normal distribution.
+#
 
 from numpy.random import normal
-from latqcdtools.plotting import *
+from latqcdtools.base.plotting import *
 
 latexify()
 

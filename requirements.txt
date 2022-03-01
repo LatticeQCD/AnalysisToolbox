@@ -9,6 +9,8 @@ sklearn
 colorama
 lmfit
 sympy==1.9
+cycler
+itertools
 
 # For the Documentation
 alabaster==0.7.12

@@ -1,12 +1,14 @@
-#!/usr/bin/env python3
+# 
+# test_plot.py                                                               
+# 
+# H. Sandmeyer
+# 
+# Test several of the methods in the plotting.py module.
+#
 
-import numpy as np
-from latqcdtools.experimental.readin import *
 from latqcdtools.base.plotting import *
 
-
 latexify()
-#set_default_param(alpha=0.5)
 
 plot_file("data1.txt", 1, 2, 3, 4, label="gauss noise", xlabel="$\\frac{1}{z}$", capsize = 2)
 plot_file("wurf.dat", 1, 3, 4, 2, style="lines", label="quadratic", marker = 'o')
