@@ -19,7 +19,7 @@ Nt = 8
 
 pt = polyakovTools(Ns, Nt)
 
-stream, conf, ReParr, ImParr = np.loadtxt('polyakovTable.d',unpack=True)
+stream, conf, ReParr, ImParr = np.loadtxt('polyakovTable.txt',unpack=True)
 
 absPm    , absPe     = jackknife( pt.absPLoop        , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
 absP2m   , absP2e    = jackknife( pt.absPLoop2       , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
