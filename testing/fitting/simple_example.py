@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from latqcdtools.experimental.readin import *
-from latqcdtools.experimental.fitting import *
+import numpy as np
+from latqcdtools.statistics.fitting import *
 
 print("\n Example of a simple 3-parameter quadratic fit.\n")
 
@@ -11,7 +11,7 @@ def fit_func(x, params):
     c = params[2]
     return a * x**2 + b * x + c
 
-xdata, ydata, edata = read_in("wurf.dat", 1, 3, 4)
+xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,1,3))
 
 fitter = Fitter(fit_func, xdata, ydata, expand = False)
 

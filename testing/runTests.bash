@@ -37,6 +37,12 @@ runTestRoutine testScales.py
 cd ..
 
 
+# ------------------ FITTING TESTS
+
+cd fitting
+runTestRoutine test_fit.py
+cd ..
+
 echo
 echo "Done!"
 echo

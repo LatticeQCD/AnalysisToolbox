@@ -5,8 +5,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 
 
-def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12,
-             maxiter=10000, use_alg=False, algorithm=None):
+def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, use_alg=False, algorithm=None):
     if algorithm == "levenberg":
         args = (start_params, func, jack, hess)
         kwargs = {'eps': tol, 'use_alg': use_alg,

@@ -1,17 +1,13 @@
 
-
 import numpy as np
 
 
-
-def diff_deriv(x, func, args = (), expand = False, eps = None):
+def diff_deriv(x, func, args = (), eps = None):
     if eps is None:
         eps = best_eps(x)
     up = x + eps
     down = x - eps
     return (func(up, *args) - func(down, *args)) / (2*eps)
-
-
 
 
 
@@ -71,7 +67,6 @@ def diff_hess(params, func, args = (), eps = None, expand = False):
         downdown[i] = down[i]
         downup[i] = down[i]
 
-
     return np.array(ret)
 
 
@@ -98,39 +93,3 @@ def diff_fit_hess(x, params, func, args = (), eps = None, expand = False):
     else:
         f = lambda p: func(x, p, *args)
     return diff_hess(params, f, eps = eps, expand = False)
-
-
-
-
-
-# Implementation for usage with algopy which can handle numpy operations but is very slow and buggy
-
-
-
-
-# alg_hess using algopy
-def alg_hess(x, func, args = ()):
-    if not algopy_avail:
-        raise ImportError("Algopy not installed. Please install algopy or use diff_hess")
-    return alg_jac(x, alg_grad, args = (func, args))
-
-
-def alg_fit_grad(x, params, func, args = (), expand = False):
-# For fitting or plotting we expect the first argument of func to be x instead of params.
-# Therefore we have to change the order using this wrapper
-    if expand:
-        f = lambda p: func(x, *(tuple(p) + tuple(args)))
-    else:
-        f = lambda p: func(x, p, *args)
-    return alg_grad(params, f)
-
-def alg_fit_hess(x, params, func, args = (), expand = False):
-# For fitting or plotting we expect the first argument of func to be x instead of params.
-# Therefore we have to change the order using this wrapper
-    if expand:
-        f = lambda p: func(x, *(tuple(p) + tuple(args)))
-    else:
-        f = lambda p: func(x, p, *args)
-    return alg_hess(params, f)
-
-
