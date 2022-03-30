@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 
-# testingTools.bash                                                               
+# testingTools.bash
 # 
 # D. Clarke 
 # 

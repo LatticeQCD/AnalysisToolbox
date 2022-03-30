@@ -7,8 +7,7 @@
 # 
 import numpy as np
 import importlib.util
-import math, sys, time, multiprocessing
-import latqcdtools.base.logger as logger
+import sys
 
 
 def remove_nan(*data, test_cols = None):
@@ -139,29 +138,4 @@ def get_numb_params(func, x = 1, args = (), expand = True):
                 pass
         raise IndexError("Function does not work with up to 1000 parameters")
 
-
-def timeout(func, args=(), kwargs={}, timeout_duration=300):
-    manager = multiprocessing.Manager()
-    return_dict = manager.dict()
-
-    class TimeoutError(Exception):
-        pass
-
-    def wrap_func(*args):
-        ret = func(*args[0], **args[1])
-        args[2]["ret"] = ret
-
-    p = multiprocessing.Process(target = wrap_func, args = (args, kwargs, return_dict))
-    p.start()
-
-    p.join(timeout_duration)
-
-    # If thread is still active
-    if p.is_alive():
-
-        # Terminate
-        p.terminate()
-        p.join()
-        raise TimeoutError("Time out for " + str(func))
-    return return_dict["ret"]
 

@@ -11,7 +11,7 @@ from scipy.optimize import curve_fit
 from scipy.linalg import inv
 import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
-from latqcdtools.experimental.optimize import minimize
+from latqcdtools.base.optimize import minimize
 import latqcdtools.base.logger as logger
 from latqcdtools.base.num_deriv import diff_jac
 from latqcdtools.statistics.statistics import error_prop_func, norm_cov

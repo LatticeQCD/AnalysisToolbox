@@ -14,9 +14,17 @@ def best_eps(x):
     return eps
 
 
+def diff_deriv(x, func, args = (), eps = None):
+    if eps is None:
+        eps = best_eps(x)
+    up = x + eps
+    down = x - eps
+    return (func(up, *args) - func(down, *args)) / (2*eps)
+
+
 def diff_grad(params, func, args = (), eps = None, expand = False):
     """ Gradient using difference quotient. """
-    ret = [ 0.0 for i in range(len(params))]
+    ret = [0.0]*len(params)
     up = np.array(params, dtype = float)
     down = np.array(params, dtype = float)
     for i in range(len(params)):
@@ -25,13 +33,13 @@ def diff_grad(params, func, args = (), eps = None, expand = False):
         up[i] += eps
         down[i] -= eps
         if expand:
-            ret[i] = (func(*(tuple(up) + tuple(args)))
-                    - func(*(tuple(down) + tuple(args)))) / (2*eps)
+            ret[i] = (func(*(tuple(up) + tuple(args))) - func(*(tuple(down) + tuple(args)))) / (2*eps)
         else:
             ret[i] = (func(up, *args) - func(down, *args)) / (2*eps)
         up[i] = params[i]
         down[i] = params[i]
     return np.array(ret)
+
 
 # Hessian using difference quotient
 def diff_hess(params, func, args = (), eps = None, expand = False):
@@ -73,8 +81,7 @@ def diff_hess(params, func, args = (), eps = None, expand = False):
             downdown[j]-=epsj
             downup[j]+=epsj
 
-            ret[i][j]=(func(upup,*args) + func(downdown,*args)
-                    -func(updown,*args) - func(downup,*args)) / (4*epsi*epsj)
+            ret[i][j]=(func(upup,*args) + func(downdown,*args)-func(updown,*args) - func(downup,*args)) / (4*epsi*epsj)
             ret[j][i]=ret[i][j]
 
             upup[j]=params[j]
@@ -92,6 +99,7 @@ def diff_hess(params, func, args = (), eps = None, expand = False):
 
     return np.array(ret)
 
+
 def diff_fit_grad(x, params, func, args = (), eps = None, expand = False):
 # For fitting or plotting we expect the first argument of func to be x instead of params.
 # Therefore we have to change the order using this wrapper
@@ -100,6 +108,7 @@ def diff_fit_grad(x, params, func, args = (), eps = None, expand = False):
     else:
         f = lambda p: func(x, p, *args)
     return diff_grad(params, f, eps = eps, expand = False)
+
 
 def diff_fit_hess(x, params, func, args = (), eps = None, expand = False):
 # For fitting or plotting we expect the first argument of func to be x instead of params.
