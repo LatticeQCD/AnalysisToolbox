@@ -85,11 +85,10 @@ def levenberg(param, func, grad_func=None, hess_func=None, eps=1e-12, max_itt=10
 # --------------------------------------------------------------------------------------------------------- MINIMIZATION
 
 
-def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, use_alg=False, algorithm=None):
+def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
     if algorithm == "levenberg":
         args = (start_params, func, jack, hess)
-        kwargs = {'eps': tol, 'use_alg': use_alg,
-                  'max_itt': maxiter}
+        kwargs = {'eps': tol, 'max_itt': maxiter}
         params, nfev = levenberg(*args, **kwargs)
 
     else:

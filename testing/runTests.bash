@@ -16,6 +16,12 @@ echo "Running python tests:"
 echo
 
 
+# --------------------- BASE TESTS
+
+
+runTestRoutine test_deriv.py
+
+
 # --------------- STATISTICS TESTS
 
 

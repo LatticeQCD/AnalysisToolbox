@@ -63,9 +63,7 @@ class Fitter:
     of the chisqare numerically. Either compute the numerical derivative of the whole chisquare 
     (derive_chisq = True) or compute the derivatives of the fitting function and use error
     propagation (derive_chisq = False). The latter is expected to be more stable and is the
-    default case. For the computation of the numerical derivatives there are two possibilities:
-    Either use a difference quotient (use_diff = True) or use an algorithmic derivative which
-    is implemented using algopy (use_alg = True).
+    default case.
 
     Parameters
     ----------
@@ -107,11 +105,6 @@ class Fitter:
         Maximum number of iterations / function evaluations.
     use_diff : bool, optional, default: True
         In case of numerical derivative use the difference quotient for approximation.
-    use_alg : bool, optional, default: False
-        In case of numerical derivative use an analytical derivative using algopy. Much slower 
-        than difference quotient. If set along use_diff, use_alg is preferred. If both set to 
-        False, derive_chisq will be set to True, and a difference quotient will be used for 
-        numerical derivatives.
     no_chache : bool, optional, default: False
         Disable caching. Might be necessary when using custom numerical derivatives.
     norm_err_chi2 : bool, optional, default: True
@@ -163,7 +156,7 @@ class Fitter:
     """
 
     # Allowed keys for the constructor
-    _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args','tol', 'use_diff', 'use_alg',
+    _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args','tol', 'use_diff',
                      'no_cache', 'norm_err_chi2', 'derive_chisq', 'cut_eig', 'cut_perc', 'test_tol', 'max_fev',
                      'try_all', 'func_sup_numpy', 'use_corr', 'always_return', 'suppress_warning']
 

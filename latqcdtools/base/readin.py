@@ -11,15 +11,13 @@ import numpy as np
 
 def read_in_pure_no_numpy(filename, col1=1, col2=2, symmetrize = False):
     try:
-        #To support input file streams
+        # To support input file streams
         ins = open(filename, "r")
         close = True
     except TypeError:
         ins = filename
         close = False
     data_dict = {}
-    lineelems = []
-    line_numb = 0
     for line in ins:
         if line.startswith('#') or len(line) < 2:
             continue
@@ -28,8 +26,6 @@ def read_in_pure_no_numpy(filename, col1=1, col2=2, symmetrize = False):
             Nt = int(lineelems[col1 - 1])
         except ValueError:
             Nt = float(lineelems[col1 - 1])
-
-
         corr = float(lineelems[col2 - 1])
         if Nt not in data_dict:
             data_dict[Nt] = []
@@ -63,13 +59,13 @@ def read_in_pure_trans(filename, col1=1, col2=2, symmetrize = False):
     return xdata, np.array(data).transpose(), len(data[0])
 
 
-''' General wrapper for reading in specified columns from a file. Comment character #. '''
 def read_in(filename, *args):
+    """ General wrapper for reading in specified columns from a file. Comment character #. """
     if args == ():
         args = (1, 2, 3)
-    data = [[] for i in range(len(args))]
+    data = [[]]*len(args)
     try:
-        #To support input file streams
+        # To support input file streams
         ins = open(filename, "r")
         close = True
     except TypeError:
@@ -123,7 +119,7 @@ def read_in_fitmass(filename):
     aicc_col = cols.index("AICc")
     chi2_col = cols.index("chi^2/d.o.f.")
 
-    #When there is only one line, numpy.loadtxt, will giv a 1D array
+    # When there is only one line, numpy.loadtxt, will giv a 1D array
     if len(data.shape) == 1:
         data = [data]
 

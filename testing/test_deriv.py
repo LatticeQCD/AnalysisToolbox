@@ -1,10 +1,17 @@
-#!/usr/bin/env python3
+# 
+# test_deriv.py
+# 
+# H. Sandmeyer
+# 
+# Tests of methods to calculate derivatives numerically.
+#
 
-from latqcdtools.tools import *
-from latqcdtools.num_deriv import *
-import latqcdtools.logger as logger
+
 import numpy as np
- 
+from latqcdtools.base.num_deriv import diff_fit_grad, diff_fit_hess
+from latqcdtools.base.check import rel_check
+import latqcdtools.base.logger as logger
+
 def print_results(res,  res_true, text):
     test = True
     res = np.asarray(res)
@@ -16,12 +23,10 @@ def print_results(res,  res_true, text):
             print("res[" + str(it.multi_index) + "] = " + str(res[it.multi_index])
                     + " != res_true[" + str(it.multi_index) + "] = " + str(res_true[it.multi_index]))
         it.iternext()
-    print("============================")
     if test:
         logger.TBPass(text)
     else:
         logger.TBFail(text)
-    print("============================")
     print()
 
 
@@ -45,17 +50,6 @@ def jac_g(x, b):
 def hess_f(x, b):
     return b * np.array([[0, x[1] * np.exp(x[1]) + np.exp(x[1])], 
         [x[1] * np.exp(x[1]) + np.exp(x[1]), x[0] * (x[1] * np.exp(x[1]) + 2 * np.exp(x[1]))]])
-
-if algopy_avail:
-    res = alg_hess([1.0, 1.0], f, (1.0,))
-    res_true = hess_f([1.0, 1.0], 1.0)
-    print_results(res, res_true, "algorithmic hessian")
-    res = alg_grad([1.0, 1.0], f, (1.0,))
-    res_true = grad_f([1.0, 1.0], 1.0)
-    print_results(res, res_true, "algorithmic gradient")
-    res = alg_jac([1.0, 1.0], g, (1.0,))
-    res_true = jac_g([1.0, 1.0], 1.0)
-    print_results(res, res_true, "algorithmic jacobian")
 
 
 print("\nTesting fitting gradient")
