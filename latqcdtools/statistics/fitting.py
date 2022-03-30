@@ -913,7 +913,7 @@ class Fitter:
 
                 if abs(np.sum(test) - np.sum(np.diag(test))) > self._test_tol:
                     if self._always_return:
-                        fit_errors = np.array([np.nan for i in range(len(params))])
+                        fit_errors = np.array( [np.nan]*len(params) )
                     else:
                         logger.warn("Off diagonals in test matrix are larger than",self._test_tol)
                         logger.warn("Test - matrix:")
@@ -928,7 +928,7 @@ class Fitter:
                         pcov = inv_jej
                     if np.min(np.diag(pcov)) < 0:
                         if self._always_return:
-                            fit_errors = np.array([np.nan for i in range(len(params))])
+                            fit_errors = np.array( [np.nan]*len(params) )
                         else:
                             raise ValueError(algorithm + ": Negative entries for the variance!")
                     else:
@@ -936,13 +936,13 @@ class Fitter:
 
             except ZeroDivisionError as e:
                 if self._always_return:
-                    fit_errors = np.array([np.nan for i in range(len(params))])
+                    fit_errors = np.array( [np.nan]*len(params) )
                     pcov = np.full((len(params), len(params)), np.nan)
                 else:
                     raise e
 
         else:
-            fit_errors = np.array([np.nan for i in range(len(params))])
+            fit_errors = np.array( [np.nan]*len(params) )
             pcov = np.full((len(params),len(params)), np.nan)
         return pcov, fit_errors, dof
 
@@ -1014,8 +1014,8 @@ class Fitter:
         else:
             if priorval is not None:
                 raise ValueError("Priorval passed but priorsigma is None")
-            self._priorval = [0 for i in range(self._numb_params)]
-            self._priorsigma = [1 for i in range(self._numb_params)]
+            self._priorval = [0]*self._numb_params
+            self._priorsigma = [1]*self._numb_params
             self._checkprior = False
 
         # Check for consistency.
@@ -1552,25 +1552,16 @@ def print_scl(string, scl, align_numb = 60, level = "INFO"):
     logger.log(level, string.ljust(align_numb) + "%.6e" % scl)
 
 
-
 def print_res(string, res, res_err = None, chi_dof = None, align_numb = 60, level = "INFO"):
     """Print aligned"""
-
     if res is not None:
-        logger.log(level, (string.ljust(align_numb)
-            + "[" + " ".join(["%.6e" for i in range(len(res))]) + "]") % tuple(res))
+        logger.log(level, (string.ljust(align_numb) + "[" + " ".join( ["%.6e"]*len(res) ) + "]") % tuple(res))
     else:
         logger.log(level, string.ljust(align_numb) + "None")
-
     if res_err is not None:
-        logger.log(level, ("Fit error".ljust(align_numb)
-            + "[" + " ".join(["%.6e" for i in range(len(res_err))]) + "]")
-            % tuple(res_err))
-
+        logger.log(level, ("Fit error".ljust(align_numb) + "[" + " ".join( ["%.6e"]*len(res_err) ) + "]") % tuple(res_err))
     if chi_dof is not None:
         print_scl("chi^2/d.o.f.", chi_dof, level = level)
-
-   
 
 
 def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
@@ -1579,9 +1570,8 @@ def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = Non
     Wrapper to fitter initialization and the fit in one step. See above for arguments
     """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.do_fit(start_params = start_params, priorval = priorval, 
-            priorsigma = priorsigma, algorithm = algorithm, xmin = xmin, xmax = xmax)
-
+    return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,
+                      xmin = xmin, xmax = xmax)
 
 
 def try_fit(func, algorithms, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
@@ -1592,7 +1582,6 @@ def try_fit(func, algorithms, xdata, ydata, edata = None, start_params = None, p
     """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.try_fit(algorithms, start_params, priorval, priorsigma, xmin = xmin, xmax = xmax)
-
 
 
 def cut_eig_cov(ncov, ydata, numb_cut, percentage, method):
