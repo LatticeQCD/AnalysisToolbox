@@ -13,14 +13,18 @@ from latqcdtools.physics.scales_quenched import r0_div_a, r0_hQCD_2014
 
 
 def massRatioToMasses(msml, Nt, cbeta):
-    if Nt==8 and msml==40:
+    if Nt==8 and msml==160:
+        massTable=quarkMassNt8.Table160
+    elif Nt==8 and msml==80:
+        massTable=quarkMassNt8.Table80
+    elif Nt==8 and msml==40:
         massTable=quarkMassNt8.Table40
-    elif msml is None:
-        pass
     elif Nt==8 and msml==27:
         massTable=quarkMassNt8.Table27
     elif Nt==12 and msml==27:
         massTable=quarkMassNt12.Table27
+    elif msml is None:
+        pass
     else:
         logger.TBError("ms/ml not correctly set.")
     if msml is None:
@@ -40,14 +44,15 @@ def massStringToFloat(string):
 
 
 class latticeParams:
-
     """A class to handle and check the input parameters of a lattice run."""
 
     fK=fk_PDG_2012("MeV")
     r1=r1_MILC_2010("fm")
     r0=r0_hQCD_2014("fm")
 
-    def __init__(self, Nsigma, Ntau, coupling, mass_l=None, mass_s=None,scaleType='fk'):
+    def __init__(self, Nsigma, Ntau, coupling, mass_l=None, mass_s=None,scaleType='fk',paramYear=2021):
+        if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
+            logger.TBError("Unknown reference scale",scaleType)
         self.Ns    = Nsigma
         self.Nt    = Ntau
         self.cbeta = coupling
@@ -72,7 +77,7 @@ class latticeParams:
         if self.scale=='fk':
             return MeVinv_to_fm( a_times_fk(self.beta,2021)/self.fK )
         elif self.scale=='r1':
-            return a_div_r1(self.beta,2021)*self.r1
+            return a_div_r1(self.beta,paramYear)*self.r1
         elif self.scale=='r0':
             return self.r0/r0_div_a(self.beta)
 
