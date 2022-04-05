@@ -50,15 +50,15 @@ class latticeParams:
     r1=r1_MILC_2010("fm")
     r0=r0_hQCD_2014("fm")
 
-    def __init__(self, Nsigma, Ntau, coupling, mass_l=None, mass_s=None,scaleType='fk',paramYear=2021):
-        if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
-            logger.TBError("Unknown reference scale",scaleType)
+    def __init__(self, Nsigma, Ntau, coupling, mass_l=None, mass_s=None, scaleType='fk', paramYear=2021):
+        if isinstance(coupling, str):
+            self.beta  = int(coupling)/1000
+            self.cbeta = coupling
+        else:
+            self.beta  = coupling
+            self.cbeta = int(coupling*1000)
         self.Ns    = Nsigma
         self.Nt    = Ntau
-        self.cbeta = coupling
-        self.beta  = int(coupling)/1000
-        if (self.beta<1.) or (10.<self.beta):
-            logger.TBError("Invalid beta.")
         self.cml   = mass_l
         self.cms   = mass_s
         self.ml    = massStringToFloat(mass_l)
@@ -66,10 +66,16 @@ class latticeParams:
         self.vol4  = self.Ns**3 * self.Nt
         self.vol3  = self.Ns**3
         self.scale = scaleType
+        if (self.ml is not None) and (self.ms is not None):
+            self.msml=int(round(self.ms/self.ml))
         if (self.scale=='r0') and ( (mass_l is not None) or (mass_s is not None) ):
             logger.warn("Using pure SU(3) scale for 2+1 flavor QCD.")
         if ( (self.scale=='r1') or (self.scale=='fk') ) and (mass_l is None) and (mass_s is None) :
             logger.warn("Using 2+1 flavor QCD scale for pure SU(3).")
+        if (self.beta<1.) or (10.<self.beta):
+            logger.TBError("Invalid beta.")
+        if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
+            logger.TBError("Unknown reference scale",scaleType)
 
 
     # a in [fm]
@@ -105,8 +111,8 @@ class latticeParams:
             print("    ml = ",self.ml)
         if self.ms >= 0.:
             print("    ms = ",self.ms)
-        if self.ml > 0.:
-            print(" ms/ml = ",int(round(self.ms/self.ml)))
+        if (self.ml > 0.) and (self.ms >= 0.):
+            print(" ms/ml = ",self.msml)
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
         print("  beta = ",self.beta,"\n")

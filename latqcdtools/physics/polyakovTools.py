@@ -82,9 +82,16 @@ class polyakovTools:
     return self.Ns**3*( np.mean(ReP*ImP) )
 
 
-  def VP2(self, P):
+  def ReP2(self, polReIm):
     """ V <ReP^2> """
-    return self.Ns**3*( np.mean(P**2) )
+    ReP=polReIm[0]
+    return self.Ns**3*( np.mean(ReP**2) )
+
+
+  def ImP2(self, polReIm):
+    """ V <ImP^2> """
+    ImP=polReIm[1]
+    return self.Ns**3*( np.mean(ImP**2) )
 
 
   def P2minReP2(self,polReIm):
