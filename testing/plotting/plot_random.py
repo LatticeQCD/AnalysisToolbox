@@ -19,5 +19,5 @@ for i in range(8):
     plot_dots(xdata, ydata, edata, label = str(i))
     set_params(legendpos = (1,0))
 
-plt.savefig("random.pdf")
+plt.show()
 

@@ -1,7 +1,7 @@
 #
 # plotting.py
 #
-# H. Sandmeyer
+# H. Sandmeyer, D. Clarke
 #
 # Collection of convenience tools for plotting using matplotlib.
 #
@@ -64,7 +64,6 @@ default_params = {
     'alpha_fill_edge': 1,  # Transperancy for edges of error bands
     'alpha_label': 0,      # Transperancy for labels
     'alpha_legend': 0,     # Transperancy for the legend
-    'linewidth_legend': 0, # Linewidth of the legend border
     'color': None,         # Color for different plots
     'xscale': 1.0,         # Scale data in xdata by this factor
     'yscale': 1.0,         # Scale data in ydata by this factor
@@ -87,10 +86,7 @@ default_params = {
     'legend_ncol': 1,                   # Number of columns in the legend
     'legend_col_spacing': None,         # Spacing between columns in the legend
     'handletextpad' : 0.2,              # Spacing between symbol and text in legend
-    'legend_linewidth': None,           # Linewidth of samples in the legend
     'legend_title': None,               # Title of the legend
-    'shift_legend_label_text_x' : None, # Shift legend label text
-    'shift_legend_label_text_y' : None,
     'xmin': None,                       # Does not directly change x-range
     'xmax': None,                       # Similarly, maximium xvalue to be plotted
     'marker': "iter",                   # Marker for plotting dots
@@ -103,9 +99,9 @@ default_params = {
     'capsize': 1.5,                     # Length of caps af error bars
     'elinewidth': 0.5,                  # Linewidth of the error bars of caps af error bars
     'labelsintoplot': False,            # Put xlabel and ylabel into the plotting area
-    'xlabelpos': None,                  # If labelsintplot is true use this to shift the positions of the xlabels
+    'xlabelpos': None,                  # If labelsintplot=True, shift the position (x,y) of the x-label
     'ylabelpos': None,
-    'font_size' : 9,                    # Default font size for all kind of text
+    'font_size' : 9,                    # Default font size for text
     'point_fill_color': "None",         # Fill color of points. Set to None (not as string) to have filled symbols
     'zod' : None,                       # z order of plot
 }
@@ -131,8 +127,7 @@ def fill_param_dict(params):
     """
     if 'show_leg' not in params:
         # When filling params for the first time, check if we show the legend. Triggered by one of the following keys
-        for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'legend_linewidth', 'label',
-                    'alpha_legend'):
+        for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 'alpha_legend'):
             if key in params:
                 params['show_leg'] = True
     if 'show_leg' not in params:
@@ -184,6 +179,10 @@ def set_params(ax = plt, **params):
         **params :
             Additional parameters that can be set.
     """
+
+    logger.debug("Note that many of the plotting functions call set_params, which can reset what you pass as argument.")
+    logger.debug("If you are having trouble passing options to set_params, try calling it at the end of your script.")
+
     fill_param_dict(params)
     zod = params['zod']
     if zod is None:
@@ -224,25 +223,7 @@ def set_params(ax = plt, **params):
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
 
         leg.get_frame().set_alpha(params['alpha_legend'])
-        leg.get_frame().set_linewidth(params['linewidth_legend'])
         leg.set_zorder(zod)
-        if params['legend_linewidth'] is not None:
-            for legobj in leg.legendHandles:
-                legobj.set_linewidth(params['legend_linewidth'])
-
-        if params['shift_legend_label_text_y']:
-            x_shift_ = params['shift_legend_label_text_x'] 
-            y_shift_ = params['shift_legend_label_text_y'] 
-            if x_shift_ is None:
-                x_shift_ = 0
-            if y_shift_ is None:
-                y_shift_ = 0
-            renderer = plt.gcf().canvas.get_renderer()
-
-            for i in range(len(legend_handles)):
-              x_shift = x_shift_*leg.texts[i].get_window_extent(renderer).width
-              y_shift = y_shift_*leg.texts[i].get_window_extent(renderer).height
-              leg.texts[i].set_position((x_shift, y_shift))
 
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
@@ -361,8 +342,6 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
     if params['label'] is not None:
         legend_labels.append(params['label'])
         legend_handles.append(bar)
-        params['shift_legend_label_text_y'] = -0.22
-        params['shift_legend_label_text_x'] = 0.05
 
     globals()['zod'] += 1
     set_params(**params)
@@ -823,117 +802,55 @@ def set_yrange(ymin=None, ymax=None):
     set_ymax(ymax)
 
 
-# ---------------------------------------------------------------------------------------------------------------- LATEX
+# ---------------------------------------------------------------------------------------------------PLOT INITIALIZATION
 
 
-def latexify(fig_width=10, fig_height=7, font_size=9, static_margins=False, init=True, init_fig=None, auto_layout=True):
+def initializePlt(width, height, size):
     clear_legend_labels()
-    if init_fig is None:
-        init_fig = init
-    if init_fig:
-        plt.close("all")
-
-    left_margin = 2 / fig_width
-    right_margin = 2 / fig_width
-    bottom_margin = 1.5 / fig_height
-    top_margin = 1.5 / fig_height
-
-    fig_width /= 2.54
-    fig_height /= 2.54
-
-    if font_size is None:
-        font_size = default_params['font_size']
-
+    plt.close("all")
     set_markers()
+    width /= 2.54
+    height /= 2.54
     plt.rcParams['legend.handlelength'] = 1.5
+    plt.rcParams['figure.figsize'] = [width, height]
+    plt.rcParams['figure.autolayout'] = True
+    plt.rcParams['axes.titlesize'] = size
+    plt.rcParams['savefig.bbox'] = 'standard'
+    plt.rcParams['ytick.labelsize'] = size
+    plt.rcParams['font.size'] = size
+    plt.rcParams['axes.labelsize'] = size
+    plt.rcParams['legend.fontsize'] = size
+    plt.rcParams['xtick.labelsize'] = size
+    plt.rc('axes', linewidth=0.5)
+
+
+def configureAx(axObj):
+    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
+    x_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
+    axObj.yaxis.set_major_formatter(y_formatter)
+    axObj.xaxis.set_major_formatter(x_formatter)
+    plt.ticklabel_format(style='sci', scilimits=(-3, 4))
+    axObj.set_prop_cycle(cycler('color', colors))
+
+
+def latexify(fig_width=10, fig_height=7):
+    """ Width and height are in centimeters. """
+    logger.warn("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
+    initializePlt(fig_width, fig_height, default_params['font_size'])
     plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{braket}"
     plt.rcParams['text.usetex'] = True
-    if init:
-        plt.rcParams['figure.figsize'] = [fig_width, fig_height]
-        plt.rcParams['figure.autolayout'] = auto_layout
-        plt.rcParams['axes.titlesize'] = font_size
-        plt.rcParams['savefig.bbox'] = 'standard'
-        plt.rcParams['ytick.labelsize'] = font_size
-        plt.rcParams['font.size'] = font_size
-        plt.rcParams['axes.labelsize'] = font_size
-        plt.rcParams['legend.fontsize'] = font_size
-    plt.rcParams['xtick.labelsize'] = font_size
-    plt.rc('axes', linewidth=0.5)
-    if init_fig:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-    else:
-        fig = plt.gcf()
-        ax = plt.gca()
-    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-    x_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-
-    if static_margins:
-        ax.set_axis_off()
-        # dimensions are calculated relative to the figure size
-        x = left_margin  # horiz. position of bottom-left corner
-        y = bottom_margin  # vert. position of bottom-left corner
-        w = 1 - (left_margin + right_margin)  # width of axes
-        h = 1 - (bottom_margin + top_margin)  # height of axes
-        ax = fig.add_axes([x, y, w, h])
-
-    ax.yaxis.set_major_formatter(y_formatter)
-    ax.xaxis.set_major_formatter(x_formatter)
-    plt.ticklabel_format(style='sci', scilimits=(-3, 4))
-    ax.set_prop_cycle(cycler('color', colors))
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    configureAx(ax)
     return fig, ax
 
 
-def init_notex(fig_width=10, fig_height=7, font_size=9, static_margins=False, init=True):
-    
-    clear_legend_labels()
-    plt.close("all")
-
-    left_margin  = 2 / fig_width
-    right_margin = 2 / fig_width
-    bottom_margin = 1.5 / fig_height
-    top_margin = 1.5 / fig_height
-
-    fig_width /= 2.54
-    fig_height /= 2.54
-
-    if font_size is None:
-        font_size = default_params['font_size']
-    
-    set_markers()
-    plt.rcParams['legend.handlelength'] = 1.5
-    if init:
-        plt.rcParams['figure.figsize'] = [fig_width, fig_height]
-        plt.rcParams['figure.autolayout'] = True
-        plt.rcParams['axes.titlesize'] = font_size
-        plt.rcParams['savefig.bbox'] = 'standard'
-        plt.rcParams['ytick.labelsize'] = font_size
-        plt.rcParams['font.size'] = font_size
-        plt.rcParams['axes.labelsize'] = font_size
-        plt.rcParams['legend.fontsize'] = font_size
-    plt.rcParams['xtick.labelsize'] = font_size
-    plt.rc('axes', linewidth=0.5)
-    if init:
-        fig, ax = plt.subplots()
-    else:
-        fig = plt.gcf()
-        ax = plt.gca()
-    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-    x_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-   
-    if static_margins:
-        # dimensions are calculated relative to the figure size
-        x = left_margin                      # horiz. position of bottom-left corner
-        y = bottom_margin                    # vert. position of bottom-left corner
-        w = 1 - (left_margin + right_margin) # width of axes
-        h = 1 - (bottom_margin + top_margin) # height of axes
-        ax.set_positon([x, y, w, h])
-
-    ax.yaxis.set_major_formatter(y_formatter)
-    ax.xaxis.set_major_formatter(x_formatter)
-    plt.ticklabel_format(style='sci', scilimits=(-3, 4))
-    ax.set_prop_cycle(cycler('color', colors))
+def init_notex(fig_width=10, fig_height=7):
+    """ Width and height are in centimeters. """
+    initializePlt(fig_width, fig_height, default_params['font_size'])
+    fig, ax = plt.subplots()
+    configureAx(ax)
     return fig, ax
 
 
@@ -946,11 +863,9 @@ def zoom_axis(ax, width, height, zx_min, zx_max, zy_min, zy_max, loc=1, loc1=2, 
     axins = inset_axes(ax, width, height, loc=loc, borderpad=borderpad) 
     axins.set_xlim(zx_min, zx_max) # apply the x-limits
     axins.set_ylim(zy_min, zy_max) # apply the y-limits
-
     global zod
     mark_inset(ax, axins, loc1=loc1, loc2=loc2, fc="none", ec="0.5", linewidth=0.5, zorder=zod)
     zod+=1
-
     return axins # use this axis to plot inside the box!
 
 
