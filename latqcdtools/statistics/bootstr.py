@@ -3,7 +3,7 @@
 #
 # H. Sandmeyer, H.-T. Shu
 #
-# # A parallelized bootstrap routine that can handle arbitrary return values of functions.
+# A parallelized bootstrap routine that can handle arbitrary return values of functions.
 #
 import numpy as np
 from numpy.random import randint, normal, multivariate_normal
@@ -21,14 +21,14 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
         if sample_size == 0:
             sample_sizes = [ len(i) for i in data ]
         else:
-            sample_sizes = [ sample_size for i in data ]
+            sample_sizes = [sample_size]*len(data)
 
         if not same_rand_for_obs:
             randints = [randint(0, len(data[x]), size=sample_sizes[x])
                     for x in range(numb_observe)]
         else:
             tmp_rand = randint(0, len(data[0]), size=sample_sizes[0])
-            randints = [tmp_rand for x in range(numb_observe)]
+            randints = [tmp_rand]*numb_observe
         for x in range(numb_observe):
             sample_data.append(np.array(data[x])[randints[x]])
         return

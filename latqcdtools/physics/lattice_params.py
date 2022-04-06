@@ -56,7 +56,8 @@ class latticeParams:
             self.cbeta = coupling
         else:
             self.beta  = coupling
-            self.cbeta = int(coupling*1000)
+            self.cbeta = str(int(coupling*1000))
+        self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
         self.cml   = mass_l
@@ -81,9 +82,9 @@ class latticeParams:
     # a in [fm]
     def geta(self):
         if self.scale=='fk':
-            return MeVinv_to_fm( a_times_fk(self.beta,2021)/self.fK )
+            return MeVinv_to_fm( a_times_fk(self.beta,self.year)/self.fK )
         elif self.scale=='r1':
-            return a_div_r1(self.beta,paramYear)*self.r1
+            return a_div_r1(self.beta,self.year)*self.r1
         elif self.scale=='r0':
             return self.r0/r0_div_a(self.beta)
 

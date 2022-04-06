@@ -95,7 +95,7 @@ def dev_by_dist(data, axis=0, return_both_q=False):
         return np.max(np.abs([sorted_data[idx_dn], sorted_data[idx_up]]), axis=0)
 
 
-def error_prop(func, means, errors, grad=None, use_diff = True, args=()):
+def error_prop(func, means, errors, grad=None, args=()):
     mean = func(means, *args)
     errors = np.asarray(errors)
     try:
@@ -109,10 +109,7 @@ def error_prop(func, means, errors, grad=None, use_diff = True, args=()):
     if grad is not None:
         grad = grad(means, *args)
     else:
-        if use_diff:
-            grad = numDeriv.diff_jac(means, func, args).transpose()
-        else:
-            grad = numDeriv.alg_jac(means, func, args).transpose()
+        grad = numDeriv.diff_jac(means, func, args).transpose()
     error = 0
     try:
         for i in range(len(grad)):
@@ -124,16 +121,16 @@ def error_prop(func, means, errors, grad=None, use_diff = True, args=()):
     return mean, error
 
 
-def error_prop_func(x, func, means, errors, grad=None, use_diff = True, args=()):
+def error_prop_func(x, func, means, errors, grad=None, args=()):
     """ Function to calculate error propagation for plotting. """
     # For fitting or plotting we expect the first argument of func to be x instead of params.
     # Therefore we have to change the order using this wrapper
-    wrap_func = lambda p, *args: func(x, *(tuple(p) + tuple(args)))
+    wrap_func = lambda p, *wrap_args: func(x, *(tuple(p) + tuple(wrap_args)))
     if grad is not None:
         wrap_grad = lambda p, *grad_args: grad(x, *(tuple(p) + tuple(grad_args)))
     else:
         wrap_grad = None
-    return error_prop(wrap_func, means, errors, wrap_grad, use_diff, args)[1]
+    return error_prop(wrap_func, means, errors, wrap_grad, args)[1]
 
 
 def gaudif(x1,e1,x2,e2):

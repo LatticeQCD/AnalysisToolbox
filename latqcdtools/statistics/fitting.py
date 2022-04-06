@@ -1350,7 +1350,7 @@ class Fitter:
 
 
     def plot_fit(self, filename = None, params = None, params_err = None, notex = False, norm_func = None,
-                 ranges = None, ylog = False, size = (15,10), font_size = 16, no_error = False, fix_ylim = False,
+                 ranges = None, ylog = False, size = (15,10), no_error = False, fix_ylim = False,
                  args_data = None, args_func = None, xmin = None, xmax = None, **kwargs):
         """
         Plot the fit and the fit data.
@@ -1399,9 +1399,9 @@ class Fitter:
 
         if filename is not None:
             if not notex:
-                latexify(*size, font_size = font_size)
+                latexify(*size)
             else:
-                init_notex(*size, font_size = font_size)
+                init_notex(*size)
 
         try:
             # Save xmin and xmax, as they will be overwritten in plot_data
@@ -1457,12 +1457,12 @@ class Fitter:
 
 
     def plot_cov(self, filename = None, xmin = None, xmax = None, ymax = None, notex = False, title = None,
-                 size = (15,10), font_size = 16):
+                 size = (15,10)):
         if filename is not None:
             if not notex:
-                latexify(*size, font_size = font_size)
+                latexify(*size)
             else:
-                init_notex(*size, font_size = font_size)
+                init_notex(*size)
 
         if xmin is None:
             gxmin = -np.inf
@@ -1485,13 +1485,13 @@ class Fitter:
 
 
 
-    def plot_eig(self, filename = None, xmin = None, xmax = None, notex = False, title = None, size = (15,10),
-                 font_size = 16):
+    def plot_eig(self, filename = None, xmin = None, xmax = None, notex = False, title = None, size = (15,10)):
+
         if filename is not None:
             if not notex:
-                latexify(*size, font_size = font_size)
+                latexify(*size)
             else:
-                init_notex(*size, font_size = font_size)
+                init_notex(*size)
 
         if xmin is None:
             gxmin = -np.inf

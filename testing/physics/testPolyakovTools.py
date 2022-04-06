@@ -32,7 +32,7 @@ T3chiImPm, T3chiImPe = jackknife( pt.T3ImSuscept     , [ReParr, ImParr], numb_bl
 RePxImPm , RePxImPe  = jackknife( pt.ReTimesIm       , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
 Rm       , Re        = jackknife( pt.RatSuscFunction , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
 RAm      , RAe       = jackknife( pt.RatSuscFunctionA, [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
-Re2m     , Re2e      = jackknife( pt.VP2             ,  ReParr         , numb_blocks=NBLOCKS, conf_axis=1 )
+Re2m     , Re2e      = jackknife( pt.ReP2            , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
 
 print_results(absPm    , 0.0035226075714959704 ,absPe    , 7.230320110513578e-06 , "<|P|>"      , EPSILON)
 print_results(absP2m   , 1.24087118252317e-05  ,absP2e   , 5.093993657785888e-08 , "<|P|^2>"    , EPSILON)

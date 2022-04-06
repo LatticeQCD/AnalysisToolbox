@@ -18,9 +18,9 @@ def timeout(func, args=(), kwargs={}, timeout_duration=300):
     manager = multiprocessing.Manager()
     return_dict = manager.dict()
 
-    def wrap_func(*args):
-        ret = func(*args[0], **args[1])
-        args[2]["ret"] = ret
+    def wrap_func(*wrap_args):
+        ret = func(*wrap_args[0], **wrap_args[1])
+        wrap_args[2]["ret"] = ret
 
     p = multiprocessing.Process(target = wrap_func, args = (args, kwargs, return_dict))
     p.start()
@@ -153,7 +153,7 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
 
     try:
         params[0]
-    except Exception:
+    except:
         if isinstance(params, (np.ndarray, np.generic)):
             # Somehow numpy 0D arrays have to be converted to scalar explicitly.
             params = [np.asscalar(params)]

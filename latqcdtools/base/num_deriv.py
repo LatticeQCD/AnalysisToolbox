@@ -48,7 +48,7 @@ def diff_hess(params, func, args = (), eps = None, expand = False):
         return diff_hess(params, wrap_func, eps = eps, expand = False)
 
     # This has to be a list, as we might put in arrays, if params is higher dimensional
-    ret = [ [0.0 for i in range(len(params))] for j in range(len(params))]
+    ret = [ [0.0]*len(params) for _ in range(len(params)) ]
     # convert to float
     up = np.array(params, dtype = float)
     down = np.array(params, dtype = float)

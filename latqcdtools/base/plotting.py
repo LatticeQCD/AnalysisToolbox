@@ -41,7 +41,9 @@ legend_handles = []
 legend_labels = []
 
 
-def set_markers(marker_set = markers_1):
+def set_markers(marker_set=None):
+    if marker_set is None:
+        marker_set = markers_1
     global markers
     markers = itertools.cycle(marker_set)
 
@@ -426,13 +428,13 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
     xmax = params['xmax']
 
     if params['expand']:
-        wrap_func = lambda x, *args: func(x, *args)
-        wrap_func_err = lambda x, *args_err: func_err(x, *args_err)
-        wrap_grad = lambda x, *args: grad(x, *args)
+        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
     else:
-        wrap_func = lambda x, *args: func(x, args)
-        wrap_func_err = lambda x, *args_err: func_err(x, args_err)
-        wrap_grad = lambda x, *args: grad(x, args)
+        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
 
     if xmin is None:
         for line in plt.gca().lines:
@@ -659,13 +661,13 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
     xmax = params['xmax']
 
     if params['expand']:
-        wrap_func = lambda x, *args: func(x, *args)
-        wrap_func_err = lambda x, *args_err: func_err(x, *args_err)
-        wrap_grad = lambda x, *args: grad(x, *args)
+        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
     else:
-        wrap_func = lambda x, *args: func(x, args)
-        wrap_func_err = lambda x, *args_err: func_err(x, args_err)
-        wrap_grad = lambda x, *args: grad(x, args)
+        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
 
     if xmin is None:
         for line in plt.gca().lines:
