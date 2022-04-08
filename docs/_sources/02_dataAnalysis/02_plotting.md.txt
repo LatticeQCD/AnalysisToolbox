@@ -135,8 +135,8 @@ as an argument to your `plot_file` command.
 ### Changing the size of the plot
 
 Maybe you have a computer with high resolution, the image might come up rather small when you 
-`plt.show()`. To fix this, you can use `latexify` to specify the width, height, and text size of 
-your figure as, for example `latexify(fig_width=40,fig_height=28,font_size=18)`.
+`plt.show()`. To fix this, you can use `latexify` to specify the width and height of 
+your figure as, for example `latexify(fig_width=40,fig_height=28)`.
 
 ### Printing only an inset to pdf
 

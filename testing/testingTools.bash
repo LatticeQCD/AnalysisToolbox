@@ -21,10 +21,10 @@ function runTestRoutine {
     echo '  '${routine}
     if [ ${showOutputOnScreen} ]; then
         echo "  -------------------------"
-        python ./${routine}
+        python3 ./${routine}
         echo
     else
-        python ./${routine} >> ${outFile} 2>> ${errFile}
+        python3 ./${routine} >> ${outFile} 2>> ${errFile}
         # This is just to remove these files if they are empty.
         if [ ! -s ${errFile} ]; then rm ${errFile}; fi
         if [ ! -s ${outFile} ]; then rm ${outFile}; fi

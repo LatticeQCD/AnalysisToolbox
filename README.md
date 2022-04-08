@@ -12,14 +12,21 @@ In order to use these scripts, please ensure that you have the following:
 3. scipy
 4. mpmath
 5. matplotlib
-6. LaTeX
-7. colorama (for colors in logging messages)
-8. sklearn
-9. tqdm (for making progress bars)
+6. colorama 
+7. cycler
+8. itertools
+9. LaTeX
+
 
 For your convenience, these packages can be installed via
 ```shell
-pip install -r requirements.txt
+pip3 install -r requirements.txt
+```
+There are some further packages required if you would like to make contributions to the AnalysisToolBox; in particular
+there are many packages needed to compile the documentation. If you are interested in helping develop, you should
+instead
+```shell
+pip3 install -r developerRequirements.txt
 ```
 
 Additionally you need to have python3 somewhere in your $PATH. To do this, you have to define the environment variable 
@@ -27,7 +34,7 @@ PYTHONPATH containing the path to the root folder of this project; e.g. add the
 ```shell
 export PYTHONPATH="${PYTHONPATH}:/path/to/your/AnalysisToolbox/"
 ```
-
+to your `bashrc`.
 
 
 ## Documentation
