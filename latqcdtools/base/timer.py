@@ -10,13 +10,23 @@ class timer:
 
     """A class to facilitate doing rudimentary timings in the Toolbox."""
 
+
     def __init__(self):
         print("\n  Timer initialized.\n")
         self._tstart = time.time()
         self._tend   = self._tstart
 
-    def printTiming(self):
+
+    def printTiming(self, message=None):
         self._tstart = self._tend
         self._tend   = time.time()
         timing = self._tend - self._tstart
-        print("  Time to finish: %12.8f [s]" % timing)
+        if message is None:
+            print("\n  Time to finish: %12.8f [s]\n" % timing)
+        else:
+            print("\n  "+message+"\n")
+
+
+    def resetTimer(self):
+        self._tstart = time.time()
+        self._tend   = self._tstart
