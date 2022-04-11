@@ -60,6 +60,6 @@ def print_results(res, res_true, res_err = None, res_err_true = None, text = "",
                       + " != res_err_true[" + str(i) + "] = " + str(res_err_true[i]))
 
     if test:
-        logger.TBPass(text + "\n")
+        logger.TBPass(text)
     else:
-        logger.TBFail(text + "\n")
+        logger.TBFail(text)

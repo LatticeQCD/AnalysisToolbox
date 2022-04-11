@@ -22,7 +22,6 @@ function runTestRoutine {
     if [ ${showOutputOnScreen} ]; then
         echo "  -------------------------"
         python3 ./${routine}
-        echo
     else
         python3 ./${routine} >> ${outFile} 2>> ${errFile}
         # This is just to remove these files if they are empty.

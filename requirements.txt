@@ -2,6 +2,7 @@
 
 numpy
 scipy
+numba
 mpmath
 matplotlib
 colorama

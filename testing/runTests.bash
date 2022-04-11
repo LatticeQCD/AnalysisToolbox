@@ -40,6 +40,7 @@ cd physics
 runTestRoutine testLatticeParams.py
 runTestRoutine testPolyakovTools.py
 runTestRoutine testScales.py
+runTestRoutine testStaticPotential.py
 cd ..
 
 
