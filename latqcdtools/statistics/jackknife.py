@@ -27,7 +27,6 @@ def pseudo_val(mean, mean_i, numb_blocks):
         return pseudo(np.array(mean), np.array(mean_i), numb_blocks)
 
 
-
 class nimbleJack:
 
     """ Class allowing for parallelization of the jackknife function. """
@@ -51,7 +50,7 @@ class nimbleJack:
                 self._blocksizes = [math.floor(length / self._nblocks) for length in self._lengths]
                 for length in self._lengths:
                     if length < self._nblocks:
-                        raise IndexError("More number of blocks than datapoints!")
+                        raise IndexError("More blocks than datapoints!")
             except TypeError:  # if we get an 1D array
                 self._confAxis = 0
                 self._length = self._data.shape[self._confAxis]
@@ -121,16 +120,16 @@ class nimbleJack:
 
 
     def getResults(self):
-      if self._cov is False:
-          if self._return_sample:
-              return self._blockval, self._mean, self._error
-          else:
-              return self._mean, self._error
-      else:
-          if self._return_sample:
-              return self._blockval, self._mean, self._error, self._cov
-          else:
-              return self._mean, self._error, self._cov
+        if self._cov is False:
+            if self._return_sample:
+                return self._blockval, self._mean, self._error
+            else:
+                return self._mean, self._error
+        else:
+            if self._return_sample:
+                return self._blockval, self._mean, self._error, self._cov
+            else:
+                return self._mean, self._error, self._cov
 
 
 def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), cov = False,

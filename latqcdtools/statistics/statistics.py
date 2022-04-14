@@ -56,6 +56,32 @@ def std_err(data, axis = 0):
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
 
 
+def mean_and_err(data, axis = 0):
+    mean = std_mean(data, axis = axis)
+    error = std_err(data, axis = axis)
+    return mean, error
+
+
+def mean_and_cov(data, axis = 0):
+    mean = std_mean(data, axis = axis)
+    cov = calc_cov(data)
+    return mean, cov
+
+
+def mean_and_std_dev(data, axis=0):
+    mean = std_mean(data, axis = axis)
+    std = std_dev(data, axis = axis)
+    return mean, std
+
+
+def jack_mean_and_err(data):
+    data   = np.asarray(data)
+    n      = len(data)
+    mean   = np.mean(data)
+    err    = np.sqrt( (n-1)*np.mean((data - mean)**2) )
+    return mean, err
+
+
 def calc_cov(data):
     """Calculate covariance matrix of last column in data."""
     data = np.asarray(data)
@@ -290,9 +316,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d'):
     tau_intbias=-1
     itpick=-1
     for it in range(tpickMax+1):
-        n=len(acintj[it])
-        acm=np.mean(acintj[it])
-        ace=np.sqrt( np.sum((acintj[it]-acm)**2)*(n-1)/n )
+        acm, ace = jack_mean_and_err(acintj[it])
         acbias=(nbins-1)*abs(acint[it]-acm)
         acoutfile.write(str(it)+'\t'+str(acint[it])+'\t'+str(ace)+'\t'+str(acbias)+'\n')
         if lmonoton:

@@ -7,4 +7,3 @@ mpmath
 matplotlib
 colorama
 cycler
-itertools

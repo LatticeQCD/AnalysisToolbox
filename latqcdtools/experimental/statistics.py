@@ -1,36 +1,5 @@
 import numpy as np
-import mpmath
 import latqcdtools.autocorrelation as autocorr
-import latqcdtools.tools as tools
-import latqcdtools.logger as logger
-from latqcdtools.num_deriv import diff_jac
-
-
-
-
-
-
-
-
-
-
-def mean_and_err(data, axis = 0):
-    mean = std_mean(data, axis = axis)
-    error = std_err(data, axis = axis)
-    return mean, error
-
-
-def mean_and_cov(data, axis = 0):
-    mean = std_mean(data, axis = axis)
-    cov = calc_cov(data)
-    return mean, cov
-
-
-def mean_and_std_dev(data, axis=0):
-    mean = std_mean(data, axis = axis)
-    std = std_dev(data, axis = axis)
-    return mean, std
-
 
 
 
@@ -42,13 +11,6 @@ def rem_norm_corr(corr, edata):
         for j in range(len(corr[0])):
             res[i][j] = corr[i][j] * edata[i]*edata[j]
     return np.array(res)
-
-
-
-
-
-
-
 
 
 

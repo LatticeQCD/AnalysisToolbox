@@ -34,7 +34,7 @@ def impdist(Ns,r2max):
         r2max--maximum squared distance to improve
 
     OUTPUT:
-        r2imp--list of improved distances"""
+        rimp--list of improved distances"""
 
     # This part must be placed outside the jit, since numba doesn't know what do with sys.exit.
     if not Ns > 0:
@@ -44,8 +44,8 @@ def impdist(Ns,r2max):
 
     @jit(nopython=True)
     def compiledImpDist():
-        r2imp=[]
-        kn=2.*np.pi/Ns
+        rimp  =[]
+        kn    =2.*np.pi/Ns
         pots  =[0.]*3*Ns**2
         weight=[0 ]*3*Ns**2
         cosf  =[]
@@ -92,7 +92,7 @@ def impdist(Ns,r2max):
             weight[sq]+=1
         for i in range(1,r2max+1):
             if not weight[i]==0:
-                r2imp.append(1./(4.*np.pi*(pots[i]/weight[i]+0.22578/Ns)))
-        return r2imp
+                rimp.append(1./(4.*np.pi*(pots[i]/weight[i]+0.22578/Ns)))
+        return rimp
 
     return compiledImpDist()

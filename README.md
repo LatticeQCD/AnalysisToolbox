@@ -14,9 +14,8 @@ In order to use these scripts, please ensure that you have the following:
 5. matplotlib
 6. colorama 
 7. cycler
-8. itertools 
-9. numba
-10. LaTeX
+8. numba
+9. LaTeX
 
 
 For your convenience, these packages can be installed via
