@@ -9,14 +9,19 @@
 
 import numpy as np
 
-def clipRange(array,minVal=-np.inf,maxVal=np.inf):
+
+def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf):
     """ Throw out any elements of array that lie outside the interval [minVal,maxVal].  """
-    mask = np.logical_and( array[:]>=minVal, array[:]<=maxVal )
-    return array[mask]
+    if col is None:
+        mask = np.logical_and( array[:]>=minVal, array[:]<=maxVal )
+        return array[mask]
+    else:
+        mask = np.logical_and( array[col,:]>=minVal, array[col,:]<=maxVal )
+        return array[:,mask]
 
 
-def intersectAtCol(table1,table2,col):
-    """ Return only those rows of left and right that have identical elements in column col. """
+def intersectAtCol(table1, table2, col):
+    """ Return only those rows of table1 and table2 that have identical elements in column col. """
     table1       = np.array(table1)
     table2       = np.array(table2)
     mask1using2  = np.isin( table1[col,:], table2[col,:] )
