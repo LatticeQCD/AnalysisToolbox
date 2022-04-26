@@ -19,15 +19,30 @@ def V_Teq0(r):
     #    result:  [ -91.30436191 1022.25286821  106.70659264]
     #     error:  [0.53809612 2.51598869 2.58370288]
     #  chi2/dof:  0.8083127937775374
-    a=  -91.30436191
-    b= 1022.25286821
-    c=  106.70659264
+    a =  -91.30436191
+    b = 1022.25286821
+    c =  106.70659264
     return a/r + b*r + c
 
 
+def fitV_Teq0(r, a, b, c):
+    """ Fit form of standard Cornell potential. Fit to be done in lattice units."""
+    return a + b/r + c*r
+
+
+def fitV_Teq0_oneloop(r,a,b,c,d):
+    """ Including one-loop corrections to Coulomb. See Nucl. Phys. B 129 (1977) and Phys. Lett B 92 (1980).
+        Fit to be done in lattice units."""
+    return a + ( b + d*np.log(r) )/r + c*r
+
+
+def fitV_Teq0_twoloop(r,a,b,c,d,e):
+    """ Including two-loop corrections to Coulomb. See Nucl. Phys. B 501 (1997). Fit to be done in lattice units."""
+    return a + ( b + d*np.log(r) + e*np.log(np.log(r)) )/r + c*r
+
+
 def impdist(Ns,r2max):
-    """Calculation of tree-level improved distances. Appears to be done following eq. (3) of 10.1103/PhysRevD.90.074038,
-    but I guess that should be checked.
+    """Calculation of tree-level improved distances. Follows eq. (3) of 10.1103/PhysRevD.90.074038,
 
     INPUT:
            Ns--spatial extension of lattice
