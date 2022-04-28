@@ -8,8 +8,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.physics.scales_hisq import fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk
-from latqcdtools.physics.scales_quenched import r0_div_a, r0_hQCD_2014
+from latqcdtools.physics.referenceScales import fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
 
 
 def massRatioToMasses(msml, Nt, cbeta):

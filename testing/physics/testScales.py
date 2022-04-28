@@ -7,8 +7,7 @@
 # was correct.
 #
 
-from latqcdtools.physics.scales_hisq import a_times_fk, a_div_r1
-from latqcdtools.physics.scales_quenched import r0_div_a, sqrtt0
+from latqcdtools.physics.referenceScales import a_times_fk, a_div_r1, r0_div_a, sqrtt0
 from latqcdtools.base.check import print_results
 
 EPSILON=1e-15

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Physics Modules &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>The zero-temperature static potential &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -19,11 +19,12 @@
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Statistical Physics" href="01_statisticalPhysics.html" />
-    <link rel="prev" title="Bootstrap" href="../02_dataAnalysis/05_bootstrap.html" /> 
+    <link rel="prev" title="Reference scales" href="04_referenceScales.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,12 +45,12 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../01_contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../02_dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Physics Modules</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="01_statisticalPhysics.html">Statistical Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_latticeParameters.html">Handling Lattice Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_observables.html">Computing Observables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_referenceScales.html">Reference scales</a></li>
-<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The zero-temperature static potential</a></li>
 </ul>
 </li>
 </ul>
@@ -68,9 +69,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Physics Modules</li>
+          <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
+      <li>The zero-temperature static potential</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/03_physicsAnalysis/physicsAnalysis.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/03_physicsAnalysis/staticPotential.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -78,23 +80,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="physics-modules">
-<h1>Physics Modules<a class="headerlink" href="#physics-modules" title="Permalink to this headline"></a></h1>
-<p>The AnalysisToolbox is written with an aim toward lattice QCD calculations;
-hence it includes also modules focusing on physics analysis. For example
-modules that can reconstruct observables from measurements on configurations,
-and a module containing critical exponents for some 3-d
-universality classes.</p>
-<p>Here are some more detailed articles:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="01_statisticalPhysics.html">Statistical Physics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_observables.html">Computing Observables</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_referenceScales.html">Reference scales</a></li>
-<li class="toctree-l1"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
-</ul>
+  <section class="tex2jax_ignore mathjax_ignore" id="the-zero-temperature-static-potential">
+<h1>The zero-temperature static potential<a class="headerlink" href="#the-zero-temperature-static-potential" title="Permalink to this headline"></a></h1>
+<p>In this module are mehtods related to the zero-temperature static potential. This potential is sometimes used to
+renormalize Polyakov-loop observables, to extract reference scales like <span class="math notranslate nohighlight">\(r_0\)</span>, or to improve short-distance
+lattice spacings at tree-level.</p>
+<section id="tree-level-improved-distances">
+<h2>Tree-level improved distances<a class="headerlink" href="#tree-level-improved-distances" title="Permalink to this headline"></a></h2>
+<p>Short distances calculated directly from multiplying the separation by the lattice
+spacing are plagued by lattice artifacts. Therefore if one is interested in how an observable depends on <span class="math notranslate nohighlight">\(r\)</span>, they
+should use tree-level improved distances for small <span class="math notranslate nohighlight">\(r\)</span>. This calculation depends on <span class="math notranslate nohighlight">\(N_s\)</span>. Given a maximum
+squared distance to improve <code class="docutils literal notranslate"><span class="pre">r2max</span></code>, the method</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">impdist</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span><span class="n">r2max</span><span class="p">)</span>
+</pre></div>
 </div>
+<p>returns a list of improved distances.</p>
+</section>
+<section id="zero-temperature-quark-potential">
+<h2>Zero temperature quark potential<a class="headerlink" href="#zero-temperature-quark-potential" title="Permalink to this headline"></a></h2>
+<p>The method</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">V_Teq0</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>takes a distance <span class="math notranslate nohighlight">\(r\)</span> in [fm] and returns <span class="math notranslate nohighlight">\(V\)</span> in [MeV]. The potential comes from a three-parameter Levenberg-Marquardt
+fit of the data in Fig. 14 <a class="reference external" href="https://journals.aps.org/prd/abstract/10.1103/PhysRevD.90.094503">here</a> to the
+form <span class="math notranslate nohighlight">\(V(r)=a/r+b*r+c\)</span>, which is the Cornell parameterization.</p>
+<p>There are also fit functions like <code class="docutils literal notranslate"><span class="pre">fitV_Teq0</span></code>, which can be used to extract fit parameters using a Cornell ansatz.
+Other possibilities include a parameterization including one-loop and two-loop corrections to the Coulomb part.</p>
+</section>
 </section>
 
 

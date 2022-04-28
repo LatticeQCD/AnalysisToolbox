@@ -19,9 +19,12 @@
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The zero-temperature static potential" href="staticPotential.html" />
     <link rel="prev" title="Computing Observables" href="03_observables.html" /> 
 </head>
 
@@ -48,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="02_latticeParameters.html">Handling Lattice Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_observables.html">Computing Observables</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Reference scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
 </ul>
 </li>
 </ul>
@@ -79,6 +83,17 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="reference-scales">
 <h1>Reference scales<a class="headerlink" href="#reference-scales" title="Permalink to this headline"></a></h1>
+<p>In this module you find lots of functions for scale setting, along with references for each scale determination.
+Supported scales include: <span class="math notranslate nohighlight">\(f_K\)</span>, <span class="math notranslate nohighlight">\(t_0\)</span>, <span class="math notranslate nohighlight">\(r_0\)</span>, <span class="math notranslate nohighlight">\(r_1\)</span>, and <span class="math notranslate nohighlight">\(r_1m_s\)</span>.</p>
+<p>You can get scales in lattice units
+through methods like <code class="docutils literal notranslate"><span class="pre">a_times_fk_2014(beta)</span></code>, which takes the bare coupling as input and returns <span class="math notranslate nohighlight">\(a\,f_K(\beta)\)</span>
+using a parameterization from a 2014 paper.
+Please note that the parameterizations for <span class="math notranslate nohighlight">\(a\)</span> have closed intervals <span class="math notranslate nohighlight">\([\beta_{\rm min},~\beta_{\rm max}]\)</span> in
+which they are valid.</p>
+<p>For each scale we have methods giving values in physical units along with the determination year. For example you
+can get the <span class="math notranslate nohighlight">\(r_1\)</span> scale in [fm] using <code class="docutils literal notranslate"><span class="pre">r1_MILC_2010('fm')</span></code> along with its corresponding combined error bar
+<code class="docutils literal notranslate"><span class="pre">r1err_MILC_2010('fm')</span></code>.</p>
+<p>Have a look at these modules to see what other methods are available.</p>
 </section>
 
 

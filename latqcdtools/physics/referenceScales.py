@@ -1,13 +1,15 @@
 #
-# scales_hisq.py
+# referenceScales.py
 #
-# L. Mazur, D. Clarke
+# A collection of scales and related functions for pure SU(3) configurations.
 #
-# A collection of scales and related functions for Nf=2+1 HISQ configurations.
-#
+
 import numpy as np
-from latqcdtools.physics.unitConversions import GeVinv_to_fm, MeV_to_fminv, fm_to_GeVinv, fm_to_MeVinv
 import latqcdtools.base.logger as logger
+from latqcdtools.physics.unitConversions import fm_to_GeVinv, GeVinv_to_fm, fm_to_MeVinv, MeV_to_fminv
+
+
+# ----------------------------------------------------------------------------------------------- 2+1 FLAVOR HISQ SCALES
 
 
 def beta_func(beta):
@@ -77,8 +79,7 @@ def a_fk_fm(beta, year):
     return GeVinv_to_fm(a_fk_invGeV(beta, year))
 
 
-# Experimental Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001
-# It's in section 84.5.1.
+# Experimental Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001. It's in section 84.5.1.
 def fk_PDG_2018(units):
     fkMeV = 155.72 / np.sqrt(2.)
     if units == "MeV":
@@ -89,8 +90,7 @@ def fk_PDG_2018(units):
         logger.TBError("Invalid unit specification for fk.")
 
 
-# Experimental Kaon decay constant taken from PDG 2012. DOI: 10.1103/PhysRevD.86.010001
-# It's on page 949 under meson particle listings.
+# Experimental Kaon decay constant taken from PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
 def fk_PDG_2012(units):
     fkMeV = 156.1 / np.sqrt(2.)
     if units == "MeV":
@@ -102,6 +102,7 @@ def fk_PDG_2012(units):
 
 
 # ====================================================== r1 scales
+
 
 def a_div_r1(beta, year, suppress_warnings=False):
 
@@ -148,8 +149,8 @@ def a_r1_fm(beta, year, suppress_warnings=False):
     return r1_MILC_2010("fm") * a_div_r1(beta, year, suppress_warnings)
 
 
-# r1 taken from MILC 2010. arXiv:1012.0868.
 def r1_MILC_2010(units):
+    """ r1 taken from MILC 2010. arXiv:1012.0868. """
     r1fm = 0.3106
     if units == "fm":
         return r1fm
@@ -159,6 +160,18 @@ def r1_MILC_2010(units):
         return fm_to_GeVinv(r1fm)
     else:
         logger.TBError("Invalid unit specification for r1.")
+
+def r1err_MILC_2010(units):
+    """ Error bar from MILC 2010. arXiv:101.0868. """
+    r1errfm = np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
+    if units == "fm":
+        return r1errfm
+    elif units == "MeVinv":
+        return fm_to_MeVinv(r1errfm)
+    elif units == "GeVinv":
+        return fm_to_GeVinv(r1errfm)
+    else:
+        logger.TBError("Invalid unit specification for r1err.")
 
 
 # ================================================= strange quark mass: line of constant physics
@@ -180,3 +193,84 @@ def r1_times_ms_2014(beta):
 
 def a_times_ms_2014(beta):
     return r1_times_ms_2014(beta) * a_div_r1(beta, "2014")
+
+
+# ------------------------------------------------------------------------------------------------------ QUENCHED SCALES
+
+
+# ===================================================== r0 scales
+
+
+# Fit ansatz from https://arxiv.org/pdf/1503.05652.pdf
+# Coefficients from https://arxiv.org/abs/1709.07612
+def r0_div_a(beta):
+    b0=11./(4*np.pi)**2
+    b1=102/(4*np.pi)**4
+    c1=-8.9664
+    c2=19.21
+    c3=-5.25217
+    c4=0.606828
+    return np.exp( (beta/(12*b0)+b1/(2.*b0**2)*np.log(6*b0/beta))
+                   * (1+c1/beta+c2/beta**2)/(1+c3/beta+c4/beta**2) )
+
+
+# Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
+# Use r1=0.3106 from MILC. arXiv:1012.0868.
+def r0_hQCD_2014(units):
+    r0fm = 1.5092*r1_MILC_2010("fm") # about 0.469
+    if units=="fm":
+      return r0fm
+    elif units == "MeVinv":
+      return fm_to_MeVinv(r0fm)
+    elif units=="GeVinv":
+      return fm_to_GeVinv(r0fm)
+    else:
+      logger.TBError("Invalid unit specification for r0.")
+
+
+def r0err_hQCD_2014(units):
+    r0errfm = 1.5092*np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
+    if units == "fm":
+        return r0errfm
+    elif units == "MeVinv":
+        return fm_to_MeVinv(r0errfm)
+    elif units == "GeVinv":
+        return fm_to_GeVinv(r0errfm)
+    else:
+        logger.TBError("Invalid unit specification for r0err.")
+
+
+def a_r0_invGeV(beta):
+    return r0_hQCD_2014("GeVinv")/r0_div_a(beta)
+
+
+def a_r0_fm(beta):
+    return GeVinv_to_fm(a_r0_invGeV(beta))
+
+
+# ===================================================== t0 scales
+
+
+# Based on https://arxiv.org/pdf/1503.05652.pdf
+# Latest update at 2017/01/11 by Lukas Mazur
+def sqrtt0(beta):
+    b0=11./(4*np.pi)**2
+    b1=102/(4*np.pi)**4
+    c1=-9.945
+    c2=24.191
+    c3=-5.334
+    c4=1.452
+    return np.exp( (beta/(12*b0)+b1/(2.*b0**2)*np.log(6*b0/beta))
+                   * (1+c1/beta+c2/beta**2)/(1+c3/beta+c4/beta**2) )
+
+
+sqrtt0r0_cont = 0.334
+sqrtt0_phys   = sqrtt0r0_cont*r0_hQCD_2014("GeVinv")
+
+
+def a_t0_invGeV(beta):
+    return sqrtt0_phys/sqrtt0(beta)
+
+
+def a_t0_fm(beta):
+    return GeVinv_to_fm(a_t0_invGeV(beta))

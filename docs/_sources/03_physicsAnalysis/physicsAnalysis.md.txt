@@ -17,4 +17,5 @@ maxdepth: 1
 02_latticeParameters.md
 03_observables.md
 04_referenceScales.md
+staticPotential.md
 ```

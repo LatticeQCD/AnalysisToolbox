@@ -6,7 +6,7 @@
 # Some tests of the lattice parameter class using 2021 scales.
 #
 
-from latqcdtools.physics.lattice_params import *
+from latqcdtools.physics.lattice_params import latticeParams
 from latqcdtools.base.check import print_results
 
 import params
