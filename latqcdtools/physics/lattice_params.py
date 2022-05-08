@@ -25,7 +25,7 @@ def massRatioToMasses(msml, Nt, cbeta):
     elif msml is None:
         pass
     else:
-        logger.TBError("ms/ml not correctly set.")
+        logger.TBError("m2/m1 not correctly set.")
     if msml is None:
         cml=None
         cms=None
@@ -49,7 +49,9 @@ class latticeParams:
     r1=r1_MILC_2010("fm")
     r0=r0_hQCD_2014("fm")
 
-    def __init__(self, Nsigma, Ntau, coupling, mass_l=None, mass_s=None, scaleType='fk', paramYear=2021):
+    # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
+    # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, scaleType='fk', paramYear=2021, Nf='21'):
         if isinstance(coupling, str):
             self.beta  = int(coupling)/1000
             self.cbeta = coupling
@@ -59,19 +61,20 @@ class latticeParams:
         self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
-        self.cml   = mass_l
-        self.cms   = mass_s
-        self.ml    = massStringToFloat(mass_l)
-        self.ms    = massStringToFloat(mass_s)
+        self.cm1   = mass1
+        self.cm2   = mass2
+        self.m1    = massStringToFloat(mass1)
+        self.m2    = massStringToFloat(mass2)
         self.vol4  = self.Ns**3 * self.Nt
         self.vol3  = self.Ns**3
         self.scale = scaleType
-        if (self.ml is not None) and (self.ms is not None):
-            self.msml=int(round(self.ms/self.ml))
-        if (self.scale=='r0') and ( (mass_l is not None) or (mass_s is not None) ):
-            logger.warn("Using pure SU(3) scale for 2+1 flavor QCD.")
-        if ( (self.scale=='r1') or (self.scale=='fk') ) and (mass_l is None) and (mass_s is None) :
-            logger.warn("Using 2+1 flavor QCD scale for pure SU(3).")
+        self.Nf    = Nf
+        if (self.m1 is not None) and (self.m2 is not None):
+            self.m2m1=int(round(self.m2/self.m1))
+        if (self.scale=='r0') and ( (mass1 is not None) or (mass2 is not None) ):
+            logger.warn("Using pure SU(3) scale for dynamical QCD.")
+        if ( (self.scale=='r1') or (self.scale=='fk') ) and (mass1 is None) and (mass2 is None) :
+            logger.warn("Using dynamical QCD scale for pure SU(3).")
         if (self.beta<1.) or (10.<self.beta):
             logger.TBError("Invalid beta.")
         if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
@@ -107,12 +110,18 @@ class latticeParams:
             print("    r0 = ",round(self.r0,4),"[fm] ")
         print("    Ns = ",self.Ns)
         print("    Nt = ",self.Nt)
-        if self.ml >= 0.:
-            print("    ml = ",self.ml)
-        if self.ms >= 0.:
-            print("    ms = ",self.ms)
-        if (self.ml > 0.) and (self.ms >= 0.):
-            print(" ms/ml = ",self.msml)
+        if self.Nf=='21':
+            if self.m1 >= 0.:
+                print("    ml = ",self.m1)
+            if self.m2 >= 0.:
+                print("    ms = ",self.m2)
+        else:
+            if self.m1 >= 0.:
+                print("    mf = ", self.m1)
+            if self.m2 >= 0.:
+                print("  mpre = ", self.m2)
+        if (self.m1 > 0.) and (self.m2 >= 0.) and self.Nf=='21':
+            print(" ms/ml = ",self.m2m1)
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
         print("  beta = ",self.beta,"\n")
@@ -122,7 +131,7 @@ class latticeParams:
     def getcgeom(self):
         return 'l'+str(self.Ns)+str(self.Nt)
     def getcparams(self):
-        return self.getcgeom()+'f21b'+self.cbeta+'m'+self.cml+'m'+self.cms
+        return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2
     def getcGradFlowPureGauge(self):
         return 's'+str(self.Ns).zfill(3)+'t'+str(self.Nt).zfill(2)+'_b0'+self.cbeta+'00'
 
