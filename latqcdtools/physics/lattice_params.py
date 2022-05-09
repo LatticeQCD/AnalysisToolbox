@@ -25,7 +25,7 @@ def massRatioToMasses(msml, Nt, cbeta):
     elif msml is None:
         pass
     else:
-        logger.TBError("m2/m1 not correctly set.")
+        logger.TBError("ms/ml not correctly set.")
     if msml is None:
         cml=None
         cms=None
@@ -58,23 +58,35 @@ class latticeParams:
         else:
             self.beta  = coupling
             self.cbeta = str(int(coupling*1000))
+        self.cm1   = mass1
+        self.cm2   = mass2
         self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
-        self.cm1   = mass1
-        self.cm2   = mass2
-        self.m1    = massStringToFloat(mass1)
-        self.m2    = massStringToFloat(mass2)
         self.vol4  = self.Ns**3 * self.Nt
         self.vol3  = self.Ns**3
         self.scale = scaleType
         self.Nf    = Nf
-        if (self.m1 is not None) and (self.m2 is not None):
-            self.m2m1=int(round(self.m2/self.m1))
-        if (self.scale=='r0') and ( (mass1 is not None) or (mass2 is not None) ):
-            logger.warn("Using pure SU(3) scale for dynamical QCD.")
-        if ( (self.scale=='r1') or (self.scale=='fk') ) and (mass1 is None) and (mass2 is None) :
-            logger.warn("Using dynamical QCD scale for pure SU(3).")
+        if Nf=='21':
+            self.cml   = mass1
+            self.cms   = mass2
+            self.ml    = massStringToFloat(mass1)
+            self.ms    = massStringToFloat(mass2)
+            self.cm    = None 
+            self.cpre  = None 
+            self.m     = None 
+            self.pre   = None 
+        else:
+            self.cml   = None 
+            self.cms   = None 
+            self.ml    = None 
+            self.ms    = None 
+            self.cm    = mass1
+            self.cpre  = mass2
+            self.m     = massStringToFloat(mass1)
+            self.pre   = massStringToFloat(mass2)
+        if (self.ml is not None) and (self.ms is not None):
+            self.msml=int(round(self.ms/self.ml))
         if (self.beta<1.) or (10.<self.beta):
             logger.TBError("Invalid beta.")
         if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
@@ -110,18 +122,16 @@ class latticeParams:
             print("    r0 = ",round(self.r0,4),"[fm] ")
         print("    Ns = ",self.Ns)
         print("    Nt = ",self.Nt)
-        if self.Nf=='21':
-            if self.m1 >= 0.:
-                print("    ml = ",self.m1)
-            if self.m2 >= 0.:
-                print("    ms = ",self.m2)
-        else:
-            if self.m1 >= 0.:
-                print("    mf = ", self.m1)
-            if self.m2 >= 0.:
-                print("  mpre = ", self.m2)
-        if (self.m1 > 0.) and (self.m2 >= 0.) and self.Nf=='21':
-            print(" ms/ml = ",self.m2m1)
+        if self.ml is not None:
+            print("    ml = ",self.ml)
+        if self.ms is not None:
+            print("    ms = ",self.ms)
+        if self.m is not None:
+            print("     m = ",self.m)
+        if self.pre is not None:
+            print("   pre = ",self.pre)
+        if (self.ml is not None) and (self.ms is not None): 
+            print(" ms/ml = ",self.msml)
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
         print("  beta = ",self.beta,"\n")
