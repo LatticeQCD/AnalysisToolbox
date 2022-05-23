@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jackknife &mdash; AnalysisToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bootstrap" href="bootstrap.html" />
+    <link rel="prev" title="Statistics" href="statistics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bootstrap.html">Bootstrap</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dataAnalysis.html">Data Analysis Modules</a> &raquo;</li>
+      <li>Jackknife</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/dataAnalysis/jackknife.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="jackknife">
+<h1>Jackknife<a class="headerlink" href="#jackknife" title="Permalink to this headline"></a></h1>
+<p>To generate jackknife error bars, please use the module</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.jackknife</span>
+</pre></div>
+</div>
+<p>The central method of this file is the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> method. A call to</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">cov</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>returns a jackknife average, error, and (if desired) the covariance, in that order. Here <code class="docutils literal notranslate"><span class="pre">data</span></code> is
+a time series of raw data you are interested in, and <code class="docutils literal notranslate"><span class="pre">func</span></code> is some function of that data.
+<code class="docutils literal notranslate"><span class="pre">numb_blocks</span></code> is the number of jackknife blocks, <code class="docutils literal notranslate"><span class="pre">args</span></code> are the arguments to pass to <code class="docutils literal notranslate"><span class="pre">func</span></code>. Set
+<code class="docutils literal notranslate"><span class="pre">cov=True</span></code> if you want to get the covariance. The <code class="docutils literal notranslate"><span class="pre">conf_axis</span></code> is needed when one wants to pass a
+2D array as <code class="docutils literal notranslate"><span class="pre">data</span></code>, which can happen, for instance, if <code class="docutils literal notranslate"><span class="pre">func</span></code> depends on multiple observables.
+An example will be given below.</p>
+<p>This jackknife is quite general. Something easy one might do with the jackknife is calculate the
+Polyakov loop susceptibility from Polyakov loops. A rule of thumb to use when using the jackknife
+code is to “write your function the way it appears using math symbols”. For example with the
+susceptibility one calculates <span class="math notranslate nohighlight">\(\chi_P=N_\sigma^3\left(\langle P^2\rangle - \langle P\rangle\right)\)</span>,
+so one correspondingly defines</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Ns</span><span class="o">=</span><span class="mi">32</span>
+<span class="k">def</span> <span class="nf">susc</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">Ns</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(P\)</span> is the time series of measurements of <span class="math notranslate nohighlight">\(P\)</span>, and then calls the jackknife by</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Pmean</span><span class="p">,</span> <span class="n">Perr</span> <span class="o">=</span> <span class="n">jackknife</span><span class="p">(</span><span class="n">susc</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometimes your function may depend on multiple observables; for instance one may be interested in
+the susceptibility of <span class="math notranslate nohighlight">\(|P|\)</span>, for which one needs the real and imaginary parts of <span class="math notranslate nohighlight">\(P\)</span>. One can
+accomplish this using 32 jackknife blocks with, for instance,</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">suscA</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+  <span class="n">ReP</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="n">ImP</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">Ns</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ReP</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ImP</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ReP</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+
+<span class="n">AbsPmean</span><span class="p">,</span> <span class="n">AbsPerr</span> <span class="o">=</span> <span class="n">jackknife</span><span class="p">(</span><span class="n">suscA</span><span class="p">,</span> <span class="p">[</span><span class="n">ReP</span><span class="p">,</span> <span class="n">ImP</span><span class="p">],</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that these Polyakov loop examples are meant to be instructional. A complete set of functions
+measuring Polyakov loop observables is given in <code class="docutils literal notranslate"><span class="pre">polyakovTools.py</span></code>, described in part in the part
+of the documentation for <a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html"><span class="doc std std-doc">physics</span></a> modules.
+<strong>WARNING:</strong> Although the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code>
+method is very general, one thing that cannot be done is passing a lambda function. This is because
+the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> is parallelized using <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code>, which is not able to pickle
+lambda functions.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

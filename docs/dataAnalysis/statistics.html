@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Statistics &mdash; AnalysisToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Jackknife" href="jackknife.html" />
+    <link rel="prev" title="Curve Fitting" href="curveFitting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve Fitting</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jackknife.html">Jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bootstrap.html">Bootstrap</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="dataAnalysis.html">Data Analysis Modules</a> &raquo;</li>
+      <li>Statistics</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/dataAnalysis/statistics.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="statistics">
+<h1>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline"></a></h1>
+<p>A collection of useful methods for statistics calculations can be found in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.statistics</span>
+</pre></div>
+</div>
+<section id="mean-median-and-standard-error">
+<h2>Mean, median, and standard error<a class="headerlink" href="#mean-median-and-standard-error" title="Permalink to this headline"></a></h2>
+<p>There are wrappers for <code class="docutils literal notranslate"><span class="pre">np.mean</span></code> and <code class="docutils literal notranslate"><span class="pre">np.median</span></code> called <code class="docutils literal notranslate"><span class="pre">std_mean</span></code>
+and <code class="docutils literal notranslate"><span class="pre">std_median</span></code>. The advantage of using the wrappers is that you don’t have to specify the Axis.
+There is also a <code class="docutils literal notranslate"><span class="pre">std_err</span></code>, which calculates the error bar of the mean of the array, assuming
+the data are independent.</p>
+</section>
+<section id="error-propagation">
+<h2>Error propagation<a class="headerlink" href="#error-propagation" title="Permalink to this headline"></a></h2>
+<p>The function</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>can be used to automatically propagate the <code class="docutils literal notranslate"><span class="pre">errors</span></code> of measurements <code class="docutils literal notranslate"><span class="pre">means</span></code> into the function <code class="docutils literal notranslate"><span class="pre">func</span></code>. Here <code class="docutils literal notranslate"><span class="pre">x</span></code>
+is a variable the function depends on that does not have error. If you like, you can specify the gradient <code class="docutils literal notranslate"><span class="pre">grad</span></code>
+of <code class="docutils literal notranslate"><span class="pre">func</span></code> yourself; otherwise this will be calculated numerically.</p>
+</section>
+<section id="gaussian-difference-test">
+<h2>Gaussian difference test<a class="headerlink" href="#gaussian-difference-test" title="Permalink to this headline"></a></h2>
+<p>A Gaussian difference test can be used to check whether two
+measurements are statistically consistent with one another. Given are two measurements <code class="docutils literal notranslate"><span class="pre">x1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">x2</span></code> drawn from Gaussian distributions with the same mean and respective error bars <code class="docutils literal notranslate"><span class="pre">e1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">e2</span></code>. A call to</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>returns the q-value, which is the likelihood that <code class="docutils literal notranslate"><span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">x2</span></code> are at least as far apart as
+was observed.</p>
+</section>
+<section id="integrated-autocorrelation-time">
+<h2>Integrated autocorrelation time<a class="headerlink" href="#integrated-autocorrelation-time" title="Permalink to this headline"></a></h2>
+<p>The integrated autocorrelation time is the ratio between
+the estimated variance of the sample mean and what this variance would have been if the data were
+independent; i.e. <span class="math notranslate nohighlight">\(\sigma^2_{\bar{X}}=\frac{\sigma^2}{N}\tau_{\text{int}}.\)</span>
+A call to</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getTauInt</span><span class="p">(</span><span class="n">timeSeries</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">tpickMax</span><span class="p">,</span> <span class="n">acoutfileName</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>returns an estimate for <span class="math notranslate nohighlight">\(\tau_{\text{int}}\)</span>, its error bar, its bias, and the Monte Carlo time
+separation at which it found this <span class="math notranslate nohighlight">\(\tau_{\text{int}}\)</span>. It takes a time series <code class="docutils literal notranslate"><span class="pre">timeSeries</span></code>, a
+number of jackknife bins needed for the calculation <code class="docutils literal notranslate"><span class="pre">nbins</span></code>, and an estimate for the largest that
+the autocorrelation time could be. (You can play around with this latter variable a bit if you
+are having trouble to get it to run. Usually I pick a little less than half the size of the series.)
+The results are saved by default in <code class="docutils literal notranslate"><span class="pre">acoutfileName=acor.d</span></code>, but you can change this as well.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
