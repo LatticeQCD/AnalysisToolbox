@@ -30,6 +30,7 @@ runTestRoutine gaudifTest.py
 runTestRoutine testautocor.py 
 runTestRoutine testBootstrap.py 
 runTestRoutine testJackknife.py 
+runTestRoutine testErrorProp.py
 cd ..
 
 
