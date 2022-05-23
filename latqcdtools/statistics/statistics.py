@@ -122,8 +122,9 @@ def dev_by_dist(data, axis=0, return_both_q=False):
 
 
 def error_prop(func, means, errors, grad=None, args=()):
-    mean = func(means, *args)
     errors = np.asarray(errors)
+    means  = np.asarray(means)
+    mean   = func(means, *args)
     try:
         # Test if we got a covariance matrix
         errors[0][0]
@@ -148,7 +149,7 @@ def error_prop(func, means, errors, grad=None, args=()):
 
 
 def error_prop_func(x, func, means, errors, grad=None, args=()):
-    """ Function to calculate error propagation for plotting. """
+    """ Automatically wraps your function for error_prop. It only returns the error, not the mean. """
     # For fitting or plotting we expect the first argument of func to be x instead of params.
     # Therefore we have to change the order using this wrapper
     wrap_func = lambda p, *wrap_args: func(x, *(tuple(p) + tuple(wrap_args)))

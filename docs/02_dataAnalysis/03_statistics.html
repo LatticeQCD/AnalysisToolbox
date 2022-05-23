@@ -87,12 +87,22 @@
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.statistics</span>
 </pre></div>
 </div>
-<section id="mean-median-and-error">
-<h2>Mean, median, and error<a class="headerlink" href="#mean-median-and-error" title="Permalink to this headline"></a></h2>
+<section id="mean-median-and-standard-error">
+<h2>Mean, median, and standard error<a class="headerlink" href="#mean-median-and-standard-error" title="Permalink to this headline"></a></h2>
 <p>There are wrappers for <code class="docutils literal notranslate"><span class="pre">np.mean</span></code> and <code class="docutils literal notranslate"><span class="pre">np.median</span></code> called <code class="docutils literal notranslate"><span class="pre">std_mean</span></code>
 and <code class="docutils literal notranslate"><span class="pre">std_median</span></code>. The advantage of using the wrappers is that you don’t have to specify the Axis.
 There is also a <code class="docutils literal notranslate"><span class="pre">std_err</span></code>, which calculates the error bar of the mean of the array, assuming
 the data are independent.</p>
+</section>
+<section id="error-propagation">
+<h2>Error propagation<a class="headerlink" href="#error-propagation" title="Permalink to this headline"></a></h2>
+<p>The function</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>can be used to automatically propagate the <code class="docutils literal notranslate"><span class="pre">errors</span></code> of measurements <code class="docutils literal notranslate"><span class="pre">means</span></code> into the function <code class="docutils literal notranslate"><span class="pre">func</span></code>. Here <code class="docutils literal notranslate"><span class="pre">x</span></code>
+is a variable the function depends on that does not have error. If you like, you can specify the gradient <code class="docutils literal notranslate"><span class="pre">grad</span></code>
+of <code class="docutils literal notranslate"><span class="pre">func</span></code> yourself; otherwise this will be calculated numerically.</p>
 </section>
 <section id="gaussian-difference-test">
 <h2>Gaussian difference test<a class="headerlink" href="#gaussian-difference-test" title="Permalink to this headline"></a></h2>

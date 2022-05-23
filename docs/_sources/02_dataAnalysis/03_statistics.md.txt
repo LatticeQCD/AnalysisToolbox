@@ -5,11 +5,20 @@ A collection of useful methods for statistics calculations can be found in
 import latqcdtools.statistics.statistics
 ```
 
-## Mean, median, and error 
+## Mean, median, and standard error 
 There are wrappers for `np.mean` and `np.median` called `std_mean` 
 and `std_median`. The advantage of using the wrappers is that you don't have to specify the Axis. 
 There is also a `std_err`, which calculates the error bar of the mean of the array, assuming 
 the data are independent.
+
+## Error propagation
+The function  
+```Python
+error_prop_func(x, func, means, errors, grad=None, args=())
+```
+can be used to automatically propagate the `errors` of measurements `means` into the function `func`. Here `x`
+is a variable the function depends on that does not have error. If you like, you can specify the gradient `grad`
+of `func` yourself; otherwise this will be calculated numerically.
 
 ## Gaussian difference test 
 A Gaussian difference test can be used to check whether two 
