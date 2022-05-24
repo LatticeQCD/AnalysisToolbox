@@ -37,7 +37,7 @@ def massRatioToMasses(msml, Nt, cbeta):
 
 def massStringToFloat(string):
     if string is None:
-        return -1
+        return None
     else:
         return float('0.' + string)
 
