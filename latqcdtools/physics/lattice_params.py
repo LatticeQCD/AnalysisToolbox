@@ -11,30 +11,6 @@ from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
 from latqcdtools.physics.referenceScales import fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
 
 
-def massRatioToMasses(msml, Nt, cbeta):
-    if Nt==8 and msml==160:
-        massTable=quarkMassNt8.Table160
-    elif Nt==8 and msml==80:
-        massTable=quarkMassNt8.Table80
-    elif Nt==8 and msml==40:
-        massTable=quarkMassNt8.Table40
-    elif Nt==8 and msml==27:
-        massTable=quarkMassNt8.Table27
-    elif Nt==12 and msml==27:
-        massTable=quarkMassNt12.Table27
-    elif msml is None:
-        pass
-    else:
-        logger.TBError("ms/ml not correctly set.")
-    if msml is None:
-        cml=None
-        cms=None
-    else:
-        cml=massTable[cbeta][0]
-        cms=massTable[cbeta][1]
-    return cml, cms
-
-
 def massStringToFloat(string):
     if string is None:
         return None
@@ -68,23 +44,23 @@ class latticeParams:
         self.scale = scaleType
         self.Nf    = Nf
         if Nf=='21':
-            self.cml   = mass1
-            self.cms   = mass2
-            self.ml    = massStringToFloat(mass1)
-            self.ms    = massStringToFloat(mass2)
-            self.cm    = None 
-            self.cpre  = None 
-            self.m     = None 
-            self.pre   = None 
+            self.cml  = mass1
+            self.cms  = mass2
+            self.ml   = massStringToFloat(mass1)
+            self.ms   = massStringToFloat(mass2)
+            self.cm   = None
+            self.cpre = None
+            self.m    = None
+            self.pre  = None
         else:
-            self.cml   = None 
-            self.cms   = None 
-            self.ml    = None 
-            self.ms    = None 
-            self.cm    = mass1
-            self.cpre  = mass2
-            self.m     = massStringToFloat(mass1)
-            self.pre   = massStringToFloat(mass2)
+            self.cml  = None
+            self.cms  = None
+            self.ml   = None
+            self.ms   = None
+            self.cm   = mass1
+            self.cpre = mass2
+            self.m    = massStringToFloat(mass1)
+            self.pre  = massStringToFloat(mass2)
         if (self.ml is not None) and (self.ms is not None):
             self.msml=int(round(self.ms/self.ml))
         if (self.beta<1.) or (10.<self.beta):
@@ -135,69 +111,3 @@ class latticeParams:
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
         print("  beta = ",self.beta,"\n")
-
-
-    # String often used to label lattice configurations.
-    def getcgeom(self):
-        return 'l'+str(self.Ns)+str(self.Nt)
-    def getcparams(self):
-        return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2
-    def getcGradFlowPureGauge(self):
-        return 's'+str(self.Ns).zfill(3)+'t'+str(self.Nt).zfill(2)+'_b0'+self.cbeta+'00'
-
-
-class quarkMassNt12:
-
-    """Lookup tables for Nt=12, Nf=2+1 flavors. HotQCD HISQ runs."""
-
-    Table27={ '6794': ['00167','0450'],
-              '6850': ['00157','0424'],
-              '6910': ['00148','0401'] }
-
-
-class quarkMassNt8:
-
-    """Lookup tables for Nt=8, Nf=2+1 flavors. HotQCD HISQ runs."""
-
-    Table160={ '6285': ['00049375','0790'],
-               '6300': ['00048250','0772'],
-               '6315': ['00047500','0760'],
-               '6330': ['00046625','0746'],
-               '6354': ['00045500','0728'],
-               '6372': ['00044456','0711'],
-               '6390': ['00043375','0694'],
-               '6423': ['00041875','0670'],
-               '6445': ['00040750','0652'] }
-
-    Table80={ '6285': ['0009875','0790'],
-              '6300': ['0009650','0772'],
-              '6315': ['0009500','0760'],
-              '6330': ['0009325','0746'],
-              '6354': ['0009100','0728'],
-              '6372': ['0008891','0711'],
-              '6390': ['0008675','0694'],
-              '6423': ['0008375','0670'],
-              '6445': ['0008150','0652'] }
-
-    Table40={ '6260': ['002025','0810'],
-              '6285': ['001975','0790'],
-              '6300': ['001930','0772'],
-              '6315': ['001900','0760'],
-              '6330': ['001865','0746'],
-              '6354': ['001820','0728'],
-              '6365': ['001790','0716'],
-              '6390': ['001735','0694'],
-              '6423': ['001675','0670'],
-              '6445': ['001630','0652'],
-              '6474': ['001580','0632'],
-              '6500': ['001535','0614'] }
-
-    Table27={ '6245': ['00307','0830'],
-              '6285': ['00293','0790'],
-              '6315': ['00281','0759'],
-              '6354': ['00270','0728'],
-              '6390': ['00257','0694'],
-              '6423': ['00248','0670'],
-              '6445': ['00241','0652'],
-              '6474': ['00234','0632'],
-              '6500': ['00228','0614'] }

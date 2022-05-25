@@ -7,6 +7,7 @@
 #
 
 from latqcdtools.physics.lattice_params import latticeParams
+from latqcdtools.physics.HotQCD import HotQCDParams
 from latqcdtools.base.check import print_results
 
 import params
@@ -18,7 +19,7 @@ T = lp.getT()
 print_results(a,0.13991193457966106,T,176.29569932046147,text='fK test')
 del lp
 
-lp = latticeParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms, Nf='3')
+lp = HotQCDParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms, Nf='3')
 lp.paramSummary()
 print(lp.getcparams())
 del lp

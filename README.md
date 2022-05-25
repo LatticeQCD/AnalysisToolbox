@@ -7,7 +7,7 @@ it also includes some methods complying with their conventions.
 ## Prerequisites
 
 In order to use these scripts, please ensure that you have the following:
-1. Python 3.6
+1. Python 3.6 or better
 2. numpy
 3. scipy
 4. mpmath
