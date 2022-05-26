@@ -49,4 +49,4 @@ plot_func(func, args = [a, b, opt], args_err = [a_err,b_err], func_sup_numpy = T
 plot_func(func, args = [a, b, opt], args_err = [a_err,b_err,opt], grad = grad,
         func_sup_numpy = True, title = "Please check if all error bands are the same")
 
-plt.show()
+plt.savefig("errorprop.pdf")

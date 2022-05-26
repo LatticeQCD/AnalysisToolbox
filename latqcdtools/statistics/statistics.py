@@ -331,3 +331,25 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d'):
     acoutfile.close()
 
     return tau_int, tau_inte, tau_intbias, itpick
+
+
+def fallFactorial(n,m):
+    """ Falling factorial n fall to m. """
+    if m==0:
+        return 1
+    if m>n:
+        logger.TBError("m>n in falling factorial.")
+    prod=1
+    for i in range(m):
+        prod *= n-i
+    return prod
+
+
+def riseFactorial(n,m):
+    """ Rising factorial n rise to m. """
+    if m==0:
+        return 1
+    prod=1
+    for i in range(m):
+        prod *= n+i
+    return prod
