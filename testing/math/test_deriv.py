@@ -8,7 +8,7 @@
 
 
 import numpy as np
-from latqcdtools.base.num_deriv import diff_fit_grad, diff_fit_hess
+from latqcdtools.math.num_deriv import diff_fit_grad, diff_fit_hess
 from latqcdtools.base.check import rel_check
 import latqcdtools.base.logger as logger
 

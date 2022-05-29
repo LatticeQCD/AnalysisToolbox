@@ -10,7 +10,7 @@
 import mpmath
 import numpy as np
 import latqcdtools.base.logger as logger
-import latqcdtools.base.num_deriv as numDeriv
+import latqcdtools.math.num_deriv as numDeriv
 
 
 def reduce_tuple(func):

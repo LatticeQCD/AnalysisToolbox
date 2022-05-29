@@ -16,10 +16,13 @@ echo "Running python tests:"
 echo
 
 
-# --------------------- BASE TESTS
+# --------------------- MATH TESTS
 
 
+cd math
 runTestRoutine test_deriv.py
+runTestRoutine testPolynomial.py
+cd ..
 
 
 # --------------- STATISTICS TESTS

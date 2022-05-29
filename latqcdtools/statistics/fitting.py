@@ -11,12 +11,11 @@ from scipy.optimize import curve_fit
 from scipy.linalg import inv
 import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
-from latqcdtools.base.optimize import minimize
 import latqcdtools.base.logger as logger
-from latqcdtools.base.num_deriv import diff_jac
-from latqcdtools.statistics.statistics import error_prop_func, norm_cov
 from latqcdtools.base.plotting import plot_func, save_func, latexify, plot_cov, plot_dots, init_notex, plot_eig
-from latqcdtools.base.num_deriv import diff_fit_grad, diff_fit_hess
+from latqcdtools.math.optimize import minimize
+from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
+from latqcdtools.statistics.statistics import error_prop_func, norm_cov
 from inspect import signature
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -222,7 +221,6 @@ class Fitter:
         self._cache_p_array = np.full(self._numb_params, None)
         self._cache_p_jac = np.full(self._numb_params, None)
         self._cache_p_hess = np.full(self._numb_params, None)
-
 
         # For constrained fits. Please see https://arxiv.org/abs/hep-lat/0110175
         self._priorval = np.ones(self._numb_params)

@@ -9,7 +9,7 @@ import multiprocessing
 import scipy.optimize as opt
 import numpy as np
 from numpy.linalg import inv
-from latqcdtools.base.num_deriv import diff_grad, diff_hess
+from latqcdtools.math.num_deriv import diff_grad, diff_hess
 import latqcdtools.base.logger as logger
 
 
