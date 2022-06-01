@@ -51,14 +51,14 @@ class HRG:
     def exp(self,N,T,k,mu_B,mu_Q,mu_S):
          return np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
 
-    def pressure(self, T):
+    def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0.):
         P = 0.0
         for k in range(len(self.Mass)):
             for N in range(1, 20):
                 if N * self.Mass[k] > 2500:
                     y = 0.0
                 else:
-                    y = self.ln_Z(k, N, T) * self.exp(N , T , self.B[k] , mu_B , self.Q[k] , mu_Q , self.S[k] , mu_S)
+                    y = self.ln_Z(k, N, T)*np.exp( N* (self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S)/ T )
                 P += y
         return P
 
