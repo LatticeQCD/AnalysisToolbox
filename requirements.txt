@@ -1,9 +1,10 @@
 # Run pip3 install -r requirements.txt to install these packages.
 
-numpy
-scipy
-numba
-mpmath
-matplotlib
 colorama
 cycler
+numba
+numpy
+matplotlib
+mpmath
+scipy
+sympy

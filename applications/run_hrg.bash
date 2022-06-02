@@ -18,10 +18,10 @@ filepath="../latqcdtools/physics/QM_hadron_list_ext_strange_2020.txt" # change t
 BQS1=200
 BQS2=130
 b=1.0 #excluded volume parameter
-python3 main_evhrg.py --hadron_file ${filepath} --obs chi --bqs ${BQS1} --b $b --column 0 1 2 3 4 5 6 
+python3 main_evhrg.py --hadron_file ${filepath} --obs chi --bqs ${BQS1} --b $b  
 # temperature in MeV. start:end:interval
-python3 main_evhrg.py --hadron_file ${filepath} --obs chi --bqs ${BQS2} --b $b --column 0 1 2 3 4 5 6 --temperature_range 130:180:0.5
+python3 main_evhrg.py --hadron_file ${filepath} --obs chi --bqs ${BQS2} --b $b --temperature_range 130:180:0.5
 
 
 # Here's where you can actually use it.
-python3 main_evhrg.py --hadron_file ../latqcdtools/physics/QM_hadron_list_ext_strange_2020.txt --obs chi --bqs 101 --b 0.4 --column 0 1 2 3 4 5 6 --temperature_range 130:180:0.5
+python3 main_evhrg.py --hadron_file ../latqcdtools/physics/QM_hadron_list_ext_strange_2020.txt --obs chi --bqs 101 --b 0.4 --temperature_range 130:180:0.5

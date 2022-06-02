@@ -17,13 +17,14 @@ parser = argparse.ArgumentParser(description='Script to carry out HRG calculatio
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
 parser.add_argument("--b", dest="b", required=True, help="Excluded volume parameter.", type=float)
-parser.add_argument('--column', dest='column',nargs='+', required=True, help="Read from these columns in HRG file.",type=int)
+#parser.add_argument('--column', dest='column',nargs='+', required=True, help="Read from these columns in HRG file.",type=int)
 parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi)", default="chi", type=str)
-parser.add_argument("--bqs", dest="BQS", required=False,help="BQS mu derivative orders.", type=str)
+parser.add_argument("--bqs", dest="BQS", required=False, help="BQS mu derivative orders.", type=str)
+parser.add_argument("--muB", dest="muB", default=0.0, type=float, help="muB/T")
 
 
 args      = parser.parse_args()
-col_tuple = tuple(args.column)
+#col_tuple = tuple(args.column)
 
 
 if args.obs=="chi" and args.BQS is None:
@@ -40,6 +41,8 @@ else:
 print("\n  observable:",args.obs)
 if args.BQS is not None:
     print("   BQS deriv:",args.BQS)
+if args.muB is not None:
+    print("       muB/T:",args.muB)
 print("    b [fm^3]:",args.b)
 print("     T [MeV]:",T[0],T[-1],"\n")
 
@@ -54,7 +57,7 @@ print("     T [MeV]:",T[0],T[-1],"\n")
 
 
 # This is generally the QM hrg file
-hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=col_tuple,dtype="U11,f8,i8,i8,i8,i8,i8")
+hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 tag='QM'
 
 
@@ -66,7 +69,6 @@ hadrons1,M1,Q1,B1,S1,C1,g1=np.loadtxt("../latqcdtools/physics/PDG_hadron_list_ex
 # spin statistics
 w  = np.array([1 if ba==0 else -1 for ba in B])
 w1 = np.array([1 if ba==0 else -1 for ba in B1])
-
 
 
 b  = args.b
@@ -103,7 +105,8 @@ if args.obs == "chi":
                header='T    PDG-HRG         QM-HRG          EV-HRG_b%d       EV_PDGHRG_b%d' % (b, b))
 
 elif args.obs == "p":
-    p_QM = QMhrg.pressure(T)
-    p_pdg = pdghrg.pressure(T)
-    np.savetxt("pressure_Hrg_b%0.2f_%s"%(args.b,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
+    p_QM = QMhrg.pressure(T, mu_B=args.muB)
+    p_pdg = pdghrg.pressure(T, mu_B=args.muB)
+    np.savetxt("pressure_HRG_muB%0.2f_b%0.2f_%s"%(args.muB,args.b,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
                header='T    PDG-HRG         QM-HRG          EV-HRG_b%d       EV_PDGHRG_b%d' % (b, b))
+
