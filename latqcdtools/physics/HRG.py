@@ -68,10 +68,10 @@ class HRG:
         for k in range(len(self.Mass)):
             if self.B[k]==0:
                 for N in range(1,20):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * self.ln_Z(k, N, T) * self.exp(N , T , k , mu_B , mu_Q , mu_S)
+                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * self.ln_Z(k, N, T) * np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
             else:
                 for N in range(1,2):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * self.ln_Z(k, N, T) * self.exp(N , T , k , mu_B , mu_Q ,  mu_S)
+                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * self.ln_Z(k, N, T) * np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
         return chi
 
     def gen_chi_RMS(self, T, Nt,B_order=0.0, S_order=0.0, Q_order=0.0 , mu_B = 0.0, mu_Q = 0.0, mu_S = 0.0 ):
