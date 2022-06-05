@@ -15,6 +15,7 @@ import latqcdtools.base.logger as logger
 
 parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.')
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
+parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
 parser.add_argument("--b", dest="b", required=True, help="Excluded volume parameter.", type=float)
 #parser.add_argument('--column', dest='column',nargs='+', required=True, help="Read from these columns in HRG file.",type=int)
@@ -58,7 +59,9 @@ print("     T [MeV]:",T[0],T[-1],"\n")
 
 # This is generally the QM hrg file
 hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-tag='QM'
+
+
+tag = str(args.particle_list)
 
 
 # PDG HRG file
