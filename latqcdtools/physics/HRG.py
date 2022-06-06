@@ -33,7 +33,7 @@ class HRG:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
         B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. For more information
-        please see, e.g. Physics Letters B 695 (2011) 136–142. """
+        please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812 """
 
     def __init__(self, Mass, g, w, B, S, Q):
         self.Mass = Mass
