@@ -33,7 +33,7 @@ def RMS_mass(Nt, T):
 class HRG:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. """
+        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. See the appendix of 2011.02812 for more details about the implemented formulas"""
 
     def __init__(self, Mass, g, w, B=0.0, S=0.0, Q=0.0):
         self.Mass = Mass

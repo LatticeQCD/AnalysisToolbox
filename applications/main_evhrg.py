@@ -75,7 +75,8 @@ w1 = np.array([1 if ba==0 else -1 for ba in B1])
 
 
 b  = args.b
-muB=float(args.muB)
+muB_div_T = float(args.muB)
+muB = muB_div_T * T
 
 QMhrg      = HRG(M,g,w,B,S,Q)
 pdghrg     = HRG(M1,g1,w1,B1,S1,Q1)
@@ -107,13 +108,13 @@ if args.obs == "chi":
         chi_ev  = evhrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder)+evhrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder)
         chi_ev1 = evpdghrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder) + evpdghrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder)
     # Save the output
-    np.savetxt("chiBQS_%s_Hrg_muB%0.2f_BI_b%0.2f_%s"%(args.BQS,muB,args.b,tag),
+    np.savetxt("chiBQS_%s_Hrg_muB%0.2f_BI_b%0.2f_%s"%(args.BQS,muB_div_T,args.b,tag),
                np.c_[T,chi_pdg,chi_QM,chi_ev,chi_ev1],fmt='%.1f %.8e %.8e %.8e %0.8e',
                header='T    PDG-HRG         QM-HRG          EV-HRG_b%d       EV_PDGHRG_b%d' % (b, b))
 
 elif args.obs == "p":
     p_QM = QMhrg.pressure(T, mu_B=muB)
     p_pdg = pdghrg.pressure(T, mu_B=args.muB)
-    np.savetxt("pressure_HRG_muB%0.2f_b%0.2f_%s"%(args.muB,args.b,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
+    np.savetxt("pressure_HRG_muB%0.2f_b%0.2f_%s"%(args.muB_div_T,args.b,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
                header='T    PDG-HRG         QM-HRG          EV-HRG_b%d       EV_PDGHRG_b%d' % (b, b))
 
