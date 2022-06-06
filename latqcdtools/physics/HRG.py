@@ -6,7 +6,6 @@
 # Collection of methods pertaining to hadron resonance gas calculations.
 #
 
-
 import numpy as np
 import sympy as sy
 from scipy.special import kn, lambertw
@@ -33,24 +32,27 @@ def RMS_mass(Nt, T):
 class HRG:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. """
+        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. For more information
+        please see, e.g. Physics Letters B 695 (2011) 136–142. """
 
-    def __init__(self, Mass, g, w, B=0.0, S=0.0, Q=0.0):
+    def __init__(self, Mass, g, w, B, S, Q):
         self.Mass = Mass
         self.g = g
         self.w = w
         self.B = B
-        self.S = S
         self.Q = Q
+        self.S = S
 
     def __repr__(self):
         return "hrg"
 
+    # Not actually log_Z, just the prefactor coming before the exponential. For calculations of the pressure and
+    # generalized susceptibilities, we make things unitless, e.g. P = T/V log Z ==> p/T^4 = 1/VT^3 log Z
     def ln_Z(self, k, N, T):
-        return self.w[k]**(N + 1)*self.g[k]*(self.Mass[k]/T)**2*kn(2, (N * self.Mass[k]/T))/(np.pi*N)**2/2
+        return self.w[k]**(N+1) * self.g[k] * (self.Mass[k]/T)**2 * kn(2,(N*self.Mass[k]/T))/(np.pi*N)**2/2
 
     def exp(self, N, T, k, mu_B, mu_Q, mu_S):
-        return np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
+        return np.exp( N*(self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S)/ T )
 
     def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0.):
         P = 0.0
@@ -59,24 +61,15 @@ class HRG:
                 if N * self.Mass[k] > 4000:
                     y = 0.0
                 else:
-                    y = self.ln_Z(
-                        k, N, T) * np.exp(N * (self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S) / T)
+                    y = self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
                 P += y
         return P
 
-    def gen_chi(self, T, B_order=0.0, S_order=0.0, Q_order=0.0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
+    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
         chi = 0.0
         for k in range(len(self.Mass)):
-            if self.B[k] == 0:
-                for N in range(1, 20):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * \
-                        self.ln_Z(
-                            k, N, T) * np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
-            else:
-                for N in range(1, 2):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * \
-                        self.ln_Z(
-                            k, N, T) * np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
+            for N in range(1, 20):
+                chi += (self.B[k]*N/T)**B_order * (self.S[k]*N/T)**S_order * (self.Q[k]*N/T)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
         return chi
 
     def gen_chi_RMS(self, T, Nt, B_order=0.0, S_order=0.0, Q_order=0.0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
@@ -103,13 +96,13 @@ class EV_HRG:
 
     """ Excluded volume hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics. """
 
-    def __init__(self, Mass, g, w, B=0.0, S=0.0, Q=0.0):
+    def __init__(self, Mass, g, w, B, S, Q):
         self.Mass = Mass
         self.g = g
         self.w = w
         self.B = B
-        self.S = S
-        self.Q = Q
+        self.S = Q
+        self.Q = S
 
     def __repr__(self):
         return "evhrg"

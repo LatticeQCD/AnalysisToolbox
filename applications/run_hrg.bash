@@ -25,4 +25,3 @@ python3 main_evhrg.py --hadron_file ${filepath} --tag QMHRG2020_BI --obs chi --b
 
 # Here's where you can actually use it.
 python3 main_evhrg.py --hadron_file ../latqcdtools/physics/QM_hadron_list_ext_strange_2020.txt --tag QMHRG2020_BI --obs chi --bqs 101 --b 0.4 --temperature_range 130:180:0.5
-python3 main_muBhrg.py --hadron_file ../latqcdtools/physics/QM_hadron_list_ext_strange_2020.txt --tag QMHRG2020_BI --obs chi --bqs 101 --b 0.4 --temperature_range 130:180:0.5

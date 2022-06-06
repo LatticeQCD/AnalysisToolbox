@@ -58,19 +58,19 @@ chi_QM = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB
 chi_pdg = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)
 
 if (Border==0):
-    chi_ev = evhrg.gen_chi(T,b,1,Q_order=Qorder,S_order=Sorder,mu_B=muB) + \
-    evhrg.gen_chi(T,b,-1,Q_order=Qorder, S_order=Sorder,mu_B=muB) + mesons_qm.gen_chi(T,Q_order=Qorder,S_order=Sorder,mu_B=muB)
+    chi_ev  = evhrg.gen_chi(T,b,1,Q_order=Qorder,S_order=Sorder,mu_B=muB) \
+              + evhrg.gen_chi(T,b,-1,Q_order=Qorder, S_order=Sorder,mu_B=muB) + mesons_qm.gen_chi(T,Q_order=Qorder,S_order=Sorder,mu_B=muB)
     chi_ev1 = evpdghrg.gen_chi(T,b,1,Q_order=Qorder,S_order=Sorder,mu_B=muB)\
-    +evpdghrg.gen_chi(T,b,-1,Q_order=Qorder,S_order=Sorder,mu_B=muB) \
-    + mesons_pdg.gen_chi(T,Q_order=Qorder,S_order=Sorder,mu_B=muB)
+              + evpdghrg.gen_chi(T,b,-1,Q_order=Qorder,S_order=Sorder,mu_B=muB)\
+              + mesons_pdg.gen_chi(T,Q_order=Qorder,S_order=Sorder,mu_B=muB)
 else:
-    chi_ev = evhrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)\
-    +evhrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)
-    chi_ev1 = evpdghrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B=muB) \
-    + evpdghrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)
+    chi_ev  = evhrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)\
+              + evhrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)
+    chi_ev1 = evpdghrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B=muB)\
+              + evpdghrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder,mu_B=muB)
 # 1 is for anti-particle and -1 is for anti-particle
 
-np.savetxt("chiBQS_%s_Hrg_muB_fixefT%0.1f_f_BI_b%0.2f_%s"%(args.BQS,T,args.b,tag),
+np.savetxt("chiBQS_%s_T%0.1f_f_BI_b%0.2f_%s"%(args.BQS,T,args.b,tag),
                np.c_[muB/T,chi_pdg,chi_QM,chi_ev,chi_ev1],fmt='%.1f %.8e %.8e %.8e %0.8e',
                header='muB / T    PDG-HRG         QM-HRG          EV-HRG_b%d       EV_PDGHRG_b%d' % (b, b))
 
