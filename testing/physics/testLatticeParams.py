@@ -16,7 +16,8 @@ lp = latticeParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms)
 lp.paramSummary()
 a = lp.geta()
 T = lp.getT()
-print_results(a,0.13991193457966106,T,176.29569932046147,text='fK test')
+print_results(a,0.14027137436021253,text='fK test, a')
+print_results(T,175.84394864955703,text='fK test, T')
 del lp
 
 lp = HotQCDParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms, Nf='3')
@@ -30,5 +31,6 @@ lp = latticeParams(params_zeroTemp.Ns, params_zeroTemp.Nt, params_zeroTemp.cbeta
 lp.paramSummary()
 a = lp.geta()
 T = lp.getT()
-print_results(a,0.04195979097233082,T,0.0,text='r0 test')
+print_results(a,0.04195979097233082,text='r0 test, a')
+print_results(T,0.0,text='r0 test, T')
 del lp

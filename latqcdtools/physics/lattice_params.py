@@ -8,7 +8,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.physics.referenceScales import fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
+from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
 
 
 def massStringToFloat(string):
@@ -21,13 +21,13 @@ def massStringToFloat(string):
 class latticeParams:
     """A class to handle and check the input parameters of a lattice run."""
 
-    fK=fk_PDG_2012("MeV")
     r1=r1_MILC_2010("fm")
     r0=r0_hQCD_2014("fm")
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
-    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, scaleType='fk', paramYear=2021, Nf='21'):
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
+        self.fK = fk_phys(scaleYear,"MeV")
         if isinstance(coupling, str):
             self.beta  = int(coupling)/1000
             self.cbeta = coupling
