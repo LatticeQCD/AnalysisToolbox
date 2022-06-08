@@ -8,7 +8,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.physics.referenceScales import fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
+from latqcdtools.physics.referenceScales import fk_FLAG_2019, fk_PDG_2012, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
 
 
 def massStringToFloat(string):
@@ -21,7 +21,7 @@ def massStringToFloat(string):
 class latticeParams:
     """A class to handle and check the input parameters of a lattice run."""
 
-    fK=fk_PDG_2012("MeV")
+    fK=fk_FLAG_2019("MeV")
     r1=r1_MILC_2010("fm")
     r0=r0_hQCD_2014("fm")
 

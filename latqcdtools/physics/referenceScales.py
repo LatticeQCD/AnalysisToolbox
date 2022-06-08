@@ -79,6 +79,17 @@ def a_fk_fm(beta, year):
     return GeVinv_to_fm(a_fk_invGeV(beta, year))
 
 
+# Kaon decay constant taken from FLAG 2019. https://doi.org/10.1140/epjc/s10052-019-7354-7
+def fk_FLAG_2019(units):
+    fkMeV = 155.7 / np.sqrt(2.)
+    if units == "MeV":
+        return fkMeV
+    elif units == "fminv":
+        return MeV_to_fminv(fkMeV)
+    else:
+        logger.TBError("Invalid unit specification for fk.")
+
+
 # Experimental Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001. It's in section 84.5.1.
 def fk_PDG_2018(units):
     fkMeV = 155.72 / np.sqrt(2.)
