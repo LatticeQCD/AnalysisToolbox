@@ -55,10 +55,15 @@ If none of the above cases apply, you may also send an email to dclarke(at)physi
 
 ## Contributors
 
-[H. Sandmeyer](https://github.com/hsandmeyer), [L. Altenkort](https://github.com/luhuhis), 
-[D. Clarke](https://github.com/clarkedavida), [L. Mazur](https://github.com/lukas-mazur), 
-[C. Schmidt](https://github.com/schmidt74), [H.-T. Shu](https://github.com/haitaoshu), T. Ueding
-
+[H. Sandmeyer](https://github.com/hsandmeyer), 
+[L. Altenkort](https://github.com/luhuhis), 
+[D. Clarke](https://github.com/clarkedavida), 
+[J. Goswami](https://github.com/jishnuxx),
+[L. Mazur](https://github.com/lukas-mazur), 
+[C. Schmidt](https://github.com/schmidt74), 
+[M. Sarkar](https://github.com/mugdhasarkar),
+[H.-T. Shu](https://github.com/haitaoshu), 
+T. Ueding
 
 ## Acknowledgment
 
