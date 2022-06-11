@@ -7,16 +7,29 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.unitConversions import fm_to_GeVinv, GeVinv_to_fm, fm_to_MeVinv, MeV_to_fminv
-
-
-# ----------------------------------------------------------------------------------------------- 2+1 FLAVOR HISQ SCALES
+from latqcdtools.math.polynomials import Polynomial,Rational
 
 
 def beta_func(beta):
+    """ Asymptotic scaling relation for Nf=3 up to two loops. """
     nf = 3
     b0 = (11 - 2 * nf / 3) / (4 * np.pi) ** 2
     b1 = (102 - 38 * nf / 3) / (4 * np.pi) ** 4
     return (b0 * 10 / beta) ** (-b1 / (2 * b0 ** 2)) * np.exp(-beta / (20 * b0))
+
+
+# -------------------------------------------------------------------------------------------------------- FITTING FORMS
+
+
+def fit_2014Eos_eqB2(beta,c0,c2,d2):
+   return Rational([0,c0,0,c2*10/beta],[1,0,d2*10/beta])(beta_func(beta))
+
+
+def fit_tayloraLambda(beta,a,b,c):
+   return Polynomial([0,a,0,b,0,c])(beta_func(beta))
+
+
+# ----------------------------------------------------------------------------------------------- 2+1 FLAVOR HISQ SCALES
 
 
 def allton_type_ansatz(beta, c0, c2, d2):
