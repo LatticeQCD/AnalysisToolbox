@@ -41,12 +41,15 @@ class UniversalityClass:
         print()
 
     def hyperscalingCheck(self, tol=1e-6):
-        if (2*self.beta+self.gamma-2+self.alpha) > tol:
-            logger.TBError(self.name(),"fails hyperscaling check.")
-        if (2*self.beta*self.delta-self.gamma-2+self.alpha) > tol:
-            logger.TBError(self.name(),"fails hyperscaling check.")
-        if (self.nu*self.d-2+self.alpha) > tol:
-            logger.TBError(self.name(),"fails hyperscaling check.")
+        err1 = 2*self.beta+self.gamma-2+self.alpha
+        err2 = 2*self.beta*self.delta-self.gamma-2+self.alpha
+        err3 = self.nu*self.d-2+self.alpha
+        if err1 > tol:
+            logger.TBError(self.name(),"fails hyperscaling check 1, err =",err1)
+        if err2 > tol:
+            logger.TBError(self.name(),"fails hyperscaling check 2. err =",err2)
+        if err3 > tol:
+            logger.TBError(self.name(),"fails hyperscaling check 3. err =",err3)
 
 
 class O2_3d(UniversalityClass):
@@ -60,6 +63,15 @@ class O2_3d(UniversalityClass):
     alpha = 2.-beta*(1. + delta)
     gamma = beta*(delta-1.)
 
+class O3_3d(UniversalityClass):
+    """ 3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class TODO: need better ref. """
+    symm  = "O(3)"
+    d     = 3
+    beta  = 0.366
+    nu    = 0.707
+    alpha = -0.12
+    gamma = 1.395
+    delta = (gamma+2*alpha)/(2*beta)
 
 class O4_3d(UniversalityClass):
     """ 3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). """
