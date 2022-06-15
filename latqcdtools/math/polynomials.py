@@ -9,12 +9,13 @@
 #   p(x)
 #
 import latqcdtools.base.logger as logger
+import numpy as np
 
 class Polynomial:
 
     def __init__(self, coeffs=None):
-        if not type(coeffs) is list:
-            logger.TBError("Expected list-type object for instantiation.")
+        if not ( (type(coeffs) is list) or (type(coeffs) is np.ndarray) or (type(coeffs) is np.array) ):
+            logger.TBError("Expected list-type object. Got",type(coeffs))
         self.coeffs = coeffs
 
     @property
@@ -32,8 +33,10 @@ class Rational:
 
     def __init__(self, num_coeffs, den_coeffs):
 
-        if (not type(num_coeffs) is list) or (not type(den_coeffs) is list) :
-            logger.TBError("Expected list-type objects for instantiation.")
+        if not ( (type(num_coeffs) is list) or (type(num_coeffs) is np.ndarray) or (type(num_coeffs) is np.array) ):
+            logger.TBError("Expected list-type object in numerator. Got",type(num_coeffs))
+        if not ( (type(den_coeffs) is list) or (type(den_coeffs) is np.ndarray) or (type(den_coeffs) is np.array) ):
+            logger.TBError("Expected list-type object in denominator. Got",type(den_coeffs))
         self.num_coeffs = num_coeffs
         self.den_coeffs = den_coeffs
 

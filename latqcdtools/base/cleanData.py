@@ -27,3 +27,15 @@ def intersectAtCol(table1, table2, col):
     mask1using2  = np.isin( table1[col,:], table2[col,:] )
     mask2using1  = np.isin( table2[col,:], table1[col,:] )
     return table1[:,mask1using2], table2[:,mask2using1]
+
+
+def spliceAtCol(table1, table2, col, atVal):
+    """ Assuming two tables table1 and table2 have common values in column col, create a new
+        table, where table1 has corresponding entries less than atVal in col, and table 2
+        has corresponding entries greater than atVal. """
+    table1 = np.array(table1)
+    table2 = np.array(table2)
+    mask1  = table1[col]<=atVal
+    mask2  = table2[col]>atVal
+    result = np.column_stack( (table1[:,mask1], table2[:,mask2]) )
+    return result

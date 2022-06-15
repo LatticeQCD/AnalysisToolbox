@@ -6,7 +6,7 @@
 # Quick test to make sure the bootstrap works. Do not adjust the values of any of the variables, arrays, or arguments.
 # Do not adjust the SEED.
 # 
-from latqcdtools.statistics.bootstr import bootstr
+from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss
 from latqcdtools.base.check import print_results
 import numpy as np
 
@@ -41,6 +41,8 @@ def divnp1(a, b, c):
     return (np.array([[f(a, b, c), f(a, b, c)], [f(a, b, c), f(a, b, c)]]),
             np.array([f(a, b, c), f(a, b, c)]), np.array(f(a, b, c)))
 
+def div(a):
+    return a[0]/a[1]
 
 A, B = ( np.array(range(1000)),
          np.array(range(1000,2000)) )
@@ -50,6 +52,9 @@ Usefulness of if __name__ == '__main__'
 """
 def Test_Bootstrap():
     SEED = 196
+
+    # Bootstrap tests
+
     REFm = 498.69909
     REFe = 9.085239972364768
     TESTm, TESTe = bootstr(np.mean, A, numb_samples=100, seed=SEED, parallelize=False)
@@ -90,6 +95,19 @@ def Test_Bootstrap():
     REFe = 0.00593633241664651
     TESTm, TESTe = bootstr(div4, [A, B], numb_samples=100, seed=SEED, args=(2, 2))
     print_results(TESTm, REFm, TESTe, REFe, "div4", EPSILON)
+
+    # Gaussian bootstrap tests
+
+    TESTm, TESTe = bootstr_from_gauss(np.mean, [10], [0.5], 1000, seed=SEED)
+    REFm = 9.992029809808589
+    REFe = 0.4925667778426321
+    print_results(TESTm, REFm, TESTe, REFe, "simple gauss", EPSILON)
+
+    TESTm, TESTe = bootstr_from_gauss(div, [10,2], [0.5,0.1], 1000, seed=SEED)
+    REFm = 5.005130586993748
+    REFe = 0.3555674022912204
+    print_results(TESTm, REFm, TESTe, REFe, "div gauss", EPSILON)
+
 
 if __name__ == '__main__':
     Test_Bootstrap()
