@@ -15,7 +15,7 @@ import latqcdtools.base.logger as logger
 testArray = np.linspace(-10,10,1000)
 
 
-clippedArray = clipRange(testArray,-1,1)
+clippedArray = clipRange(testArray,minVal=-1,maxVal=1)
 for i in range(len(clippedArray)):
     if clippedArray[i]<-1:
         logger.TBError("Found less than -1.")

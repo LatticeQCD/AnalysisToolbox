@@ -21,7 +21,7 @@ def rel_checkArrayScalar(arr, scal, prec = 1e-6, abs_prec = 1e-14):
     return np.isclose(arr, comparisonArray, prec, abs_prec)
 
 
-def print_results(res, res_true, res_err = None, res_err_true = None, text = "", prec = 1e-4):
+def print_results(res, res_true, res_err = None, res_err_true = None, text = "", prec = 1e-10):
     """ Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
     if you like.) Carries out with precision prec. """
     test = True

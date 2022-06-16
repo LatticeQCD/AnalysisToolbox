@@ -16,12 +16,16 @@ echo "Running python tests:"
 echo
 
 
+runTestRoutine testDataCleaner.py
+
+
 # --------------------- MATH TESTS
 
 
 cd math
-runTestRoutine test_deriv.py
+runTestRoutine testDeriv.py
 runTestRoutine testPolynomial.py
+runTestRoutine testSpline.py
 cd ..
 
 
@@ -29,11 +33,12 @@ cd ..
 
 
 cd statistics
-runTestRoutine gaudifTest.py
+runTestRoutine testGauDif.py
 runTestRoutine testautocor.py 
 runTestRoutine testBootstrap.py 
 runTestRoutine testJackknife.py 
 runTestRoutine testErrorProp.py
+runTestRoutine testFit.py
 cd ..
 
 
@@ -49,12 +54,6 @@ runTestRoutine testStatPhys.py
 runTestRoutine testHRG.py
 cd ..
 
-
-# ------------------ FITTING TESTS
-
-cd fitting
-runTestRoutine test_fit.py
-cd ..
 
 echo
 echo "Done!"
