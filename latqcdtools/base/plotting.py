@@ -934,3 +934,30 @@ def plot_file_zoom(width, height, zx_min, zx_max, filename, xcol=None, ycol=None
         xedata = data[xecol - 1]
 
     return plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata, xedata, zy_min, zy_max, **params)
+
+
+def draw_line(point1,point2,**params):
+    """ Draws a line between point1 and point2. """
+    fill_param_dict(params)
+    optional = add_optional(params)
+    ax = params['ax']
+
+    zod = params['zod']
+    if zod is None:
+        zod = globals()['zod']
+
+    marker = params['marker']
+    if marker == "iter":
+        marker = next(markers)
+
+    globals()['zod'] += 1
+
+    if params['label'] is not None:
+        legend_labels.append(params['label'])
+
+    set_params(**params)
+
+    x_values = [point1[0], point2[0]]
+    y_values = [point1[1], point2[1]]
+    ax.plot(x_values, y_values, linewidth=params['linewidth'], zorder=zod, alpha=params['alpha_lines'], marker=marker,
+            **optional)
