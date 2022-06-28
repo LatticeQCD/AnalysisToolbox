@@ -28,6 +28,56 @@ def RMS_mass(Nt, T):
 
     return pion_rms_mass, kaon_rms_mass
 
+class HRG_charm:
+
+    """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
+        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. For more information
+        please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812 """
+
+    def __init__(self, Mass, g, w, B, S, Q, C):
+        self.Mass = Mass
+        self.g = g
+        self.w = w
+        self.B = B
+        self.Q = Q
+        self.S = S
+        self.C = C
+
+    def __repr__(self):
+        return "hrg"
+
+    # Not actually log_Z, just the prefactor coming before the exponential. For calculations of the pressure and
+    # generalized susceptibilities, we make things unitless, e.g. P = T/V log Z ==> p/T^4 = 1/VT^3 log Z
+    def ln_Z(self, k, N, T):
+        return self.w[k]**(N+1) * self.g[k] * (self.Mass[k]/T)**2 * kn(2,(N*self.Mass[k]/T))/(np.pi*N)**2/2
+
+    def exp(self, N, T, k, mu_B, mu_Q, mu_S, mu_C):
+        return np.exp( N*(self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S +  self.C[k]*mu_C)/ T )
+
+    def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C = 0.):
+        P = 0.0
+        for k in range(len(self.Mass)):
+            for N in range(1, 20):
+                if N * self.Mass[k] > 4000:
+                    y = 0.0
+                else:
+                    y = self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+                P += y
+        return P
+
+    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order = 0, mu_B=0.0, mu_Q=0.0, mu_S=0.0, mu_C = 0.0):
+        chi = 0.0
+        for k in range(len(self.Mass)):
+            if self.B[k]==0:
+                for N in range(1, 20):
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * \
+self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S,mu_C)
+            else: # Boltzmann approximation
+                for N in range(1, 2):
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * \
+self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+        return chi
+
 
 class HRG:
 
