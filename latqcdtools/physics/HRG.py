@@ -121,7 +121,7 @@ class HRG:
             if self.B[k]==0:
                 for N in range(1, 20):
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
-            else: # Boltzmann approximation
+            else: # Boltzmann approximation for Baryons
                 for N in range(1, 2):
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
         return chi
@@ -199,10 +199,10 @@ class EV_HRG:
     def gen_chi(self, T, b, Bi, B_order=0, Q_order=0, S_order=0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
 
         baryon_mass = self.Mass[np.where(self.B == Bi)]
-        g_baryon = self.g[np.where(self.B == Bi)]
-        X_baryon = self.B[np.where(self.B == Bi)]
-        X_charge = self.Q[np.where(self.B == Bi)]
-        X_strange = self.S[np.where(self.B == Bi)]
+        g_baryon    = self.g[np.where(self.B    == Bi)]
+        X_baryon    = self.B[np.where(self.B    == Bi)]
+        X_charge    = self.Q[np.where(self.B    == Bi)]
+        X_strange   = self.S[np.where(self.B    == Bi)]
 
         # Bi=1 Baryon pressure , Bi=-1 for anti baryon pressure
         P = []
