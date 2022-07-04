@@ -1,11 +1,6 @@
 import numpy as np
-from scipy.special import kn
-import pylab as pl
 from latqcdtools.physics.HRG import HRG,EV_HRG
-import sys
-from scipy.special import lambertw
 import argparse
-import os
 
 parser = argparse.ArgumentParser(description='Script to calculate chiBQS along the pseudo-critical line')
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
@@ -59,10 +54,10 @@ mesons_qm=HRG(M[np.where(B==0)],g[np.where(B==0)],w[np.where(B==0)],B[np.where(B
 
 chi_QM = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B = muB, mu_S = muS, mu_Q = muQ)
 
-if (Border==0):
+if Border==0:
     chi_ev = evhrg.gen_chi(T,b,1,Q_order=Qorder,S_order=Sorder, mu_B = muB, mu_S = muS_ev, mu_Q = muQ_ev ) + evhrg.gen_chi(T,b,-1,Q_order=Qorder, S_order=Sorder , mu_B = muB, mu_S = muS_ev, mu_Q = muQ_ev) + mesons_qm.gen_chi(T, Q_order=Qorder, S_order=Sorder , mu_B = muB, mu_S = muS_ev, mu_Q = muQ_ev)
 else:
     chi_ev = evhrg.gen_chi(T,b,1, B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B = muB, mu_S = muS_ev, mu_Q = muQ_ev ) + evhrg.gen_chi(T,b,-1, B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B = muB, mu_S = muS_ev, mu_Q = muQ_ev)
 
-np.savetxt("T%0.1f_pseudo-chiBQS_%s_Hrg_BI_b%0.1f%s"%(T[0],args.BQS,args.b,tag),np.c_[T,muB,chi_QM,chi_ev],fmt='%.4f %0.4e %.8e %.8e',header='T muB HRG EV-HRG_b%0.1f'%(b))
+np.savetxt("T%0.1f_pseudo-chiBQS_%s_Hrg_BI_b%0.1f%s" % (T[0],args.BQS,args.b,tag), np.c_[T,muB,chi_QM,chi_ev], fmt='%.4f %0.4e %.8e %.8e', header='T muB HRG EV-HRG_b%0.1f' % b)
 

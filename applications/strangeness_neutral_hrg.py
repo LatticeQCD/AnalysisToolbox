@@ -1,6 +1,5 @@
 import numpy as np
 from latqcdtools.physics.HRG import HRG,EV_HRG
-import latqcdtools.base.logger as logger
 import argparse
 from scipy.optimize import newton_krylov
 
@@ -54,7 +53,7 @@ def strangeness_neutral_equations(muQS,muB,T,hrg):
     QMhrg  = HRG(M,g,w,B,S,Q)
     evhrg  = EV_HRG(M,g,w,B,S,Q)
     mesons = HRG(M[maskm],g[maskm],w[maskm],B[maskm],S[maskm],Q[maskm])
-    if (hrg=='QMhrg'):
+    if hrg=='QMhrg':
         X1B = QMhrg.gen_chi(T,B_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1Q = QMhrg.gen_chi(T,Q_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1S = QMhrg.gen_chi(T,S_order=1,mu_B=muB,mu_Q=x,mu_S=y)
@@ -62,7 +61,7 @@ def strangeness_neutral_equations(muQS,muB,T,hrg):
         X1B = evhrg.gen_chi(T,b,1,B_order=1,mu_B=muB,mu_Q=x,mu_S=y)+evhrg.gen_chi(T,b,-1, B_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1Q = evhrg.gen_chi(T,b,1,Q_order=1,mu_B=muB,mu_Q=x,mu_S=y)+evhrg.gen_chi(T,b,-1, Q_order=1,mu_B=muB,mu_Q=x,mu_S=y)+mesons.gen_chi(T,Q_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1S = evhrg.gen_chi(T,b,1,S_order=1,mu_B=muB,mu_Q=x,mu_S=y)+evhrg.gen_chi(T,b,-1, S_order=1,mu_B=muB,mu_Q=x,mu_S=y)+mesons.gen_chi(T,S_order=1,mu_B=muB,mu_Q=x,mu_S=y)
-    return (X1S, X1Q-r*X1B)
+    return X1S, X1Q - r * X1B
 
 
 # Generating muB values

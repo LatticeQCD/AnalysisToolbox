@@ -62,7 +62,7 @@ tag = str(args.particle_list)
 
 
 # PDG HRG file
-hadrons1,M1,Q1,B1,S1,C1,g1=np.loadtxt("../latqcdtools/physics/PDG_hadron_list_ext_2020.txt",unpack=True,
+hadrons1,M1,Q1,B1,S1,C1,g1=np.loadtxt("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
                                       dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
 

@@ -28,11 +28,11 @@ def RMS_mass(Nt, T):
 
     return pion_rms_mass, kaon_rms_mass
 
+
 class HRG_charm:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. For more information
-        please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812 """
+        B = baryon number of HRG state, Q = charge, S = strangeness, C = charm. """
 
     def __init__(self, Mass, g, w, B, S, Q, C):
         self.Mass = Mass
@@ -70,12 +70,10 @@ class HRG_charm:
         for k in range(len(self.Mass)):
             if self.B[k]==0:
                 for N in range(1, 20):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * \
-self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S,mu_C)
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
             else: # Boltzmann approximation
                 for N in range(1, 2):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * \
-self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
         return chi
 
 
