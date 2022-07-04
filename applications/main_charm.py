@@ -89,7 +89,7 @@ if args.obs == "chi":
     chi_QM     = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B=muB)
     chi_pdg    = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B=muB)
     # Save the output
-    np.savetxt("chiBQSC_%s_muB%0.2f_f_%s.txt"%(args.BQSC,muB_div_T,tag),
+    np.savetxt("chiBQSC_%s_muB%0.2f_%s.txt"%(args.BQSC,muB_div_T,tag),
                np.c_[T,chi_pdg,chi_QM],fmt='%.1f %.8e %.8e ',
                header='T    PDG-HRG         QM-HRG  ' )
 

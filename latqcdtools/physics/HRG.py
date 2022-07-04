@@ -115,7 +115,7 @@ class HRG:
                 P += y
         return P
 
-    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
+    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, mu_B = 0.0, mu_Q =0.0, mu_S = 0.0):
         chi = 0.0
         for k in range(len(self.Mass)):
             if self.B[k]==0:
@@ -126,7 +126,7 @@ class HRG:
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
         return chi
 
-    def gen_chi_RMS(self, T, Nt, B_order=0.0, S_order=0.0, Q_order=0.0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
+    def gen_chi_RMS(self, T, Nt, B_order=0.0, S_order=0.0, Q_order=0.0, mu_B = 0.0, mu_Q = 0.0, mu_S = 0.0):
         # rms_mass[0] is for pions and rms_mass[1] is for kaons
         rms_mass = RMS_mass(Nt, T)
         chi = 0.0
@@ -196,7 +196,7 @@ class EV_HRG:
 
         return pressure
 
-    def gen_chi(self, T, b, Bi, B_order=0, Q_order=0, S_order=0, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
+    def gen_chi(self, T, b, Bi, B_order=0, Q_order=0, S_order=0, mu_B = 0.0, mu_Q = 0.0, mu_S = 0.0):
 
         baryon_mass = self.Mass[np.where(self.B == Bi)]
         g_baryon    = self.g[np.where(self.B    == Bi)]
