@@ -1,7 +1,7 @@
 #
 # HRG.py
 #
-# J. Goswami
+# J. Goswami, D. Clarke
 #
 # Collection of methods pertaining to hadron resonance gas calculations.
 #
@@ -33,7 +33,13 @@ class HRG:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
         B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. For
-        more information please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812. """
+        more information please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
+
+        Our pressure is given in terms of a Taylor series involving modified Bessel functions of the second kind, which
+        needs to be truncated at some order. These functions get strongly suppressed when their argument is large.
+        In our case, this argument is proportional to the mass. Hence we will sometimes take the Boltzmann
+        approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
+        expansion need to be kept. Doing so boosts performance."""
 
     def __init__(self, Mass, g, w, B, S, Q, C = None):
         self.Mass = Mass
@@ -42,6 +48,7 @@ class HRG:
         self.B = B
         self.Q = Q
         self.S = S
+        # If we don't get a charm array, initialize to array of zeroes.
         if C is not None:
             self.C = C
         else:
@@ -79,8 +86,8 @@ class HRG:
                                                   * (self.Q[k]*N)**Q_order \
                                                   * (self.C[k]*N)**C_order \
                                                   * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
-            else: # Boltzmann approximation for Baryons
-                for N in range(1, 2):
+            else:
+                for N in range(1, 2): # Boltzmann approximation for Baryons.
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
                                                   * (self.Q[k]*N)**Q_order \
                                                   * (self.C[k]*N)**C_order \

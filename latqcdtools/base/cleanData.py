@@ -39,3 +39,17 @@ def spliceAtCol(table1, table2, col, atVal):
     mask2  = table2[col]>atVal
     result = np.column_stack( (table1[:,mask1], table2[:,mask2]) )
     return result
+
+
+def restrictAtCol(table, col, atVal):
+    """ Return only those rows of table where col has exactly the value atVal. """
+    table = np.array(table)
+    mask  = np.equal(table[col,:],atVal)
+    return table[:,mask]
+
+
+def excludeAtCol(table, col, atVal):
+    """ Return everything except those rows of table where col has exactly the value atVal. """
+    table = np.array(table)
+    mask  = np.not_equal(table[col,:],atVal)
+    return table[:,mask]

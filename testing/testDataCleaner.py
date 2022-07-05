@@ -8,7 +8,8 @@
 
 
 import numpy as np
-from latqcdtools.base.cleanData import clipRange
+from latqcdtools.base.cleanData import clipRange,excludeAtCol,restrictAtCol
+from latqcdtools.base.check import print_results
 import latqcdtools.base.logger as logger
 
 
@@ -38,5 +39,11 @@ for i in range(len(clippedArray)):
 if not -10 in testArray:
     logger.TBError("Expected to find -10.")
 
+logger.TBPass("clipRange tests passed")
 
-logger.TBPass("All tests passed.")
+
+testArray=np.array([[1,2,2,1,1,2,1,2,2,1],
+                    [1,2,3,4,5,6,7,8,9,0]])
+correctResult=np.array([[1,1,1,1,1],[1,4,5,7,0]])
+print_results(restrictAtCol(testArray,0,1)[0],correctResult[0],text="restrictAtCol")
+print_results(excludeAtCol(testArray,0,2)[0],correctResult[0],text="excludeAtCol")
