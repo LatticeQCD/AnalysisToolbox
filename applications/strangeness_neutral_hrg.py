@@ -1,9 +1,11 @@
 import numpy as np
-from latqcdtools.physics.HRG import HRG,EV_HRG
 import argparse
 from scipy.optimize import newton_krylov
+from latqcdtools.physics.HRG import HRG,EV_HRG
+import latqcdtools.base.logger as logger
 
-parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory')
+
+parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
 parser.add_argument("--b", dest="b", required=True, help="Excluded volume parameter.", type=float)
@@ -11,7 +13,9 @@ parser.add_argument("--Tpc", dest="Tpc", required=True,help="value of the pseudo
 parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=float)
 
 
-args = parser.parse_args()
+args, invalid_args = parser.parse_known_args()
+if len(invalid_args)>0:
+    logger.TBError("Received unrecognized arguments",invalid_args)
 
 # value of the excluded parameter
 b = args.b

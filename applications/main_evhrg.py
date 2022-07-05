@@ -13,7 +13,7 @@ from latqcdtools.physics.HRG import HRG,EV_HRG
 import latqcdtools.base.logger as logger
 
 
-parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.')
+parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
@@ -23,7 +23,10 @@ parser.add_argument("--bqs", dest="BQS", required=False, help="BQS mu derivative
 parser.add_argument("--muB", dest="muB", default=0.0, type=float, help="muB/T")
 
 
-args      = parser.parse_args()
+args, invalid_args = parser.parse_known_args()
+if len(invalid_args)>0:
+    logger.TBError("Received unrecognized arguments",invalid_args)
+
 muB_div_T = float(args.muB)
 
 

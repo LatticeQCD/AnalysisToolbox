@@ -1,8 +1,10 @@
 import numpy as np
-from latqcdtools.physics.HRG import HRG,EV_HRG
 import argparse
+from latqcdtools.physics.HRG import HRG,EV_HRG
+import latqcdtools.base.logger as logger
 
-parser = argparse.ArgumentParser(description='Script to calculate chiBQS along the pseudo-critical line')
+
+parser = argparse.ArgumentParser(description='Script to calculate chiBQS along the pseudo-critical line',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
 parser.add_argument("--mubmus_file", dest="mubmus_file", required=True,help="values of muB, muQ and muS for the strangeness neutral case in the pseudo-critical line", type=lambda f: open(f))
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
@@ -11,11 +13,10 @@ parser.add_argument("--b", dest="b", required=True, help="Excluded volume parame
 parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=float)
 
 
+args, invalid_args = parser.parse_known_args()
+if len(invalid_args)>0:
+    logger.TBError("Received unrecognized arguments",invalid_args)
 
-
-
-
-args = parser.parse_args()    
 
 # This is generally the QMHRG file
 hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")

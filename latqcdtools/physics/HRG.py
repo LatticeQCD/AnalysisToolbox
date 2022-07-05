@@ -95,7 +95,8 @@ class HRG:
         return "hrg"
 
     # Not actually log_Z, just the prefactor coming before the exponential. For calculations of the pressure and
-    # generalized susceptibilities, we make things unitless, e.g. P = T/V log Z ==> p/T^4 = 1/VT^3 log Z
+    # generalized susceptibilities, we make things unitless, e.g. P = T/V log Z ==> p/T^4 = 1/VT^3 log Z. The k
+    # labels the different states. N represents the Nth order of a Taylor expansion of a logarithm.
     def ln_Z(self, k, N, T):
         return self.w[k]**(N+1) * self.g[k] * (self.Mass[k]/T)**2 * kn(2,(N*self.Mass[k]/T))/(np.pi*N)**2/2
 

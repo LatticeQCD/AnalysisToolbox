@@ -13,7 +13,7 @@ from latqcdtools.physics.HRG import HRG_charm
 import latqcdtools.base.logger as logger
 
 
-parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.')
+parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
@@ -22,7 +22,10 @@ parser.add_argument("--bqsc", dest="BQSC", required=False, help="BQSC mu derivat
 parser.add_argument("--muB", dest="muB", default=0.0, type=float, help="muB/T")
 
 
-args      = parser.parse_args()
+args, invalid_args = parser.parse_known_args()
+if len(invalid_args)>0:
+    logger.TBError("Received unrecognized arguments",invalid_args)
+
 muB_div_T = float(args.muB)
 
 
@@ -39,7 +42,7 @@ else:
 
 print("\n  observable:",args.obs)
 if args.BQSC is not None:
-    print("   BQSC deriv:",args.BQSC)
+    print("  BQSC deriv:",args.BQSC)
 if muB_div_T is not None:
     print("       muB/T:",muB_div_T)
 print("     T [MeV]:",T[0],T[-1],"\n")
@@ -56,7 +59,6 @@ print("     T [MeV]:",T[0],T[-1],"\n")
 
 # This is generally the QM hrg file
 hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-
 
 tag = str(args.particle_list)
 
