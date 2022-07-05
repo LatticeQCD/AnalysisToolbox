@@ -29,67 +29,23 @@ def RMS_mass(Nt, T):
     return pion_rms_mass, kaon_rms_mass
 
 
-class HRG_charm:
-
-    """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B = baryon number of HRG state, Q = charge, S = strangeness, C = charm. """
-
-    def __init__(self, Mass, g, w, B, S, Q, C):
-        self.Mass = Mass
-        self.g = g
-        self.w = w
-        self.B = B
-        self.Q = Q
-        self.S = S
-        self.C = C
-
-    def __repr__(self):
-        return "hrg"
-
-    # Not actually log_Z, just the prefactor coming before the exponential. For calculations of the pressure and
-    # generalized susceptibilities, we make things unitless, e.g. P = T/V log Z ==> p/T^4 = 1/VT^3 log Z
-    def ln_Z(self, k, N, T):
-        return self.w[k]**(N+1) * self.g[k] * (self.Mass[k]/T)**2 * kn(2,(N*self.Mass[k]/T))/(np.pi*N)**2/2
-
-    def exp(self, N, T, k, mu_B, mu_Q, mu_S, mu_C):
-        return np.exp( N*(self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S +  self.C[k]*mu_C)/ T )
-
-    def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C = 0.):
-        P = 0.0
-        for k in range(len(self.Mass)):
-            for N in range(1, 20):
-                if N * self.Mass[k] > 4000:
-                    y = 0.0
-                else:
-                    y = self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
-                P += y
-        return P
-
-    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order = 0, mu_B=0.0, mu_Q=0.0, mu_S=0.0, mu_C = 0.0):
-        chi = 0.0
-        for k in range(len(self.Mass)):
-            if self.B[k]==0:
-                for N in range(1, 20):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
-            else: # Boltzmann approximation
-                for N in range(1, 2):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
-        return chi
-
-
 class HRG:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B = baryon number of HRG state, Q = charge HRG state, S = strangeness HRG state. For more information
-        please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812 """
+        B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. For
+        more information please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812. """
 
-    def __init__(self, Mass, g, w, B, S, Q):
+    def __init__(self, Mass, g, w, B, S, Q, C = None):
         self.Mass = Mass
         self.g = g
         self.w = w
         self.B = B
         self.Q = Q
         self.S = S
+        if C is not None:
+            self.C = C
+        else:
+            self.C = np.zeros(len(Mass))
 
     def __repr__(self):
         return "hrg"
@@ -100,51 +56,64 @@ class HRG:
     def ln_Z(self, k, N, T):
         return self.w[k]**(N+1) * self.g[k] * (self.Mass[k]/T)**2 * kn(2,(N*self.Mass[k]/T))/(np.pi*N)**2/2
 
-    def exp(self, N, T, k, mu_B, mu_Q, mu_S):
-        return np.exp( N*(self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S)/ T )
+    def exp(self, N, T, k, mu_B, mu_Q, mu_S, mu_C):
+        return np.exp( N*( self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C )/ T )
 
-    def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0.):
+    def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         P = 0.0
         for k in range(len(self.Mass)):
-            for N in range(1, 20):
+            for N in range(1, 20): # Keep only first 20 terms of the series.
                 if N * self.Mass[k] > 4000:
                     y = 0.0
                 else:
-                    y = self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
+                    y = self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
                 P += y
         return P
 
-    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, mu_B = 0.0, mu_Q =0.0, mu_S = 0.0):
+    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         chi = 0.0
         for k in range(len(self.Mass)):
             if self.B[k]==0:
                 for N in range(1, 20):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
+                                                  * (self.Q[k]*N)**Q_order \
+                                                  * (self.C[k]*N)**C_order \
+                                                  * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
             else: # Boltzmann approximation for Baryons
                 for N in range(1, 2):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order * (self.Q[k]*N)**Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
+                                                  * (self.Q[k]*N)**Q_order \
+                                                  * (self.C[k]*N)**C_order \
+                                                  * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
         return chi
 
-    def gen_chi_RMS(self, T, Nt, B_order=0.0, S_order=0.0, Q_order=0.0, mu_B = 0.0, mu_Q = 0.0, mu_S = 0.0):
+    def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         # rms_mass[0] is for pions and rms_mass[1] is for kaons
         rms_mass = RMS_mass(Nt, T)
         chi = 0.0
         for k in range(len(self.Mass)):
             if 140 >= self.Mass[k] >= 130:
                 for N in range(1, 20):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * self.w[k] ** (N + 1) * self.g[k] * (rms_mass[0] / T) ** 2 * self.exp(N, T, k, mu_B, mu_Q, mu_S) * kn(2, (
-                        N * rms_mass[0] / T)) / (np.pi * N) ** 2 / 2
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
+                                                  * (self.Q[k]*N)**Q_order \
+                                                  * (self.C[k]*N)**C_order \
+                                                  * self.w[k]**(N + 1) * self.g[k] * (rms_mass[0]/T)**2 * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) * kn(2, (N*rms_mass[0]/T)) / (np.pi*N)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
                 for N in range(1, 10):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (self.Q[k] * N) ** Q_order * self.w[k] ** (N + 1) * self.g[k] * (rms_mass[1] / T) ** 2 * self.exp(N, T, k, mu_B, mu_Q, mu_S) * kn(2, (
-                        N * rms_mass[1] / T)) / (np.pi * N) ** 2 / 2
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
+                                                  * (self.Q[k]*N)**Q_order \
+                                                  * (self.C[k]*N)**C_order \
+                                                  * self.w[k]**(N + 1) * self.g[k] * (rms_mass[1]/T)**2 * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) * kn(2, (N*rms_mass[1]/T)) / (np.pi*N)**2 / 2
             else:
                 for N in range(1, 2):
-                    chi += (self.B[k] * N) ** B_order * (self.S[k] * N) ** S_order * (
-                        self.Q[k] * N) ** Q_order * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S)
+                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
+                                                  * (self.Q[k]*N)**Q_order \
+                                                  * (self.C[k]*N)**C_order \
+                                                  * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
         return chi
 
 
+# TODO: Make this inherit from the HRG class.
 class EV_HRG:
 
     """ Excluded volume hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics. """
@@ -164,7 +133,7 @@ class EV_HRG:
         return g*(m/T)**2 * kn(2, (m/T)) / np.pi**2 / 2
 
     def exp(self, N, T, k, mu_B, mu_Q, mu_S):
-        return np.exp(N * (self.B[k] * mu_B + self.Q[k] * mu_Q + self.S[k] * mu_S) / T)
+        return np.exp( N*(self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S) / T)
 
     def baryon_pressure(self, T, b, Bi, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
 
@@ -181,8 +150,7 @@ class EV_HRG:
 
         P = np.array(P)
 
-        mB, mQ, mS, i, ci, bi, qi, si, temp = symbols(
-            'mB, mQ , mS, i, ci, bi, qi, si,temp')
+        mB, mQ, mS, i, ci, bi, qi, si, temp = symbols('mB, mQ , mS, i, ci, bi, qi, si, temp')
 
         F_pressure = (1 / (b*(T/197.3)**3)) * LambertW(
             (b*(T/197.3)**3) * Sum(Indexed('ci', i) * exp(mB * Indexed('bi', i) + mQ * Indexed('qi', i) + mS * Indexed('si', i)),
@@ -190,8 +158,7 @@ class EV_HRG:
         f = lambdify((mB, mQ, mS, ci, bi, qi, si, temp), F_pressure,
                      modules=['scipy', {'LambertW': lambertw}])
 
-        pressure = f(mu_B/T, mu_Q/T, mu_S/T, P, X_baryon,
-                     X_charge, X_strange, T).real
+        pressure = f(mu_B/T, mu_Q/T, mu_S/T, P, X_baryon, X_charge, X_strange, T).real
 
         return pressure
 
@@ -211,8 +178,7 @@ class EV_HRG:
         P = np.array(P)
 
         # ci = ideal gas pressure of individual particles
-        mB, mQ, mS, i, ci, bi, qi, si, temp, be = symbols(
-            'mB, mQ , mS, i, ci, bi, qi, si, temp, be')
+        mB, mQ, mS, i, ci, bi, qi, si, temp, be = symbols('mB, mQ , mS, i, ci, bi, qi, si, temp, be')
 
         F_pressure = (1 / be) * LambertW(
             be * Sum(

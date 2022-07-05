@@ -7,7 +7,7 @@
 #
 
 import numpy as np
-from latqcdtools.physics.HRG import HRG,EV_HRG,HRG_charm
+from latqcdtools.physics.HRG import HRG,EV_HRG
 from latqcdtools.base.check import print_results
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify
 import matplotlib.pyplot as plt
@@ -68,8 +68,8 @@ print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 c
 
 
 #
-# Test: Calculate chi^1011_BQSC at muB/T=0. For now this is just comparing against what Jishnu wrote to make sure I
-#       didn't break anything when combining classes. This still needs to know about mu_C derivatives.
+# Test: Calculate chi^1001_BQSC at muB/T=0. This has not yet been well tested; it is only comparing against
+#       a result that this code also generated.
 #
 muB_div_T = 0
 muB       = muB_div_T * T
@@ -77,15 +77,19 @@ muB       = muB_div_T * T
 hadrons,M,Q,B,S,C,g = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
                                  usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 w  = np.array([1 if ba==0 else -1 for ba in B])
-QMhrg     = HRG_charm(M,g,w,B,S,Q,C)
-#pdghrg    = HRG_charm(M1,g1,w1,B1,S1,Q1,C1)
-chi_QM    = QMhrg.gen_chi(T , B_order=1, Q_order=0, S_order=1, mu_B=muB)
-chi_pdg   = pdghrg.gen_chi(T, B_order=1, Q_order=0, S_order=1, mu_B=muB)
+QMhrg     = HRG(M,g,w,B,S,Q,C)
+chi_QM    = QMhrg.gen_chi(T , B_order=1, Q_order=0, S_order=0, C_order=1, mu_B=muB)
+chi_pdg   = pdghrg.gen_chi(T, B_order=1, Q_order=0, S_order=0, C_order=1, mu_B=muB)
 
-refT, refPDG, refQM = np.loadtxt("HRGcontrol/chiBQSC_1011_muB0.00_QMHRG2020_BI_charm.control",unpack=True)
+refT, refPDG, refQM = np.loadtxt("HRGcontrol/chiBQSC_1001_muB0.00_QMHRG2020_BI_charm.control",unpack=True)
 print_results(T      , refT  , prec=EPSILON, text="T check")
-print_results(chi_pdg, refPDG, prec=EPSILON, text="chiBQSC1011 PDG check")
-print_results(chi_QM , refQM , prec=EPSILON, text="chiBQSC1011 QM check")
+print_results(chi_pdg, refPDG, prec=EPSILON, text="chiBQSC1001 PDG check")
+print_results(chi_QM , refQM , prec=EPSILON, text="chiBQSC1001 QM check")
+
+
+#
+# Test: Compare charm results against Physics Letters B 737 (2014) 210–215.
+#
 
 #latexify()
 #plot_lines(T,3*pdghrg.pressure(T,0,0,0),xmax=175,label="$\\mu_B/T=1$",marker=None)

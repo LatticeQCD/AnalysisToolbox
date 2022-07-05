@@ -9,7 +9,7 @@
 
 import argparse
 import numpy as np
-from latqcdtools.physics.HRG import HRG_charm
+from latqcdtools.physics.HRG import HRG
 import latqcdtools.base.logger as logger
 
 
@@ -76,8 +76,8 @@ w1 = np.array([1 if ba==0 else -1 for ba in B1])
 muB = muB_div_T * T
 
 
-QMhrg      = HRG_charm(M,g,w,B,S,Q,C)
-pdghrg     = HRG_charm(M1,g1,w1,B1,S1,Q1,C1)
+QMhrg      = HRG(M,g,w,B,S,Q,C)
+pdghrg     = HRG(M1,g1,w1,B1,S1,Q1,C1)
 
 
 if args.obs == "chi":
@@ -88,8 +88,8 @@ if args.obs == "chi":
     Sorder = int(args.BQSC[2])
     Corder = int(args.BQSC[3])
 
-    chi_QM     = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B=muB)
-    chi_pdg    = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B=muB)
+    chi_QM     = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder, mu_B=muB)
+    chi_pdg    = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder, mu_B=muB)
     # Save the output
     np.savetxt("chiBQSC_%s_muB%0.2f_%s.txt"%(args.BQSC,muB_div_T,tag),
                np.c_[T,chi_pdg,chi_QM],fmt='%.1f %.8e %.8e ',
