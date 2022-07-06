@@ -83,7 +83,7 @@ comparisonPlot(3*pdghrg.pressure(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.
 
 #
 # Test: Calculate chi^1001_BQSC at muB/T=0. This has not yet been well tested; it is only comparing against
-#       a result that this code also generated.
+#       a result that this code also generated. This is currently list dependent.
 #
 muB_div_T = 0
 muB       = muB_div_T * T
