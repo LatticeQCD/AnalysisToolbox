@@ -32,7 +32,7 @@ def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
 
 
 # QM and PDG HRG files
-hadrons,M,Q,B,S,C,g = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
+hadrons,M,Q,B,S,_,g = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
                                  usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
                                         dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
@@ -62,7 +62,7 @@ chi_ev  = evhrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) \
 chi_ev1 = evpdghrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) \
           + evpdghrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
 
-refT, refPDG, refQM, refEV, refEV1 = np.loadtxt("HRGcontrol/chiBQS_200_muB1.00_b1.00_QMHRG2020_BI.control",unpack=True)
+_, refPDG, refQM, refEV, refEV1 = np.loadtxt("HRGcontrol/chiBQS_200_muB1.00_b1.00_QMHRG2020_BI.control",unpack=True)
 
 print_results(chi_pdg, refPDG, prec=EPSILON, text="chiB2 PDG check")
 print_results(chi_QM , refQM , prec=EPSILON, text="chiB2 QM check")
@@ -90,7 +90,7 @@ muB       = muB_div_T * T
 data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
                   usecols=(1,2,3,4,5,6),dtype="f8,i8,i8,i8,i8,i8")
 
-M, Q, B, S, C, g = data[0], data[1], data[2], data[3], data[4], data[5]
+#M, Q, B, S, C, g = data[0], data[1], data[2], data[3], data[4], data[5]
 #w = np.array([1 if ba==0 else -1 for ba in B])
 #
 #QMhrg   = HRG(M,g,w,B,S,Q,C)

@@ -10,6 +10,7 @@ import numpy as np
 import sympy as sy
 from scipy.special import kn, lambertw
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
+import concurrent.futures
 
 
 def RMS_mass(Nt, T):
@@ -41,7 +42,7 @@ class HRG:
         approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
         expansion need to be kept. Doing so boosts performance."""
 
-    def __init__(self, Mass, g, w, B, S, Q, C = None):
+    def __init__(self, Mass, g, w, B, S, Q, C = None, parallelize=False, nproc=2):
         self.Mass = Mass
         self.g = g
         self.w = w
@@ -53,6 +54,8 @@ class HRG:
             self.C = C
         else:
             self.C = np.zeros(len(Mass))
+        self.parallelize = parallelize
+        self.nproc = nproc
 
     def __repr__(self):
         return "hrg"
@@ -73,21 +76,40 @@ class HRG:
                 P += self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
         return P
 
+    def chi_contribution(self,pack):
+        k       = pack[0]
+        T       = pack[1]
+        B_order = pack[2]
+        S_order = pack[3]
+        Q_order = pack[4]
+        C_order = pack[5]
+        mu_B    = pack[6]
+        mu_Q    = pack[7]
+        mu_S    = pack[8]
+        mu_C    = pack[9]
+        Nterms  = 20
+        if self.B[k] != 0:
+            Nterms = 2
+        chi_part = 0.
+        for N in range(1, Nterms):
+            chi_part += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
+                                               * (self.Q[k]*N)**Q_order \
+                                               * (self.C[k]*N)**C_order \
+                                               * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+        return chi_part
+
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         chi = 0.0
+        dataPackage = []
         for k in range(len(self.Mass)):
-            if self.B[k]==0:
-                for N in range(1, 20):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
-                                                  * (self.Q[k]*N)**Q_order \
-                                                  * (self.C[k]*N)**C_order \
-                                                  * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
-            else:
-                for N in range(1, 2): # Boltzmann approximation for Baryons.
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
-                                                  * (self.Q[k]*N)**Q_order \
-                                                  * (self.C[k]*N)**C_order \
-                                                  * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+            dataPackage.append([k,T,B_order,S_order,Q_order,C_order,mu_B,mu_Q,mu_S,mu_C])
+        if self.parallelize:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=self.nproc) as executor:
+                blockval = executor.map(self.chi_contribution, dataPackage)
+            chi += sum((list(blockval)))
+        else:
+            for k in range(len(self.Mass)):
+                chi += self.chi_contribution(dataPackage[k])
         return chi
 
     def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
@@ -100,13 +122,17 @@ class HRG:
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
                                                   * (self.Q[k]*N)**Q_order \
                                                   * (self.C[k]*N)**C_order \
-                                                  * self.w[k]**(N + 1) * self.g[k] * (rms_mass[0]/T)**2 * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) * kn(2, (N*rms_mass[0]/T)) / (np.pi*N)**2 / 2
+                                                  * self.w[k]**(N+1) * self.g[k] * (rms_mass[0]/T)**2 \
+                                                  * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) \
+                                                  * kn(2, (N*rms_mass[0]/T)) / (np.pi*N)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
                 for N in range(1, 10):
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
                                                   * (self.Q[k]*N)**Q_order \
                                                   * (self.C[k]*N)**C_order \
-                                                  * self.w[k]**(N + 1) * self.g[k] * (rms_mass[1]/T)**2 * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) * kn(2, (N*rms_mass[1]/T)) / (np.pi*N)**2 / 2
+                                                  * self.w[k]**(N+1) * self.g[k] * (rms_mass[1]/T)**2 \
+                                                  * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) \
+                                                  * kn(2, (N*rms_mass[1]/T)) / (np.pi*N)**2 / 2
             else:
                 for N in range(1, 2):
                     chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
