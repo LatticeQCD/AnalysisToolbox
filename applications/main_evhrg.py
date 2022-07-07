@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 from latqcdtools.physics.HRG import HRG,EV_HRG
 import latqcdtools.base.logger as logger
+from latqcdtools.base.utilities import getArgs
 
 
 parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
@@ -23,9 +24,7 @@ parser.add_argument("--bqs", dest="BQS", required=False, help="BQS mu derivative
 parser.add_argument("--muB", dest="muB", default=0.0, type=float, help="muB/T")
 
 
-args, invalid_args = parser.parse_known_args()
-if len(invalid_args)>0:
-    logger.TBError("Received unrecognized arguments",invalid_args)
+args = getArgs(parser)
 
 muB_div_T = float(args.muB)
 

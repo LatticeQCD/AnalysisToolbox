@@ -39,8 +39,6 @@ class latticeParams:
         self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
-        self.vol4  = self.Ns**3 * self.Nt
-        self.vol3  = self.Ns**3
         self.scale = scaleType
         self.Nf    = Nf
         if Nf=='21':
@@ -81,10 +79,10 @@ class latticeParams:
 
     # T in [MeV]
     def getT(self):
-        if self.Ns == self.Nt:
-            return 0.
-        else:
-            return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
+        if self.Ns is not None:
+            if self.Ns == self.Nt:
+                return 0.
+        return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
 
 
     # A nicely formatted summary of the lattice parameters.
@@ -96,7 +94,8 @@ class latticeParams:
             print("    r1 = ",self.r1,"[fm] ")
         elif self.scale == 'r0':
             print("    r0 = ",round(self.r0,4),"[fm] ")
-        print("    Ns = ",self.Ns)
+        if self.Ns is not None:
+            print("    Ns = ",self.Ns)
         print("    Nt = ",self.Nt)
         if self.ml is not None:
             print("    ml = ",self.ml)

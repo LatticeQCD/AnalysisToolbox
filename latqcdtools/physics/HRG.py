@@ -42,6 +42,7 @@ class HRG:
         approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
         expansion need to be kept. Doing so boosts performance."""
 
+    # For now keep parallelize false. This implementation does not speed anything up for some reason.
     def __init__(self, Mass, g, w, B, S, Q, C = None, parallelize=False, nproc=2):
         self.Mass = Mass
         self.g = g

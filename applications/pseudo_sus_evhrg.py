@@ -1,7 +1,7 @@
 import numpy as np
 import argparse
 from latqcdtools.physics.HRG import HRG,EV_HRG
-import latqcdtools.base.logger as logger
+from latqcdtools.base.utilities import getArgs
 
 
 parser = argparse.ArgumentParser(description='Script to calculate chiBQS along the pseudo-critical line',allow_abbrev=False)
@@ -13,9 +13,7 @@ parser.add_argument("--b", dest="b", required=True, help="Excluded volume parame
 parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=float)
 
 
-args, invalid_args = parser.parse_known_args()
-if len(invalid_args)>0:
-    logger.TBError("Received unrecognized arguments",invalid_args)
+args = getArgs(parser)
 
 
 # This is generally the QMHRG file

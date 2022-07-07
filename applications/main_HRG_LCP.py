@@ -1,9 +1,23 @@
+# 
+# main_HRG_LCP.py                                                               
+# 
+# J. Goswami, D. Clarke
+# 
+#
+# 
 import numpy as np
 import argparse
 from scipy.optimize import newton_krylov
-from latqcdtools.physics.HRG import HRG,EV_HRG
-import latqcdtools.base.logger as logger
+from latqcdtools.physics.HRG import HRG, EV_HRG
+from latqcdtools.base.utilities import getArgs
 
+# 1. make HRG type an argument, b becomes optional, default is QM. 'All' is possible. saves 50% time.
+# 2. comment out Tpc stuff for the time being (until jishnu explains)
+# 3. get rid of this tag business
+# 4. get rid of the run shell scripts, should be easy enough to use without them
+# 7. update any missing documentation
+# 8. introduce a constraint argument (choice between s/nB=something or Ns=0)
+# 9. any other applications to bring over from the old toolbox? simple stuff anyway
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
@@ -12,10 +26,7 @@ parser.add_argument("--b", dest="b", required=True, help="Excluded volume parame
 parser.add_argument("--Tpc", dest="Tpc", required=True,help="value of the pseudo-critical temperature at zero chemical potential", type=float)
 parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=float)
 
-
-args, invalid_args = parser.parse_known_args()
-if len(invalid_args)>0:
-    logger.TBError("Received unrecognized arguments",invalid_args)
+args = getArgs(parser)
 
 # value of the excluded parameter
 b = args.b
@@ -46,25 +57,24 @@ def strangeness_neutral_equations(muQS,muB,T,hrg):
         X1B = QMhrg.gen_chi(T,B_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1Q = QMhrg.gen_chi(T,Q_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1S = QMhrg.gen_chi(T,S_order=1,mu_B=muB,mu_Q=x,mu_S=y)
-    else:
+    else: # why mesons use QM? why mesons are seemingly double counted???
         X1B = evhrg.gen_chi(T,b,1,B_order=1,mu_B=muB,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, B_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1Q = evhrg.gen_chi(T,b,1,Q_order=1,mu_B=muB,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, Q_order=1,mu_B=muB,mu_Q=x,mu_S=y) + mesons.gen_chi(T,Q_order=1,mu_B=muB,mu_Q=x,mu_S=y)
         X1S = evhrg.gen_chi(T,b,1,S_order=1,mu_B=muB,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, S_order=1,mu_B=muB,mu_Q=x,mu_S=y) + mesons.gen_chi(T,S_order=1,mu_B=muB,mu_Q=x,mu_S=y)
+    # This is what the solver tries to make equal to zero.
     return X1S, X1Q - r*X1B
 
 
 # Generating muB values
-xs=np.arange(0.95,600,4) # eventually switch to 5 with step sizes of 5.
+fmuB=np.arange(5,600,5)
 
-# We solve for a given muB, muQ and muS, starting values of muQ and muS. This parameterization is kind of outdated
-# however probably useful for solver to give a better starting values of muQ and muS
+# This parameterization is kind of outdated however probably useful for solver to give better starting values of muQ and muS
 dS=0.214
 eS=0.161
 dQ=0.0211
 eQ=0.106
-fmuB =  xs
-fmuQ = -dQ/(1.0 + eQ*xs) 
-fmuS =  dS/(1.0 + eS*xs)
+fmuQ = -dQ/(1.0 + eQ*fmuB) # Initial guess for muQ
+fmuS =  dS/(1.0 + eS*fmuB) # Initial guess for muS
 
 Tpc = Tpc0*(1.0-kap2*(fmuB/Tpc0)**2)
 
