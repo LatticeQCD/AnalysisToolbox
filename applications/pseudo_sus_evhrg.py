@@ -1,3 +1,6 @@
+# calculate susceptibilities of arbitrary order also on PC line, uses main_HRG as input, since the krylov solver
+# part is the slow part
+
 import numpy as np
 import argparse
 from latqcdtools.physics.HRG import HRG,EV_HRG
