@@ -71,7 +71,7 @@ print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
 
 
 #
-# Test: Calculate the pressure and compare it with PHYSICAL REVIEW D 90, 094503 (2014). We allow for a 2% error
+# Test: Calculate P, E, S and compare them with PHYSICAL REVIEW D 90, 094503 (2014). We allow for a 2% error
 #       tolerance because I had to fish the paper values out by eye and because we are using an updated resonance list
 #       compared to what was available in 2014.
 #
@@ -79,6 +79,12 @@ refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
 test3p_div_T4      = 3*pdghrg.pressure(refT,0,0,0)
 print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
 comparisonPlot(3*pdghrg.pressure(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
+
+
+refT, refe_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
+teste_div_T4      = pdghrg.energy_density(refT,0,0,0)
+print_results(refe_div_T4, teste_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
+comparisonPlot(pdghrg.energy_density(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
 
 
 #

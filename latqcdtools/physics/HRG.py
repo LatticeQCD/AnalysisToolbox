@@ -40,7 +40,8 @@ class HRG:
         needs to be truncated at some order. These functions get strongly suppressed when their argument is large.
         In our case, this argument is proportional to the mass. Hence we will sometimes take the Boltzmann
         approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
-        expansion need to be kept. Doing so boosts performance."""
+        expansion need to be kept. Doing so boosts performance. """
+
 
     # For now keep parallelize false. This implementation does not speed anything up for some reason.
     def __init__(self, Mass, g, w, B, S, Q, C = None, parallelize=False, nproc=2):
@@ -58,26 +59,44 @@ class HRG:
         self.parallelize = parallelize
         self.nproc = nproc
 
+
     def __repr__(self):
         return "hrg"
 
-    # Not actually log_Z, just the prefactor coming before the exponential. For calculations of the pressure and
-    # generalized susceptibilities, we make things unitless, e.g. P = T/V log Z ==> p/T^4 = 1/VT^3 log Z. The k
-    # labels the different states. N represents the Nth order of a Taylor expansion of a logarithm.
-    def ln_Z(self, k, N, T):
-        return self.w[k]**(N+1) * self.g[k] * (self.Mass[k]/T)**2 * kn(2,(N*self.Mass[k]/T))/(np.pi*N)**2/2
 
-    def exp(self, N, T, k, mu_B, mu_Q, mu_S, mu_C):
-        return np.exp( N*( self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C )/ T )
+    # n represents the nth order of a Taylor expansion of a logarithm.
+    def factor(self, k, n, T):
+        # m^2 g eta^(n+1) T/2pi**2 n**2
+        return self.Mass[k]**2 * self.g[k] * T * self.w[k]**(n+1) / (2*np.pi**2*n**2)
+
+
+    def muN(self, k, mu_B, mu_Q, mu_S, mu_C):
+        return self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C
+
+
+    def z(self, T, k, mu_B, mu_Q, mu_S, mu_C):
+        return np.exp( self.muN(k, mu_B, mu_Q, mu_S, mu_C)/T )
+
 
     def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         P = 0.0
         for k in range(len(self.Mass)):
-            for N in range(1, 20): # Keep only first 20 terms of the series.
-                P += self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
-        return P
+            for n in range(1, 20): # Keep only first 20 terms of the series.
+                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * kn(2,(n*self.Mass[k]/T))
+        return P/T**3
 
-    def chi_contribution(self,pack):
+
+    def energy_density(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        eps = 0.
+        for k in range(len(self.Mass)):
+            for n in range(1,20):
+                x = self.Mass[k]*n/T
+                eps += T * self.factor(k,n,T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n  \
+                                          * ( kn(2,x) * (3 - n*self.muN(k,mu_B,mu_Q,mu_S,mu_C)/T) + kn(1,x)*x )
+        return eps/T**4
+
+
+    def chi_contribution(self,pack): # since the parallelization didn't work you may as well get rid of it, since it's hard to read
         k       = pack[0]
         T       = pack[1]
         B_order = pack[2]
@@ -92,12 +111,14 @@ class HRG:
         if self.B[k] != 0:
             Nterms = 2
         chi_part = 0.
-        for N in range(1, Nterms):
-            chi_part += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
-                                               * (self.Q[k]*N)**Q_order \
-                                               * (self.C[k]*N)**C_order \
-                                               * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+        for n in range(1, Nterms):
+            chi_part += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
+                                               * (self.Q[k]*n)**Q_order \
+                                               * (self.C[k]*n)**C_order \
+                                               * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                                               * kn(2,(n*self.Mass[k]/T))
         return chi_part
+
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         chi = 0.0
@@ -111,7 +132,8 @@ class HRG:
         else:
             for k in range(len(self.Mass)):
                 chi += self.chi_contribution(dataPackage[k])
-        return chi
+        return chi/T**3
+
 
     def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         # rms_mass[0] is for pions and rms_mass[1] is for kaons
@@ -119,31 +141,32 @@ class HRG:
         chi = 0.0
         for k in range(len(self.Mass)):
             if 140 >= self.Mass[k] >= 130:
-                for N in range(1, 20):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
-                                                  * (self.Q[k]*N)**Q_order \
-                                                  * (self.C[k]*N)**C_order \
-                                                  * self.w[k]**(N+1) * self.g[k] * (rms_mass[0]/T)**2 \
-                                                  * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) \
-                                                  * kn(2, (N*rms_mass[0]/T)) / (np.pi*N)**2 / 2
+                for n in range(1, 20):
+                    chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
+                                                  * (self.Q[k]*n)**Q_order \
+                                                  * (self.C[k]*n)**C_order \
+                                                  * self.w[k]**(n+1) * self.g[k] * (rms_mass[0]/T)**2 \
+                                                  * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                                                  * kn(2, (n*rms_mass[0]/T)) / (np.pi*n)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
-                for N in range(1, 10):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
-                                                  * (self.Q[k]*N)**Q_order \
-                                                  * (self.C[k]*N)**C_order \
-                                                  * self.w[k]**(N+1) * self.g[k] * (rms_mass[1]/T)**2 \
-                                                  * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C) \
-                                                  * kn(2, (N*rms_mass[1]/T)) / (np.pi*N)**2 / 2
+                for n in range(1, 10):
+                    chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
+                                                  * (self.Q[k]*n)**Q_order \
+                                                  * (self.C[k]*n)**C_order \
+                                                  * self.w[k]**(n+1) * self.g[k] * (rms_mass[1]/T)**2 \
+                                                  * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                                                  * kn(2, (n*rms_mass[1]/T)) / (np.pi*n)**2 / 2
             else:
-                for N in range(1, 2):
-                    chi += (self.B[k]*N)**B_order * (self.S[k]*N)**S_order \
-                                                  * (self.Q[k]*N)**Q_order \
-                                                  * (self.C[k]*N)**C_order \
-                                                  * self.ln_Z(k, N, T) * self.exp(N, T, k, mu_B, mu_Q, mu_S, mu_C)
+                for n in range(1, 2):
+                    chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
+                                                  * (self.Q[k]*n)**Q_order \
+                                                  * (self.C[k]*n)**C_order \
+                                                  * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                                                  * kn(2,(n*self.Mass[k]/T))/T**3
         return chi
 
 
-# TODO: Make this inherit from the HRG class.
+# TODO: the __init__ can be inherited from the HRG class
 class EV_HRG:
 
     """ Excluded volume hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics. """
@@ -161,9 +184,6 @@ class EV_HRG:
 
     def Pid(self, m, g, T):
         return g*(m/T)**2 * kn(2, (m/T)) / np.pi**2 / 2
-
-    def exp(self, N, T, k, mu_B, mu_Q, mu_S):
-        return np.exp( N*(self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S) / T)
 
     def baryon_pressure(self, T, b, Bi, mu_B=0.0, mu_Q=0.0, mu_S=0.0):
 
