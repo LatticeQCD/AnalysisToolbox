@@ -95,6 +95,7 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1,20):
                 x = self.Mass[k]*n/T
+                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
                 eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(2,x) * (3 - n*self.muN(k,mu_B,mu_Q,mu_S,mu_C)/T) + kn(1,x)*x )
         return eps
 
@@ -122,12 +123,11 @@ class HRG:
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                eps += 2 * self.factor(k, n, T) * n**2 * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n / T**5 \
-                         * (   kn(0,x) * m**2/(4*T**2)
-                             - kn(1,x) * (m/4*n*T) * (3/2+n*muxN/T)
-                             + kn(2,x) * ( m**2/(4*T**2) - muxN/(2*n*T) + 3/n**2 )
-                             + kn(3,x) * (m/4*n*T) * ( 3 - n*muxN/T )
-                           )
+                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
+                eps += self.factor(k, n, T)/m * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n / T**7 \
+                                              * (   kn(0,x) * ( n*m*( n*m**2 + muxN*T ) )
+                                                  + kn(1,x) * ( n*m**2*T - n**2*m**2*muxN + 2*muxN*T**2 )
+                                                )
         return eps
 
 

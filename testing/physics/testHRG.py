@@ -94,9 +94,9 @@ comparisonPlot(3*pdghrg.S_div_T3(refT,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_d
 
 
 refT, ref3CV_div_T3 = np.loadtxt("HRGcontrol/2014_CV_div_T3.d",unpack=True)
-testCV_div_T3       = 3*pdghrg.CV_div_T3(refT,0,0,0)
+testCV_div_T3       = pdghrg.CV_div_T3(refT,0,0,0)
 print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 check")
-comparisonPlot(3*pdghrg.CV_div_T3(refT,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
+comparisonPlot(pdghrg.CV_div_T3(refT,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
 #
