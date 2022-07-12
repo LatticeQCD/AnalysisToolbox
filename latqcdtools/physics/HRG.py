@@ -125,10 +125,22 @@ class HRG:
                 x    = m*n/T
                 # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
                 eps += self.factor(k, n, T)/m * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n / T**7 \
-                                              * (   kn(0,x) * ( n*m*( n*m**2 + muxN*T ) )
-                                                  + kn(1,x) * ( n*m**2*T - n**2*m**2*muxN + 2*muxN*T**2 )
+                                              * (   kn(0,x) * ( n*m*( -2*muxN*T + n*( m**2 + muxN**2 ) ) )
+                                                  + kn(1,x) * ( -2*n**2*m**2*muxN - 4*muxN*T**2 + n*T*( m**2 + 2*muxN ) )
                                                 )
         return eps
+
+
+    def ddT_P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        P = 0.
+        for k in range(len(self.Mass)):
+            muxN = self.muN(k, mu_B, mu_Q, mu_S, mu_C)
+            for n in range(1,20):
+                m    = self.Mass[k]
+                x    = m*n/T
+                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
+                P += self.factor(k, n, T) * n * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x) * m - kn(2,x) * muxN )/T**2
+        return P
 
 
     def CV(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
@@ -137,6 +149,11 @@ class HRG:
 
     def CV_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         return self.CV(T, mu_B, mu_S, mu_Q, mu_C)/T**3
+
+
+    def cs2(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        return ( 4*self.P_div_T4(T,mu_B,mu_S,mu_Q,mu_C) + T*self.ddT_P_div_T4(T,mu_B,mu_S,mu_Q,mu_C)
+                 )/( 4*self.E_div_T4(T,mu_B,mu_S,mu_Q,mu_C) + T*self.ddT_E_div_T4(T,mu_B,mu_S,mu_Q,mu_C) )
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
