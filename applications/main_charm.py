@@ -94,8 +94,8 @@ if args.obs == "chi":
                header='T    PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
-    p_QM = QMhrg.pressure(T, mu_B=muB)
-    p_pdg = pdghrg.pressure(T, mu_B=args.muB)
-    np.savetxt("pressure_muB%0.2f_%s.txt"%(muB_div_T,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
+    p_QM = QMhrg.P_div_T4(T, mu_B=muB)
+    p_pdg = pdghrg.P_div_T4(T, mu_B=args.muB)
+    np.savetxt("P_div_T4_muB%0.2f_%s.txt"%(muB_div_T,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
                header='T    PDG-HRG         QM-HRG  ')
 

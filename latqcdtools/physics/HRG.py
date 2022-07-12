@@ -10,7 +10,6 @@ import numpy as np
 import sympy as sy
 from scipy.special import kn, lambertw
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
-import concurrent.futures
 
 
 def RMS_mass(Nt, T):
@@ -44,7 +43,7 @@ class HRG:
 
 
     # For now keep parallelize false. This implementation does not speed anything up for some reason.
-    def __init__(self, Mass, g, w, B, S, Q, C = None, parallelize=False, nproc=2):
+    def __init__(self, Mass, g, w, B, S, Q, C = None):
         self.Mass = Mass
         self.g = g
         self.w = w
@@ -56,8 +55,6 @@ class HRG:
             self.C = C
         else:
             self.C = np.zeros(len(Mass))
-        self.parallelize = parallelize
-        self.nproc = nproc
 
 
     def __repr__(self):
@@ -65,16 +62,19 @@ class HRG:
 
 
     # n represents the nth order of a Taylor expansion of a logarithm.
+    # k represents the kth state that appears in the table of resonances.
     def factor(self, k, n, T):
-        # m^2 g eta^(n+1) T/2pi**2 n**2
-        return self.Mass[k]**2 * self.g[k] * T * self.w[k]**(n+1) / (2*np.pi**2*n**2)
+        # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
+        return self.Mass[k]**2 * self.g[k] * T**2 * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
 
     def muN(self, k, mu_B, mu_Q, mu_S, mu_C):
+        # mu_i * N_i
         return self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C
 
 
     def z(self, T, k, mu_B, mu_Q, mu_S, mu_C):
+        # e^(mu_i*N_i/T)
         return np.exp( self.muN(k, mu_B, mu_Q, mu_S, mu_C)/T )
 
 
@@ -83,7 +83,11 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1, 20): # Keep only first 20 terms of the series.
                 P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * kn(2,(n*self.Mass[k]/T))
-        return P/T**3
+        return P
+
+
+    def P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        return self.pressure(T, mu_B, mu_S, mu_Q, mu_C)/T**4
 
 
     def energy_density(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
@@ -91,48 +95,63 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1,20):
                 x = self.Mass[k]*n/T
-                eps += T * self.factor(k,n,T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n  \
-                                          * ( kn(2,x) * (3 - n*self.muN(k,mu_B,mu_Q,mu_S,mu_C)/T) + kn(1,x)*x )
-        return eps/T**4
+                eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(2,x) * (3 - n*self.muN(k,mu_B,mu_Q,mu_S,mu_C)/T) + kn(1,x)*x )
+        return eps
 
 
-    def chi_contribution(self,pack): # since the parallelization didn't work you may as well get rid of it, since it's hard to read
-        k       = pack[0]
-        T       = pack[1]
-        B_order = pack[2]
-        S_order = pack[3]
-        Q_order = pack[4]
-        C_order = pack[5]
-        mu_B    = pack[6]
-        mu_Q    = pack[7]
-        mu_S    = pack[8]
-        mu_C    = pack[9]
-        Nterms  = 20
-        if self.B[k] != 0:
-            Nterms = 2
-        chi_part = 0.
-        for n in range(1, Nterms):
-            chi_part += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
-                                               * (self.Q[k]*n)**Q_order \
-                                               * (self.C[k]*n)**C_order \
-                                               * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
-                                               * kn(2,(n*self.Mass[k]/T))
-        return chi_part
+    def E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        return self.energy_density(T, mu_B, mu_S, mu_Q, mu_C)/T**4
+
+
+    # all unitless: s = e + p - mu_i n_i
+    def entropy(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        muxN=0.
+        for k in range(len(self.Mass)):
+            muxN += self.muN(k, mu_B, mu_Q, mu_S, mu_C)
+        return ( self.energy_density(T,mu_B,mu_S,mu_Q,mu_C) + self.pressure(T,mu_B,mu_S,mu_Q,mu_C) - muxN )/T
+
+
+    def S_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        return self.entropy(T,mu_B,mu_S,mu_Q,mu_C)/T**3
+
+
+    def ddT_E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        eps = 0.
+        for k in range(len(self.Mass)):
+            muxN = self.muN(k, mu_B, mu_Q, mu_S, mu_C)
+            for n in range(1,20):
+                m    = self.Mass[k]
+                x    = m*n/T
+                eps += 2 * self.factor(k, n, T) * n**2 * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n / T**5 \
+                         * (   kn(0,x) * m**2/(4*T**2)
+                             - kn(1,x) * (m/4*n*T) * (3/2+n*muxN/T)
+                             + kn(2,x) * ( m**2/(4*T**2) - muxN/(2*n*T) + 3/n**2 )
+                             + kn(3,x) * (m/4*n*T) * ( 3 - n*muxN/T )
+                           )
+        return eps
+
+
+    def CV(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        return ( 4*self.E_div_T4(T, mu_B, mu_S, mu_Q, mu_C) + T*self.ddT_E_div_T4(T, mu_B, mu_S, mu_Q, mu_C) ) * T**3
+
+
+    def CV_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        return self.CV(T, mu_B, mu_S, mu_Q, mu_C)/T**3
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         chi = 0.0
-        dataPackage = []
         for k in range(len(self.Mass)):
-            dataPackage.append([k,T,B_order,S_order,Q_order,C_order,mu_B,mu_Q,mu_S,mu_C])
-        if self.parallelize:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=self.nproc) as executor:
-                blockval = executor.map(self.chi_contribution, dataPackage)
-            chi += sum((list(blockval)))
-        else:
-            for k in range(len(self.Mass)):
-                chi += self.chi_contribution(dataPackage[k])
-        return chi/T**3
+            Nterms = 20
+            if self.B[k] != 0:
+                Nterms = 2
+            for n in range(1, Nterms):
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
+                                              * (self.Q[k]*n)**Q_order \
+                                              * (self.C[k]*n)**C_order \
+                                              * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                                              * kn(2,(n*self.Mass[k]/T))
+        return chi/T**4
 
 
     def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
@@ -162,7 +181,7 @@ class HRG:
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
                                                   * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
-                                                  * kn(2,(n*self.Mass[k]/T))/T**3
+                                                  * kn(2,(n*self.Mass[k]/T))/T**4
         return chi
 
 

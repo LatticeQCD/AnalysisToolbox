@@ -71,20 +71,32 @@ print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
 
 
 #
-# Test: Calculate P, E, S and compare them with PHYSICAL REVIEW D 90, 094503 (2014). We allow for a 2% error
+# Test: Compare some quantities them with PHYSICAL REVIEW D 90, 094503 (2014). We allow for a 2% error
 #       tolerance because I had to fish the paper values out by eye and because we are using an updated resonance list
 #       compared to what was available in 2014.
 #
 refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
-test3p_div_T4      = 3*pdghrg.pressure(refT,0,0,0)
+test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
 print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
-comparisonPlot(3*pdghrg.pressure(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
+comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
 
 
-refT, refe_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
-teste_div_T4      = pdghrg.energy_density(refT,0,0,0)
-print_results(refe_div_T4, teste_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
-comparisonPlot(pdghrg.energy_density(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
+refT, refE_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
+testE_div_T4      = pdghrg.E_div_T4(refT,0,0,0)
+print_results(refE_div_T4, testE_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
+comparisonPlot(pdghrg.E_div_T4(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
+
+
+refT, ref3S_div_4T3 = np.loadtxt("HRGcontrol/2014_3s_div_4T3.d",unpack=True)
+test3s_div_4T3      = 3*pdghrg.S_div_T3(refT,0,0,0)/4
+print_results(ref3S_div_4T3, test3s_div_4T3, prec=3e-2, text="2014 HotQCD 3s/4T^3 check")
+comparisonPlot(3*pdghrg.S_div_T3(refT,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_div_4T3.d","2014 HotQCD")
+
+
+refT, ref3CV_div_T3 = np.loadtxt("HRGcontrol/2014_CV_div_T3.d",unpack=True)
+testCV_div_T3       = 3*pdghrg.CV_div_T3(refT,0,0,0)
+print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 check")
+comparisonPlot(3*pdghrg.CV_div_T3(refT,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
 #
@@ -122,9 +134,9 @@ M, Q, B, S, C, g = openCharmMesons[0], openCharmMesons[1], openCharmMesons[2], o
 w = np.array([1 if ba==0 else -1 for ba in B])
 QMhrg = HRG(M,g,w,B,S,Q,C)
 refT, refMesonP_div_T4 = np.loadtxt("HRGcontrol/2014_P_Mc.d",unpack=True)
-mesonP_div_T4 = QMhrg.pressure(refT,0,0,0)
+mesonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
 print_results(mesonP_div_T4, refMesonP_div_T4, prec=1.8e-1, text="2014 HotQCD meson open charm")
-comparisonPlot(QMhrg.pressure(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Mc.d","2014 open charm meson")
+comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Mc.d","2014 open charm meson")
 
 # And the Baryons have B!=0. (Fig. 1 in paper.)
 openCharmBaryons = excludeAtCol(openCharmStates,2,0)
@@ -132,9 +144,9 @@ M, Q, B, S, C, g = openCharmBaryons[0], openCharmBaryons[1], openCharmBaryons[2]
 w = np.array([1 if ba==0 else -1 for ba in B])
 QMhrg = HRG(M,g,w,B,S,Q,C)
 refT, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/2014_P_Bc.d",unpack=True)
-baryonP_div_T4 = QMhrg.pressure(refT,0,0,0)
+baryonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
 print_results(baryonP_div_T4, refBaryonP_div_T4, prec=2.2e-1, text="2014 HotQCD baryon open charm")
-comparisonPlot(QMhrg.pressure(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Bc.d","2014 open charm baryon")
+comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Bc.d","2014 open charm baryon")
 
 # Finally we check one of the derivatives. (Fig. 4 in paper.)
 M, Q, B, S, C, g = openCharmStates[0], openCharmStates[1], openCharmStates[2], openCharmStates[3], openCharmStates[4], openCharmStates[5]
