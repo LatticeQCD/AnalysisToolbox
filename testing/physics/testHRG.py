@@ -90,13 +90,13 @@ comparisonPlot(pdghrg.E_div_T4(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","
 refT, ref3S_div_4T3 = np.loadtxt("HRGcontrol/2014_3s_div_4T3.d",unpack=True)
 test3s_div_4T3      = 3*pdghrg.S_div_T3(refT,0,0,0)/4
 print_results(ref3S_div_4T3, test3s_div_4T3, prec=3e-2, text="2014 HotQCD 3s/4T^3 check")
-comparisonPlot(3*pdghrg.S_div_T3(refT,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_div_4T3.d","2014 HotQCD")
+comparisonPlot(3*pdghrg.S_div_T3(T,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_div_4T3.d","2014 HotQCD")
 
 
 refT, ref3CV_div_T3 = np.loadtxt("HRGcontrol/2014_CV_div_T3.d",unpack=True)
 testCV_div_T3       = pdghrg.CV_div_T3(refT,0,0,0)
 print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 check")
-comparisonPlot(pdghrg.CV_div_T3(refT,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
+comparisonPlot(pdghrg.CV_div_T3(T,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
 #
