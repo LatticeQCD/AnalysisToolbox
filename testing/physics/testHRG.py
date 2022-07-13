@@ -149,9 +149,10 @@ print_results(baryonP_div_T4, refBaryonP_div_T4, prec=2.2e-1, text="2014 HotQCD 
 comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Bc.d","2014 open charm baryon")
 
 # Do another check against Frithjof's data.
-#refT, _, _, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/OUT_5.0.DAT140_2022_hidden_charm_pressure",unpack=True)
-#baryonP_div_T4 = QMhrg.pressure(refT,0,0,0)
-#print_results(baryonP_div_T4, refBaryonP_div_T4, prec=3e-2, text="2022 Frithjof code open charm")
+refT, _, _, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/OUT_5.0.DAT140_2022_hidden_charm_pressure",unpack=True)
+refT *= 1000 # He gives his temperatures in [GeV]
+baryonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
+print_results(baryonP_div_T4, refBaryonP_div_T4, prec=1e-3, text="2022 Frithjof code open charm")
 
 
 # Finally we check one of the derivatives. (Fig. 4 in paper.)
