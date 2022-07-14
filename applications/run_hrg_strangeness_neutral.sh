@@ -1,11 +1,5 @@
-#!/bin/bash
-b=1.0 # value of the excluded volume parameter !!
-Tpc=156.5 # Tpc value in MeV
 r=0.4 #nQ/nB=0.4
 
-
 filepath="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
-filepath_muB="Tpc156.5_pseudo-muS_muB_r0.4QMHRG2020_BI"
 
-time python3 main_HRG_LCP.py --Tpc ${Tpc} --r $r --hadron_file ${filepath} --models QM
-
+time python3 main_HRG_LCP.py --r $r --hadron_file ${filepath} --models QM --T 100

@@ -44,6 +44,13 @@ class HRG:
 
     # For now keep parallelize false. This implementation does not speed anything up for some reason.
     def __init__(self, Mass, g, w, B, S, Q, C = None):
+        # M = Mass of the hadron
+        # Q = charge of the hadron
+        # B = Baryon number of the hadron [B=1,-1,0,0 for baryon,anti-baryon,meson,anti-mesons]
+        # S = Strangeness number of the hadron
+        # C = Charm number of the hadron
+        # g = degenracy of the hadron state
+        # w = spin statistics of hadron (eta)
         self.Mass = Mass
         self.g = g
         self.w = w
@@ -95,7 +102,6 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1,20):
                 x = self.Mass[k]*n/T
-                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
                 eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(2,x) * (3 - n*self.muN(k,mu_B,mu_Q,mu_S,mu_C)/T) + kn(1,x)*x )
         return eps
 
@@ -123,7 +129,6 @@ class HRG:
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
                 eps += self.factor(k, n, T)/m * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n / T**7 \
                                               * (   kn(0,x) * ( n*m*( -2*muxN*T + n*( m**2 + muxN**2 ) ) )
                                                   + kn(1,x) * ( -2*n**2*m**2*muxN - 4*muxN*T**2 + n*T*( m**2 + 2*muxN ) )
@@ -138,7 +143,6 @@ class HRG:
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
                 P += self.factor(k, n, T) * n * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x) * m - kn(2,x) * muxN )/T**2
         return P
 

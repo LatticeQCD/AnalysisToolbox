@@ -9,7 +9,7 @@
 
 import argparse
 import numpy as np
-from latqcdtools.physics.HRG import HRG
+from latqcdtools.physics.HRG import HRG, EV_HRG
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import getArgs
 
@@ -18,24 +18,52 @@ parser = argparse.ArgumentParser(description='Script to carry out HRG calculatio
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
-parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi)", default="chi", type=str)
+parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi, cs2)", default="chi", type=str)
 parser.add_argument("--bqsc", dest="BQSC", required=False, help="BQSC mu derivative orders.", type=str)
-parser.add_argument("--muB", dest="muB", default=0.0, type=float, help="muB/T")
+parser.add_argument("--muB", dest="muB", default=None, type=float, help="muB/T")
+parser.add_argument("--models",nargs="*",dest="models",default=['QM'],required=True,help="list of HRG models from (EV,QM) to try, default = QM",type=str)
+parser.add_argument("--LCP_file", dest="LCP_file", required=False, help="muB, muQ, and muS chosen to fall along some line of constant physics", type=lambda f: open(f))
+parser.add_argument("--b", dest="b", help="excluded volume parameter.", default=None, type=float)
+
 
 args = getArgs(parser)
 
-muB_div_T = float(args.muB)
+models    = args.models
+b         = args.b
+tag       = args.particle_list
+Tpc0      = args.Tpc
+r         = args.r
+LCP_file  = args.LCP_file
+muB_div_T = args.muB
 
+
+#
+# Various checks against user error.
+#
+if "EV" in models and b is None:
+    logger.TBError("Need to specify excluded volume parameter b when using EVHRG.")
+
+if (LCP_file is not None) and (muB_div_T is not None):
+    logger.TBError("The LCP file already dictates the allowed possible muB.")
 
 if args.obs=="chi" and args.BQSC is None:
-  logger.TBError("Please specify BQSC derivative orders for chi.")
+    logger.TBError("Please specify BQSC derivative orders for chi.")
+
+if args.obs=="cs2" and LCP_file is None:
+    logger.TBError("c_s^2 must be calculated at N_S=0 with some fixed s/nB.")
 
 
-if args.temperature_range is None:
-    T = np.linspace(130, 180, 101)
+if LCP_file is not None:
+    if args.temperature_range is None:
+        T = np.linspace(130, 180, 101)
+    else:
+        t = args.temperature_range
+        T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
 else:
-    t = args.temperature_range
-    T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
+    # common parameter file for these? he somehow needs to know which model is which, the usecols vector needs
+    # to be decided automatically based on that, etc
+    T, muB, muQ, muS = np.loadtxt(args.mubmus_file.name, unpack=True, usecols=(0, 1, 2, 3))
+
 
 
 print("\n  observable:",args.obs)
@@ -43,22 +71,12 @@ if args.BQSC is not None:
     print("  BQSC deriv:",args.BQSC)
 if muB_div_T is not None:
     print("       muB/T:",muB_div_T)
+if LCP_file is not None:
+    print("    LCP file:",LCP_file)
 print("     T [MeV]:",T[0],T[-1],"\n")
 
 
-# hadron  = Name of the hadron [All particles and anti-particles]
-# M       = Mass of the hadron
-# Q       = charge of the hadron
-# B       = Baryon number of the hadron [B=1,-1,0,0 for baryon,anti-baryon,meson,anti-mesons]
-# S       = Strangeness number of the hadron
-# C       = Charm number of the hadron
-# g       = degenracy of the hadron state
-
-
-# This is generally the QM hrg file
-hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-
-tag = str(args.particle_list)
+hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 
 
 # PDG HRG file
@@ -94,8 +112,11 @@ if args.obs == "chi":
                header='T    PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
+
     p_QM = QMhrg.P_div_T4(T, mu_B=muB)
     p_pdg = pdghrg.P_div_T4(T, mu_B=args.muB)
     np.savetxt("P_div_T4_muB%0.2f_%s.txt"%(muB_div_T,tag), np.c_[T,p_pdg,p_QM],fmt='%.1f %.8e %.8e',
                header='T    PDG-HRG         QM-HRG  ')
 
+elif args.obs == "cs2":
+    pass

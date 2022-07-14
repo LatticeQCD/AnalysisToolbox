@@ -18,13 +18,9 @@ parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=flo
 
 args = getArgs(parser)
 
-
-# This is generally the QMHRG file
-hadrons,M,Q,B,S,C,g=np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-
+hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 
 tag = str(args.particle_list)
-
 
 # spin statistics
 w  = np.array([1 if ba==0 else -1 for ba in B])

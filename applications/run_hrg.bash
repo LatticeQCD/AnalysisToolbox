@@ -27,4 +27,4 @@ BQS2=200
 #python3 main_evhrg.py --hadron_file ../latqcdtools/physics/QM_hadron_list_ext_strange_2020.txt --tag QMHRG2020_BI --obs chi --bqs 101 --b 0.4 --temperature_range 130:180:0.5
 
 # Here's where you can actually use it.
-python3 main_charm.py --hadron_file  ${filepath_charm} --tag QMHRG2020_BI_charm --obs chi --bqsc 1001 --temperature_range 130:180:0.5
+python3 main_charm.py --hadron_file  ${filepath_charm} --obs chi --bqsc 1111 --temperature_range 130:180:0.5 --models QM --tag myTag 
