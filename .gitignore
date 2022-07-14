@@ -1,10 +1,10 @@
 .idea/
-chiBQS_*_QM
+chiBQS*
 QM_mass*
 T156.5_pseudo-chiBQS_100_Hrg_BI_b1.0QMHRG2020_BI
 Tpc156.5_pseudo-muS_muB_r0.4QMHRG2020_BI
-chiBQSC_1001_muB0.00_QMHRG2020_BI_charm.txt
 HRG_LCP*
+P_div_T4*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

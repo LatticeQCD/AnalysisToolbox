@@ -17,6 +17,11 @@ def getArgs(parser):
     return args
 
 
+def printArg(message,param):
+    if param is not None:
+        print(message,param)
+
+
 class timer:
 
     """A class to facilitate doing rudimentary timings in the Toolbox."""

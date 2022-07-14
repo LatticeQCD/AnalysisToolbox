@@ -10,7 +10,7 @@ import numpy as np
 import argparse
 from scipy.optimize import newton_krylov
 from latqcdtools.physics.HRG import HRG, EV_HRG
-from latqcdtools.base.utilities import getArgs
+from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 
 # 4. get rid of the run shell scripts, should be easy enough to use without them
@@ -36,11 +36,9 @@ Tpc0     = args.Tpc
 r        = args.r
 temp     = args.temp
 
-# You use this "is not None" print stuff, add a function for it.
-if b is not None:
-    print("    b [fm^3]:",args.b)
-if temp is not None:
-    print("     T [MeV]:",args.temp)
+
+printArg("    b [fm^3]:",args.b)
+printArg("     T [MeV]:",args.temp)
 
 
 if "EV" in models and b is None:

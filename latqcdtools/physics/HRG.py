@@ -58,10 +58,10 @@ class HRG:
         self.Q = Q
         self.S = S
         # If we don't get a charm array, initialize to array of zeroes.
-        if C is not None:
-            self.C = C
-        else:
+        if C is None:
             self.C = np.zeros(len(Mass))
+        else:
+            self.C = C
 
 
     def __repr__(self):
@@ -153,11 +153,6 @@ class HRG:
 
     def CV_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         return self.CV(T, mu_B, mu_S, mu_Q, mu_C)/T**3
-
-
-    def cs2(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return ( 4*self.P_div_T4(T,mu_B,mu_S,mu_Q,mu_C) + T*self.ddT_P_div_T4(T,mu_B,mu_S,mu_Q,mu_C)
-                 )/( 4*self.E_div_T4(T,mu_B,mu_S,mu_Q,mu_C) + T*self.ddT_E_div_T4(T,mu_B,mu_S,mu_Q,mu_C) )
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
