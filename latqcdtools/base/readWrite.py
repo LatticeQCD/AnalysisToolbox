@@ -1,11 +1,14 @@
 # 
 # readWrite.py
-# 
+#
+# H. Sandmeyer, D. Clarke
+#
 # Collection of methods for reading in and writing out data for different purposes. There are some methods
 # specifically for reading in correlator fitting data, but also some more general methods
 # that anyone can use, like read_in. 
 #
- 
+
+
 import numpy as np
 
 
@@ -76,3 +79,18 @@ def read_in(filename, *args):
     if close:
         ins.close()
     return np.array(data)
+
+
+def writeTable(filename,*args,**kwargs):
+    """ Wrapper for np.savetxt, which would otherwise output in a way that is not very intuitive for tables.
+        Additionally constructs format string to include only 8 digits after the decimal point.  """
+    if 'header' in kwargs:
+        head = kwargs['header']
+    else:
+        head = ''
+    data = ()
+    form = ''
+    for col in args:
+        data += (col,)
+        form +=  '%.8e  '
+    np.savetxt(filename,np.transpose(data),fmt=form,header=head)

@@ -11,7 +11,7 @@ import latqcdtools.statistics.fitting as fitting
 from latqcdtools.base.check import print_results, rel_check
 import latqcdtools.base.logger as logger
 import latqcdtools.statistics.statistics as stats
-from latqcdtools.base.readin import read_in_pure
+from latqcdtools.base.readWrite import read_in_pure
 from scipy.optimize import curve_fit
 
 def simple(x, a):

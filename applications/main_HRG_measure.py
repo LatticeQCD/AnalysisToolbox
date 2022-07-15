@@ -12,6 +12,7 @@ import numpy as np
 from latqcdtools.physics.HRG import HRG, EV_HRG
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import getArgs, printArg
+from latqcdtools.base.readWrite import writeTable
 
 
 parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
@@ -107,11 +108,9 @@ if args.obs == "chi":
                                 mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
     if tag is not None:
-        np.savetxt("chiBQSC_%s_%s.txt"%(args.BQSC,tag),np.c_[T,muB_div_T,chi_pdg,chi_QM],
-                   fmt='%.1f %.8e %.8e %.8e ',header='T    PDG-HRG         QM-HRG  ' )
+        writeTable("chiBQSC_%s_%s.txt"%(args.BQSC,tag), T, muB_div_T, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
     else:
-        np.savetxt("chiBQSC_%s_.txt"%args.BQSC,np.c_[T,muB_div_T,chi_pdg,chi_QM],
-                   fmt='%.1f %.8e %.8e %.8e',header='T    PDG-HRG         QM-HRG  ' )
+        writeTable("chiBQSC_%s_.txt"%args.BQSC, T, muB_div_T, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
 
@@ -119,11 +118,9 @@ elif args.obs == "p":
     p_pdg = pdghrg.P_div_T4(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
     if tag is not None:
-        np.savetxt("P_div_T4_%s.txt"%tag, (np.transpose(T),np.transpose(p_pdg),np.transpose(p_QM)),
-                   fmt='%.1f %.8e %.8e',header='T    PDG-HRG         QM-HRG  ')
+        writeTable("P_div_T4_%s.txt"%tag, T, p_QM, p_pdg, header='T    PDG-HRG         QM-HRG  ')
     else:
-        np.savetxt("P_div_T4.txt", (np.transpose(T),np.transpose(p_pdg),np.transpose(p_QM)),
-                   fmt='%.1f %.8e %.8e',header='T    PDG-HRG         QM-HRG  ')
+        writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')
 
 elif args.obs == "cs2":
 
