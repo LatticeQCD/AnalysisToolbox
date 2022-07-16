@@ -13,7 +13,6 @@ from latqcdtools.physics.HRG import HRG, EV_HRG
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 
-# 4. get rid of the run shell scripts, should be easy enough to use without them
 # 7. update any missing documentation
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)

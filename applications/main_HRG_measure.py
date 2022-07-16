@@ -3,7 +3,8 @@
 # 
 # J. Goswami
 #
-# Use data in PDG table to carry out HRG calculations.
+# Use hardon resonance lists to measure observables. You can specify some line of constant physics as input, or
+# you can specify the values of the control parameters by hand.
 #
 
 
@@ -96,7 +97,6 @@ pdghrg     = HRG(M1,g1,w1,B1,S1,Q1,C1)
 
 if args.obs == "chi":
 
-    # mu derivative orders
     Border = int(args.BQSC[0])
     Qorder = int(args.BQSC[1])
     Sorder = int(args.BQSC[2])
@@ -121,11 +121,3 @@ elif args.obs == "p":
         writeTable("P_div_T4_%s.txt"%tag, T, p_QM, p_pdg, header='T    PDG-HRG         QM-HRG  ')
     else:
         writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')
-
-elif args.obs == "cs2":
-
-    def cs2(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return (4 * self.P_div_T4(T, mu_B, mu_S, mu_Q, mu_C) + T * self.ddT_P_div_T4(T, mu_B, mu_S, mu_Q, mu_C)
-                ) / (4 * self.E_div_T4(T, mu_B, mu_S, mu_Q, mu_C) + T * self.ddT_E_div_T4(T, mu_B, mu_S, mu_Q, mu_C))
-
-
