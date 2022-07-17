@@ -1,5 +1,5 @@
 # calculate susceptibilities of arbitrary order also on PC line, uses main_HRG as input, since the krylov solver
-# part is the slow part
+# part is the slow part we solve only once
 
 import numpy as np
 import argparse
