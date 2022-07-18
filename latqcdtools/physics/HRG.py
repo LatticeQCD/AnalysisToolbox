@@ -102,7 +102,8 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1,20):
                 x = self.Mass[k]*n/T
-                eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(2,x) * (3 - n*self.muN(k,mu_B,mu_Q,mu_S,mu_C)/T) + kn(1,x)*x )
+                eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n \
+                       * ( kn(2,x) * 3 + kn(1,x)*x )
         return eps
 
 
@@ -125,14 +126,10 @@ class HRG:
     def ddT_E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         eps = 0.
         for k in range(len(self.Mass)):
-            muxN = self.muN(k, mu_B, mu_Q, mu_S, mu_C)
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                eps += self.factor(k, n, T)/m * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n / T**7 \
-                                              * (   kn(0,x) * ( n*m*( -2*muxN*T + n*( m**2 + muxN**2 ) ) )
-                                                  + kn(1,x) * ( -2*n**2*m**2*muxN - 4*muxN*T**2 + n*T*( m**2 + 2*muxN ) )
-                                                )
+                eps += self.factor(k,n,T)*m*n * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**7
         return eps
 
 

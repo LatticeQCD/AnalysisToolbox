@@ -11,15 +11,20 @@ from latqcdtools.physics.HRG import HRG,EV_HRG
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
+
 import matplotlib.pyplot as plt
+
 
 EPSILON = 1e-6
 SHOW_PLOTS = False # In case you want a visual to see how comparisons with older results look.
 
+
 if SHOW_PLOTS:
     latexify()
 
+
 T = np.linspace(130, 179.5, 100)
+
 
 def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
     if SHOW_PLOTS:
@@ -36,6 +41,7 @@ hadrons,M,Q,B,S,_,g = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_
                                  usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
                                         dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
+
 
 # Spin statistics. w= fermi(-1)/bose(1) statistics. (If baryon number is 1, you have three spin-1/2 constituents, which
 # allows only half-integer baryon spins.
@@ -165,3 +171,10 @@ chiBSC112 = QMhrg.gen_chi(refT,B_order=1,S_order=1,Q_order=0,C_order=2)
 chiSC13   = QMhrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=3)
 RSC13     = -chiBSC112/(chiSC13 - chiBSC112)
 print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
+
+
+#
+#  Test: Check P/T^4 derivative by comparing against spline interpolation + numerical derivative
+#
+P_div_T4     = QMhrg.P_div_T4(T,0,0,0)
+ddT_P_div_T4 = QMhrg.ddT_P_div_T4(T,0,0,0)
