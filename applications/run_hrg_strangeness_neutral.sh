@@ -29,7 +29,7 @@ elif [ ${runMode} -eq 2 ]; then
 
 elif [ ${runMode} -eq 3 ]; then
 
-  for obs in cs2
+  for obs in energy specificheat #cs2
       do
           for mb in 0.0 1.0 1.5 2.0 2.5
               do
