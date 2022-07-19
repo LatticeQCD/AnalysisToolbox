@@ -70,57 +70,54 @@ class HRG:
 
     # n represents the nth order of a Taylor expansion of a logarithm.
     # k represents the kth state that appears in the table of resonances.
-    def factor(self, k, n, T):
+    # n=1 is Boltzmann approximation
+    def factor(self, k, n , T):
         # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
-        return self.Mass[k]**2 * self.g[k] * T**2 * self.w[k]**(n+1) / (2*np.pi**2*n**2)
+        return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
 
     def muN(self, k, mu_B, mu_Q, mu_S, mu_C):
-        # mu_i * N_i
+        # mu_X * N_X, X = (B,Q,S,C)
         return self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C
 
 
     def z(self, T, k, mu_B, mu_Q, mu_S, mu_C):
-        # e^(mu_i*N_i/T)
-        return np.exp( self.muN(k, mu_B, mu_Q, mu_S, mu_C)/T )
-
-
-    def pressure(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        P = 0.0
-        for k in range(len(self.Mass)):
-            for n in range(1, 20): # Keep only first 20 terms of the series.
-                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * kn(2,(n*self.Mass[k]/T))
-        return P
+        # e^(mu_X*N_X/T) , X = (B,Q,S,C)
+        return np.exp( ( self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C ) / T )
 
 
     def P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return self.pressure(T, mu_B, mu_S, mu_Q, mu_C)/T**4
-
-
-    def energy_density(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        eps = 0.
+        P = 0.0
         for k in range(len(self.Mass)):
-            for n in range(1,20):
-                x = self.Mass[k]*n/T
-                eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n \
-                       * ( kn(2,x) * 3 + kn(1,x)*x )
-        return eps
+            if self.Mass[k] < 500 : 
+                for n in range(1, 20): # We only need n = 20 of a Taylor series for the pions i.e the particles whose mass is less than 200 MeV for safety we also include Kaons as well.
+                    P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * kn(2,(n*self.Mass[k]/T))
+            else :
+                P += self.factor(k, 1, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C) * kn(2,(self.Mass[k]/T)) 
+        return P
 
 
     def E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return self.energy_density(T, mu_B, mu_S, mu_Q, mu_C)/T**4
+        eps = 0.
+        for k in range(len(self.Mass)):
+            if self.Mass[k] < 500 :  
+                for n in range(1,20):
+                    x = self.Mass[k]*n/T
+                    eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n \
+                        * ( kn(2,x) * 3 + kn(1,x)*x )
+            else :
+                x = self.Mass[k]/T 
+                eps += self.factor(k,1,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)\
+                        * ( kn(2,x) * 3 + kn(1,x)*x )
+        return eps
 
 
     # all unitless: s = e + p - mu_i n_i
-    def entropy(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+    def S_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         muxN=0.
         for k in range(len(self.Mass)):
             muxN += self.muN(k, mu_B, mu_Q, mu_S, mu_C)
-        return ( self.energy_density(T,mu_B,mu_S,mu_Q,mu_C) + self.pressure(T,mu_B,mu_S,mu_Q,mu_C) - muxN )/T
-
-
-    def S_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return self.entropy(T,mu_B,mu_S,mu_Q,mu_C)/T**3
+        return  self.E_div_T4(T,mu_B,mu_S,mu_Q,mu_C) + self.P_div_T4(T,mu_B,mu_S,mu_Q,mu_C) - muxN / T
 
 
     def ddT_E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
@@ -129,7 +126,7 @@ class HRG:
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                eps += self.factor(k,n,T)*m*n * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**7
+                eps += self.factor(k,n,T)*m*n * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**3
         return eps
 
 
@@ -140,32 +137,27 @@ class HRG:
                 m    = self.Mass[k]
                 x    = m*n/T
                 # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
-                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
-                     * ( kn(1,x)*m*n - T*kn(2,x) )/T**7
+                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x)*m*n - T*kn(2,x) )/T**7
         return P
 
 
-    def CV(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return ( 4*self.E_div_T4(T, mu_B, mu_S, mu_Q, mu_C) + T*self.ddT_E_div_T4(T, mu_B, mu_S, mu_Q, mu_C) ) * T**3
-
-
     def CV_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
-        return self.CV(T, mu_B, mu_S, mu_Q, mu_C)/T**3
+        return 4*self.E_div_T4(T, mu_B, mu_S, mu_Q, mu_C) + T*self.ddT_E_div_T4(T, mu_B, mu_S, mu_Q, mu_C)
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
         chi = 0.0
         for k in range(len(self.Mass)):
-            Nterms = 20
-            if self.B[k] != 0:
-                Nterms = 2
+            Nterms = 2
+            if self.Mass[k] < 500 :
+                Nterms = 20
             for n in range(1, Nterms):
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
                                               * (self.Q[k]*n)**Q_order \
                                               * (self.C[k]*n)**C_order \
                                               * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
                                               * kn(2,(n*self.Mass[k]/T))
-        return chi/T**4
+        return chi
 
 
     def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
@@ -195,7 +187,7 @@ class HRG:
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
                                                   * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
-                                                  * kn(2,(n*self.Mass[k]/T))/T**4
+                                                  * kn(2,(n*self.Mass[k]/T))
         return chi
 
 

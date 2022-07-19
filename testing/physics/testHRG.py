@@ -108,7 +108,7 @@ comparisonPlot(pdghrg.CV_div_T3(T,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.
 refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
 #cs2 = (   4*QMhrg.P_div_T4(refT,0,0,0,0) + refT*QMhrg.ddT_P_div_T4(refT,0,0,0,0)
 #      )/( 4*QMhrg.E_div_T4(refT,0,0,0,0) + refT*QMhrg.ddT_E_div_T4(refT,0,0,0,0) )
-cs2 = pdghrg.entropy(refT,0,0,0,0)/pdghrg.CV(refT,0,0,0)
+cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3(refT,0,0,0)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
 #
