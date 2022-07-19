@@ -136,11 +136,12 @@ class HRG:
     def ddT_P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         P = 0.
         for k in range(len(self.Mass)):
-            muxN = self.muN(k, mu_B, mu_Q, mu_S, mu_C)
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                P += self.factor(k, n, T) * n * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x) * m - kn(2,x) * muxN )/T**2
+                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
+                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                     * ( kn(1,x)*m*n - T*kn(2,x) )/T**7
         return P
 
 

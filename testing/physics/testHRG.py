@@ -105,6 +105,12 @@ print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 
 comparisonPlot(pdghrg.CV_div_T3(T,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
+refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
+#cs2 = (   4*QMhrg.P_div_T4(refT,0,0,0,0) + refT*QMhrg.ddT_P_div_T4(refT,0,0,0,0)
+#      )/( 4*QMhrg.E_div_T4(refT,0,0,0,0) + refT*QMhrg.ddT_E_div_T4(refT,0,0,0,0) )
+cs2 = pdghrg.entropy(refT,0,0,0,0)/pdghrg.CV(refT,0,0,0)
+print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
+
 #
 # Test: Calculate chi^1001_BQSC at muB/T=0. Update and uncomment this when the particle list is finalized.
 #
@@ -176,5 +182,5 @@ print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
 #
 #  Test: Check P/T^4 derivative by comparing against spline interpolation + numerical derivative
 #
-P_div_T4     = QMhrg.P_div_T4(T,0,0,0)
-ddT_P_div_T4 = QMhrg.ddT_P_div_T4(T,0,0,0)
+#P_div_T4     = QMhrg.P_div_T4(T,0,0,0)
+#ddT_P_div_T4 = QMhrg.ddT_P_div_T4(T,0,0,0)
