@@ -96,10 +96,11 @@ nB = QMhrg.gen_chi(T[0], B_order=1, Q_order=0, S_order=0, C_order=0, mu_B=target
 if not rel_check(target_snB,s/nB,1e-4):
     print("#Strayed from line of constant physics by",100*abs(target_snB-s/nB)/target_snB,"%")
 
-# TODO: this is bullshit at the moment. CV, p are correct at least at zero mu, so my first guess is something is wrong
-#       with dP/dT. anyway these can be cross-checked with numerical derivative
-cs2 = (   4*QMhrg.P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) + T[0]*QMhrg.ddT_P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC)
-      )/( 4*QMhrg.E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) + T[0]*QMhrg.ddT_E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )
+pT4 = QMhrg.P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC)
+eT4 = QMhrg.E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC)
+
+# these temp derivatives may not be correct for this situation...
+cs2 = ( 4*pT4 + T[0]*QMhrg.ddT_P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )/( 4*eT4 + T[0]*QMhrg.ddT_E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )
 
 
-print('  %.8e  %.8e  %.8e  '%(T[0],target_muB,cs2))
+print('  %.8e  %.8e  %.8e  %.8e  %.8e'%(T[0],target_muB,cs2,pT4,eT4))

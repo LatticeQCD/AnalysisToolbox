@@ -39,10 +39,12 @@ class HRG:
         needs to be truncated at some order. These functions get strongly suppressed when their argument is large.
         In our case, this argument is proportional to the mass. Hence we will sometimes take the Boltzmann
         approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
-        expansion need to be kept. Doing so boosts performance. """
+        expansion need to be kept. Doing so boosts performance.
+
+        We work in the grand canonical ensemble, i.e. we consider P(V,T,mu_i/T). Hence in this class, derivatives w.r.t.
+        one of those N_chemical_potentials + 2 variables assume all others are held fixed. """
 
 
-    # For now keep parallelize false. This implementation does not speed anything up for some reason.
     def __init__(self, Mass, g, w, B, S, Q, C = None):
         # M = Mass of the hadron
         # Q = charge of the hadron
@@ -72,7 +74,7 @@ class HRG:
     # k represents the kth state that appears in the table of resonances.
     # n=1 is Boltzmann approximation
     def factor(self, k, n , T):
-        # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
+        # (m/T)^2 g eta^(n+1) / 2pi^2 n^2
         return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
 
@@ -136,8 +138,7 @@ class HRG:
             for n in range(1,20):
                 m    = self.Mass[k]
                 x    = m*n/T
-                # m^2 g eta^(n+1) T^2 / 2pi^2 n^2
-                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x)*m*n - T*kn(2,x) )/T**7
+                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x)*m*n - T*kn(2,x) )/T**3
         return P
 
 
@@ -262,10 +263,8 @@ class EV_HRG:
                 (i, 0, len(P) - 1)))
         expr_chi = sy.diff(F_pressure, mB, B_order, mQ, Q_order, mS, S_order)
 
-        f = lambdify((mB, mQ, mS, ci, bi, qi, si, temp, be),
-                     expr_chi, modules=['scipy', {'LambertW': lambertw}])
+        f = lambdify( (mB, mQ, mS, ci, bi, qi, si, temp, be), expr_chi, modules=['scipy', {'LambertW': lambertw}] )
 
-        chi_num = f(mu_B/T, mu_Q/T, mu_S/T, P, X_baryon,
-                    X_charge, X_strange, T, b*(T/197.3)**3).real
+        chi_num = f(mu_B/T, mu_Q/T, mu_S/T, P, X_baryon, X_charge, X_strange, T, b*(T/197.3)**3).real
 
         return chi_num
