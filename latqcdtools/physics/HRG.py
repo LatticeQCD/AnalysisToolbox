@@ -12,20 +12,19 @@ from scipy.special import kn, lambertw
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
 
 
+APPROX_KAON_MASS = 500   # Mass cutoff in [MeV] for Boltzmann approximation.
+
+
 def RMS_mass(Nt, T):
-
-    a = 6924.46
-    b = 31881.4
-    c = -1.02357e+06
-    mkaon = 493.68
-    mpion = 140.0
-
-    x = 1.0/Nt/T*197.3
+    a             = 6924.46
+    b             = 31881.4
+    c             = -1.02357e+06
+    mkaon         = 493.68
+    mpion         = 140.0
+    x             = 1.0/Nt/T*197.3
     pion_rms_mass = mpion + a*x**2+b*x**4+c*x**6
-
-    del2 = pion_rms_mass**2 - mpion**2
+    del2          = pion_rms_mass**2 - mpion**2
     kaon_rms_mass = np.sqrt(mkaon**2+del2)
-
     return pion_rms_mass, kaon_rms_mass
 
 
@@ -43,7 +42,6 @@ class HRG:
 
         We work in the grand canonical ensemble, i.e. we consider P(V,T,mu_i/T). Hence in this class, derivatives w.r.t.
         one of those N_chemical_potentials + 2 variables assume all others are held fixed. """
-
 
     def __init__(self, Mass, g, w, B, S, Q, C = None):
         # M = Mass of the hadron
@@ -70,52 +68,50 @@ class HRG:
         return "hrg"
 
 
+    def Nmax(self,k):
+        if self.Mass[k] < APPROX_KAON_MASS:
+            return 21 # Keep 20 terms of Taylor expansion
+        else:
+            return 2  # Keep 1 term of Taylor expansion
+
+
     # n represents the nth order of a Taylor expansion of a logarithm.
     # k represents the kth state that appears in the table of resonances.
     # n=1 is Boltzmann approximation
     def factor(self, k, n , T):
-        # (m/T)^2 g eta^(n+1) / 2pi^2 n^2
+        """ (m/T)^2 g eta^(n+1) / 2pi^2 n^2 """
         return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
 
     def muN(self, k, mu_B, mu_Q, mu_S, mu_C):
-        # mu_X * N_X, X = (B,Q,S,C)
+        """ mu_X * N_X, X = (B,Q,S,C) """
         return self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C
 
 
     def z(self, T, k, mu_B, mu_Q, mu_S, mu_C):
-        # e^(mu_X*N_X/T) , X = (B,Q,S,C)
+        """ e^(mu_X*N_X/T) , X = (B,Q,S,C) """
         return np.exp( ( self.B[k]*mu_B + self.Q[k]*mu_Q + self.S[k]*mu_S + self.C[k]*mu_C ) / T )
 
 
     def P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         P = 0.0
         for k in range(len(self.Mass)):
-            if self.Mass[k] < 500 : 
-                for n in range(1, 20): # We only need n = 20 of a Taylor series for the pions i.e the particles whose mass is less than 200 MeV for safety we also include Kaons as well.
-                    P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * kn(2,(n*self.Mass[k]/T))
-            else :
-                P += self.factor(k, 1, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C) * kn(2,(self.Mass[k]/T)) 
+            for n in range(1, self.Nmax(k)):
+                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * kn(2,(n*self.Mass[k]/T))
         return P
 
 
     def E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         eps = 0.
         for k in range(len(self.Mass)):
-            if self.Mass[k] < 500 :  
-                for n in range(1,20):
-                    x = self.Mass[k]*n/T
-                    eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n \
-                        * ( kn(2,x) * 3 + kn(1,x)*x )
-            else :
-                x = self.Mass[k]/T 
-                eps += self.factor(k,1,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)\
-                        * ( kn(2,x) * 3 + kn(1,x)*x )
+            for n in range(1,self.Nmax(k)):
+                x = self.Mass[k]*n/T
+                eps += self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(2,x) * 3 + kn(1,x)*x )
         return eps
 
 
-    # all unitless: s = e + p - mu_i n_i
     def S_div_T3(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        """ s = e + p - mu_i n_i """
         muxN=0.
         for k in range(len(self.Mass)):
             muxN += self.muN(k, mu_B, mu_Q, mu_S, mu_C)
@@ -125,7 +121,7 @@ class HRG:
     def ddT_E_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         eps = 0.
         for k in range(len(self.Mass)):
-            for n in range(1,20):
+            for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
                 eps += self.factor(k,n,T)*m*n * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**3
@@ -135,7 +131,7 @@ class HRG:
     def ddT_P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
         P = 0.
         for k in range(len(self.Mass)):
-            for n in range(1,20):
+            for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
                 P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x)*m*n - T*kn(2,x) )/T**3
@@ -147,18 +143,39 @@ class HRG:
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
+        """ chi_BQSC """
         chi = 0.0
         for k in range(len(self.Mass)):
-            Nterms = 2
-            if self.Mass[k] < 500 :
-                Nterms = 20
-            for n in range(1, Nterms):
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
-                                              * (self.Q[k]*n)**Q_order \
-                                              * (self.C[k]*n)**C_order \
+            for n in range(1, self.Nmax(k)):
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
                                               * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
                                               * kn(2,(n*self.Mass[k]/T))
         return chi
+
+
+    def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):
+        """ d(chi_BQSC)/dT """
+        chi = 0.0
+        for k in range(len(self.Mass)):
+            for n in range(1,self.Nmax(k)):
+                m    = self.Mass[k]
+                x    = m*n/T
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                                              * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
+                                              * ( kn(1,x)*m*n - T*kn(2,x) )/T**3
+        return chi
+
+
+    def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        """ Arbitrary muX/T derivatives of E/T^4 """
+        eps = 0.
+        for k in range(len(self.Mass)):
+            for n in range(1,self.Nmax(k)):
+                x = self.Mass[k]*n/T
+                eps += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                                              * self.factor(k,n,T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n \
+                                              * ( kn(2,x)*3 + kn(1,x)*x )
+        return eps
 
 
     def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, mu_B=0., mu_Q=0., mu_S=0., mu_C=0.):

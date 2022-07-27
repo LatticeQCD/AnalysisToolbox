@@ -13,7 +13,6 @@ from latqcdtools.physics.HRG import HRG, EV_HRG
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 
-# 7. update any missing documentation
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties", type=lambda f: open(f))
