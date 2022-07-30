@@ -14,7 +14,7 @@ def getArgs(parser):
     """ Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. """
     args, invalid_args = parser.parse_known_args()
     if len(invalid_args)>0:
-        logger.TBError("Received unrecognized arguments",invalid_args)
+        logger.TBError("Received unrecognized arguments",invalid_args,".")
     return args
 
 
@@ -24,14 +24,22 @@ def printArg(message,param):
         print(message,param)
 
 
+def printDict(dic):
+    """ Prints key, value pairs line by line. """
+    if not isinstance(dic,dict):
+        logger.TBError("printDict should take a dictionary as argument.")
+    for key in dic:
+        print(key,dic[key])
+
+
 def shell(*args):
-  """ Carry out the passed arguments args in the shell. Can be passed as a single
-      string or as a list. Captures and returns output of shell command. E.g.
-        shell('ls -lah')
-  """
-  args = [str(s) for s in args]
-  process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
-  return process.stdout
+    """ Carry out the passed arguments args in the shell. Can be passed as a single
+        string or as a list. Captures and returns output of shell command. E.g.
+          shell('ls -lah')
+    """
+    args = [str(s) for s in args]
+    process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
+    return process.stdout
 
 
 #
@@ -61,9 +69,9 @@ class timer:
         self._tend   = time.time()
         timing = self._tend - self._tstart
         if message is None:
-            print("\n  Time to finish: %12.8f [s]\n" % timing)
+            print("\n  Time to finish: %12.8f [s].\n" % timing)
         else:
-            print("\n  "+message+"\n")
+            print("\n  Time to finish "+message+": %12.8f [s].\n" % timing)
 
 
     def resetTimer(self):
