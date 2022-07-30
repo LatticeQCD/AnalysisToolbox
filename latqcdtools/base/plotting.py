@@ -93,7 +93,7 @@ default_params = {
     'xmax': None,                       # Similarly, maximium xvalue to be plotted
     'marker': "iter",                   # Marker for plotting dots
     'markersize': 3.5,                  # Size of the dots
-    'linewidth': 0.5,                   # Linewidth of line plots
+    'linewidth': 1,                   # Linewidth of line plots
     'loc': 1,                           # Position of the sub_plot_location
     'loc1': 4,                          # First edge of the connection line from the zoom window to sub plot
     'loc2': 2,                          # Second edge of the connection line from the zoom window to sub plot
