@@ -90,10 +90,12 @@ default_params = {
     'handletextpad' : 0.2,              # Spacing between symbol and text in legend
     'legend_title': None,               # Title of the legend
     'xmin': None,                       # Does not directly change x-range
-    'xmax': None,                       # Similarly, maximium xvalue to be plotted
+    'xmax': None,                       # Similarly, maximium x-value to be plotted
+    'ymin': None,                       # Does not directly change y-range
+    'ymax': None,                       # Similarly, maximium y-value to be plotted
     'marker': "iter",                   # Marker for plotting dots
     'markersize': 3.5,                  # Size of the dots
-    'linewidth': 1,                   # Linewidth of line plots
+    'linewidth': 1,                     # Linewidth of line plots
     'loc': 1,                           # Position of the sub_plot_location
     'loc1': 4,                          # First edge of the connection line from the zoom window to sub plot
     'loc2': 2,                          # Second edge of the connection line from the zoom window to sub plot
@@ -268,7 +270,7 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
     if params['style'] == "band":
         return plot_band(xdata, ydata, yedata, xedata, **params)
 
-    raise ValueError("No such style: " + params['style'])
+    logger.TBError("No such style: " + params['style'])
 
 
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
@@ -276,7 +278,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     fill_param_dict(params)
     optional = add_optional(params)
 
-    xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, xmin=params['xmin'], xmax=params['xmax'])
+    xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
 
     ax = params['ax']
     xscale = params['xscale']
@@ -373,7 +375,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     xdata, ydata, yedata, xedata = check_numpy(xdata, ydata, yedata, xedata)
     fill_param_dict(params)
     optional = add_optional(params)
-    xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, xmin=params['xmin'], xmax=params['xmax'])
+    xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
     xscale=params['xscale']
     yscale=params['yscale']
     ax = params['ax']
@@ -494,16 +496,27 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
         return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
 
 
-def plot_fill(xdata, ydata, yedata, **params):
-    xdata, ydata, yedata = check_numpy(xdata, ydata, yedata)
+def plot_fill(xdata, ydata, yedata, xedata=None, **params):
+
+    if (yedata is None) and (xedata is None):
+        logger.TBError("Please pass plot_fill some error bars.")
+    if (yedata is not None) and (xedata is not None):
+        logger.TBError("Please pass plot_fill either x-error or y-error, not both.")
+
     fill_param_dict(params)
     optional = add_optional(params)
-    xdata, ydata, yedata = remove_points(xdata, ydata, yedata, xmin = params['xmin'], xmax = params['xmax'])
-    xscale=params['xscale']
-    yscale=params['yscale']
-    ax = params['ax']
 
-    zod = params['zod']
+    if xedata is None:
+        xdata, ydata, yedata = check_numpy(xdata, ydata, yedata)
+        xdata, ydata, yedata = remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
+    else:
+        xdata, ydata, xedata = check_numpy(xdata, ydata, xedata)
+        ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval = params['ymin'], maxval = params['ymax'])
+
+    xscale = params['xscale']
+    yscale = params['yscale']
+    ax     = params['ax']
+    zod    = params['zod']
     if zod is None:
          zod = globals()['zod']
 
@@ -517,9 +530,15 @@ def plot_fill(xdata, ydata, yedata, **params):
     globals()['zod'] += 1
 
     col = ebar[0].get_color()
-    pl = ax.fill_between(xdata*xscale, (np.asarray(ydata*yscale) - np.asarray(yedata*yscale)),
-                         (np.asarray(ydata*yscale) + np.asarray(yedata*yscale)), facecolor=col, alpha=params['alpha'],
-                         linewidth=0, zorder=1)
+    if xedata is None:
+        pl = ax.fill_between(xdata*xscale, (np.asarray(ydata*yscale) - np.asarray(yedata*yscale)),
+                             (np.asarray(ydata*yscale) + np.asarray(yedata*yscale)), facecolor=col, alpha=params['alpha'],
+                             linewidth=0, zorder=1)
+    else:
+        pl = ax.fill_betweenx(ydata * yscale, (np.asarray(xdata * xscale) - np.asarray(xedata * xscale)),
+                             (np.asarray(xdata * xscale) + np.asarray(xedata * xscale)), facecolor=col,
+                             alpha=params['alpha'],
+                             linewidth=0, zorder=1)
 
     if params['label'] is not None:
         legend_labels.append(params['label'])
@@ -533,10 +552,9 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     fill_param_dict(params)
     optional = add_optional(params)
     if center is not None:
-        xdata, low_lim, up_lim, center = remove_points(xdata, low_lim, up_lim, center, xmin = params['xmin'],
-                                                       xmax = params['xmax'])
+        xdata, low_lim, up_lim, center = remove_points(xdata, low_lim, up_lim, center, minval = params['xmin'], maxval = params['xmax'])
     else:
-        xdata, low_lim, up_lim = remove_points(xdata, low_lim, up_lim, xmin = params['xmin'], xmax = params['xmax'])
+        xdata, low_lim, up_lim = remove_points(xdata, low_lim, up_lim, minval = params['xmin'], maxval = params['xmax'])
 
     xscale=params['xscale']
     yscale=params['yscale']
@@ -733,14 +751,13 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
                 print(xdata[i], ydata[i], file = fout)
 
 
-def remove_points(xdata, *args, xmin = -np.inf, xmax = np.inf):
-    if xmin is None:
-        xmin = -np.inf
-    if xmax is None:
-        xmax = np.inf
-
-    ind = (xdata>=xmin) & (xdata<=xmax)
-    ret = [xdata[ind]]
+def remove_points(data, *args, minval = None, maxval = None):
+    if minval is None:
+        minval = -np.inf
+    if maxval is None:
+        maxval = np.inf
+    ind = (data>=minval) & (data<=maxval)
+    ret = [data[ind]]
     for i in args:
         try:
             if i is not None:

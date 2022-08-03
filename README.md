@@ -4,7 +4,7 @@ The AnalysisToolbox is a collection of Python tools that can be used for data an
 particular toward lattice QCD. The Analysistoolbox is used especially by the HotQCD collaboration, so
 it also includes some methods complying with their conventions.
 
-## Prerequisites
+## Getting Started
 
 In order to use these scripts, please ensure that you have the following:
 1. Python 3.6 or better
@@ -34,7 +34,16 @@ PYTHONPATH containing the path to the root folder of this project; e.g. add the
 ```shell
 export PYTHONPATH="${PYTHONPATH}:/path/to/your/AnalysisToolbox/"
 ```
-to your `bashrc`.
+to your `bashrc`. This updated `PYTHONPATH` can then be implemented with
+```shell
+source .bashrc
+```
+or you can just open a new terminal. Once this has all been settled
+try running the tests. You can do this by going to the `testing` folder
+and calling
+```shell
+bash runTests.bash
+```
 
 
 ## Documentation

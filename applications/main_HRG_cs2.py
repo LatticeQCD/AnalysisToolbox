@@ -100,7 +100,7 @@ eT4 = QMhrg.E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC)
 
 # these temp derivatives do not apply. the formula assumes ns=0 and s/nB fixed, but these derivatives are rather
 # carried out assuming mu/T is fixed. TODO: this needs to be removed and the program renamed.
-cs2 = ( 4*pT4 + T[0]*QMhrg.ddT_P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )/( 4*eT4 + T[0]*QMhrg.ddT_E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )
-
+#cs2 = ( 4*pT4 + T[0]*QMhrg.ddT_P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )/( 4*eT4 + T[0]*QMhrg.ddT_E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )
+cs2 = -1 
 
 print('  %.8e  %.8e  %.8e  %.8e  %.8e'%(T[0],target_muB,cs2,pT4,eT4))
