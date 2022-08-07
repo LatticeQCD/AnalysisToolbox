@@ -45,7 +45,7 @@ if (Tpc0 is not None) and (temp is not None):
     logger.TBError("Please choose between having a fixed temperature or moving along pseudocritical line.")
 
 
-muB=np.arange(5,400,5)
+muB=np.arange(10,800,10)
 
 
 dS = 0.214  # This parameterization is kind of outdated however probably useful for solver to give better starting values of muQ and muS

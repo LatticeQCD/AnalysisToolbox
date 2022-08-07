@@ -49,29 +49,31 @@ def set_markers(marker_set=None):
 
 
 default_params = {
-    'xcol': None,          # Column for the xdata when plotting a file
-    'ycol': None,          # Column for the ydata when plotting a file
-    'yecol': None,         # Column for the errors in y-direction when plotting a file
-    'xecol': None,         # Column for the errors in x-direction when plotting a file
-    'expand': True,        # Defines whether the parameters get expanded or not, i.e func(x *param) or func(x param)
-    'ax': plt,             # Axis object that is used for the plots. Default is matplotlib.pyplot
-    'style': "dots",       # Style when plotting a file
+
+    # Hidden python options. (Generally speaking do not touch these.)
+    'ax': plt,      # Axis object that is used for the plots. Default is matplotlib.pyplot.
+    'expand': True, # Defines whether the parameters get expanded or not, i.e func(x *param) or func(x param).
+
+    # Basic options affecting all plots.
     'xlabel': None,
     'ylabel': None,
-    'label': None,         # Label in legend
-    'title': None,         # Title of the plot
-    'alpha': 0.5,          # Transperancy for different plots
-    'alpha_dots': None,    # Transperancy for different dots
-    'alpha_lines': 1,      # Transperancy for different lines
-    'alpha_fill_edge': 1,  # Transperancy for edges of error bands
-    'alpha_label': 0,      # Transperancy for labels
-    'alpha_legend': 0,     # Transperancy for the legend
-    'color': None,         # Color for different plots
-    'xscale': 1.0,         # Scale data in xdata by this factor
-    'yscale': 1.0,         # Scale data in ydata by this factor
-    'npoints' : 1000,      # Number of points for function plotting
-    #
-    #  loc positions:
+    'title': None,
+    'label': None,              # What are the data called? (Will appear in legend.)
+    'color': None,              # Color for your data. (By default each new set automatically gets different color.)
+    'marker': "iter",           # Symbol used for plotting data. (Set to 'None' if you don't want any.)
+    'markersize': 3.5,          # Size of the symbols.
+    'font_size': 9,             # Default font size for text.
+    'alpha': 0.5,               # General transparency for data.
+    'xscale': 1.0,              # Scale data in xdata by this factor.
+    'yscale': 1.0,              # Scale data in ydata by this factor.
+    'ticksintoplot' : True,     # Put ticks into plotting area.
+    'surroundWithTicks' : True, # Put ticks also on top and right.
+    'labelsintoplot': False,    # Put xlabel and ylabel into plotting area.
+    'xlabelpos': None,          # If labelsintplot=True, shift the position (x,y) of the x-label.
+    'ylabelpos': None,
+    'zod': None,                # Controls where in foreground/background data/lines/bands appear.
+
+    # Options for the legend.
     # 'upper right'   : 1
     # 'upper left'    : 2
     # 'lower left'    : 3
@@ -82,19 +84,31 @@ default_params = {
     # 'lower center'  : 8
     # 'upper center'  : 9
     # 'center'        : 10
-    #
+    # 'best'          : Tries its best to automatically find a place for the legend.
     'legendpos': 'best',
-    'bbox_to_anchor': None,             # Manual position of the legend
-    'legend_ncol': 1,                   # Number of columns in the legend
-    'legend_col_spacing': None,         # Spacing between columns in the legend
-    'handletextpad' : 0.2,              # Spacing between symbol and text in legend
-    'legend_title': None,               # Title of the legend
+    'bbox_to_anchor': None,      # Manual position of the legend.
+    'legend_ncol': 1,            # Number of columns in the legend.
+    'legend_col_spacing': None,  # Spacing between columns in the legend.
+    'handletextpad': 0.2,        # Spacing between symbol and text in legend.
+    'legend_title': None,        # Title of the legend.
+
+    # Options for plotting files.
+    'xcol': None,          # Column for the xdata when plotting a file.
+    'ycol': None,          # Column for the ydata when plotting a file.
+    'yecol': None,         # Column for the errors in y-direction when plotting a file.
+    'xecol': None,         # Column for the errors in x-direction when plotting a file.
+    'style': "dots",       # Style when plotting a file.
+
+    'alpha_dots': None,    # Transperancy for different dots
+    'alpha_lines': 1,      # Transperancy for different lines
+    'alpha_fill_edge': 1,  # Transperancy for edges of error bands
+    'alpha_label': 0,      # Transperancy for labels
+    'alpha_legend': 0,     # Transperancy for the legend
+    'npoints' : 1000,      # Number of points for function plotting
     'xmin': None,                       # Does not directly change x-range
     'xmax': None,                       # Similarly, maximium x-value to be plotted
     'ymin': None,                       # Does not directly change y-range
     'ymax': None,                       # Similarly, maximium y-value to be plotted
-    'marker': "iter",                   # Marker for plotting dots
-    'markersize': 3.5,                  # Size of the dots
     'linewidth': 1,                     # Linewidth of line plots
     'loc': 1,                           # Position of the sub_plot_location
     'loc1': 4,                          # First edge of the connection line from the zoom window to sub plot
@@ -102,12 +116,7 @@ default_params = {
     'borderpad': 0.5,                   # Padding between subplot and major plot axis
     'capsize': 1.5,                     # Length of caps af error bars
     'elinewidth': 0.5,                  # Linewidth of the error bars of caps af error bars
-    'labelsintoplot': False,            # Put xlabel and ylabel into the plotting area
-    'xlabelpos': None,                  # If labelsintplot=True, shift the position (x,y) of the x-label
-    'ylabelpos': None,
-    'font_size' : 9,                    # Default font size for text
     'point_fill_color': "None",         # Fill color of points. Set to None (not as string) to have filled symbols
-    'zod' : None,                       # z order of plot
 }
 
 
@@ -219,6 +228,14 @@ def set_params(ax = plt, **params):
     if params['title'] is not None:
         if ax == plt:
             ax.title(params['title'])
+
+    if params['ticksintoplot'] is not None:
+        if ax == plt:
+            ax.tick_params(direction='in')
+
+    if params['surroundWithTicks']:
+        if ax == plt:
+            ax.tick_params(top=True,right=True)
 
     if params['show_leg']:
 

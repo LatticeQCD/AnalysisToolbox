@@ -3,7 +3,8 @@
 # 
 # H. Sandmeyer
 # 
-# Test several of the methods in the plotting.py module.
+# Test several of the methods in the plotting.py module. This script is a good
+# example script to see what kind of fanciful things you can do with plots.
 #
 
 import numpy as np
@@ -19,6 +20,5 @@ plot_file("data3.txt", 1, 2, 3, 4, style="fill", alpha=0.9, label="linear 2", le
 plot_bar([-6,-5],[1,2])
 plot_func(np.sin)
 plot_file_zoom('40%', '30%', 2., 4., "wurf.dat", 1, 3, 4, 2, capsize = 2, style = 'lines')
-plt.savefig("tmp.pdf")
+plt.show()
 plt.close()
-print("\nPlotting done. Compare tmp.pdf with ref.pdf\n")
