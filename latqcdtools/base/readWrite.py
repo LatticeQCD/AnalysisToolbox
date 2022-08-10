@@ -91,6 +91,11 @@ def writeTable(filename,*args,**kwargs):
     data = ()
     form = ''
     for col in args:
-        data += (col,)
-        form +=  '%.8e  '
+        if isinstance(col[0],complex):
+            data += (col.real,)
+            data += (col.imag,)
+            form += '%.8e  %8e  '
+        else:
+            data += (col,)
+            form += '%.8e  '
     np.savetxt(filename,np.transpose(data),fmt=form,header=head)

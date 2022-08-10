@@ -42,6 +42,15 @@ def shell(*args):
     return process.stdout
 
 
+def shellVerbose(*args):
+    """ Carry out the passed arguments args in the shell. Can be passed as a single
+        string or as a list. Captures and returns output of shell command. E.g.
+          shell('ls -lah')
+    """
+    args = [str(s) for s in args]
+    process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
+    print(process.stdout)
+
 #
 # A case where he fails:
 # ['thermalTable_mu0.0357', 'thermalTable_mu0.0952', 'thermalTable_mu0.1309', 'thermalTable_mu0.0833',

@@ -25,6 +25,18 @@ def check_numpy(*data):
     return tuple(data)
 
 
+def getColorGradient(NUM_COLORS=None):
+    """ Return a preceptually uniform set of NUM_COLORS colors. """
+    if NUM_COLORS is None:
+        logger.TBError("Give me a number of colors.")
+    cm = plt.get_cmap('viridis')
+    gradColors=[]
+    for i in range(NUM_COLORS):
+        color = cm(1.*i/NUM_COLORS)
+        gradColors.append(color)
+    return gradColors
+
+
 zod = 1 # use for zorder in plot commands will be increased
 
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
@@ -101,7 +113,7 @@ default_params = {
 
     'alpha_dots': None,    # Transperancy for different dots
     'alpha_lines': 1,      # Transperancy for different lines
-    'alpha_fill_edge': 1,  # Transperancy for edges of error bands
+    'alpha_fill_edge': 0,  # Transperancy for edges of error bands
     'alpha_label': 0,      # Transperancy for labels
     'alpha_legend': 0,     # Transperancy for the legend
     'npoints' : 1000,      # Number of points for function plotting
@@ -265,7 +277,7 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
         yedata = np.array(data[yecol - 1], dtype = float)
     else:
         if params['style'] == "fill":
-            raise ValueError("Need error column for filled plotting")
+            logger.TBError("Need error column for filled plotting")
     if xecol is not None:
         xedata = np.array(data[xecol - 1], dtype = float)
 
@@ -404,7 +416,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 
     zod = params['zod']
     if zod is None:
-         zod = globals()['zod']
+        zod = globals()['zod']
 
     marker = params['marker']
     if marker == "iter":
