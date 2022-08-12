@@ -285,3 +285,14 @@ class EV_HRG:
         chi_num = f(mu_B/T, mu_Q/T, mu_S/T, P, X_baryon, X_charge, X_strange, T, b*(T/197.3)**3).real
 
         return chi_num
+
+
+def LCP_init_NS0(muB):
+    """ Give a good initial guess for NS=0 LCP """
+    dS  = 0.214
+    eS  = 0.161
+    dQ  = 0.0211
+    eQ  = 0.106
+    muQ = -dQ / (1.0 + eQ * muB)
+    muS = dS / (1.0 + eS * muB)
+    return muQ, muS

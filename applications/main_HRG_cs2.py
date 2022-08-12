@@ -3,14 +3,13 @@
 # 
 # D. Clarke
 #
-# Do an HRG calculation of speed of sound at constant entropy. We use a formula that assumes strangeness neutrality
-# and fixes s/nB; hence we need a line of constant physics.
+# Do an HRG calculation of basic observables along a line of constant entropy.
 #
 
 
 import argparse
 import numpy as np
-from latqcdtools.physics.HRG import HRG
+from latqcdtools.physics.HRG import HRG, LCP_init_NS0
 from latqcdtools.base.utilities import getArgs
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, newton_krylov
@@ -29,6 +28,7 @@ args = getArgs(parser)
 showPlots  = False
 target_snB = args.snB
 LCP_file   = args.LCP_file
+r          = args.r
 
 
 T, muB, muQ, muS = np.loadtxt(args.LCP_file.name, unpack=True, usecols=(0, 1, 2, 3))
@@ -64,8 +64,6 @@ def func(z):
 target_muB = fsolve(func,x[guessIndex])[0]
 
 
-r=0.4
-# TODO: now it is used in two places, maybe can somehow be part of HRG header
 def strangeness_neutral_equations(muQS,mu,t):
     x, y   = muQS
     X1B = QMhrg.gen_chi(t,B_order=1,mu_B=mu,mu_Q=x,mu_S=y)
@@ -74,16 +72,8 @@ def strangeness_neutral_equations(muQS,mu,t):
     return X1S, X1Q - r*X1B
 
 
-# TODO: you use this so much it could probably be part of the HRG header file
-dS = 0.214  # This parameterization is kind of outdated however probably useful for solver to give better starting values of muQ and muS
-eS = 0.161
-dQ = 0.0211
-eQ = 0.106
-muQ = -dQ / (1.0 + eQ * target_muB)  # Initial guess for muQ
-muS = dS / (1.0 + eS * target_muB)   # Initial guess for muS
+muQ, muS = LCP_init_NS0
 solution = newton_krylov(lambda p: strangeness_neutral_equations(p,target_muB,T[0]), (muQ, muS))
-
-
 muQ = solution[0]
 muS = solution[1]
 
@@ -98,9 +88,5 @@ if not rel_check(target_snB,s/nB,1e-4):
 pT4 = QMhrg.P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC)
 eT4 = QMhrg.E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC)
 
-# these temp derivatives do not apply. the formula assumes ns=0 and s/nB fixed, but these derivatives are rather
-# carried out assuming mu/T is fixed. TODO: this needs to be removed and the program renamed.
-#cs2 = ( 4*pT4 + T[0]*QMhrg.ddT_P_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )/( 4*eT4 + T[0]*QMhrg.ddT_E_div_T4(T[0],mu_B=target_muB,mu_S=muS,mu_Q=muQ,mu_C=muC) )
-cs2 = -1 
 
-print('  %.8e  %.8e  %.8e  %.8e  %.8e'%(T[0],target_muB,cs2,pT4,eT4))
+print('  %.8e  %.8e  %.8e  %.8e'%(T[0],target_muB,pT4,eT4))

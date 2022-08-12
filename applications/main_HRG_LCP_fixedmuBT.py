@@ -9,11 +9,10 @@
 import numpy as np
 import argparse
 from scipy.optimize import newton_krylov
-from latqcdtools.physics.HRG import HRG, EV_HRG
+from latqcdtools.physics.HRG import HRG, EV_HRG, LCP_init_NS0
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 
-# 7. update any missing documentation
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties", type=lambda f: open(f))
@@ -34,7 +33,7 @@ b        = args.b
 tag      = args.particle_list
 r        = args.r
 Tpc0     = args.Tpc
-
+t        = args.temperature_range
 
 muB_div_T = float(args.muB)
 
@@ -44,25 +43,19 @@ printArg("    b [fm^3]:",args.b)
 
 if "EV" in models and b is None:
     logger.TBError("Need to specify excluded volume parameter b when using EVHRG.")
-if (Tpc0 is not None) and (temp is not None):
-    logger.TBError("Please choose between having a fixed temperature or moving along pseudocritical line.")
+if (Tpc0 is not None) and (t is not None):
+    logger.TBError("Please choose between a temperature range or moving along pseudocritical line.")
 
 if args.temperature_range is None:
     T = np.linspace(130, 180, 101)
 else:
-    t = args.temperature_range
     T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
 
-#muB=np.arange(5,400,5)
+
 muB = muB_div_T * T
 
 
-dS = 0.214  # This parameterization is kind of outdated however probably useful for solver to give better starting values of muQ and muS
-eS = 0.161
-dQ = 0.0211
-eQ = 0.106
-muQ = -dQ / (1.0 + eQ * muB)  # Initial guess for muQ
-muS = dS / (1.0 + eS * muB)   # Initial guess for muS
+muQ = muS =  LCP_init_NS0(muB)
 
 
 hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file.name,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))

@@ -3,12 +3,13 @@
 
 import numpy as np
 import argparse
-from latqcdtools.physics.HRG import HRG,EV_HRG
+from latqcdtools.physics.HRG import HRG
 from latqcdtools.base.utilities import getArgs
 
 
 parser = argparse.ArgumentParser(description='Script to calculate chiBQS along the pseudo-critical line',allow_abbrev=False)
-parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
+parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
+                    help="Table with hadron properties")
 parser.add_argument("--fixedmuBNszerofile", dest="fixedmuB", required=True,help="values of muB, muQ and muS for fixed muB / T", type=lambda f: open(f))
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", required=True ,type=str)
 parser.add_argument("--bqs", dest="BQS", required=False, help="BQS mu derivative orders.", type=str)
@@ -17,8 +18,9 @@ parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=flo
 
 
 args = getArgs(parser)
+r = args.r
 
-hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
+hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 
 tag = str(args.particle_list)
 
@@ -31,10 +33,6 @@ tpc, muB, muQ, muS = np.loadtxt(args.fixedmuB.name,unpack=True,usecols=(0,1,2,3)
 T=tpc
 
 
-r        = args.r
-
-
-# initialize the class
 QMhrg = HRG(M,g,w,B,S,Q)
 
 if args.obs == "chi":

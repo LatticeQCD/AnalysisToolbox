@@ -10,15 +10,15 @@
 
 import argparse
 import numpy as np
-from latqcdtools.physics.HRG import HRG, EV_HRG
+from latqcdtools.physics.HRG import HRG
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import getArgs, printArg
 from latqcdtools.base.readWrite import writeTable
 
 
 parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
-parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties.", type=lambda f: open(f))
-parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", default=None ,type=str)
+parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
+                    help="Table with hadron properties")
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
 parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi, cs2)", default="chi", type=str)
 parser.add_argument("--bqsc", dest="BQSC", required=False, help="BQSC mu derivative orders.", type=str)
@@ -75,24 +75,22 @@ else:
 
 
 print("\n  observable:",args.obs)
+printArg(" hadron_list:",args.hadron_file)
 printArg("  BQSC deriv:",args.BQSC)
 printArg("       muB/T:",muB_div_T)
-#printArg("    LCP file:",LCP_file.name)
 printArg("         tag:",tag)
 print("     T [MeV]:",T[0],T[-1],"\n")
 
 
-hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file.name,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
+hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 hadrons1,M1,Q1,B1,S1,C1,g1=np.loadtxt("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
                                       dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 w  = np.array([1 if ba==0 else -1 for ba in B])
 w1 = np.array([1 if ba==0 else -1 for ba in B1])
 
 
-
 QMhrg      = HRG(M,g,w,B,S,Q,C)
 pdghrg     = HRG(M1,g1,w1,B1,S1,Q1,C1)
-
 
 
 if args.obs == "chi":

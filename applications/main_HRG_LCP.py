@@ -9,13 +9,14 @@
 import numpy as np
 import argparse
 from scipy.optimize import newton_krylov
-from latqcdtools.physics.HRG import HRG, EV_HRG
+from latqcdtools.physics.HRG import HRG, EV_HRG, LCP_init_NS0
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
-parser.add_argument("--hadron_file", dest="hadron_file", required=True,help="Table with hadron properties", type=lambda f: open(f))
+parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
+                    help="Table with hadron properties")
 parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", default=None)
 parser.add_argument("--b", dest="b", help="excluded volume parameter.", default=None, type=float)
 parser.add_argument("--Tpc", dest="Tpc", default=None,help="determine T(muB) along the pseudo-critical line", type=float)
@@ -35,6 +36,7 @@ r        = args.r
 temp     = args.temp
 
 
+printArg(" hadron_list:",args.hadron_file)
 printArg("    b [fm^3]:",args.b)
 printArg("     T [MeV]:",args.temp)
 
@@ -45,18 +47,10 @@ if (Tpc0 is not None) and (temp is not None):
     logger.TBError("Please choose between having a fixed temperature or moving along pseudocritical line.")
 
 
-muB=np.arange(10,800,10)
+muB=np.arange(100,150,10)
 
 
-dS = 0.214  # This parameterization is kind of outdated however probably useful for solver to give better starting values of muQ and muS
-eS = 0.161
-dQ = 0.0211
-eQ = 0.106
-muQ = -dQ / (1.0 + eQ * muB)  # Initial guess for muQ
-muS = dS / (1.0 + eS * muB)   # Initial guess for muS
-
-
-hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file.name,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
+hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
 
 if Tpc0 is not None:
@@ -69,6 +63,9 @@ else:
 
 QMhrg = HRG(M, g, w, B, S, Q)
 evhrg = EV_HRG(M, g, w, B, S, Q)
+
+
+muQ, muS = LCP_init_NS0(muB)
 
 
 #

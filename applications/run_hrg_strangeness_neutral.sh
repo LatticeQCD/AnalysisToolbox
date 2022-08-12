@@ -14,7 +14,7 @@ runMode=0
 
 if [ ${runMode} -eq 0 ]; then
 
-  temps=($(seq 40 1 160))
+  temps=($(seq 100 1 105))
   for temp in "${temps[@]}"; do
     python3 main_HRG_LCP.py --r $r --hadron_file ${filepath} --models QM --T ${temp}
   done
