@@ -7,6 +7,7 @@
 #
 from subprocess import run, PIPE
 import time
+import numpy as np
 import latqcdtools.base.logger as logger
 
 
@@ -61,6 +62,13 @@ def naturalSort(l):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(l, key=alphanum_key)
+
+
+def find_nearest_idx(array, value):
+    """ Find the index of the element of array nearest to value. """
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return idx
 
 
 class timer:

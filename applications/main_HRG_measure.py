@@ -33,7 +33,6 @@ args = getArgs(parser)
 
 models    = args.models
 b         = args.b
-tag       = args.particle_list
 LCP_file  = args.LCP_file
 muB_div_T = args.muB
 
@@ -59,7 +58,7 @@ if args.obs=="cs2" and LCP_file is None:
 #
 if LCP_file is None:
     if args.temperature_range is None:
-        T = np.linspace(100, 140, 101)
+        T = np.linspace(3, 160, 158)
     else:
         t = args.temperature_range
         T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
@@ -77,8 +76,7 @@ else:
 print("\n  observable:",args.obs)
 printArg(" hadron_list:",args.hadron_file)
 printArg("  BQSC deriv:",args.BQSC)
-printArg("       muB/T:",muB_div_T)
-printArg("         tag:",tag)
+printArg("       muB/cs2_HRG_muQ0.pdfT:",muB_div_T)
 print("     T [MeV]:",T[0],T[-1],"\n")
 
 
@@ -105,17 +103,11 @@ if args.obs == "chi":
     chi_pdg    = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
                                 mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
-    if tag is not None:
-        writeTable("chiBQSC_%s_%s.txt"%(args.BQSC,tag), T, muB_div_T, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
-    else:
-        writeTable("chiBQSC_%s_.txt"%args.BQSC, T, muB_div_T, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
+    writeTable("chiBQSC_%s_.txt"%args.BQSC, T, muB_div_T, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
 
     p_QM = QMhrg.P_div_T4(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
     p_pdg = pdghrg.P_div_T4(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
-    if tag is not None:
-        writeTable("P_div_T4_%s.txt"%tag, T, p_QM, p_pdg, header='T    PDG-HRG         QM-HRG  ')
-    else:
-        writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')
+    writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')

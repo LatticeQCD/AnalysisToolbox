@@ -74,7 +74,8 @@ default_params = {
     'color': None,              # Color for your data. (By default each new set automatically gets different color.)
     'marker': "iter",           # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 3.5,          # Size of the symbols.
-    'font_size': 9,             # Default font size for text.
+    'font_size': 10,             # Default font size for text.
+    'font_weight' : 'normal',   # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,               # General transparency for data.
     'xscale': 1.0,              # Scale data in xdata by this factor.
     'yscale': 1.0,              # Scale data in ydata by this factor.
@@ -132,6 +133,11 @@ default_params = {
 }
 
 
+# Used for later checks that the user did not pass a wrong parameter by mistake.
+allowed_params = set(default_params.keys())
+allowed_params = allowed_params | {'linestyle','show_leg'}
+
+
 def set_default_param(**kwargs):
     for key, val in kwargs.items():
         default_params[key] = val
@@ -150,6 +156,10 @@ def fill_param_dict(params):
         -------
             Dictionary filled with all default parameters
     """
+    for key in params:
+        if not key in allowed_params:
+            logger.warn("Encountered unexpected plotting parameter",key)
+
     if 'show_leg' not in params:
         # When filling params for the first time, check if we show the legend. Triggered by one of the following keys
         for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 'alpha_legend'):
@@ -187,9 +197,10 @@ def add_optional(params):
 # Try xycoords = 'data' for data coordinates
 def set_label(label, pos, color="black", xycoords = 'axes fraction', zorder = None, **params):
     fill_param_dict(params)
-    optional = add_optional(params)
-    font_size = params['font_size']
-    plt.gca().annotate(label, xy=pos, xycoords=xycoords, color = color, fontsize = font_size,
+    optional    = add_optional(params)
+    font_size   = params['font_size']
+    font_weight = params['font_weight']
+    plt.gca().annotate(label, xy=pos, xycoords=xycoords, color = color, fontsize = font_size, fontweight = font_weight,
                        bbox=dict(linewidth = 0, facecolor = 'white',alpha=params['alpha_label']), zorder = zorder,
                        **optional)
 
@@ -218,7 +229,8 @@ def set_params(ax = plt, **params):
             if params['xlabelpos'] is None:
                 params['xlabelpos'] = (0.95,0.027)
             set_label(params['xlabel'], params['xlabelpos'], ha='right', va='bottom', xycoords='axes fraction',
-                      alpha_label = params['alpha_label'], font_size = params['font_size'], zorder = zod)
+                      alpha_label = params['alpha_label'], font_size = params['font_size'],
+                      font_weight = params['font_weight'], zorder = zod)
         else:
             if ax == plt:
                 ax.xlabel(params['xlabel'])
@@ -230,7 +242,8 @@ def set_params(ax = plt, **params):
             if params['ylabelpos'] is None:
                 params['ylabelpos'] = (0.025,0.972)
             set_label(params['ylabel'], params['ylabelpos'], ha='left', va='top', xycoords='axes fraction',
-                      alpha_label = params['alpha_label'], font_size = params['font_size'], zorder = zod)
+                      alpha_label = params['alpha_label'], font_size = params['font_size'],
+                      font_weight = params['font_weight'], zorder = zod)
         else:
             if ax == plt:
                 ax.ylabel(params['ylabel'])
@@ -853,12 +866,13 @@ def set_yrange(ymin=None, ymax=None):
 # ---------------------------------------------------------------------------------------------------PLOT INITIALIZATION
 
 
-def initializePlt(width, height, size):
+def initializePlt(width, height):
     clear_legend_labels()
     plt.close("all")
     set_markers()
     width /= 2.54
     height /= 2.54
+    size = default_params['font_size']
     plt.rcParams['legend.handlelength'] = 1.5
     plt.rcParams['figure.figsize'] = [width, height]
     plt.rcParams['figure.autolayout'] = True
@@ -869,6 +883,7 @@ def initializePlt(width, height, size):
     plt.rcParams['axes.labelsize'] = size
     plt.rcParams['legend.fontsize'] = size
     plt.rcParams['xtick.labelsize'] = size
+    plt.rcParams['font.weight'] = default_params['font_weight']
     plt.rc('axes', linewidth=0.5)
 
 
@@ -883,8 +898,8 @@ def configureAx(axObj):
 
 def latexify(fig_width=10, fig_height=7):
     """ Width and height are in centimeters. """
-    logger.warn("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
-    initializePlt(fig_width, fig_height, default_params['font_size'])
+    logger.debug("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
+    initializePlt(fig_width, fig_height)
     plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{braket}"
     plt.rcParams['text.usetex'] = True
@@ -896,7 +911,7 @@ def latexify(fig_width=10, fig_height=7):
 
 def init_notex(fig_width=10, fig_height=7):
     """ Width and height are in centimeters. """
-    initializePlt(fig_width, fig_height, default_params['font_size'])
+    initializePlt(fig_width, fig_height)
     fig, ax = plt.subplots()
     configureAx(ax)
     return fig, ax
