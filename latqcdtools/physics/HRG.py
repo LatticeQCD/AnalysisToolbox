@@ -209,10 +209,12 @@ class HRG:
         return chi
 
 
-# TODO: the __init__ can be inherited from the HRG class
+# TODO: the __init__ can be inherited from the HRG class. This cannot really be done straightforwardly because gen_chi
+#       here has a different signature than in the HRG class. Initializing EV_HRG with b helps, but apparently in EV
+#       gen_chi(Bi=1) + gen_chi(Bi=-1) is different from gen_chi(abs(Bi)=1). No idea why.
 class EV_HRG:
 
-    """ Excluded volume hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics. """
+    """ Excluded volume hadron resonance gas. b is excluded volume parameter. """
 
     def __init__(self, Mass, g, w, B, S, Q):
         self.Mass = Mass

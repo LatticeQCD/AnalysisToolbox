@@ -10,7 +10,7 @@
 import argparse
 import numpy as np
 from latqcdtools.physics.HRG import HRG, LCP_init_NS0
-from latqcdtools.base.utilities import getArgs
+from latqcdtools.base.utilities import getArgs, find_nearest_idx
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, newton_krylov
 from latqcdtools.base.check import rel_check
@@ -43,18 +43,8 @@ QMhrg      = HRG(M,g,w,B,S,Q,C)
 s  = QMhrg.S_div_T3(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 nB = QMhrg.gen_chi(T, B_order=1, Q_order=0, S_order=0, C_order=0, mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
-#
-# TODO: make this less messy
-#
-
 x=muB
 y=s/nB
-
-# TODO: should be a base.utility along with something like find_nearest
-def find_nearest_idx(array, value):
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return idx
 
 guessIndex=find_nearest_idx(y,target_snB)
 

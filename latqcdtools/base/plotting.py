@@ -74,14 +74,14 @@ default_params = {
     'color': None,              # Color for your data. (By default each new set automatically gets different color.)
     'marker': "iter",           # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 3.5,          # Size of the symbols.
-    'font_size': 10,             # Default font size for text.
+    'font_size': 12,            # Default font size for text.
     'font_weight' : 'normal',   # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,               # General transparency for data.
     'xscale': 1.0,              # Scale data in xdata by this factor.
     'yscale': 1.0,              # Scale data in ydata by this factor.
     'ticksintoplot' : True,     # Put ticks into plotting area.
     'surroundWithTicks' : True, # Put ticks also on top and right.
-    'labelsintoplot': False,    # Put xlabel and ylabel into plotting area.
+    'labelsintoplot': True,     # Put xlabel and ylabel into plotting area.
     'xlabelpos': None,          # If labelsintplot=True, shift the position (x,y) of the x-label.
     'ylabelpos': None,
     'zod': None,                # Controls where in foreground/background data/lines/bands appear.
@@ -135,7 +135,7 @@ default_params = {
 
 # Used for later checks that the user did not pass a wrong parameter by mistake.
 allowed_params = set(default_params.keys())
-allowed_params = allowed_params | {'linestyle','show_leg'}
+allowed_params = allowed_params | {'linestyle','show_leg','ha','va'}
 
 
 def set_default_param(**kwargs):
@@ -881,7 +881,7 @@ def initializePlt(width, height):
     plt.rcParams['ytick.labelsize'] = size
     plt.rcParams['font.size'] = size
     plt.rcParams['axes.labelsize'] = size
-    plt.rcParams['legend.fontsize'] = size
+    plt.rcParams['legend.fontsize'] = size-2
     plt.rcParams['xtick.labelsize'] = size
     plt.rcParams['font.weight'] = default_params['font_weight']
     plt.rc('axes', linewidth=0.5)

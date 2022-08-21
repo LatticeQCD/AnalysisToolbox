@@ -63,10 +63,8 @@ muB       = muB_div_T * T
 
 chi_QM  = QMhrg.gen_chi(T , B_order=2, Q_order=0, S_order=0, mu_B=muB)
 chi_pdg = pdghrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, mu_B=muB)
-chi_ev  = evhrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) \
-          + evhrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
-chi_ev1 = evpdghrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) \
-          + evpdghrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
+chi_ev  = evhrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) + evhrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
+chi_ev1 = evpdghrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) + evpdghrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
 
 _, refPDG, refQM, refEV, refEV1 = np.loadtxt("HRGcontrol/chiBQS_200_muB1.00_b1.00_QMHRG2020_BI.control",unpack=True)
 
@@ -106,8 +104,6 @@ comparisonPlot(pdghrg.CV_div_T3(T,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.
 
 
 refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
-#cs2 = (   4*QMhrg.P_div_T4(refT,0,0,0,0) + refT*QMhrg.ddT_P_div_T4(refT,0,0,0,0)
-#      )/( 4*QMhrg.E_div_T4(refT,0,0,0,0) + refT*QMhrg.ddT_E_div_T4(refT,0,0,0,0) )
 cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3(refT,0,0,0)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
@@ -177,10 +173,3 @@ chiBSC112 = QMhrg.gen_chi(refT,B_order=1,S_order=1,Q_order=0,C_order=2)
 chiSC13   = QMhrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=3)
 RSC13     = -chiBSC112/(chiSC13 - chiBSC112)
 print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
-
-
-#
-#  Test: Check P/T^4 derivative by comparing against spline interpolation + numerical derivative
-#
-#P_div_T4     = QMhrg.P_div_T4(T,0,0,0)
-#ddT_P_div_T4 = QMhrg.ddT_P_div_T4(T,0,0,0)
