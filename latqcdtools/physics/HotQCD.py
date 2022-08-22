@@ -117,6 +117,14 @@ def quarkMassTableHISQ(Nf, Nt, msml):
             else:
                 logger.TBError("Invalid ms/ml for quark mass table.")
 
+        elif Nt==16:
+
+            if msml==27:
+                Table = {'6050': ['00394', '1064'],
+                         '6315': ['00281', '07587']}
+            else:
+                logger.TBError("Invalid ms/ml for quark mass table.")
+
         else:
             logger.TBError("Invalid Nt for quark mass table.")
 

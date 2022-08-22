@@ -11,6 +11,8 @@ from latqcdtools.physics.HRG import HRG,EV_HRG
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
+from latqcdtools.math.num_deriv import diff_deriv
+
 
 import matplotlib.pyplot as plt
 
@@ -173,3 +175,21 @@ chiBSC112 = QMhrg.gen_chi(refT,B_order=1,S_order=1,Q_order=0,C_order=2)
 chiSC13   = QMhrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=3)
 RSC13     = -chiBSC112/(chiSC13 - chiBSC112)
 print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
+
+#
+# Test: Compare numerical derivatives against analytic derivatives.
+#
+exact     = QMhrg.ddT_E_div_T4(T)
+numerical = diff_deriv(T,QMhrg.E_div_T4)
+print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dT")
+
+exact     = QMhrg.ddT_P_div_T4(T)
+numerical = diff_deriv(T,QMhrg.P_div_T4)
+print_results(exact, numerical, prec=EPSILON, text="d(P/T^4)/dT")
+
+def chiBQ11(t):
+    return QMhrg.gen_chi(t,B_order=1,Q_order=1,S_order=0,C_order=0)
+
+exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
+numerical = diff_deriv(T,chiBQ11)
+print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")

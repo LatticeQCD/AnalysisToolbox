@@ -129,12 +129,13 @@ class HRG:
 
 
     def ddT_P_div_T4(self, T, mu_B=0., mu_S=0., mu_Q=0., mu_C=0.):
+        """ (m/T)^2 g eta^(n+1) / 2pi^2 n^2 """
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
-                P += self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * ( kn(1,x)*m*n - T*kn(2,x) )/T**3
+                P += self.factor(k, n, T) * self.z(T,k,mu_B,mu_Q,mu_S,mu_C)**n * m*n*kn(1,x) / T**2
         return P
 
 
@@ -161,8 +162,7 @@ class HRG:
                 m    = self.Mass[k]
                 x    = m*n/T
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n \
-                                              * ( kn(1,x)*m*n - T*kn(2,x) )/T**3
+                                              * self.factor(k, n, T) * self.z(T, k, mu_B, mu_Q, mu_S, mu_C)**n * m*n*kn(1,x) / T**2
         return chi
 
 
