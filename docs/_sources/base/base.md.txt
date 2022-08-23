@@ -10,5 +10,6 @@ Here are some more detailed articles:
 ---
 maxdepth: 1
 ---
+utilities.md
 plotting.md
 ```

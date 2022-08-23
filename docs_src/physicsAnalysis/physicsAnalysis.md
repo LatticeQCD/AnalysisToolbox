@@ -18,4 +18,5 @@ latticeParameters.md
 observables.md
 referenceScales.md
 staticPotential.md
+HRG.md
 ```

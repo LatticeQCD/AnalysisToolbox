@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Physics Modules &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Utilities &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Statistical Physics" href="statisticalPhysics.html" />
-    <link rel="prev" title="Bootstrap" href="../dataAnalysis/bootstrap.html" /> 
+    <link rel="next" title="Plotting" href="plotting.html" />
+    <link rel="prev" title="Basic Modules" href="base.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,17 +43,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Physics Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
-<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="base.html">Basic Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
 </ul>
 
         </div>
@@ -70,9 +66,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Physics Modules</li>
+          <li><a href="base.html">Basic Modules</a> &raquo;</li>
+      <li>Utilities</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/physicsAnalysis/physicsAnalysis.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/base/utilities.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -80,24 +77,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="physics-modules">
-<h1>Physics Modules<a class="headerlink" href="#physics-modules" title="Permalink to this headline"></a></h1>
-<p>The AnalysisToolbox is written with an aim toward lattice QCD calculations;
-hence it includes also modules focusing on physics analysis. For example
-modules that can reconstruct observables from measurements on configurations,
-and a module containing critical exponents for some 3-d
-universality classes.</p>
-<p>Here are some more detailed articles:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="observables.html">Computing Observables</a></li>
-<li class="toctree-l1"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
-<li class="toctree-l1"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+  <section class="tex2jax_ignore mathjax_ignore" id="utilities">
+<h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h1>
+<p>In this module we collect a bunch of useful, general utilities. These include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">getArg</span></code>: Python’s argument parser is not very careful. This wrapper complains if any invalid arguments were passed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">printArg</span></code>: Will print an argument to screen, only if it isn’t <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">printDict</span></code>: Prints a dictionary out with each key-value pair getting a line. This is more readable than the standard print.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shell</span></code>: Calls a Bash command from within Python and captures the output of the command.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shellVerbose</span></code>: Does the same thing, except prints the output to screen rather than capturing it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find_nearest_idx</span></code>: Finds the index of an array whose element is closest to some specified number.</p></li>
 </ul>
-</div>
+<p>In addition, this module contains the <code class="docutils literal notranslate"><span class="pre">timer</span></code> class.</p>
 </section>
 
 

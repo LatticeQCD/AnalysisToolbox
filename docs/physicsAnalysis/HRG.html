@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Computing Observables &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Hadron resonance gas &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -24,8 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reference scales" href="referenceScales.html" />
-    <link rel="prev" title="Handling Lattice Parameters" href="latticeParameters.html" /> 
+    <link rel="prev" title="The zero-temperature static potential" href="staticPotential.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,10 +49,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Computing Observables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Hadron resonance gas</a></li>
 </ul>
 </li>
 </ul>
@@ -73,9 +72,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
-      <li>Computing Observables</li>
+      <li>Hadron resonance gas</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/physicsAnalysis/observables.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/physicsAnalysis/HRG.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -83,24 +82,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="computing-observables">
-<h1>Computing Observables<a class="headerlink" href="#computing-observables" title="Permalink to this headline"></a></h1>
-<p>The AnalysisToolbox has built in methods for several commonly computed observables in the context of lattice
-calculations trying to understand the QCD phase diagram.</p>
-<section id="polyakov-loop-observables">
-<h2>Polyakov loop observables<a class="headerlink" href="#polyakov-loop-observables" title="Permalink to this headline"></a></h2>
-<p>The Polyakov loop <span class="math notranslate nohighlight">\(P\)</span> is the order parameter of the deconfinement transition in the quenched limit. The imaginary
-part is the order parameter of the Roberge-Weiss transition. It is also occasionally of interest at finite quark
-mass and real <span class="math notranslate nohighlight">\(\mu\)</span>. You can find a bunch of Polyakov loop related observables in the <code class="docutils literal notranslate"><span class="pre">polyakovTools</span></code> module.</p>
-<p>Initialize a <code class="docutils literal notranslate"><span class="pre">polyakovTools</span></code> object with</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pt</span> <span class="o">=</span> <span class="n">polyakovTools</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>with spatial extent <code class="docutils literal notranslate"><span class="pre">Ns</span></code> and Euclidean time extent <code class="docutils literal notranslate"><span class="pre">Nt</span></code>. One can then get <span class="math notranslate nohighlight">\(\langle |P|\rangle\)</span> from</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span> <span class="n">pt</span><span class="o">.</span><span class="n">absP</span><span class="p">(</span><span class="n">RePmeas</span><span class="p">,</span> <span class="n">ImPmeas</span><span class="p">)</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>where <code class="docutils literal notranslate"><span class="pre">RePmeas</span></code> and <code class="docutils literal notranslate"><span class="pre">ImPmeas</span></code> are <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays of measurements of real and imaginary parts of <span class="math notranslate nohighlight">\(P\)</span>, respectively.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="hadron-resonance-gas">
+<h1>Hadron resonance gas<a class="headerlink" href="#hadron-resonance-gas" title="Permalink to this headline"></a></h1>
+<p>The hadron resonance gas is a non-interacting model, valid below the crossover temperature, that uses hadrons and
+their resonances as the only degrees of freedom. In this model, the pressure for a single species <span class="math notranslate nohighlight">\(i\)</span> comes out to be
+$<span class="math notranslate nohighlight">\(
+  P_i=\frac{m^2g_iT^2}{2\pi^2}\sum_{k=1}^\infty\frac{\eta_i^{k+1}z_i^k}{k^2}
+                         K_2\left(\frac{m_ik}{T}\right),
+\)</span><span class="math notranslate nohighlight">\(
+where \)</span>g_i<span class="math notranslate nohighlight">\( is the species' degeneracy, \)</span>m_i<span class="math notranslate nohighlight">\( its mass, \)</span>\eta_i<span class="math notranslate nohighlight">\( is +1 if it is a boson and -1 if it is a fermion,
+\)</span>K_2<span class="math notranslate nohighlight">\( is the modified Bessel function of the second kind,
+\)</span><span class="math notranslate nohighlight">\(
+  z_i=\exp{\mu_B B_i + \mu_Q Q_i + \mu_S S_i + \mu_C C_i},
+\)</span><span class="math notranslate nohighlight">\(
+and \)</span>B_i<span class="math notranslate nohighlight">\(, \)</span>Q_i<span class="math notranslate nohighlight">\(, \)</span>S_i<span class="math notranslate nohighlight">\(, and \)</span>C_i<span class="math notranslate nohighlight">\( are the species' baryon number, electric charge, strangeness, and charm, 
+respectively. The total pressure is then
+\)</span><span class="math notranslate nohighlight">\(
+  \frac{P}=\sum_{i=1}P_i,
+\)</span>$
+where the summation runs over states.
+From this pressure, all other thermodynamic observables can be derived analytically, then evaluated
+numerically</p>
+<section id="hrg-py">
+<h2>HRG.py<a class="headerlink" href="#hrg-py" title="Permalink to this headline"></a></h2>
+<p>In this module, we have the <code class="docutils literal notranslate"><span class="pre">HRG</span></code> class and its associated methods. This class can be instantiated using some information
+from some list of hadrons and resonances, for example those lists given in the <code class="docutils literal notranslate"><span class="pre">HRGtables</span></code> subfolder.
+In this class are implemented a handful of dimensionless observables and some of their temperature derivatives.</p>
+<p>In evaluating the above sum over <span class="math notranslate nohighlight">\(k\)</span>, we use the fact that the modified Bessel functions are exponentially suppressed
+in mass and only keep at most 20 terms for numerical efficiency. For states with somewhat high masses (e.g. baryons and
+heavier states) we may only keep the first term. This is the so-called Boltzmann approximation.</p>
 </section>
 </section>
 
