@@ -22,61 +22,38 @@ parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
 parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi, cs2)", default="chi", type=str)
 parser.add_argument("--bqsc", dest="BQSC", required=False, help="BQSC mu derivative orders.", type=str)
-parser.add_argument("--muB", dest="muB", default=None, type=float, help="muB/T")
-parser.add_argument("--models",nargs="*",dest="models",default=['QM'],required=True,help="list of HRG models from (EV,QM,PDG) to try, default = QM",type=str)
-parser.add_argument("--LCP_file", dest="LCP_file", required=False, help="muB, muQ, and muS chosen to fall along some line of constant physics", type=lambda f: open(f))
-parser.add_argument("--b", dest="b", help="excluded volume parameter.", default=None, type=float)
+parser.add_argument("--muB", dest="muB", required=True, type=float, help="muB/T")
 
 
-args = getArgs(parser)
-
-
-models    = args.models
-b         = args.b
-LCP_file  = args.LCP_file
+args      = getArgs(parser)
 muB_div_T = args.muB
 
 
 #
 # Various checks against user error.
 #
-if "EV" in models and b is None:
-    logger.TBError("Need to specify excluded volume parameter b when using EVHRG.")
-
-if (LCP_file is not None) and (muB_div_T is not None):
-    logger.TBError("The LCP file already dictates the allowed possible muB.")
-
 if args.obs=="chi" and args.BQSC is None:
     logger.TBError("Please specify BQSC derivative orders for chi.")
-
-if args.obs=="cs2" and LCP_file is None:
-    logger.TBError("c_s^2 must be calculated at N_S=0 with some fixed s/nB.")
 
 
 #
 # Set up the chemical potentials based on user input.
 #
-if LCP_file is None:
-    if args.temperature_range is None:
-        T = np.linspace(3, 160, 158)
-    else:
-        t = args.temperature_range
-        T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
-    muB = muB_div_T * T
-    muQ = 0.
-    muS = 0.
-    muC = 0.
+if args.temperature_range is None:
+    T = np.linspace(3, 160, 158)
 else:
-    # common parameter file for these? he somehow needs to know which model is which, the usecols vector needs
-    # to be decided automatically based on that, etc
-    T, muB, muQ, muS = np.loadtxt(args.LCP_file.name, unpack=True, usecols=(0, 1, 2, 3))
-    muC = 0.
+    t = args.temperature_range
+    T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
+muB = muB_div_T * T
+muQ = 0.
+muS = 0.
+muC = 0.
 
 
 print("\n  observable:",args.obs)
 printArg(" hadron_list:",args.hadron_file)
 printArg("  BQSC deriv:",args.BQSC)
-printArg("       muB/cs2_HRG_muQ0.pdfT:",muB_div_T)
+printArg("       muB/T:",muB_div_T)
 print("     T [MeV]:",T[0],T[-1],"\n")
 
 
@@ -103,7 +80,7 @@ if args.obs == "chi":
     chi_pdg    = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
                                 mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
-    writeTable("chiBQSC_%s_.txt"%args.BQSC, T, muB_div_T, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
+    writeTable("chiBQSC_%s.txt"%args.BQSC, T, muB, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
 
@@ -111,3 +88,6 @@ elif args.obs == "p":
     p_pdg = pdghrg.P_div_T4(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
 
     writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')
+
+else:
+    logger.TBError("Observable",args.obs,"not yet implemented.")

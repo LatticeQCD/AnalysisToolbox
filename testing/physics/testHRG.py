@@ -112,8 +112,8 @@ print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 #
 # Test: Calculate chi^1001_BQSC at muB/T=0. Update and uncomment this when the particle list is finalized.
 #
-muB_div_T = 0
-muB       = muB_div_T * T
+#muB_div_T = 0
+#muB       = muB_div_T * T
 
 data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
                   usecols=(1,2,3,4,5,6),dtype="f8,i8,i8,i8,i8,i8")
@@ -193,3 +193,11 @@ def chiBQ11(t):
 exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
 numerical = diff_deriv(T,chiBQ11)
 print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
+
+
+exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,mu_B=muB)
+def Ehat(muh):
+    mu=muh*T
+    return QMhrg.E_div_T4(T,mu_B=mu)
+numerical = diff_deriv(muB/T,Ehat)
+print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dmuB")
