@@ -33,7 +33,7 @@ b        = args.b
 tag      = args.particle_list
 r        = args.r
 Tpc0     = args.Tpc
-t        = args.temperature_range
+temp     = args.temperature_range
 
 muB_div_T = float(args.muB)
 
@@ -43,25 +43,21 @@ printArg("    b [fm^3]:",args.b)
 
 if "EV" in models and b is None:
     logger.TBError("Need to specify excluded volume parameter b when using EVHRG.")
-if (Tpc0 is not None) and (t is not None):
+if (Tpc0 is not None) and (temp is not None):
     logger.TBError("Please choose between a temperature range or moving along pseudocritical line.")
 
 if args.temperature_range is None:
     T = np.linspace(130, 180, 101)
 else:
-    T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
+    T = np.arange(float(temp.split(':')[0]),float(temp.split(':')[1]),float(temp.split(':')[2]))
 
 
-muB = muB_div_T * T
-
-
-muQ = muS =  LCP_init_NS0(muB)
+muBh       = muB_div_T
+muQh, muSh = LCP_init_NS0(muBh)
 
 
 hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file.name,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
-
-t = T
 
 QMhrg = HRG(M, g, w, B, S, Q)
 evhrg = EV_HRG(M, g, w, B, S, Q)
@@ -70,21 +66,21 @@ evhrg = EV_HRG(M, g, w, B, S, Q)
 #
 # strategy: given muB, solve for muQ and muS such that NS = 0 and N1/NB = r
 #
-def strangeness_neutral_equations(muQS,mu,T,hrg):
+def strangeness_neutral_equations(muQSh,muh,t,hrg):
 
-    x, y   = muQS
+    x, y   = muQSh
     maskm  = B == 0
     mesons = HRG(M[maskm],g[maskm],w[maskm],B[maskm],S[maskm],Q[maskm])
 
     if hrg=='QM':
         # chi_1X = N_X
-        X1B = QMhrg.gen_chi(T,B_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1S = QMhrg.gen_chi(T,S_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1Q = QMhrg.gen_chi(T,Q_order=1,mu_B=mu,mu_Q=x,mu_S=y)
+        X1B = QMhrg.gen_chi(t,B_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1S = QMhrg.gen_chi(t,S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1Q = QMhrg.gen_chi(t,Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
     else: # observables that can be improved thru EV are baryon-specific (see arXiv:2011.02812 appendix)
-        X1B = evhrg.gen_chi(T,b,1,B_order=1,mu_B=mu,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, B_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1Q = evhrg.gen_chi(T,b,1,Q_order=1,mu_B=mu,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, Q_order=1,mu_B=mu,mu_Q=x,mu_S=y) + mesons.gen_chi(T,Q_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1S = evhrg.gen_chi(T,b,1,S_order=1,mu_B=mu,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, S_order=1,mu_B=mu,mu_Q=x,mu_S=y) + mesons.gen_chi(T,S_order=1,mu_B=mu,mu_Q=x,mu_S=y)
+        X1B = evhrg.gen_chi(t,b,1,B_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + evhrg.gen_chi(t,b,-1, B_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1Q = evhrg.gen_chi(t,b,1,Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + evhrg.gen_chi(t,b,-1, Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + mesons.gen_chi(t,Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1S = evhrg.gen_chi(t,b,1,S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + evhrg.gen_chi(t,b,-1, S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + mesons.gen_chi(t,S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
     # This is what the solver tries to make equal to zero.
     return X1S, X1Q - r*X1B
 
@@ -94,7 +90,7 @@ solution={}
 
 for model in models:
     print("  Solving for model",model)
-    solution[model] = newton_krylov(lambda p: strangeness_neutral_equations(p,muB,t,model), (muQ, muS))
+    solution[model] = newton_krylov(lambda p: strangeness_neutral_equations(p,muBh,T,model), (muQh, muSh))
 
 
 if tag is not None:
@@ -103,12 +99,12 @@ else:
     outFileName="HRG_fxiedmuBT%0.1f_"%muB_div_T + "r%0.1f"%r
 
 
-outFileHeader = 'T     muB  '
+outFileHeader = 'T     muB/T  '
 outFileFormat = '%0.6e %0.4f'
-outFileData   = [t, muB]
+outFileData   = [T, muBh]
 for model in models:
-    outFileHeader += 'muQ_' + model + '  '
-    outFileHeader += 'muS_' + model + '  '
+    outFileHeader += 'muQ_' + model + '/T  '
+    outFileHeader += 'muS_' + model + '/T  '
     outFileFormat += ' %0.6e %0.6e'
     outFileData.append( solution[model][0] )
     outFileData.append( solution[model][1] )

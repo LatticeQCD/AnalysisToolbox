@@ -22,11 +22,11 @@ parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
 parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi, cs2)", default="chi", type=str)
 parser.add_argument("--bqsc", dest="BQSC", required=False, help="BQSC mu derivative orders.", type=str)
-parser.add_argument("--muB", dest="muB", required=True, type=float, help="muB/T")
+parser.add_argument("--muB", dest="muBh", required=True, type=float, help="muB/T")
 
 
-args      = getArgs(parser)
-muB_div_T = args.muB
+args = getArgs(parser)
+muBh = args.muBh
 
 
 #
@@ -44,16 +44,15 @@ if args.temperature_range is None:
 else:
     t = args.temperature_range
     T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
-muB = muB_div_T * T
-muQ = 0.
-muS = 0.
-muC = 0.
+muQh = 0.
+muSh = 0.
+muCh = 0.
 
 
 print("\n  observable:",args.obs)
 printArg(" hadron_list:",args.hadron_file)
 printArg("  BQSC deriv:",args.BQSC)
-printArg("       muB/T:",muB_div_T)
+printArg("       muB/T:",muBh)
 print("     T [MeV]:",T[0],T[-1],"\n")
 
 
@@ -75,17 +74,17 @@ if args.obs == "chi":
     Sorder = int(args.BQSC[2])
     Corder = int(args.BQSC[3])
 
-    chi_QM     = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
-                               mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
-    chi_pdg    = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
-                                mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
+    chi_QM  = QMhrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
+                            muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
+    chi_pdg = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
+                             muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
 
-    writeTable("chiBQSC_%s.txt"%args.BQSC, T, muB, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
+    writeTable("chiBQSC_%s.txt"%args.BQSC, T, muBh, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
 
-    p_QM = QMhrg.P_div_T4(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
-    p_pdg = pdghrg.P_div_T4(T,mu_B=muB, mu_Q=muQ, mu_S=muS, mu_C=muC)
+    p_QM = QMhrg.P_div_T4(T,muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
+    p_pdg = pdghrg.P_div_T4(T,muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
 
     writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')
 

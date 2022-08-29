@@ -28,7 +28,7 @@ tag = str(args.particle_list)
 w  = np.array([1 if ba==0 else -1 for ba in B])
 
 #muB muQ muS file
-tpc, muB, muQ, muS = np.loadtxt(args.fixedmuB.name,unpack=True,usecols=(0,1,2,3))
+tpc, muBh, muQh, muSh = np.loadtxt(args.fixedmuB.name,unpack=True,usecols=(0,1,2,3))
 
 T=tpc
 
@@ -40,19 +40,19 @@ if args.obs == "chi":
     Border = int(args.BQS[0])
     Qorder = int(args.BQS[1])
     Sorder = int(args.BQS[2])
-    obs = QMhrg.gen_chi(T, B_order=Border, Q_order=Qorder, S_order=Sorder, mu_B = muB, mu_S = muS, mu_Q = muQ)
+    obs = QMhrg.gen_chi(T, B_order=Border, Q_order=Qorder, S_order=Sorder, muB_div_T = muB, muS_div_T = muS, muQ_div_T = muQ)
     np.savetxt("muB_divT%0.1f_%sBQS%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,args.BQS,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 elif args.obs == "pressure":
-    obs = QMhrg.P_div_T4(T, mu_B=muB, mu_S = muS, mu_Q = muQ)
+    obs = QMhrg.P_div_T4(T, muB_div_T=muB, muS_div_T = muS, muQ_div_T = muQ)
     np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 elif args.obs == "energy":
-    obs = QMhrg.E_div_T4(T, mu_B=muB, mu_S = muS, mu_Q = muQ)
+    obs = QMhrg.E_div_T4(T, muB_div_T=muB, muS_div_T = muS, muQ_div_T = muQ)
     np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 elif args.obs == "specificheat":
-    obs = QMhrg.CV_div_T3(T, mu_B=muB, mu_S = muS, mu_Q = muQ)
+    obs = QMhrg.CV_div_T3(T, muB_div_T=muB, muS_div_T = muS, muQ_div_T = muQ)
     np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 elif args.obs == "cs2":
-    num = 4*QMhrg.P_div_T4(T, mu_B=muB,mu_S = muS, mu_Q = muQ) + T * QMhrg.ddT_P_div_T4(T, mu_B=muB,mu_S = muS, mu_Q = muQ) 
-    den = 4*QMhrg.E_div_T4(T, mu_B=muB,mu_S = muS, mu_Q = muQ) + T * QMhrg.ddT_E_div_T4(T, mu_B=muB,mu_S = muS, mu_Q = muQ)
+    num = 4*QMhrg.P_div_T4(T, muB_div_T=muB,muS_div_T = muS, muQ_div_T = muQ) + T * QMhrg.ddT_P_div_T4(T, muB_div_T=muB,muS_div_T = muS, muQ_div_T = muQ)
+    den = 4*QMhrg.E_div_T4(T, muB_div_T=muB,muS_div_T = muS, muQ_div_T = muQ) + T * QMhrg.ddT_E_div_T4(T, muB_div_T=muB,muS_div_T = muS, muQ_div_T = muQ)
     np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,num/den], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 

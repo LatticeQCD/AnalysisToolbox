@@ -59,33 +59,33 @@ if Tpc0 is not None:
     t = Tpc0*(1.0-kap2*(muB/Tpc0)**2)
 else:
     t = np.repeat(temp,len(muB))
-
+muBh  = muB/t
 
 QMhrg = HRG(M, g, w, B, S, Q)
 evhrg = EV_HRG(M, g, w, B, S, Q)
 
 
-muQ, muS = LCP_init_NS0(muB)
+muQh, muSh = LCP_init_NS0(muBh)
 
 
 #
 # strategy: given muB, solve for muQ and muS such that NS = 0 and N1/NB = r
 #
-def strangeness_neutral_equations(muQS,mu,T,hrg):
+def strangeness_neutral_equations(muQSh,muh,T,hrg):
 
-    x, y   = muQS
+    x, y   = muQSh
     maskm  = B == 0
     mesons = HRG(M[maskm],g[maskm],w[maskm],B[maskm],S[maskm],Q[maskm])
 
     if hrg=='QM':
         # chi_1X = N_X
-        X1B = QMhrg.gen_chi(T,B_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1S = QMhrg.gen_chi(T,S_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1Q = QMhrg.gen_chi(T,Q_order=1,mu_B=mu,mu_Q=x,mu_S=y)
+        X1B = QMhrg.gen_chi(T,B_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1S = QMhrg.gen_chi(T,S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1Q = QMhrg.gen_chi(T,Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
     else: # observables that can be improved thru EV are baryon-specific (see arXiv:2011.02812 appendix)
-        X1B = evhrg.gen_chi(T,b,1,B_order=1,mu_B=mu,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, B_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1Q = evhrg.gen_chi(T,b,1,Q_order=1,mu_B=mu,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, Q_order=1,mu_B=mu,mu_Q=x,mu_S=y) + mesons.gen_chi(T,Q_order=1,mu_B=mu,mu_Q=x,mu_S=y)
-        X1S = evhrg.gen_chi(T,b,1,S_order=1,mu_B=mu,mu_Q=x,mu_S=y) + evhrg.gen_chi(T,b,-1, S_order=1,mu_B=mu,mu_Q=x,mu_S=y) + mesons.gen_chi(T,S_order=1,mu_B=mu,mu_Q=x,mu_S=y)
+        X1B = evhrg.gen_chi(T,b,1,B_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + evhrg.gen_chi(T,b,-1, B_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1Q = evhrg.gen_chi(T,b,1,Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + evhrg.gen_chi(T,b,-1, Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + mesons.gen_chi(T,Q_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
+        X1S = evhrg.gen_chi(T,b,1,S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + evhrg.gen_chi(T,b,-1, S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y) + mesons.gen_chi(T,S_order=1,muB_div_T=muh,muQ_div_T=x,muS_div_T=y)
     # This is what the solver tries to make equal to zero.
     return X1S, X1Q - r*X1B
 
@@ -95,7 +95,7 @@ solution={}
 
 for model in models:
     print("  Solving for model",model)
-    solution[model] = newton_krylov(lambda p: strangeness_neutral_equations(p,muB,t,model), (muQ, muS))
+    solution[model] = newton_krylov(lambda p: strangeness_neutral_equations(p,muBh,t,model), (muQh, muSh))
 
 
 if tag is not None:
@@ -104,12 +104,12 @@ else:
     outFileName="HRG_LCP_T%0.1f_"%temp + "r%0.1f"%r
 
 
-outFileHeader = 'T     muB  '
+outFileHeader = 'T     muB/T  '
 outFileFormat = '%0.6e %0.4f'
-outFileData   = [t, muB]
+outFileData   = [t, muBh]
 for model in models:
-    outFileHeader += 'muQ_' + model + '  '
-    outFileHeader += 'muS_' + model + '  '
+    outFileHeader += 'muQ_' + model + '/T  '
+    outFileHeader += 'muS_' + model + '/T  '
     outFileFormat += ' %0.6e %0.6e'
     outFileData.append( solution[model][0] )
     outFileData.append( solution[model][1] )

@@ -59,12 +59,10 @@ evpdghrg   = EV_HRG(M1,g1,w1,B1,S1,Q1)
 #
 # Test: Calculate chi^200_BQS with b=1 and mu/T=1. Compare against trusted control result.
 #
-b         = 1
-muB_div_T = 1
-muB       = muB_div_T * T
+b        = 1
 
-chi_QM  = QMhrg.gen_chi(T , B_order=2, Q_order=0, S_order=0, mu_B=muB)
-chi_pdg = pdghrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, mu_B=muB)
+chi_QM  = QMhrg.gen_chi(T , B_order=2, Q_order=0, S_order=0, muB_div_T=1)
+chi_pdg = pdghrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, muB_div_T=1)
 chi_ev  = evhrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) + evhrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
 chi_ev1 = evpdghrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) + evpdghrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
 
@@ -112,8 +110,6 @@ print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 #
 # Test: Calculate chi^1001_BQSC at muB/T=0. Update and uncomment this when the particle list is finalized.
 #
-#muB_div_T = 0
-#muB       = muB_div_T * T
 
 data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
                   usecols=(1,2,3,4,5,6),dtype="f8,i8,i8,i8,i8,i8")
@@ -122,8 +118,8 @@ data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_c
 #w = np.array([1 if ba==0 else -1 for ba in B])
 #
 #QMhrg   = HRG(M,g,w,B,S,Q,C)
-#chi_QM  = QMhrg.gen_chi(T , B_order=1, Q_order=0, S_order=0, C_order=1, mu_B=muB)
-#chi_pdg = pdghrg.gen_chi(T, B_order=1, Q_order=0, S_order=0, C_order=1, mu_B=muB)
+#chi_QM  = QMhrg.gen_chi(T , B_order=1, Q_order=0, S_order=0, C_order=1, muB_div_T=muB)
+#chi_pdg = pdghrg.gen_chi(T, B_order=1, Q_order=0, S_order=0, C_order=1, muB_div_T=muB)
 #
 #refT, refPDG, refQM = np.loadtxt("HRGcontrol/chiBQSC_1001_muB0.00_QMHRG2020_BI_charm.control",unpack=True)
 #print_results(chi_pdg, refPDG, prec=EPSILON, text="chiBQSC1001 PDG check")
@@ -179,8 +175,11 @@ print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
 #
 # Test: Compare numerical derivatives against analytic derivatives.
 #
-exact     = QMhrg.ddT_E_div_T4(T)
-numerical = diff_deriv(T,QMhrg.E_div_T4)
+T   = np.linspace(100,150,101)
+def Ehat(t):
+    return QMhrg.E_div_T4(t,muB_div_T=1)
+exact     = QMhrg.ddT_E_div_T4(T, muB_div_T=1)
+numerical = diff_deriv(T,Ehat)
 print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dT")
 
 exact     = QMhrg.ddT_P_div_T4(T)
@@ -189,15 +188,14 @@ print_results(exact, numerical, prec=EPSILON, text="d(P/T^4)/dT")
 
 def chiBQ11(t):
     return QMhrg.gen_chi(t,B_order=1,Q_order=1,S_order=0,C_order=0)
-
 exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
 numerical = diff_deriv(T,chiBQ11)
 print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
 
 
-exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,mu_B=muB)
+muh = np.linspace(0,1.5,len(T))
+exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
 def Ehat(muh):
-    mu=muh*T
-    return QMhrg.E_div_T4(T,mu_B=mu)
-numerical = diff_deriv(muB/T,Ehat)
+    return QMhrg.E_div_T4(T,muB_div_T=muh)
+numerical = diff_deriv(muh,Ehat)
 print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dmuB")
