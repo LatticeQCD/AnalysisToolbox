@@ -1397,9 +1397,8 @@ class Fitter:
 
         if filename is not None:
             if not notex:
-                latexify(*size)
-            else:
-                init_notex(*size)
+                latexify()
+            init_notex(*size)
 
         try:
             # Save xmin and xmax, as they will be overwritten in plot_data
@@ -1451,16 +1450,12 @@ class Fitter:
             logger.warn("Plotting of fit failed: ", e, "\n")
 
 
-
-
-
     def plot_cov(self, filename = None, xmin = None, xmax = None, ymax = None, notex = False, title = None,
                  size = (15,10)):
         if filename is not None:
             if not notex:
-                latexify(*size)
-            else:
-                init_notex(*size)
+                latexify()
+            init_notex(*size)
 
         if xmin is None:
             gxmin = -np.inf
@@ -1487,9 +1482,8 @@ class Fitter:
 
         if filename is not None:
             if not notex:
-                latexify(*size)
-            else:
-                init_notex(*size)
+                latexify()
+            init_notex(*size)
 
         if xmin is None:
             gxmin = -np.inf

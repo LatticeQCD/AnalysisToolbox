@@ -3,8 +3,8 @@
 # 
 # J. Goswami, D. Clarke
 # 
-# Do some HRG calculations along some specified line of constant physics. For example you might constrain N_S=0 with
-# N_Q/N_B=0.5.
+# Do some HRG calculations to create a specified line of constant physics (LCP). For example you might constrain
+# N_S=0 with N_Q/N_B=0.5.
 #
 import numpy as np
 import argparse
@@ -34,11 +34,12 @@ tag      = args.particle_list
 Tpc0     = args.Tpc
 r        = args.r
 temp     = args.temp
+muBmax   = 800
 
-
-printArg(" hadron_list:",args.hadron_file)
-printArg("    b [fm^3]:",args.b)
-printArg("     T [MeV]:",args.temp)
+printArg("  hadron_list:",args.hadron_file)
+printArg("     b [fm^3]:",args.b)
+printArg("      T [MeV]:",args.temp)
+printArg(" muBmax [MeV]:",muBmax)
 
 
 if "EV" in models and b is None:
@@ -47,7 +48,7 @@ if (Tpc0 is not None) and (temp is not None):
     logger.TBError("Please choose between having a fixed temperature or moving along pseudocritical line.")
 
 
-muB=np.arange(100,150,10)
+muB =np.arange(10,600,10)
 
 
 hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
@@ -60,6 +61,7 @@ if Tpc0 is not None:
 else:
     t = np.repeat(temp,len(muB))
 muBh  = muB/t
+
 
 QMhrg = HRG(M, g, w, B, S, Q)
 evhrg = EV_HRG(M, g, w, B, S, Q)

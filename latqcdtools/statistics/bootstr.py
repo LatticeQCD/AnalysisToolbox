@@ -62,7 +62,7 @@ class nimbleBoot:
         if self._seed is not None:
             my_seed = self._seed
         else:
-            my_seed = randint(0, 4194304) #generate a time dependent seed
+            my_seed = randint(0, 7271978) #generate a time dependent seed
         if parallelize:
             sampleList=range(self._numb_samples)
             with concurrent.futures.ProcessPoolExecutor(max_workers=nproc) as executor:

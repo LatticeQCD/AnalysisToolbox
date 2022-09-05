@@ -82,7 +82,7 @@ default_params = {
     'ticksintoplot' : True,     # Put ticks into plotting area.
     'surroundWithTicks' : True, # Put ticks also on top and right.
     'labelsintoplot': True,     # Put xlabel and ylabel into plotting area.
-    'xlabelpos': None,          # If labelsintplot=True, shift the position (x,y) of the x-label.
+    'xlabelpos': None,          # If labelsintplot=True, shift the position (x,y) of the x-label, expressed as percent.
     'ylabelpos': None,
     'zod': None,                # Controls where in foreground/background data/lines/bands appear.
 
@@ -115,7 +115,7 @@ default_params = {
     'alpha_dots': None,    # Transperancy for different dots
     'alpha_lines': 1,      # Transperancy for different lines
     'alpha_fill_edge': 0,  # Transperancy for edges of error bands
-    'alpha_label': 0,      # Transperancy for labels
+    'alpha_label': 1,      # Transperancy for labels
     'alpha_legend': 0,     # Transperancy for the legend
     'npoints' : 1000,      # Number of points for function plotting
     'xmin': None,                       # Does not directly change x-range
@@ -590,6 +590,9 @@ def plot_fill(xdata, ydata, yedata, xedata=None, **params):
     return ebar,pl
 
 
+#
+# TODO: make this guy work vertically
+#
 def plot_band(xdata, low_lim, up_lim, center = None, **params):
     fill_param_dict(params)
     optional = add_optional(params)
@@ -866,13 +869,12 @@ def set_yrange(ymin=None, ymax=None):
 # ---------------------------------------------------------------------------------------------------PLOT INITIALIZATION
 
 
-def initializePlt(width, height):
+def initializePlt(width, height, size):
     clear_legend_labels()
     plt.close("all")
     set_markers()
     width /= 2.54
     height /= 2.54
-    size = default_params['font_size']
     plt.rcParams['legend.handlelength'] = 1.5
     plt.rcParams['figure.figsize'] = [width, height]
     plt.rcParams['figure.autolayout'] = True
@@ -896,22 +898,17 @@ def configureAx(axObj):
     axObj.set_prop_cycle(cycler('color', colors))
 
 
-def latexify(fig_width=10, fig_height=7):
-    """ Width and height are in centimeters. """
+def latexify():
+    """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
+        convenient functions like ev. """
     logger.debug("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
-    initializePlt(fig_width, fig_height)
-    plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
-    plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{braket}"
+    plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
     plt.rcParams['text.usetex'] = True
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    configureAx(ax)
-    return fig, ax
 
 
-def init_notex(fig_width=10, fig_height=7):
+def init_notex(fig_width=10, fig_height=7,size=default_params['font_size']):
     """ Width and height are in centimeters. """
-    initializePlt(fig_width, fig_height)
+    initializePlt(fig_width, fig_height, size)
     fig, ax = plt.subplots()
     configureAx(ax)
     return fig, ax
@@ -920,20 +917,21 @@ def init_notex(fig_width=10, fig_height=7):
 # --------------------------------------------------------------------------------------------------------------- INSETS
 
 
-def zoom_axis(ax, width, height, zx_min, zx_max, zy_min, zy_max, loc=1, loc1=2, loc2=4, borderpad=0.5):
+def zoom_axis(ax, width, height, zx_min, zx_max, zy_min, zy_max, loc=1, loc1=2, loc2=4, borderpad=0.5, markInset=True):
     # width and height with respect to the parent axis should be passed like: width="70%" etc...
     # loc=1 == upper-right
     axins = inset_axes(ax, width, height, loc=loc, borderpad=borderpad) 
     axins.set_xlim(zx_min, zx_max) # apply the x-limits
     axins.set_ylim(zy_min, zy_max) # apply the y-limits
     global zod
-    mark_inset(ax, axins, loc1=loc1, loc2=loc2, fc="none", ec="0.5", linewidth=0.5, zorder=zod)
+    if markInset:
+        mark_inset(ax, axins, loc1=loc1, loc2=loc2, fc="none", ec="0.5", linewidth=0.5, zorder=zod)
     zod+=1
     return axins # use this axis to plot inside the box!
 
 
 def plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata=None, xedata=None, zy_min=None, zy_max=None,
-                   **params):
+                   markInset=True,**params):
     fill_param_dict(params)
     xscale=params['xscale']
     yscale=params['yscale']
@@ -964,7 +962,7 @@ def plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata=None, xed
 
     params['ax'] = zoom_axis(params['ax'], width, height, zx_min*xscale, zx_max*xscale, zy_min*yscale, zy_max*yscale,
                              loc = params['loc'], loc1 = params['loc1'], loc2 = params['loc2'],
-                             borderpad=params['borderpad'])
+                             borderpad=params['borderpad'],markInset=markInset)
 
     if params['style'] == "dots":
         return plot_dots(xdata, ydata, yedata=yedata, xedata=xedata, **params), params['ax']
@@ -975,7 +973,7 @@ def plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata=None, xed
 
 
 def plot_file_zoom(width, height, zx_min, zx_max, filename, xcol=None, ycol=None, yecol=None, xecol=None, zy_min=None,
-                   zy_max=None, **params):
+                   zy_max=None, markInset=True, **params):
     fill_param_dict(params)
     data = np.loadtxt(filename).transpose()
 
@@ -994,7 +992,8 @@ def plot_file_zoom(width, height, zx_min, zx_max, filename, xcol=None, ycol=None
     if xecol is not None:
         xedata = data[xecol - 1]
 
-    return plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata, xedata, zy_min, zy_max, **params)
+    return plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata, xedata, zy_min, zy_max,
+                          markInset=markInset, **params)
 
 
 def draw_line(point1,point2,**params):
