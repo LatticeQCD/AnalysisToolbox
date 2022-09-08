@@ -6,15 +6,16 @@
 # Collection of convenience tools for plotting using matplotlib.
 #
 
-import matplotlib as mpl
-from latqcdtools.statistics.statistics import error_prop_func, norm_cov
-import latqcdtools.base.logger as logger
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.colors as cl
+import matplotlib.ticker as ticker
 from cycler import cycler
 import itertools
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
-import matplotlib.colors as cl
+import latqcdtools.base.logger as logger
+from latqcdtools.statistics.statistics import error_prop_func, norm_cov
 
 
 def check_numpy(*data):
@@ -112,16 +113,14 @@ default_params = {
     'xecol': None,         # Column for the errors in x-direction when plotting a file.
     'style': "dots",       # Style when plotting a file.
 
+    # Transparency
     'alpha_dots': None,    # Transperancy for different dots
     'alpha_lines': 1,      # Transperancy for different lines
     'alpha_fill_edge': 0,  # Transperancy for edges of error bands
     'alpha_label': 1,      # Transperancy for labels
     'alpha_legend': 0,     # Transperancy for the legend
+
     'npoints' : 1000,      # Number of points for function plotting
-    'xmin': None,                       # Does not directly change x-range
-    'xmax': None,                       # Similarly, maximium x-value to be plotted
-    'ymin': None,                       # Does not directly change y-range
-    'ymax': None,                       # Similarly, maximium y-value to be plotted
     'linewidth': 1,                     # Linewidth of line plots
     'loc': 1,                           # Position of the sub_plot_location
     'loc1': 4,                          # First edge of the connection line from the zoom window to sub plot
@@ -130,6 +129,14 @@ default_params = {
     'capsize': 1.5,                     # Length of caps af error bars
     'elinewidth': 0.5,                  # Linewidth of the error bars of caps af error bars
     'point_fill_color': "None",         # Fill color of points. Set to None (not as string) to have filled symbols
+
+    # Adjust aspects of the plot's axes
+    'xtick_freq': None,
+    'ytick_freq': None,
+    'xmin': None,          # Does not directly change x-range
+    'xmax': None,
+    'ymin': None,          # Does not directly change y-range
+    'ymax': None,
 }
 
 
@@ -263,13 +270,35 @@ def set_params(ax = plt, **params):
             ax.tick_params(top=True,right=True)
 
     if params['show_leg']:
-
         leg = ax.legend(legend_handles, legend_labels, numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
-
         leg.get_frame().set_alpha(params['alpha_legend'])
         leg.set_zorder(zod)
+
+    if params['xtick_freq'] is not None:
+        start, end = ax.gca().get_xlim()
+        if params['xmin'] is not None:
+            start = params['xmin']
+        if params['xmax'] is not None:
+            end = params['xmax']
+        ax.gca().xaxis.set_ticks(np.arange(start, end, params['xtick_freq']))
+        for n, label in enumerate(ax.gca().xaxis.get_ticklabels()):
+            # Label every other tick
+            if n % 2 != 0:
+                label.set_visible(False)
+
+    if params['ytick_freq'] is not None:
+        start, end = ax.gca().get_ylim()
+        if params['ymin'] is not None:
+            start = params['ymin']
+        if params['ymax'] is not None:
+            end = params['ymax']
+        ax.gca().yaxis.set_ticks(np.arange(start, end, params['ytick_freq']))
+        for n, label in enumerate(ax.gca().yaxis.get_ticklabels()):
+            # Label every other tick
+            if n % 2 != 0:
+                label.set_visible(False)
 
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
@@ -825,7 +854,7 @@ def get_legend_handles():
     return legend_handles, legend_labels
 
 
-# --------------------------------------------------------------------------------------------------- CHANGE AXIS LIMITS
+# -------------------------------------------------------------------------------------------------- CHANGE AXIS OPTIONS
 
 
 def set_xmin(x_min=None):
@@ -994,6 +1023,9 @@ def plot_file_zoom(width, height, zx_min, zx_max, filename, xcol=None, ycol=None
 
     return plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata, xedata, zy_min, zy_max,
                           markInset=markInset, **params)
+
+
+# ------------------------------------------------------------------------------------------------------------- GEOMETRY
 
 
 def draw_line(point1,point2,**params):
