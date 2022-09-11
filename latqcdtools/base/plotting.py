@@ -13,17 +13,8 @@ import matplotlib.colors as cl
 import matplotlib.ticker as ticker
 from cycler import cycler
 import itertools
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import error_prop_func, norm_cov
-
-
-def check_numpy(*data):
-    data=list(data)
-    for i in range(len(data)):
-        if isinstance(data[i], (list, tuple)):
-            data[i] = np.array(data[i])
-    return tuple(data)
 
 
 def getColorGradient(NUM_COLORS=None):
@@ -40,25 +31,19 @@ def getColorGradient(NUM_COLORS=None):
 
 zod = 1 # use for zorder in plot commands will be increased
 
+
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
 colors_2 = ['#396AB1', '#DA7C30', '#3E9651', '#CC2529', '#535154', '#6B4C9A', '#922428', '#948B3D']
 colors_3 = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00']
+colors   = colors_1
 
-colors = colors_1
 
 markers_1 = ['o', 'v', 'D', 's', 'p', '^', 'h', 'd', 'x', '+', '*']
+markers   = itertools.cycle(markers_1)
 
-markers = itertools.cycle(markers_1)
 
 legend_handles = []
 legend_labels = []
-
-
-def set_markers(marker_set=None):
-    if marker_set is None:
-        marker_set = markers_1
-    global markers
-    markers = itertools.cycle(marker_set)
 
 
 default_params = {
@@ -201,23 +186,10 @@ def add_optional(params):
     return ret
 
 
-# Try xycoords = 'data' for data coordinates
-def set_label(label, pos, color="black", xycoords = 'axes fraction', zorder = None, **params):
-    fill_param_dict(params)
-    optional    = add_optional(params)
-    font_size   = params['font_size']
-    font_weight = params['font_weight']
-    plt.gca().annotate(label, xy=pos, xycoords=xycoords, color = color, fontsize = font_size, fontweight = font_weight,
-                       bbox=dict(linewidth = 0, facecolor = 'white',alpha=params['alpha_label']), zorder = zorder,
-                       **optional)
-
-
-def set_params(ax = plt, **params):
+def set_params(**params):
     """Set additional parameters to the plot. For example set a title or label.
         Parameters
         ----------
-        ax : Axis object, optional, default = plt
-            The axis to which the parameters should be set
 
         **params :
             Additional parameters that can be set.
@@ -227,7 +199,10 @@ def set_params(ax = plt, **params):
     logger.debug("If you are having trouble passing options to set_params, try calling it at the end of your script.")
 
     fill_param_dict(params)
+
+    ax  = getAxObject(params)
     zod = params['zod']
+
     if zod is None:
          zod = globals()['zod']
 
@@ -235,39 +210,33 @@ def set_params(ax = plt, **params):
         if params['labelsintoplot'] or params['xlabelpos'] is not None:
             if params['xlabelpos'] is None:
                 params['xlabelpos'] = (0.95,0.027)
-            set_label(params['xlabel'], params['xlabelpos'], ha='right', va='bottom', xycoords='axes fraction',
-                      alpha_label = params['alpha_label'], font_size = params['font_size'],
-                      font_weight = params['font_weight'], zorder = zod)
+            ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black', fontsize=params['font_size'],
+                                         fontweight=params['font_weight'], ha='right', va='bottom',
+                                         bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']),
+                                         zorder=zod)
         else:
-            if ax == plt:
-                ax.xlabel(params['xlabel'])
-            else:
-                ax.set_xlabel(params['xlabel'])
+            ax.xlabel(params['xlabel'])
 
     if params['ylabel'] is not None:
         if params['labelsintoplot'] or params['ylabelpos'] is not None:
             if params['ylabelpos'] is None:
                 params['ylabelpos'] = (0.025,0.972)
-            set_label(params['ylabel'], params['ylabelpos'], ha='left', va='top', xycoords='axes fraction',
-                      alpha_label = params['alpha_label'], font_size = params['font_size'],
-                      font_weight = params['font_weight'], zorder = zod)
+            ax.annotate(params['ylabel'], xy=params['ylabelpos'], xycoords='axes fraction', color='black',
+                                    fontsize=params['font_size'], ha='left', va='top',
+                        fontweight=params['font_weight'],
+                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']),
+                        zorder=zod)
         else:
-            if ax == plt:
-                ax.ylabel(params['ylabel'])
-            else:
-                ax.set_ylabel(params['ylabel'])
+            ax.ylabel(params['ylabel'])
 
     if params['title'] is not None:
-        if ax == plt:
-            ax.title(params['title'])
+        plt.title(params['title'])
 
     if params['ticksintoplot'] is not None:
-        if ax == plt:
-            ax.tick_params(direction='in')
+        ax.tick_params(direction='in')
 
     if params['surroundWithTicks']:
-        if ax == plt:
-            ax.tick_params(top=True,right=True)
+        ax.tick_params(top=True,right=True)
 
     if params['show_leg']:
         leg = ax.legend(legend_handles, legend_labels, numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
@@ -282,8 +251,8 @@ def set_params(ax = plt, **params):
             start = params['xmin']
         if params['xmax'] is not None:
             end = params['xmax']
-        ax.gca().xaxis.set_ticks(np.arange(start, end, params['xtick_freq']))
-        for n, label in enumerate(ax.gca().xaxis.get_ticklabels()):
+        ax.xaxis.set_ticks(np.arange(start, end, params['xtick_freq']))
+        for n, label in enumerate(ax.xaxis.get_ticklabels()):
             # Label every other tick
             if n % 2 != 0:
                 label.set_visible(False)
@@ -294,8 +263,8 @@ def set_params(ax = plt, **params):
             start = params['ymin']
         if params['ymax'] is not None:
             end = params['ymax']
-        ax.gca().yaxis.set_ticks(np.arange(start, end, params['ytick_freq']))
-        for n, label in enumerate(ax.gca().yaxis.get_ticklabels()):
+        ax.yaxis.set_ticks(np.arange(start, end, params['ytick_freq']))
+        for n, label in enumerate(ax.yaxis.get_ticklabels()):
             # Label every other tick
             if n % 2 != 0:
                 label.set_visible(False)
@@ -351,7 +320,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
     xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
 
-    ax = params['ax']
+    ax  = getAxObject(params)
+
     xscale = params['xscale']
     yscale = params['yscale']
     if xedata is not None:
@@ -399,9 +369,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
     xdata, ydata = check_numpy(xdata, ydata)
     fill_param_dict(params)
     optional = add_optional(params)
-    ax = params['ax']
-    params['alpha'] = 1
-    params['linewidth'] = 0
+    ax  = getAxObject(params)
 
     zod = params['zod']
     if zod is None:
@@ -449,7 +417,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
     xscale=params['xscale']
     yscale=params['yscale']
-    ax = params['ax']
+    ax  = getAxObject(params)
 
     if xedata is not None:
         xedata=np.copy(xedata*xscale)
@@ -586,7 +554,7 @@ def plot_fill(xdata, ydata, yedata, xedata=None, **params):
 
     xscale = params['xscale']
     yscale = params['yscale']
-    ax     = params['ax']
+    ax  = getAxObject(params)
     zod    = params['zod']
     if zod is None:
          zod = globals()['zod']
@@ -632,7 +600,7 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
 
     xscale=params['xscale']
     yscale=params['yscale']
-    ax = params['ax']
+    ax  = getAxObject(params)
 
     zod = params['zod']
     if zod is None:
@@ -854,6 +822,28 @@ def get_legend_handles():
     return legend_handles, legend_labels
 
 
+def set_markers(marker_set=None):
+    if marker_set is None:
+        marker_set = markers_1
+    global markers
+    markers = itertools.cycle(marker_set)
+
+
+def check_numpy(*data):
+    data=list(data)
+    for i in range(len(data)):
+        if isinstance(data[i], (list, tuple)):
+            data[i] = np.array(data[i])
+    return tuple(data)
+
+
+def getAxObject(params):
+    if params['ax']==plt:
+        return plt.gca()
+    else:
+        return params['ax']
+
+
 # -------------------------------------------------------------------------------------------------- CHANGE AXIS OPTIONS
 
 
@@ -941,115 +931,3 @@ def init_notex(fig_width=10, fig_height=7,size=default_params['font_size']):
     fig, ax = plt.subplots()
     configureAx(ax)
     return fig, ax
-
-
-# --------------------------------------------------------------------------------------------------------------- INSETS
-
-
-def zoom_axis(ax, width, height, zx_min, zx_max, zy_min, zy_max, loc=1, loc1=2, loc2=4, borderpad=0.5, markInset=True):
-    # width and height with respect to the parent axis should be passed like: width="70%" etc...
-    # loc=1 == upper-right
-    axins = inset_axes(ax, width, height, loc=loc, borderpad=borderpad) 
-    axins.set_xlim(zx_min, zx_max) # apply the x-limits
-    axins.set_ylim(zy_min, zy_max) # apply the y-limits
-    global zod
-    if markInset:
-        mark_inset(ax, axins, loc1=loc1, loc2=loc2, fc="none", ec="0.5", linewidth=0.5, zorder=zod)
-    zod+=1
-    return axins # use this axis to plot inside the box!
-
-
-def plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata=None, xedata=None, zy_min=None, zy_max=None,
-                   markInset=True,**params):
-    fill_param_dict(params)
-    xscale=params['xscale']
-    yscale=params['yscale']
-    if params['ax'] is plt:
-        params['ax'] = plt.gca()
-
-    if zy_max is None:
-        if yedata is None:
-            tmp = np.copy(ydata)
-        else:
-            tmp = ydata+yedata
-        zy_max = np.min(tmp)
-        for i in range(len(xdata)):
-            if zx_max > xdata[i] > zx_min:
-                if zy_max < tmp[i]:
-                    zy_max = tmp[i]
-
-    if zy_min is None:
-        if yedata is None:
-            tmp = np.copy(ydata)
-        else:
-            tmp = ydata-yedata
-        zy_min = np.max(tmp)
-        for i in range(len(xdata)):
-            if zx_max > xdata[i] > zx_min:
-                if zy_min > tmp[i]:
-                    zy_min = tmp[i]
-
-    params['ax'] = zoom_axis(params['ax'], width, height, zx_min*xscale, zx_max*xscale, zy_min*yscale, zy_max*yscale,
-                             loc = params['loc'], loc1 = params['loc1'], loc2 = params['loc2'],
-                             borderpad=params['borderpad'],markInset=markInset)
-
-    if params['style'] == "dots":
-        return plot_dots(xdata, ydata, yedata=yedata, xedata=xedata, **params), params['ax']
-    if params['style'] == "lines":
-        return plot_lines(xdata, ydata, yedata=yedata, xedata=xedata, **params), params['ax']
-    if params['style'] == "fill":
-        return plot_fill(xdata, ydata, yedata=yedata, **params), params['ax']
-
-
-def plot_file_zoom(width, height, zx_min, zx_max, filename, xcol=None, ycol=None, yecol=None, xecol=None, zy_min=None,
-                   zy_max=None, markInset=True, **params):
-    fill_param_dict(params)
-    data = np.loadtxt(filename).transpose()
-
-    if xcol is not None:
-        xdata = data[xcol - 1]
-    else:
-        xdata = np.arange(len(data))
-    if ycol is not None:
-        ydata = data[ycol - 1]
-    else:
-        ydata = np.arange(len(xdata))
-    yedata = None
-    xedata = None
-    if yecol is not None:
-        yedata = data[yecol - 1]
-    if xecol is not None:
-        xedata = data[xecol - 1]
-
-    return plot_data_zoom(width, height, zx_min, zx_max, xdata, ydata, yedata, xedata, zy_min, zy_max,
-                          markInset=markInset, **params)
-
-
-# ------------------------------------------------------------------------------------------------------------- GEOMETRY
-
-
-def draw_line(point1,point2,**params):
-    """ Draws a line between point1 and point2. """
-    fill_param_dict(params)
-    optional = add_optional(params)
-    ax = params['ax']
-
-    zod = params['zod']
-    if zod is None:
-        zod = globals()['zod']
-
-    marker = params['marker']
-    if marker == "iter":
-        marker = next(markers)
-
-    globals()['zod'] += 1
-
-    if params['label'] is not None:
-        legend_labels.append(params['label'])
-
-    set_params(**params)
-
-    x_values = [point1[0], point2[0]]
-    y_values = [point1[1], point2[1]]
-    ax.plot(x_values, y_values, linewidth=params['linewidth'], zorder=zod, alpha=params['alpha_lines'], marker=marker,
-            **optional)
