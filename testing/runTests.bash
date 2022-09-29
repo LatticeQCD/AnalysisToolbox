@@ -16,7 +16,16 @@ echo "Running python tests:"
 echo
 
 
+# --------------------- BASE TESTS
+
+
+cd base
 runTestRoutine testDataCleaner.py
+runTestRoutine "testReadWrite.py --type str"
+diff test.d control.d
+runTestRoutine "testReadWrite.py --type list"
+diff test.d control.d
+cd ..
 
 
 # --------------------- MATH TESTS

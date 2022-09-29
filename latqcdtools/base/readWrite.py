@@ -8,9 +8,8 @@
 # that anyone can use, like read_in. 
 #
 
-
 import numpy as np
-
+import latqcdtools.base.logger as logger
 
 def read_in_pure_no_numpy(filename, col1=1, col2=2, symmetrize = False):
     try:
@@ -83,9 +82,20 @@ def read_in(filename, *args):
 
 def writeTable(filename,*args,**kwargs):
     """ Wrapper for np.savetxt, which would otherwise output in a way that is not very intuitive for tables.
-        Additionally constructs format string to include only 8 digits after the decimal point.  """
+        Additionally constructs format string to include only 8 digits after the decimal point. """
     if 'header' in kwargs:
         head = kwargs['header']
+        if isinstance(head,list):
+            form = '%12s'
+            temp = (head[0],)
+            if len(head[0]) > 12:
+                logger.warn("writeTable header[0] should be kept under 12 characters.")
+            for label in head[1:]:
+                if len(label)>14:
+                    logger.warn("writeTable header labels should be kept under 14 characters.")
+                form += '  %14s'
+                temp += label,
+            head = form % temp
     else:
         head = ''
     data = ()

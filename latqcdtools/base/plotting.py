@@ -16,6 +16,11 @@ import itertools
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import error_prop_func, norm_cov
 
+# TODO: put in some docstrings for stuff that doesn't have it yet. maybe also reorganize the ordering a little bit for
+#       to separate internal and external stuff? also like is there some code redundancy in the xmin, xmax section?
+#       finally check all the gcas, they may not be needed anymore. also you need to like make sure that all the
+#       external methods here have some sort of test; you changed a lot of things and it's important to verify that
+#       the changes you made are stable. also expand a bit in the documentation
 
 def getColorGradient(NUM_COLORS=None):
     """ Return a preceptually uniform set of NUM_COLORS colors. """
@@ -29,7 +34,8 @@ def getColorGradient(NUM_COLORS=None):
     return gradColors
 
 
-zod = 1 # use for zorder in plot commands will be increased
+zod         = 1 # use for zorder in plot commands will be increased
+initialized = False
 
 
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
@@ -52,25 +58,33 @@ default_params = {
     'ax': plt,      # Axis object that is used for the plots. Default is matplotlib.pyplot.
     'expand': True, # Defines whether the parameters get expanded or not, i.e func(x *param) or func(x param).
 
-    # Basic options affecting all plots.
+    # Basic options affecting most plots.
     'xlabel': None,
     'ylabel': None,
     'title': None,
-    'label': None,              # What are the data called? (Will appear in legend.)
-    'color': None,              # Color for your data. (By default each new set automatically gets different color.)
-    'marker': "iter",           # Symbol used for plotting data. (Set to 'None' if you don't want any.)
-    'markersize': 3.5,          # Size of the symbols.
-    'font_size': 12,            # Default font size for text.
-    'font_weight' : 'normal',   # Default style of font ('normal', 'bold', 'heavy', 'light')
-    'alpha': 0.5,               # General transparency for data.
-    'xscale': 1.0,              # Scale data in xdata by this factor.
-    'yscale': 1.0,              # Scale data in ydata by this factor.
-    'ticksintoplot' : True,     # Put ticks into plotting area.
-    'surroundWithTicks' : True, # Put ticks also on top and right.
-    'labelsintoplot': True,     # Put xlabel and ylabel into plotting area.
-    'xlabelpos': None,          # If labelsintplot=True, shift the position (x,y) of the x-label, expressed as percent.
+    'label': None,               # What are the data called? (Will appear in legend.)
+    'color': None,               # Color for your data. (By default each new set automatically gets different color.)
+    'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
+    'markersize': 3.5,           # Size of the symbols.
+    'font_size': 12,             # Default font size for text.
+    'font_weight' : 'normal',    # Default style of font ('normal', 'bold', 'heavy', 'light')
+    'alpha': 0.5,                # General transparency for data.
+    'xscale': 1.0,               # Scale data in xdata by this factor.
+    'yscale': 1.0,               # Scale data in ydata by this factor.
+    'ticksintoplot' : True,      # Put ticks into plotting area.
+    'surroundWithTicks' : True,  # Put ticks also on top and right.
+    'labelsintoplot': True,      # Put xlabel and ylabel into plotting area.
+    'xlabelpos': None,           # If labelsintplot=True, shift the position (x,y) of the x-label, expressed as percent.
     'ylabelpos': None,
-    'zod': None,                # Controls where in foreground/background data/lines/bands appear.
+    'alpha_dots': None,          # Transperancy for different dots
+    'alpha_lines': 1,            # Transperancy for different lines
+    'alpha_fill_edge': 0,        # Transperancy for edges of error bands
+    'alpha_label': 1,            # Transperancy for labels
+    'linewidth': 1,              # Linewidth of line plots
+    'capsize': 1.5,              # Length of caps af error bars
+    'elinewidth': 0.5,           # Linewidth of the error bars of caps af error bars
+    'point_fill_color': "None",  # Fill color of points. Set to None (not as string) to have filled symbols
+    'zod': None,                 # Controls where in foreground/background data/lines/bands appear.
 
     # Options for the legend.
     # 'upper right'   : 1
@@ -90,34 +104,21 @@ default_params = {
     'legend_col_spacing': None,  # Spacing between columns in the legend.
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
     'legend_title': None,        # Title of the legend.
+    'alpha_legend': 0,           # Transperancy for the legend
 
-    # Options for plotting files.
-    'xcol': None,          # Column for the xdata when plotting a file.
-    'ycol': None,          # Column for the ydata when plotting a file.
-    'yecol': None,         # Column for the errors in y-direction when plotting a file.
-    'xecol': None,         # Column for the errors in x-direction when plotting a file.
-    'style': "dots",       # Style when plotting a file.
-
-    # Transparency
-    'alpha_dots': None,    # Transperancy for different dots
-    'alpha_lines': 1,      # Transperancy for different lines
-    'alpha_fill_edge': 0,  # Transperancy for edges of error bands
-    'alpha_label': 1,      # Transperancy for labels
-    'alpha_legend': 0,     # Transperancy for the legend
-
-    'npoints' : 1000,      # Number of points for function plotting
-    'linewidth': 1,                     # Linewidth of line plots
-    'loc': 1,                           # Position of the sub_plot_location
-    'loc1': 4,                          # First edge of the connection line from the zoom window to sub plot
-    'loc2': 2,                          # Second edge of the connection line from the zoom window to sub plot
-    'borderpad': 0.5,                   # Padding between subplot and major plot axis
-    'capsize': 1.5,                     # Length of caps af error bars
-    'elinewidth': 0.5,                  # Linewidth of the error bars of caps af error bars
-    'point_fill_color': "None",         # Fill color of points. Set to None (not as string) to have filled symbols
+    # Options for plotting files and functions.
+    'xcol': None,        # Column for the xdata when plotting a file.
+    'ycol': None,        # Column for the ydata when plotting a file.
+    'yecol': None,       # Column for the errors in y-direction when plotting a file.
+    'xecol': None,       # Column for the errors in x-direction when plotting a file.
+    'style': "dots",     # Style when plotting a file.
+    'npoints': 1000,     # Number of points for function plotting
 
     # Adjust aspects of the plot's axes
     'xtick_freq': None,
     'ytick_freq': None,
+    'xtick_every_n' : 2,   # If xtick_freq or ytick_freq is not None, label every nth tick.
+    'ytick_every_n' : 2,
     'xmin': None,          # Does not directly change x-range
     'xmax': None,
     'ymin': None,          # Does not directly change y-range
@@ -186,6 +187,7 @@ def add_optional(params):
     return ret
 
 
+# TODO: there's some stuff from the param dict that should be set in here but isn't currently,
 def set_params(**params):
     """Set additional parameters to the plot. For example set a title or label.
         Parameters
@@ -200,6 +202,12 @@ def set_params(**params):
 
     fill_param_dict(params)
 
+    global initialized
+
+    if initialized:
+        print("you should only see me once")
+        initialized=False
+
     ax  = getAxObject(params)
     zod = params['zod']
 
@@ -210,24 +218,23 @@ def set_params(**params):
         if params['labelsintoplot'] or params['xlabelpos'] is not None:
             if params['xlabelpos'] is None:
                 params['xlabelpos'] = (0.95,0.027)
-            ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black', fontsize=params['font_size'],
-                                         fontweight=params['font_weight'], ha='right', va='bottom',
-                                         bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']),
-                                         zorder=zod)
+            ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black',
+                        fontsize=params['font_size'], fontweight=params['font_weight'], ha='right', va='bottom',
+                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=zod)
         else:
             ax.xlabel(params['xlabel'])
+            ax.xaxis.get_label().set_fontsize(params['font_size'])
 
     if params['ylabel'] is not None:
         if params['labelsintoplot'] or params['ylabelpos'] is not None:
             if params['ylabelpos'] is None:
                 params['ylabelpos'] = (0.025,0.972)
             ax.annotate(params['ylabel'], xy=params['ylabelpos'], xycoords='axes fraction', color='black',
-                                    fontsize=params['font_size'], ha='left', va='top',
-                        fontweight=params['font_weight'],
-                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']),
-                        zorder=zod)
+                        fontsize=params['font_size'], ha='left', va='top', fontweight=params['font_weight'],
+                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=zod)
         else:
             ax.ylabel(params['ylabel'])
+            ax.yaxis.get_label().set_fontsize(params['font_size'])
 
     if params['title'] is not None:
         plt.title(params['title'])
@@ -246,28 +253,29 @@ def set_params(**params):
         leg.set_zorder(zod)
 
     if params['xtick_freq'] is not None:
-        start, end = ax.gca().get_xlim()
+        start, end = ax.get_xlim()
         if params['xmin'] is not None:
             start = params['xmin']
         if params['xmax'] is not None:
             end = params['xmax']
         ax.xaxis.set_ticks(np.arange(start, end, params['xtick_freq']))
         for n, label in enumerate(ax.xaxis.get_ticklabels()):
-            # Label every other tick
-            if n % 2 != 0:
+            if n % params['xtick_every_n'] != 0:
                 label.set_visible(False)
 
     if params['ytick_freq'] is not None:
-        start, end = ax.gca().get_ylim()
+        start, end = ax.get_ylim()
         if params['ymin'] is not None:
             start = params['ymin']
         if params['ymax'] is not None:
             end = params['ymax']
         ax.yaxis.set_ticks(np.arange(start, end, params['ytick_freq']))
         for n, label in enumerate(ax.yaxis.get_ticklabels()):
-            # Label every other tick
-            if n % 2 != 0:
+            if n % params['ytick_every_n'] != 0:
                 label.set_visible(False)
+
+    set_xrange(params['xmin'],params['xmax'])
+    set_yrange(params['ymin'],params['ymax'])
 
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
@@ -460,9 +468,11 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     return ebar
 
 
-# To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err
-# To use a numerical derivative, just pass the errors of args to args_err
-def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
+def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, swapXY=False, **params):
+    """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
+        To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
+        bars in the x-direction instead of the y-direction. """
+
     fill_param_dict(params)
     params['marker'] = None
     xmin = params['xmin']
@@ -510,7 +520,10 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
         else:
             ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
 
-        return plot_fill(xdata, ydata, ydata_err, **params)
+        if swapXY:
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **params)
+        else:
+            return plot_fill(xdata, ydata, ydata_err, **params)
 
     elif len(args_err) > 0:
         if grad is None:
@@ -529,10 +542,16 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
             ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
                                                   args = tmp_opt) for x in xdata])
 
-        return plot_fill(xdata, ydata, ydata_err, **params)
+        if swapXY:
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **params)
+        else:
+            return plot_fill(xdata, ydata, ydata_err, **params)
 
     else:
-        return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
+        if swapXY:
+            return plot_lines(ydata, xdata, yedata=None, xedata=None, **params)
+        else:
+            return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
 
 
 def plot_fill(xdata, ydata, yedata, xedata=None, **params):
@@ -647,10 +666,10 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
 def plot_cov(cov, filename = None, title=None, notex=False, ignore_first = 0, norm = True, xrange = None, yrange = None,
              xmin = None, xmax = None, ymin = None, ymax = None, xlabel = "$n_{\\tau/\\sigma}$",
              ylabel = "$n_{\\tau/\\sigma}$"):
-    if not notex:
-        latexify()
-    else:
-        init_notex()
+#    if not notex:
+#        latexify()
+#    else:
+#        init_notex()
     if norm:
         ncov = norm_cov(cov)
     else:
@@ -695,10 +714,10 @@ def plot_cov(cov, filename = None, title=None, notex=False, ignore_first = 0, no
 
 
 def plot_eig(cov, filename, title=None, notex=False):
-    if not notex:
-        latexify()
-    else:
-        init_notex()
+#    if not notex:
+#        latexify()
+#    else:
+#        init_notex()
     v, w = np.linalg.eig(cov)
     eig_real = np.real(np.sort(v))
     eig_imag = np.imag(np.sort(v))
@@ -888,46 +907,54 @@ def set_yrange(ymin=None, ymax=None):
 # ---------------------------------------------------------------------------------------------------PLOT INITIALIZATION
 
 
-def initializePlt(width, height, size):
+# TODO: maybe get rid of some of these, make set_params call initializePlt in secret. maybe there can be some global
+#       variable that detects whether you've called initializePlt or not, so it's not getting called every time you
+#       use set_params. this would also be a lot more intuitive since set_params has font_size built in.
+#def initializePlt(width, height, size):
+def initializePlt(size):
+
     clear_legend_labels()
     plt.close("all")
-    set_markers()
-    width /= 2.54
-    height /= 2.54
-    plt.rcParams['legend.handlelength'] = 1.5
-    plt.rcParams['figure.figsize'] = [width, height]
+#    set_markers()
+#    width /= 2.54
+#    height /= 2.54
+#    plt.rcParams['legend.handlelength'] = 1.5
+#    plt.rcParams['figure.figsize'] = [width, height]
     plt.rcParams['figure.autolayout'] = True
     plt.rcParams['axes.titlesize'] = size
     plt.rcParams['savefig.bbox'] = 'standard'
     plt.rcParams['ytick.labelsize'] = size
     plt.rcParams['font.size'] = size
     plt.rcParams['axes.labelsize'] = size
-    plt.rcParams['legend.fontsize'] = size-2
+    plt.rcParams['legend.fontsize'] = size
     plt.rcParams['xtick.labelsize'] = size
     plt.rcParams['font.weight'] = default_params['font_weight']
-    plt.rc('axes', linewidth=0.5)
+#    plt.rc('axes', linewidth=0.5)
 
 
-def configureAx(axObj):
-    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-    x_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-    axObj.yaxis.set_major_formatter(y_formatter)
-    axObj.xaxis.set_major_formatter(x_formatter)
-    plt.ticklabel_format(style='sci', scilimits=(-3, 4))
-    axObj.set_prop_cycle(cycler('color', colors))
+#def configureAx(axObj):
+#    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
+#    x_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
+#    axObj.yaxis.set_major_formatter(y_formatter)
+#    axObj.xaxis.set_major_formatter(x_formatter)
+#    plt.ticklabel_format(style='sci', scilimits=(-3, 4))
+#    axObj.set_prop_cycle(cycler('color', colors))
 
 
-def latexify():
+def latexify(bold=False):
     """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
         convenient functions like ev. """
     logger.debug("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
-    plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
+    if bold:
+        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
+    else:
+        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
     plt.rcParams['text.usetex'] = True
 
 
-def init_notex(fig_width=10, fig_height=7,size=default_params['font_size']):
-    """ Width and height are in centimeters. """
-    initializePlt(fig_width, fig_height, size)
-    fig, ax = plt.subplots()
-    configureAx(ax)
-    return fig, ax
+#def init_notex(fig_width=10, fig_height=7,size=default_params['font_size']):
+#    """ Width and height are in centimeters. """
+#    initializePlt(fig_width, fig_height, size)
+#    fig, ax = plt.subplots()
+#    configureAx(ax)
+#    return fig, ax
