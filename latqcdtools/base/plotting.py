@@ -7,35 +7,20 @@
 #
 
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
-import matplotlib.ticker as ticker
-from cycler import cycler
 import itertools
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import error_prop_func, norm_cov
 
-# TODO: put in some docstrings for stuff that doesn't have it yet. maybe also reorganize the ordering a little bit for
-#       to separate internal and external stuff? also like is there some code redundancy in the xmin, xmax section?
+# TODO: put in some docstrings for stuff that doesn't have it yet.
 #       finally check all the gcas, they may not be needed anymore. also you need to like make sure that all the
 #       external methods here have some sort of test; you changed a lot of things and it's important to verify that
 #       the changes you made are stable. also expand a bit in the documentation
 
-def getColorGradient(NUM_COLORS=None):
-    """ Return a preceptually uniform set of NUM_COLORS colors. """
-    if NUM_COLORS is None:
-        logger.TBError("Give me a number of colors.")
-    cm = plt.get_cmap('viridis')
-    gradColors=[]
-    for i in range(NUM_COLORS):
-        color = cm(1.*i/NUM_COLORS)
-        gradColors.append(color)
-    return gradColors
 
-
-zod         = 1 # use for zorder in plot commands will be increased
-initialized = False
+zod        = 1
+initialize = True
 
 
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
@@ -131,6 +116,217 @@ allowed_params = set(default_params.keys())
 allowed_params = allowed_params | {'linestyle','show_leg','ha','va'}
 
 
+# ---------------------------------------------------------------------------------------------- SOME EXTERNAL FUNCTIONS
+
+
+def getColorGradient(NUM_COLORS=None):
+    """ Return a preceptually uniform set of NUM_COLORS colors. """
+    if NUM_COLORS is None:
+        logger.TBError("Give me a number of colors.")
+    cm = plt.get_cmap('viridis')
+    gradColors=[]
+    for i in range(NUM_COLORS):
+        color = cm(1.*i/NUM_COLORS)
+        gradColors.append(color)
+    return gradColors
+
+
+def latexify(bold=False):
+    """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
+        convenient functions like ev. """
+    logger.debug("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
+    if bold:
+        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
+    else:
+        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
+    plt.rcParams['text.usetex'] = True
+
+
+# ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
+
+
+def initializePlt(size):
+    global initialize
+    if initialize:
+        initialize = False
+        plt.rcParams['figure.autolayout'] = True
+        plt.rcParams['axes.titlesize'] = size
+        plt.rcParams['savefig.bbox'] = 'standard'
+        plt.rcParams['ytick.labelsize'] = size
+        plt.rcParams['font.size'] = size
+        plt.rcParams['axes.labelsize'] = size
+        plt.rcParams['legend.fontsize'] = size
+        plt.rcParams['xtick.labelsize'] = size
+        plt.rcParams['font.weight'] = default_params['font_weight']
+
+
+def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
+    fill_param_dict(params)
+    xmin = params['xmin']
+    xmax = params['xmax']
+
+    if params['expand']:
+        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
+    else:
+        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
+
+    if xmin is None:
+        for line in plt.gca().lines:
+            xmin_new = np.min(line.get_xdata())
+            if xmin is None:
+                xmin = xmin_new
+            if xmin_new < xmin:
+                xmin = xmin_new
+    if xmax is None:
+        for line in plt.gca().lines:
+            xmax_new = np.max(line.get_xdata())
+            if xmax is None:
+                xmax = xmax_new
+            if xmax_new > xmax:
+                xmax = xmax_new
+
+    if xmin is None:
+        xmin = -10
+    if xmax is None:
+        xmax = 10
+
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
+
+    if func_sup_numpy:
+        ydata = wrap_func(xdata, *args)
+    else:
+        ydata = np.array([wrap_func(x, *args) for x in xdata])
+
+    if func_err is not None:
+        if func_sup_numpy:
+            ydata_err = wrap_func_err(xdata, *args_err)
+        else:
+            ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
+
+        with open(filename, "w") as fout:
+            for i in range(len(xdata)):
+                print(xdata[i], ydata[i], ydata_err[i], file = fout)
+
+    elif len(args_err) > 0:
+        if grad is None:
+            logger.warn("Used numerical derivative!")
+            wrap_grad = None
+
+        # Arguments that are part of the error propagation
+        tmp_args = tuple(args)[0:len(args_err)]
+
+        # Optional arguments that are constant and, therefore, not part of the error propagation
+        tmp_opt = tuple(args)[len(args_err):]
+
+        if func_sup_numpy:
+            ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
+        else:
+            ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
+                                                  args = tmp_opt) for x in xdata])
+
+        with open(filename, "w") as fout:
+            for i in range(len(xdata)):
+                print(xdata[i], ydata[i], ydata_err[i], file = fout)
+
+    else:
+        with open(filename, "w") as fout:
+            for i in range(len(xdata)):
+                print(xdata[i], ydata[i], file = fout)
+
+
+def remove_points(data, *args, minval = None, maxval = None):
+    if minval is None:
+        minval = -np.inf
+    if maxval is None:
+        maxval = np.inf
+    ind = (data>=minval) & (data<=maxval)
+    ret = [data[ind]]
+    for i in args:
+        try:
+            if i is not None:
+                ret.append(i[ind])
+            else:
+                ret.append(None)
+        except (IndexError, TypeError):
+            ret.append(i)
+    return ret
+
+
+def clear_legend_labels():
+    global legend_labels
+    legend_labels = []
+    global legend_handles
+    legend_handles = []
+
+
+def get_legend_handles():
+    return legend_handles, legend_labels
+
+
+def set_markers(marker_set=None):
+    if marker_set is None:
+        marker_set = markers_1
+    global markers
+    markers = itertools.cycle(marker_set)
+
+
+def check_numpy(*data):
+    data=list(data)
+    for i in range(len(data)):
+        if isinstance(data[i], (list, tuple)):
+            data[i] = np.array(data[i])
+    return tuple(data)
+
+
+def getAxObject(params):
+    if params['ax']==plt:
+        return plt.gca()
+    else:
+        return params['ax']
+
+
+def set_xmin(x_min=None):
+    if x_min is not None:
+        ax = plt.gca()
+        x1, x2 = ax.get_xlim()
+        ax.set_xlim([x_min,x2])
+
+
+def set_xmax(x_max=None):
+    if x_max is not None:
+        ax = plt.gca()
+        x1, x2 = ax.get_xlim()
+        ax.set_xlim([x1,x_max])
+
+
+def set_ymin(y_min=None):
+    if y_min is not None:
+        ax = plt.gca()
+        y1, y2 = ax.get_ylim()
+        ax.set_ylim([y_min,y2])
+
+
+def set_ymax(y_max=None):
+    if y_max is not None:
+        ax = plt.gca()
+        y1, y2 = ax.get_ylim()
+        ax.set_ylim([y1,y_max])
+
+
+def set_xrange(xmin=None, xmax=None):
+    set_xmin(xmin)
+    set_xmax(xmax)
+
+
+def set_yrange(ymin=None, ymax=None):
+    set_ymin(ymin)
+    set_ymax(ymax)
+
+
 def set_default_param(**kwargs):
     for key, val in kwargs.items():
         default_params[key] = val
@@ -187,7 +383,6 @@ def add_optional(params):
     return ret
 
 
-# TODO: there's some stuff from the param dict that should be set in here but isn't currently,
 def set_params(**params):
     """Set additional parameters to the plot. For example set a title or label.
         Parameters
@@ -202,11 +397,7 @@ def set_params(**params):
 
     fill_param_dict(params)
 
-    global initialized
-
-    if initialized:
-        print("you should only see me once")
-        initialized=False
+    initializePlt(params['font_size'])
 
     ax  = getAxObject(params)
     zod = params['zod']
@@ -660,16 +851,9 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
         return pl
 
 
-# ----------------------------------------------------------------------------------------------- SPECIAL PLOT FUNCTIONS
-
-
-def plot_cov(cov, filename = None, title=None, notex=False, ignore_first = 0, norm = True, xrange = None, yrange = None,
+def plot_cov(cov, filename = None, title=None, ignore_first = 0, norm = True, xrange = None, yrange = None,
              xmin = None, xmax = None, ymin = None, ymax = None, xlabel = "$n_{\\tau/\\sigma}$",
              ylabel = "$n_{\\tau/\\sigma}$"):
-#    if not notex:
-#        latexify()
-#    else:
-#        init_notex()
     if norm:
         ncov = norm_cov(cov)
     else:
@@ -713,11 +897,7 @@ def plot_cov(cov, filename = None, title=None, notex=False, ignore_first = 0, no
         plt.savefig(filename)
 
 
-def plot_eig(cov, filename, title=None, notex=False):
-#    if not notex:
-#        latexify()
-#    else:
-#        init_notex()
+def plot_eig(cov, filename, title=None):
     v, w = np.linalg.eig(cov)
     eig_real = np.real(np.sort(v))
     eig_imag = np.imag(np.sort(v))
@@ -729,232 +909,3 @@ def plot_eig(cov, filename, title=None, notex=False):
                 alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$" )
     plt.savefig(filename)
     plt.clf()
-
-
-# ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
-
-
-def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
-    fill_param_dict(params)
-    xmin = params['xmin']
-    xmax = params['xmax']
-
-    if params['expand']:
-        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
-        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
-        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
-    else:
-        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
-        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
-        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
-
-    if xmin is None:
-        for line in plt.gca().lines:
-            xmin_new = np.min(line.get_xdata())
-            if xmin is None:
-                xmin = xmin_new
-            if xmin_new < xmin:
-                xmin = xmin_new
-    if xmax is None:
-        for line in plt.gca().lines:
-            xmax_new = np.max(line.get_xdata())
-            if xmax is None:
-                xmax = xmax_new
-            if xmax_new > xmax:
-                xmax = xmax_new
-
-    if xmin is None:
-        xmin = -10
-    if xmax is None:
-        xmax = 10
-
-    xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
-
-    if func_sup_numpy:
-        ydata = wrap_func(xdata, *args)
-    else:
-        ydata = np.array([wrap_func(x, *args) for x in xdata])
-
-    if func_err is not None:
-        if func_sup_numpy:
-            ydata_err = wrap_func_err(xdata, *args_err)
-        else:
-            ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
-
-        with open(filename, "w") as fout:
-            for i in range(len(xdata)):
-                print(xdata[i], ydata[i], ydata_err[i], file = fout)
-
-    elif len(args_err) > 0:
-        if grad is None:
-            logger.warn("Used numerical derivative!")
-            wrap_grad = None
-
-        # Arguments that are part of the error propagation
-        tmp_args = tuple(args)[0:len(args_err)]
-
-        # Optional arguments that are constant and, therefore, not part of the error propagation
-        tmp_opt = tuple(args)[len(args_err):]
-
-        if func_sup_numpy:
-            ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
-        else:
-            ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
-                                                  args = tmp_opt) for x in xdata])
-
-        with open(filename, "w") as fout:
-            for i in range(len(xdata)):
-                print(xdata[i], ydata[i], ydata_err[i], file = fout)
-
-    else:
-        with open(filename, "w") as fout:
-            for i in range(len(xdata)):
-                print(xdata[i], ydata[i], file = fout)
-
-
-def remove_points(data, *args, minval = None, maxval = None):
-    if minval is None:
-        minval = -np.inf
-    if maxval is None:
-        maxval = np.inf
-    ind = (data>=minval) & (data<=maxval)
-    ret = [data[ind]]
-    for i in args:
-        try:
-            if i is not None:
-                ret.append(i[ind])
-            else:
-                ret.append(None)
-        except (IndexError, TypeError):
-            ret.append(i)
-    return ret
-
-
-def clear_legend_labels():
-    global legend_labels
-    legend_labels = []
-    global legend_handles
-    legend_handles = []
-
-
-def get_legend_handles():
-    return legend_handles, legend_labels
-
-
-def set_markers(marker_set=None):
-    if marker_set is None:
-        marker_set = markers_1
-    global markers
-    markers = itertools.cycle(marker_set)
-
-
-def check_numpy(*data):
-    data=list(data)
-    for i in range(len(data)):
-        if isinstance(data[i], (list, tuple)):
-            data[i] = np.array(data[i])
-    return tuple(data)
-
-
-def getAxObject(params):
-    if params['ax']==plt:
-        return plt.gca()
-    else:
-        return params['ax']
-
-
-# -------------------------------------------------------------------------------------------------- CHANGE AXIS OPTIONS
-
-
-def set_xmin(x_min=None):
-    if x_min is not None:
-        ax = plt.gca()
-        x1, x2 = ax.get_xlim()
-        ax.set_xlim([x_min,x2])
-
-
-def set_xmax(x_max=None):
-    if x_max is not None:
-        ax = plt.gca()
-        x1, x2 = ax.get_xlim()
-        ax.set_xlim([x1,x_max])
-
-
-def set_ymin(y_min=None):
-    if y_min is not None:
-        ax = plt.gca()
-        y1, y2 = ax.get_ylim()
-        ax.set_ylim([y_min,y2])
-
-
-def set_ymax(y_max=None):
-    if y_max is not None:
-        ax = plt.gca()
-        y1, y2 = ax.get_ylim()
-        ax.set_ylim([y1,y_max])
-
-
-def set_xrange(xmin=None, xmax=None):
-    set_xmin(xmin)
-    set_xmax(xmax)
-
-
-def set_yrange(ymin=None, ymax=None):
-    set_ymin(ymin)
-    set_ymax(ymax)
-
-
-# ---------------------------------------------------------------------------------------------------PLOT INITIALIZATION
-
-
-# TODO: maybe get rid of some of these, make set_params call initializePlt in secret. maybe there can be some global
-#       variable that detects whether you've called initializePlt or not, so it's not getting called every time you
-#       use set_params. this would also be a lot more intuitive since set_params has font_size built in.
-#def initializePlt(width, height, size):
-def initializePlt(size):
-
-    clear_legend_labels()
-    plt.close("all")
-#    set_markers()
-#    width /= 2.54
-#    height /= 2.54
-#    plt.rcParams['legend.handlelength'] = 1.5
-#    plt.rcParams['figure.figsize'] = [width, height]
-    plt.rcParams['figure.autolayout'] = True
-    plt.rcParams['axes.titlesize'] = size
-    plt.rcParams['savefig.bbox'] = 'standard'
-    plt.rcParams['ytick.labelsize'] = size
-    plt.rcParams['font.size'] = size
-    plt.rcParams['axes.labelsize'] = size
-    plt.rcParams['legend.fontsize'] = size
-    plt.rcParams['xtick.labelsize'] = size
-    plt.rcParams['font.weight'] = default_params['font_weight']
-#    plt.rc('axes', linewidth=0.5)
-
-
-#def configureAx(axObj):
-#    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-#    x_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-#    axObj.yaxis.set_major_formatter(y_formatter)
-#    axObj.xaxis.set_major_formatter(x_formatter)
-#    plt.ticklabel_format(style='sci', scilimits=(-3, 4))
-#    axObj.set_prop_cycle(cycler('color', colors))
-
-
-def latexify(bold=False):
-    """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
-        convenient functions like ev. """
-    logger.debug("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
-    if bold:
-        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
-    else:
-        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
-    plt.rcParams['text.usetex'] = True
-
-
-#def init_notex(fig_width=10, fig_height=7,size=default_params['font_size']):
-#    """ Width and height are in centimeters. """
-#    initializePlt(fig_width, fig_height, size)
-#    fig, ax = plt.subplots()
-#    configureAx(ax)
-#    return fig, ax

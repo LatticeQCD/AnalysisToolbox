@@ -20,8 +20,11 @@ set_params(xlabel   ="$T$ [MeV]",
            legend_title="$\\ev{\\int dx}$",
            labelsintoplot=True,
            xlabelpos=(0.6,0.05),
-           ylabelpos=(0.05,0.6),
-           font_size=10,
+           ylabelpos=(0.05,0.4),
+           font_size=10)
+set_params(xmin=1.0,
+           xmax=3.0,
+           ymin=1.0
           )
 
 plt.show()
