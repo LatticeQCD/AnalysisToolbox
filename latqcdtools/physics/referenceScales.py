@@ -18,6 +18,26 @@ def beta_func(beta):
     return (b0 * 10 / beta) ** (-b1 / (2 * b0 ** 2)) * np.exp(-beta / (20 * b0))
 
 
+def MeVtoUnits(value,name,units):
+    if units == "MeV":
+        return value
+    elif units == "fminv":
+        return MeV_to_fminv(value)
+    else:
+        logger.TBError("Invalid unit specification for " + name + ".")
+
+
+def fmtoUnits(value,name,units):
+    if units == "fm":
+        return value
+    elif units == "MeVinv":
+        return fm_to_MeVinv(value)
+    elif units == "GeVinv":
+        return fm_to_GeVinv(value)
+    else:
+        logger.TBError("Invalid unit specification for " + name + ".")
+
+
 # -------------------------------------------------------------------------------------------------------- FITTING FORMS
 
 
@@ -103,21 +123,8 @@ def fk_phys(year=2019,units="MeV"):
         fkMeV = 156.1 / np.sqrt(2.)
     else:
         logger.TBError("Invalid year specification for physical value of fK.")
-    if units == "MeV":
-        return fkMeV
-    elif units == "fminv":
-        return MeV_to_fminv(fkMeV)
-    else:
-        logger.TBError("Invalid unit specification for fk.")
+    return MeVtoUnits(fkMeV,"fK",units)
 
-
-# Some wrappers to support older implementations of the fK scales.
-def fk_FLAG_2019(units):
-    return fk_phys(2019,units)
-def fk_PDG_2018(units):
-    return fk_phys(2018,units)
-def fk_PDG_2012(units):
-    return fk_phys(2012,units)
 
 
 # ====================================================== r1 scales
@@ -171,27 +178,13 @@ def a_r1_fm(beta, year, suppress_warnings=False):
 def r1_MILC_2010(units):
     """ r1 taken from MILC 2010. arXiv:1012.0868. """
     r1fm = 0.3106
-    if units == "fm":
-        return r1fm
-    elif units == "MeVinv":
-        return fm_to_MeVinv(r1fm)
-    elif units == "GeVinv":
-        return fm_to_GeVinv(r1fm)
-    else:
-        logger.TBError("Invalid unit specification for r1.")
+    return fmtoUnits(r1fm,"r1",units)
 
 
 def r1err_MILC_2010(units):
     """ Error bar from MILC 2010. arXiv:101.0868. """
     r1errfm = np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    if units == "fm":
-        return r1errfm
-    elif units == "MeVinv":
-        return fm_to_MeVinv(r1errfm)
-    elif units == "GeVinv":
-        return fm_to_GeVinv(r1errfm)
-    else:
-        logger.TBError("Invalid unit specification for r1err.")
+    return fmtoUnits(r1errfm,"r1_err",units)
 
 
 # ================================================= strange quark mass: line of constant physics
@@ -238,26 +231,12 @@ def r0_div_a(beta):
 # Use r1=0.3106 from MILC. arXiv:1012.0868.
 def r0_hQCD_2014(units):
     r0fm = 1.5092*r1_MILC_2010("fm") # about 0.469
-    if units=="fm":
-      return r0fm
-    elif units == "MeVinv":
-      return fm_to_MeVinv(r0fm)
-    elif units=="GeVinv":
-      return fm_to_GeVinv(r0fm)
-    else:
-      logger.TBError("Invalid unit specification for r0.")
+    return fmtoUnits(r0fm,"r0",units)
 
 
 def r0err_hQCD_2014(units):
     r0errfm = 1.5092*np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    if units == "fm":
-        return r0errfm
-    elif units == "MeVinv":
-        return fm_to_MeVinv(r0errfm)
-    elif units == "GeVinv":
-        return fm_to_GeVinv(r0errfm)
-    else:
-        logger.TBError("Invalid unit specification for r0err.")
+    return fmtoUnits(r0errfm,"r0err",units)
 
 
 def a_r0_invGeV(beta):
@@ -294,3 +273,30 @@ def a_t0_invGeV(beta):
 
 def a_t0_fm(beta):
     return GeVinv_to_fm(a_t0_invGeV(beta))
+
+
+# --------------------------------------------------------------------------------------------------------- OTHER SCALES
+
+
+def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
+    """ Physical value of MS-bar lambda parameter. """
+    if year==2021:
+        # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
+        LMS, LMSerr = 339, 12
+    else:
+        logger.TBError("Invalid year specification for physical value of lambda-MSbar.")
+    if returnErr:
+        return MeVtoUnits(LMS,"lambda-MSbar",units), MeVtoUnits(LMSerr,"lambda-MSbarerr",units)
+    else:
+        return MeVtoUnits(LMS,"lambda-MSbar",units)
+
+
+# ------------------------------------------------------------------------------------------------------ LEGACY WRAPPERS
+
+
+def fk_FLAG_2019(units):
+    return fk_phys(2019,units)
+def fk_PDG_2018(units):
+    return fk_phys(2018,units)
+def fk_PDG_2012(units):
+    return fk_phys(2012,units)
