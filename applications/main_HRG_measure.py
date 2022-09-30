@@ -19,14 +19,16 @@ from latqcdtools.base.readWrite import writeTable
 parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
                     help="Table with hadron properties")
+parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", default=None ,type=str)
 parser.add_argument('--temperature_range', dest='temperature_range',required=False, help="Perform HRG calculation in this range.",type=str)
-parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi, cs2)", default="chi", type=str)
+parser.add_argument("--obs", dest="obs", help="Observable to calculate (p, chi)", default="chi", type=str)
 parser.add_argument("--bqsc", dest="BQSC", required=False, help="BQSC mu derivative orders.", type=str)
 parser.add_argument("--muB", dest="muBh", required=True, type=float, help="muB/T")
 
 
 args = getArgs(parser)
 muBh = args.muBh
+tag       = args.particle_list
 
 
 #
@@ -40,7 +42,7 @@ if args.obs=="chi" and args.BQSC is None:
 # Set up the chemical potentials based on user input.
 #
 if args.temperature_range is None:
-    T = np.linspace(3, 160, 158)
+    T = np.arange(4, 166, 0.5)
 else:
     t = args.temperature_range
     T = np.arange(float(t.split(':')[0]),float(t.split(':')[1]),float(t.split(':')[2]))
@@ -57,7 +59,7 @@ print("     T [MeV]:",T[0],T[-1],"\n")
 
 
 hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-hadrons1,M1,Q1,B1,S1,C1,g1=np.loadtxt("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
+hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
                                       dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 w  = np.array([1 if ba==0 else -1 for ba in B])
 w1 = np.array([1 if ba==0 else -1 for ba in B1])
@@ -79,14 +81,14 @@ if args.obs == "chi":
     chi_pdg = pdghrg.gen_chi(T,B_order=Border, Q_order=Qorder, S_order=Sorder, C_order=Corder,
                              muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
 
-    writeTable("chiBQSC_%s.txt"%args.BQSC, T, muBh, chi_pdg, chi_QM, header='T    PDG-HRG         QM-HRG  ' )
+    np.savetxt("chiBQSC_%s_%s.txt"%(args.BQSC,tag), np.c_[T, muBh*T/T, chi_pdg, chi_QM], header='T muB / T   PDG-HRG         QM-HRG  ' )
 
 elif args.obs == "p":
 
     p_QM = QMhrg.P_div_T4(T,muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
     p_pdg = pdghrg.P_div_T4(T,muB_div_T=muBh, muQ_div_T=muQh, muS_div_T=muSh, muC_div_T=muCh)
 
-    writeTable("P_div_T4.txt",T,p_QM,p_pdg,header='T    PDG-HRG         QM-HRG  ')
+    np.savetxt("P_div_T4_%s.txt"%tag,np.c_[T,p_QM,p_pdg],header='T    PDG-HRG         QM-HRG  ')
 
 else:
     logger.TBError("Observable",args.obs,"not yet implemented.")

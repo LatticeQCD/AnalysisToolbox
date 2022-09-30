@@ -44,7 +44,13 @@ and calling
 ```shell
 bash runTests.bash
 ```
-
+## A quick start guide to use the HRG
+In the application directory, 
+```shell
+source run_hrg.bash
+```
+This will generate a file named "chiBQSC_2000_QMHRG2020_BI.txt" in the same directory. As the name suggests it is second-order baryon number susceptibility vs Temperature at fixed $\mu_B / T [\mu_Q = \mu_S = \mu_C = 0]$.
+It has four columns, which are Temperature[MeV], $\mu_B / T$, $\chi_2^B$[PDG-HRG] and $\chi_2^B$[QMHRG2020]. Please change the BQSC in the run_hrg.bash to generate other observables. Please see the documentation for more details about HRG.
 
 ## Documentation
 
