@@ -145,7 +145,7 @@ def latexify(bold=False):
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
-def initializePlt(size):
+def initializePlt(size,xmin,xmax,ymin,ymax):
     global initialize
     if initialize:
         initialize = False
@@ -158,6 +158,8 @@ def initializePlt(size):
         plt.rcParams['legend.fontsize'] = size
         plt.rcParams['xtick.labelsize'] = size
         plt.rcParams['font.weight'] = default_params['font_weight']
+        set_xrange(xmin,xmax)
+        set_yrange(ymin,ymax)
 
 
 def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
@@ -397,7 +399,7 @@ def set_params(**params):
 
     fill_param_dict(params)
 
-    initializePlt(params['font_size'])
+    initializePlt(params['font_size'],params['xmin'],params['xmax'],params['ymin'],params['ymax'])
 
     ax  = getAxObject(params)
     zod = params['zod']
@@ -464,9 +466,6 @@ def set_params(**params):
         for n, label in enumerate(ax.yaxis.get_ticklabels()):
             if n % params['ytick_every_n'] != 0:
                 label.set_visible(False)
-
-    set_xrange(params['xmin'],params['xmax'])
-    set_yrange(params['ymin'],params['ymax'])
 
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
@@ -745,7 +744,7 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
 
 
-def plot_fill(xdata, ydata, yedata, xedata=None, **params):
+def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 
     if (yedata is None) and (xedata is None):
         logger.TBError("Please pass plot_fill some error bars.")
@@ -782,12 +781,11 @@ def plot_fill(xdata, ydata, yedata, xedata=None, **params):
     if xedata is None:
         pl = ax.fill_between(xdata*xscale, (np.asarray(ydata*yscale) - np.asarray(yedata*yscale)),
                              (np.asarray(ydata*yscale) + np.asarray(yedata*yscale)), facecolor=col, alpha=params['alpha'],
-                             linewidth=0, zorder=1)
+                             linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
     else:
         pl = ax.fill_betweenx(ydata * yscale, (np.asarray(xdata * xscale) - np.asarray(xedata * xscale)),
                              (np.asarray(xdata * xscale) + np.asarray(xedata * xscale)), facecolor=col,
-                             alpha=params['alpha'],
-                             linewidth=0, zorder=1)
+                             alpha=params['alpha'],linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
 
     if params['label'] is not None:
         legend_labels.append(params['label'])

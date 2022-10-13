@@ -48,7 +48,7 @@ if (Tpc0 is not None) and (temp is not None):
     logger.TBError("Please choose between having a fixed temperature or moving along pseudocritical line.")
 
 
-muB =np.arange(10,600,10)
+muB =np.arange(10,muBmax,10)
 
 
 hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))

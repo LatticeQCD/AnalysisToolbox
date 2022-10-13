@@ -139,6 +139,7 @@ class HRG:
         return P
 
 
+    # TODO: So like, is this wrong?
     def CV_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         return 4*self.E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) + T*self.ddT_E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
 

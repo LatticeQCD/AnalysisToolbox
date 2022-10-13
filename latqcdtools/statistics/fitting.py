@@ -12,7 +12,7 @@ from scipy.linalg import inv
 import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import plot_func, save_func, latexify, plot_cov, plot_dots, init_notex, plot_eig
+from latqcdtools.base.plotting import plot_func, save_func, latexify, plot_cov, plot_dots, plot_eig
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import error_prop_func, norm_cov
@@ -1348,7 +1348,7 @@ class Fitter:
 
 
     def plot_fit(self, filename = None, params = None, params_err = None, notex = False, norm_func = None,
-                 ranges = None, ylog = False, size = (15,10), no_error = False, fix_ylim = False,
+                 ranges = None, ylog = False, no_error = False, fix_ylim = False,
                  args_data = None, args_func = None, xmin = None, xmax = None, **kwargs):
         """
         Plot the fit and the fit data.
@@ -1398,7 +1398,6 @@ class Fitter:
         if filename is not None:
             if not notex:
                 latexify()
-            init_notex(*size)
 
         try:
             # Save xmin and xmax, as they will be overwritten in plot_data
@@ -1450,12 +1449,10 @@ class Fitter:
             logger.warn("Plotting of fit failed: ", e, "\n")
 
 
-    def plot_cov(self, filename = None, xmin = None, xmax = None, ymax = None, notex = False, title = None,
-                 size = (15,10)):
+    def plot_cov(self, filename = None, xmin = None, xmax = None, ymax = None, notex = False, title = None):
         if filename is not None:
             if not notex:
                 latexify()
-            init_notex(*size)
 
         if xmin is None:
             gxmin = -np.inf
@@ -1473,17 +1470,15 @@ class Fitter:
             logger.warn(e)
             pass
 
-        plot_cov(self._fit_cor, filename, title = title, notex = notex, xmin = xmin, xmax = ymax, ymin = xmin,
-                 ymax = ymax)
+        plot_cov(self._fit_cor, filename, title = title, xmin = xmin, xmax = ymax, ymin = xmin, ymax = ymax)
 
 
 
-    def plot_eig(self, filename = None, xmin = None, xmax = None, notex = False, title = None, size = (15,10)):
+    def plot_eig(self, filename = None, xmin = None, xmax = None, notex = False, title = None):
 
         if filename is not None:
             if not notex:
                 latexify()
-            init_notex(*size)
 
         if xmin is None:
             gxmin = -np.inf
@@ -1501,7 +1496,7 @@ class Fitter:
             logger.warn(e)
             pass
 
-        plot_eig(self._fit_cov, filename, title = title, notex = notex)
+        plot_eig(self._fit_cov, filename, title = title)
 
 
     def get_func(self, x, params = None, params_err = None):

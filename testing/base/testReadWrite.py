@@ -26,3 +26,5 @@ elif args.headerType=="list":
     writeTable("test.d",xdata,ydata,header=["who","bastank"])
 else:
     logger.TBError("Invalid header type",args.headerType)
+
+logger.TBPass("I didn't encounter an error.")
