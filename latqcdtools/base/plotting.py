@@ -51,7 +51,7 @@ default_params = {
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
     'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 3.5,           # Size of the symbols.
-    'font_size': 12,             # Default font size for text.
+    'font_size': 14,             # Default font size for text.
     'font_weight' : 'normal',    # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
     'xscale': 1.0,               # Scale data in xdata by this factor.
@@ -72,17 +72,10 @@ default_params = {
     'zod': None,                 # Controls where in foreground/background data/lines/bands appear.
 
     # Options for the legend.
-    # 'upper right'   : 1
-    # 'upper left'    : 2
-    # 'lower left'    : 3
-    # 'lower right'   : 4
-    # 'right'         : 5
-    # 'center left'   : 6
-    # 'center right'  : 7
-    # 'lower center'  : 8
-    # 'upper center'  : 9
-    # 'center'        : 10
-    # 'best'          : Tries its best to automatically find a place for the legend.
+    # legendpos:
+    #   2     9     1
+    #   6     10    7
+    #   3     8     4
     'legendpos': 'best',
     'bbox_to_anchor': None,      # Manual position of the legend.
     'legend_ncol': 1,            # Number of columns in the legend.

@@ -126,7 +126,7 @@ def bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False
         func : callable
             The function that calculates the observable
 
-        data : array_lik
+        data : array_like
             Input data
 
         numb_samples : integer

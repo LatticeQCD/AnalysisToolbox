@@ -10,7 +10,7 @@ import numpy as np
 from scipy.interpolate import LSQUnivariateSpline
 import latqcdtools.base.logger as logger
 
-def auto_knots(xdata, nknots):
+def even_knots(xdata, nknots):
     """ Return a list of nknots evenly spaced knots. """
     try:
         flat_xdata = np.sort(np.concatenate(xdata))
@@ -39,16 +39,33 @@ def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     # Retry if too many data points are removed by np.unique
     if len(np.unique(sample_xdata)) < nknots + 1:
         return random_knots(xdata, nknots, randomization_factor)
-    ret = auto_knots(sample_xdata, nknots)
+    ret = even_knots(sample_xdata, nknots)
     return ret
 
 
-def getSpline(xdata, ydata, nknots, order=3, rand=False):
-    if type(nknots) is not int:
+def getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None):
+    if type(num_knots) is not int:
         logger.TBError("Please specify an integer number of knots.")
-    if rand:
-        knots=random_knots(xdata,nknots)
+    nknots = num_knots
+    if fixedKnots is not None:
+        if type(fixedKnots) is not list:
+            logger.TBError("knots must be specified as a list.")
+        nknots -= len(fixedKnots)
+        if nknots < 0:
+            logger.TBError("len(fixedKnots) cannot exceed num_knots.")
+    if nknots>0:
+        if rand:
+            knots = random_knots(xdata,nknots)
+        else:
+            knots = even_knots(xdata,nknots)
     else:
-        knots=auto_knots(xdata,nknots)
+        knots=[]
+    if fixedKnots is not None:
+        for knot in fixedKnots:
+            knots.append(knot)
+    knots = sorted(knots)
+    if knots[0]<xdata[0]:
+        logger.TBError("You can't but a knot to the left of the x-data...")
+    logger.debug("Knots are:",knots)
     spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
     return spline

@@ -9,16 +9,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import LSQUnivariateSpline
-from latqcdtools.math.spline import auto_knots,random_knots
+from latqcdtools.math.spline import even_knots,random_knots
 from latqcdtools.base.plotting import plot_dots, plot_lines, set_params
 from latqcdtools.base.check import print_results
 
 x = np.linspace(-1, 1, 101)
 y = 10*x**2 + np.random.randn(len(x))
 
-knots = auto_knots(x, 3)
+knots = even_knots(x, 3)
 
-print_results(knots,[-0.5, 0.0, 0.5], text="auto_knots")
+print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
 
 spline = LSQUnivariateSpline(x, y, knots, k=3)
 
