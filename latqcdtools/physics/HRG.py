@@ -88,7 +88,7 @@ class HRG:
         return self.B[k]*np.float128(muB_div_T) + self.Q[k]*np.float128(muQ_div_T) + self.S[k]*np.float128(muS_div_T) + self.C[k]*np.float128(muC_div_T)
 
 
-    def z(self, T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
+    def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
         """ e^(mu_X*N_X/T) , X = (B,Q,S,C) """
         return np.exp( self.muN_div_T(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T) ) 
 
@@ -97,7 +97,7 @@ class HRG:
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
-                P += self.factor(k, n, T) * self.z(T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n * kn(2,(n*self.Mass[k]/T))
+                P += self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n * kn(2,(n*self.Mass[k]/T))
         return P
 
 
@@ -106,15 +106,17 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
                 x = self.Mass[k]*n/T
-                eps += self.factor(k,n,T) * self.z(T,k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * ( kn(2,x) * 3 + kn(1,x)*x )
+                eps += self.factor(k,n,T) * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * ( kn(2,x) * 3 + kn(1,x)*x )
         return eps
 
 
     def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         """ s = e + p - mu_i n_i """
-        muxN_div_T=0.
-        for k in range(len(self.Mass)):
-            muxN_div_T += self.muN_div_T(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)
+        NB = self.gen_chi(T,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        NS = self.gen_chi(T,B_order=0,S_order=1,Q_order=0,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        NQ = self.gen_chi(T,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        NC = self.gen_chi(T,B_order=0,S_order=0,Q_order=0,C_order=1,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        muxN_div_T = NB*muB_div_T + NS*muS_div_T + NQ*muQ_div_T + NC*muC_div_T
         return  self.E_div_T4(T,muB_div_T,muS_div_T,muQ_div_T,muC_div_T) + self.P_div_T4(T,muB_div_T,muS_div_T,muQ_div_T,muC_div_T) - muxN_div_T
 
 
@@ -124,7 +126,7 @@ class HRG:
             for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
-                eps += self.factor(k,n,T)*m*n * self.z(T,k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**3
+                eps += self.factor(k,n,T)*m*n * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**3
         return eps
 
 
@@ -135,11 +137,11 @@ class HRG:
             for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
-                P += self.factor(k, n, T) * self.z(T,k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * m*n*kn(1,x) / T**2
+                P += self.factor(k, n, T) * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * m*n*kn(1,x) / T**2
         return P
 
 
-    # TODO: So like, is this wrong?
+    # TODO: not correct for mu>0, since C_V is evaluated at fixed nB, nS, which means there is a dependence between the mu_X
     def CV_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         return 4*self.E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) + T*self.ddT_E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
 
@@ -150,7 +152,7 @@ class HRG:
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k, n, T) * self.z(T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                              * self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
                                               * kn(2,(n*self.Mass[k]/T))
         return chi
 
@@ -163,7 +165,7 @@ class HRG:
                 m    = self.Mass[k]
                 x    = m*n/T
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k, n, T) * self.z(T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n * m*n*kn(1,x) / T**2
+                                              * self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n * m*n*kn(1,x) / T**2
         return chi
 
 
@@ -174,7 +176,7 @@ class HRG:
             for n in range(1,self.Nmax(k)):
                 x = self.Mass[k]*n/T
                 eps += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k,n,T) * self.z(T,k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n \
+                                              * self.factor(k,n,T) * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n \
                                               * ( kn(2,x)*3 + kn(1,x)*x )
         return eps
 
@@ -190,7 +192,7 @@ class HRG:
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[0]/T)**2 \
-                                                  * self.z(T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                                  * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
                                                   * kn(2, (n*rms_mass[0]/T)) / (np.pi*n)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
                 for n in range(1, 10):
@@ -198,14 +200,14 @@ class HRG:
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[1]/T)**2 \
-                                                  * self.z(T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                                  * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
                                                   * kn(2, (n*rms_mass[1]/T)) / (np.pi*n)**2 / 2
             else:
                 for n in range(1, 2):
                     chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
-                                                  * self.factor(k, n, T) * self.z(T, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                                  * self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
                                                   * kn(2,(n*self.Mass[k]/T))
         return chi
 

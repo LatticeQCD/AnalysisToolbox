@@ -23,10 +23,21 @@ zod        = 1
 initialize = True
 
 
+def getColorGradient(NUM_COLORS=None):
+    """ Return a preceptually uniform set of NUM_COLORS colors. """
+    if NUM_COLORS is None:
+        logger.TBError("Give me a number of colors.")
+    cm = plt.get_cmap('viridis')
+    gradColors=[]
+    for i in range(NUM_COLORS):
+        color = cm(1.*i/NUM_COLORS)
+        gradColors.append(color)
+    return gradColors
+
+
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
-colors_2 = ['#396AB1', '#DA7C30', '#3E9651', '#CC2529', '#535154', '#6B4C9A', '#922428', '#948B3D']
-colors_3 = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00']
 colors   = colors_1
+#colors   = getColorGradient(10)
 
 
 markers_1 = ['o', 'v', 'D', 's', 'p', '^', 'h', 'd', 'x', '+', '*']
@@ -112,18 +123,6 @@ allowed_params = allowed_params | {'linestyle','show_leg','ha','va'}
 # ---------------------------------------------------------------------------------------------- SOME EXTERNAL FUNCTIONS
 
 
-def getColorGradient(NUM_COLORS=None):
-    """ Return a preceptually uniform set of NUM_COLORS colors. """
-    if NUM_COLORS is None:
-        logger.TBError("Give me a number of colors.")
-    cm = plt.get_cmap('viridis')
-    gradColors=[]
-    for i in range(NUM_COLORS):
-        color = cm(1.*i/NUM_COLORS)
-        gradColors.append(color)
-    return gradColors
-
-
 def latexify(bold=False):
     """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
         convenient functions like ev. """
@@ -135,21 +134,30 @@ def latexify(bold=False):
     plt.rcParams['text.usetex'] = True
 
 
+def clearPlot():
+    """ Clears plot object and legend handles. Useful if you want to do multiple plots in the same script. """
+    plt.clf()
+    clear_legend_labels()
+
+
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
 def initializePlt(size,xmin,xmax,ymin,ymax):
     global initialize
     if initialize:
+        logger.debug("Plot initializer called!")
+        logger.debug("Many of the plotting functions call set_params, which can reset what you pass as argument.")
+        logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
         initialize = False
         plt.rcParams['figure.autolayout'] = True
         plt.rcParams['axes.titlesize'] = size
         plt.rcParams['savefig.bbox'] = 'standard'
-        plt.rcParams['ytick.labelsize'] = size
         plt.rcParams['font.size'] = size
+        plt.rcParams['ytick.labelsize'] = size
+        plt.rcParams['xtick.labelsize'] = size
         plt.rcParams['axes.labelsize'] = size
         plt.rcParams['legend.fontsize'] = size
-        plt.rcParams['xtick.labelsize'] = size
         plt.rcParams['font.weight'] = default_params['font_weight']
         set_xrange(xmin,xmax)
         set_yrange(ymin,ymax)
@@ -386,9 +394,6 @@ def set_params(**params):
         **params :
             Additional parameters that can be set.
     """
-
-    logger.debug("Note that many of the plotting functions call set_params, which can reset what you pass as argument.")
-    logger.debug("If you are having trouble passing options to set_params, try calling it at the end of your script.")
 
     fill_param_dict(params)
 
