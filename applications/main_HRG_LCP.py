@@ -34,7 +34,7 @@ tag      = args.particle_list
 Tpc0     = args.Tpc
 r        = args.r
 temp     = args.temp
-muBmax   = 800
+muBmax   = 1650
 
 printArg("  hadron_list:",args.hadron_file)
 printArg("     b [fm^3]:",args.b)
