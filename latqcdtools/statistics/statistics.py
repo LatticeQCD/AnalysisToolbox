@@ -11,6 +11,7 @@ import mpmath
 import numpy as np
 import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
+#from latqcdtools.base.plotting import plotTauInt
 
 
 def reduce_tuple(func):
@@ -287,12 +288,12 @@ def tauintj(nt,nbins,ts,xhat = None):
     return acintj
 
 
-def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d'):
+def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     """Given a time series, return estimates for the integrated autocorrelation time and its error.
 
     INPUT:
          tpickMax--The largest nt at which you think your estimate for tau_int could lie.
-            nbins--The number of jackknife bins.
+            nbins--The number of jackknife bins (for estimating the error in tau_int)
                ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
                    time translation invariance holds. List must be in order of markov chain generation
 
@@ -330,6 +331,9 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d'):
                 lmonoton=False
     acoutfile.close()
 
+    if showPlot:
+#        plotTauInt(acoutfileName)
+         pass
     return tau_int, tau_inte, tau_intbias, itpick
 
 

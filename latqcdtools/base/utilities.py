@@ -33,6 +33,20 @@ def printDict(dic):
         print(key,dic[key])
 
 
+def printClean(*args):
+    data = ()
+    form = ''
+    for col in args:
+        if isinstance(col,complex):
+            data += (col.real,)
+            data += (col.imag,)
+            form += '(%.8e  %8e)  '
+        else:
+            data += (col,)
+            form += '%.8e  '
+    print(form % data)
+
+
 def shell(*args):
     """ Carry out the passed arguments args in the shell. Can be passed as a single
         string or as a list. Captures and returns output of shell command. E.g.

@@ -111,15 +111,3 @@ def writeTable(filename,*args,**kwargs):
     np.savetxt(filename,np.transpose(data),fmt=form,header=head)
 
 
-def printClean(*args):
-    data = ()
-    form = ''
-    for col in args:
-        if isinstance(col,complex):
-            data += (col.real,)
-            data += (col.imag,)
-            form += '(%.8e  %8e)  '
-        else:
-            data += (col,)
-            form += '%.8e  '
-    print(form % data)

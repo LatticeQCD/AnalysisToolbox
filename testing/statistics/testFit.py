@@ -55,47 +55,11 @@ EPSILON=1e-4
 print("\nTesting quadradic fit with expansion of parameters...\n")
 
 xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,2,3), unpack=True)
-
-res_true     = [-1.943413e+00, 6.800332e+00, -1.123906e-01]
-res_err_true = [ 8.859594e-02, 3.204274e-01,  2.476714e-01]
-res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, func_sup_numpy=False, algorithm="levenberg",
-                                       grad=grad_fit_func, hess=hess_fit_func)
-print_results(res, res_true, res_err, res_err_true, "Exact levenberg without error", prec=EPSILON)
-
-
 res_true     = [-1.930355e+00, 6.747380e+00, -6.979050e-02]
 res_err_true = [ 9.072495e-02, 3.357190e-01,  2.676424e-01]
 res, tmp = curve_fit(fit_func, xdata, ydata, sigma = edata)
 res_err = np.sqrt(np.diag(tmp))
-print_results(res, res_true, res_err, res_err_true, "As a reference: Curve_fit", prec=EPSILON)
-
-
-fitter = fitting.Fitter(fit_func, xdata, ydata, edata, grad = grad_fit_func, hess = hess_fit_func, func_sup_numpy=False)
-res, res_err, _ = fitter.do_fit(algorithm="levenberg", start_params = [1, 1, 1])
-fitter.plot_fit("quadratic_fit.pdf")
-print_results(res, res_true, res_err, res_err_true, "Exact levenberg with error",prec=EPSILON )
-
-
-# Most algorithms are extremely sensitive to the numerical derivatives. There are even cases 
-# where they work only with their built-in derivative.
-
-
-fitter = fitting.Fitter(fit_func, xdata, ydata, edata, func_sup_numpy = True)
-res, res_err, _ = fitter.do_fit(algorithm="levenberg", start_params = [1, 1, 1])
-fitter.plot_fit("quadratic_fit_num.pdf")
-print_results(res, res_true, res_err, res_err_true,"Numerical levenberg using difference quotient",prec=EPSILON)
-
-
-res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], func_sup_numpy=False,
-                                       algorithm="levenberg", use_diff = True, derive_chisq= True)
-print_results(res, res_true, res_err, res_err_true, "Numerical levenberg using difference quotient on chisquare",prec=EPSILON)
-
-
-res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], use_diff = True, derive_chisq= True,
-                                       use_corr = True, func_sup_numpy = True, algorithm="levenberg")
-print_results(res, res_true, res_err, res_err_true,
-              "Numerical levenberg using difference quotient on chisquare with normalized covariance matrix",prec=EPSILON)
-
+print_results(res, res_true, res_err, res_err_true, "Curve_fit", prec=EPSILON)
 
 res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="BFGS", grad = grad_fit_func,
                                        func_sup_numpy=False)
@@ -123,8 +87,6 @@ print_results(res, res_true, res_err, res_err_true, "Powell quadratic ",prec=EPS
 
 
 
-
-
 print("Testing correlator fit...\n")
 
 
@@ -136,41 +98,34 @@ res_err_true = [5.042611e-08, 8.380914e-05]
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata,[1, 1], grad=grad_one_state, hess=hess_one_state,
-                                       args=(64,), func_sup_numpy=False, algorithm="levenberg")
-print_results(res, res_true, res_err, res_err_true, "Exact levenberg",prec=EPSILON)
+                                       args=(64,), func_sup_numpy=False, algorithm="curve_fit")
+print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
-                                       args=(64,), use_corr = True, func_sup_numpy=False, algorithm="levenberg" )
-print_results(res, res_true, res_err, res_err_true,"Exact levenberg using normalized covariance matrix",prec=EPSILON)
-
-
-res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
-                                       args=(64,), use_corr = True, func_sup_numpy=False, algorithm="levenberg")
-print_results(res, res_true, res_err, res_err_true,"Exact levenberg using normalized covariance matrix",prec=EPSILON)
+                                       args=(64,), use_corr = True, func_sup_numpy=False, algorithm="curve_fit" )
+print_results(res, res_true, res_err, res_err_true,"Exact curve_fit using normalized covariance matrix",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, np.diag(edata) ** 2, [1, 1], grad=grad_one_state,
-                                       hess=hess_one_state, args=(64,), func_sup_numpy=False, algorithm="levenberg")
+                                       hess=hess_one_state, args=(64,), func_sup_numpy=False, algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "Diagonal correlation matrix",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = False,
-                                       func_sup_numpy=False, algorithm="levenberg")
-print_results(res, res_true, res_err, res_err_true, "Numerical levenberg with difference quotient applied on chisquare",prec=EPSILON)
+                                       func_sup_numpy=False, algorithm="curve_fit")
+print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit with difference quotient applied on chisquare",prec=EPSILON)
 
 
 # Numerical derivative gives a slightly different result
 res_err_true = [5.0425819803e-08, 8.38114689761e-05]
-
-
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = True,
-                                       func_sup_numpy=False, algorithm="levenberg", )
-print_results(res, res_true, res_err, res_err_true,"Numerical levenberg with difference quotient",prec=EPSILON)
-
+                                       func_sup_numpy=False, algorithm="curve_fit", )
+print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
 
 
 xdata, data, nconfs = read_in_pure("corr_pure.dat",1,2)
+
 
 ''' Old version of calc_cov which is presumably only used here. '''
 def calc_cov_OLD(data):
@@ -181,7 +136,6 @@ def calc_cov_OLD(data):
         res += np.array([(data[:, l] - mean)]).transpose().dot(
             np.array([(data[:, l] - mean)]))
     return 1 / (len(data[0]) - 1) * res
-
 cov   = calc_cov_OLD(data)
 ydata = stats.std_mean(data, axis = 1)
 cov_true = np.loadtxt("cov.txt")
@@ -199,15 +153,10 @@ else:
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
-                                       hess=hess_one_state, args=(64,), func_sup_numpy=False, algorithm="levenberg")
+                                       hess=hess_one_state, args=(64,), func_sup_numpy=False, algorithm="curve_fit")
 res_true = [4.988713e-05, 2.950030e-01]
 res_err_true = [1.176005e-06, 5.573209e-04]
-print_results(res, res_true, res_err, res_err_true, "Exact levenberg for correlated data",prec=EPSILON)
-
-
-res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
-                                       hess=hess_one_state, args=(64,), algorithm = "curve_fit", func_sup_numpy=False)
-print_results(res, res_true, res_err, res_err_true, "Curve_fit for correlated data",prec=EPSILON)
+print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, res_true, args=(64,),
@@ -222,8 +171,8 @@ print_results(res, res_true, res_err, res_err_true, "As a reference: Direct corr
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, grad=grad_one_state, hess=hess_one_state,
                                        args=(64,), use_corr = True, no_cache = True, func_sup_numpy=False,
-                                       algorithm="levenberg")
-print_results(res, res_true, res_err, res_err_true, "Exact levenberg for correlated data, normalized covariance matrix",prec=EPSILON)
+                                       algorithm="curve_fit")
+print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data, normalized covariance matrix",prec=EPSILON)
 
 
 
@@ -233,10 +182,8 @@ print("Testing constraint fit...\n")
 
 startparam=[5e-05,3e-01]
 sigma=[5e-05,3e-01]
-
-
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, priorval = startparam, priorsigma = sigma,
-                                       args=(64,), func_sup_numpy = True, algorithm="levenberg")
+                                       args=(64,), func_sup_numpy = True, algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
 
@@ -248,8 +195,6 @@ print("Testing 2D xdata...\n")
 xdata = np.ones((10, 2))
 xdata[:,0]  = np.arange(10)
 xdata[:5,1] = np.full(5, 4)
-
-
 ydata = np.arange(10)
 edata = np.ones(10)
 
@@ -260,8 +205,5 @@ def func_2d(x, a):
 
 res_true = [5.102041e-01]
 res_err_true = [1.189990e-01]
-res, res_err, _ = fitting.do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, algorithm="levenberg" )
+res, res_err, _ = fitting.do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, algorithm="curve_fit" )
 print_results(res, res_true, res_err, res_err_true, "2D xdata fit",prec=EPSILON)
-
-
-print("All tests done. Please see also generated pdfs.\n")

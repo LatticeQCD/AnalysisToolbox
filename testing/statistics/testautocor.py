@@ -3,7 +3,8 @@
 #
 # D. Clarke
 #
-# Simple test for the getTauInt method to calculate integrated autocorrelation times.
+# Simple test for the getTauInt method to calculate integrated autocorrelation times. Compares against software
+# by Bernd Berg.
 #
 from latqcdtools.statistics.statistics import getTauInt
 from latqcdtools.base.check import print_results
@@ -19,11 +20,6 @@ ts = [63.5, 62.1, 62.5, 63.5, 62.1, 62.1, 62.5, 62.5, 62.1, 62.5, 62.5, 62.5, 63
 
 tau_int, tau_inte, tau_intbias, itpick = getTauInt(ts, nbins, nt, 'acor.d')
 
-print("\nRESULT:")
-print("itpick,\ttau_int\ttau_inte\ttau_int bias")
-print(itpick, tau_int, tau_inte, tau_intbias)
-
-# A simplistic test comparing with software by Bernd Berg.
 TESTitpick   = 33
 TESTtau_int  = 18.24028851979112
 TESTtau_inte = 5.9003840732043

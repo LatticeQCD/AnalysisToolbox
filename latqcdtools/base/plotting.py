@@ -36,8 +36,8 @@ def getColorGradient(NUM_COLORS=None):
 
 
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
-colors   = colors_1
-#colors   = getColorGradient(10)
+#colors   = colors_1
+colors   = getColorGradient(14)
 
 
 markers_1 = ['o', 'v', 'D', 's', 'p', '^', 'h', 'd', 'x', '+', '*']
@@ -140,28 +140,10 @@ def clearPlot():
     clear_legend_labels()
 
 
-# ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
-
-
-def initializePlt(size,xmin,xmax,ymin,ymax):
-    global initialize
-    if initialize:
-        logger.debug("Plot initializer called!")
-        logger.debug("Many of the plotting functions call set_params, which can reset what you pass as argument.")
-        logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
-        initialize = False
-        plt.rcParams['figure.autolayout'] = True
-        plt.rcParams['axes.titlesize'] = size
-        plt.rcParams['savefig.bbox'] = 'standard'
-        plt.rcParams['font.size'] = size
-        plt.rcParams['ytick.labelsize'] = size
-        plt.rcParams['xtick.labelsize'] = size
-        plt.rcParams['axes.labelsize'] = size
-        plt.rcParams['legend.fontsize'] = size
-        plt.rcParams['font.weight'] = default_params['font_weight']
-        set_xrange(xmin,xmax)
-        set_yrange(ymin,ymax)
-
+def plotTauInt(acoutfileName):
+    clearPlot()
+    plot_file(acoutfileName, xcol=1, ycol=2, yecol=3, xlabel='conf', ylabel='$\\tau_{\\rm int}$')
+    plt.show()
 
 def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
     fill_param_dict(params)
@@ -239,6 +221,90 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
         with open(filename, "w") as fout:
             for i in range(len(xdata)):
                 print(xdata[i], ydata[i], file = fout)
+
+
+def plot_cov(cov, filename = None, title=None, ignore_first = 0, norm = True, xrange = None, yrange = None,
+             xmin = None, xmax = None, ymin = None, ymax = None, xlabel = "$n_{\\tau/\\sigma}$",
+             ylabel = "$n_{\\tau/\\sigma}$"):
+    if norm:
+        ncov = norm_cov(cov)
+    else:
+        ncov = cov
+    if title is not None:
+        plt.title(title)
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if xmin is None:
+        off_x = 0
+    else:
+        off_x = xmin
+
+    if ymin is None:
+        off_y = 0
+    else:
+        off_y = ymin
+
+    if xrange is None:
+        xrange = np.arange(off_x + ignore_first, off_x + len(cov)+1)
+    if yrange is None:
+        yrange = np.arange(off_y + ignore_first, off_y + len(cov)+1)
+
+    plt.pcolormesh(xrange, yrange, ncov[ignore_first:, ignore_first:], cmap = "Blues")
+
+    if xmin is not None:
+        set_xmin(xmin)
+    if ymin is not None:
+        set_ymin(ymin)
+    if xmax is not None:
+        set_xmax(xmax)
+    if ymax is not None:
+        set_ymax(ymax)
+
+    plt.gca().invert_yaxis()
+
+    cb = plt.colorbar()
+    cb.ax.tick_params(labelsize=12)
+    if filename is not None:
+        plt.savefig(filename)
+
+
+def plot_eig(cov, filename, title=None):
+    v, w = np.linalg.eig(cov)
+    eig_real = np.real(np.sort(v))
+    eig_imag = np.imag(np.sort(v))
+    plt.yscale('log')
+    plot_bar(range(len(eig_real), 0, -1), eig_real, color='#d32d11', label="real",
+            alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$")
+    if np.min(eig_imag) != 0:
+        plot_bar(range(len(eig_imag), 0, -1), eig_imag, color='#0081bf', label="imag",
+                alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$" )
+    plt.savefig(filename)
+    plt.clf()
+
+
+# ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
+
+
+def initializePlt(size,xmin,xmax,ymin,ymax):
+    global initialize
+    if initialize:
+        logger.debug("Plot initializer called!")
+        logger.debug("Many of the plotting functions call set_params, which can reset what you pass as argument.")
+        logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
+        initialize = False
+        plt.rcParams['figure.autolayout'] = True
+        plt.rcParams['axes.titlesize'] = size
+        plt.rcParams['savefig.bbox'] = 'standard'
+        plt.rcParams['font.size'] = size
+        plt.rcParams['ytick.labelsize'] = size
+        plt.rcParams['xtick.labelsize'] = size
+        plt.rcParams['axes.labelsize'] = size
+        plt.rcParams['legend.fontsize'] = size
+        plt.rcParams['font.weight'] = default_params['font_weight']
+        set_xrange(xmin,xmax)
+        set_yrange(ymin,ymax)
+
 
 
 def remove_points(data, *args, minval = None, maxval = None):
@@ -845,63 +911,3 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
         return ebar,pl
     else:
         return pl
-
-
-def plot_cov(cov, filename = None, title=None, ignore_first = 0, norm = True, xrange = None, yrange = None,
-             xmin = None, xmax = None, ymin = None, ymax = None, xlabel = "$n_{\\tau/\\sigma}$",
-             ylabel = "$n_{\\tau/\\sigma}$"):
-    if norm:
-        ncov = norm_cov(cov)
-    else:
-        ncov = cov
-    if title is not None:
-        plt.title(title)
-
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    if xmin is None:
-        off_x = 0
-    else:
-        off_x = xmin
-
-    if ymin is None:
-        off_y = 0
-    else:
-        off_y = ymin
-
-    if xrange is None:
-        xrange = np.arange(off_x + ignore_first, off_x + len(cov)+1)
-    if yrange is None:
-        yrange = np.arange(off_y + ignore_first, off_y + len(cov)+1)
-
-    plt.pcolormesh(xrange, yrange, ncov[ignore_first:, ignore_first:], cmap = "Blues")
-
-    if xmin is not None:
-        set_xmin(xmin)
-    if ymin is not None:
-        set_ymin(ymin)
-    if xmax is not None:
-        set_xmax(xmax)
-    if ymax is not None:
-        set_ymax(ymax)
-
-    plt.gca().invert_yaxis()
-
-    cb = plt.colorbar()
-    cb.ax.tick_params(labelsize=12)
-    if filename is not None:
-        plt.savefig(filename)
-
-
-def plot_eig(cov, filename, title=None):
-    v, w = np.linalg.eig(cov)
-    eig_real = np.real(np.sort(v))
-    eig_imag = np.imag(np.sort(v))
-    plt.yscale('log')
-    plot_bar(range(len(eig_real), 0, -1), eig_real, color='#d32d11', label="real",
-            alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$")
-    if np.min(eig_imag) != 0:
-        plot_bar(range(len(eig_imag), 0, -1), eig_imag, color='#0081bf', label="imag",
-                alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$" )
-    plt.savefig(filename)
-    plt.clf()

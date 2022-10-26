@@ -24,38 +24,15 @@ import traceback
 
 class NotAvailableError(Exception):
     pass
-
-
-
-
-
-"""
-Calculate the covariance matrix. The matrix is normalized with N-1. This means 
-sqrt(diag(cov))=error of single measurement and not sqrt(diag(cov))=error of mean value.
-
-Parameters
-----------
-
-data: two dimensional array_like
-2D array with the raw data. The first axis corresponds to the observables and the second axis 
-corresponds to the indivual measurements on that observable.
-
-Returns
--------
-Covariance matrix and the mean value of the data
-"""
 class IllegalArgumentError(ValueError):
     pass
 
 
 class Fitter:
     """
-    Base class for fitting routines
-    
-    The :class:`Fitter`, contains all information necessary for fitting: The data and the 
-    function to be fitted and optional the data for the errors. For error handling one can 
-    either weight each data point as it is the usual case or use a full correlated fit.
-    There are different minimization algorithms available. Many of them need the gradient or
+    The :class:`Fitter`, contains all information necessary for fitting: The data, the function to be fitted, and
+    optional the data for the errors. For error handling one can  either weight each data point or use a full
+    correlated fit. There are different minimization algorithms available. Many of them need the gradient or
     hessian of the chisquare. One way is to set the derivatives of the fitting function from
     outside. The derivatives of the actual chisquare are then computed via error propagation.
     Another way is to use numerical derivatives. There are two ways to compute the derivatives
@@ -91,8 +68,7 @@ class Fitter:
         Optional parameter for the gradient. If set to None the arguments for the function 
         are used (args).
     hess_args : array_like, optional, default: None
-        Optional parameter for the hessian. If set to None the arguments for the function 
-        are used (args).
+        Optional parameter for the hessian. If set to None the arguments for the function  are used (args).
     expand : bool, optional, default: True
         Expand the parameter for the fitting function. If true, function has to look like
             func(x, a, b, *args)
@@ -142,11 +118,8 @@ class Fitter:
     -------
     :class:`Fitter` object
 
-
-
     Examples
     --------
-
     For usage, create an instance of class fitter an then call do_fit or try_fit.
     >>> func = lambda x,a:a*x**2
     >>> fitter = Fitter(func, [1,2,3,4], [1,3,2,1], [0.4, 0.5, 0.3, 0.2])
@@ -160,17 +133,14 @@ class Fitter:
                      'try_all', 'func_sup_numpy', 'use_corr', 'always_return', 'suppress_warning']
 
     # All possible algorithms.
-    _all_algs = [ "levenberg", "curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG",
+    _all_algs = [ "curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG",
                   "BFGS", "dogleg", "trust-ncg"]
 
     # Standard algorithms for the minimization
-    _std_algs = ["levenberg", "curve_fit", "TNC", "Powell" ,"Nelder-Mead", "COBYLA"]
+    _std_algs = ["curve_fit", "TNC", "Powell" ,"Nelder-Mead", "COBYLA"]
 
     # Algorithms that turn out to be rather fast
-    _fast_algs = [ "levenberg", "curve_fit", "TNC", "Powell" ,"Nelder-Mead"]
-
-
-
+    _fast_algs = [ "curve_fit", "TNC", "Powell" ,"Nelder-Mead"]
 
 
 
@@ -210,7 +180,6 @@ class Fitter:
         # work on the cache.
         if self._derive_chisq:
             self._no_cache = True
-
 
         # Caching variables. In order to boost performance, we cache results.
         self._cache_array = None
@@ -307,9 +276,6 @@ class Fitter:
 
 
 
-
-
-
     def _init_options(self, kwargs):
         """
         Initialize all the options
@@ -349,8 +315,7 @@ class Fitter:
                 self._max_fev[alg] = tmp_fev
 
         if self._max_fev is None:
-            self._max_fev = { "levenberg": 30000,
-                    "curve_fit" : 50000,
+            self._max_fev = {"curve_fit" : 50000,
                     "L-BFGS-B": 15000,
                     "TNC": 15000,
                     "Powell" : 30000,
@@ -1054,8 +1019,7 @@ class Fitter:
         ----------
         algorithms: string or None, optional, default = None
             List of strings with the algorithms that can be used. Possible values are:
-                 "levenberg", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP"
-                 "CG", "BFGS", "dogleg", "trust-ncg".
+                 "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG", "BFGS", "dogleg", "trust-ncg".
             The latter 4 usually don't work. When provided None, the first 7 algorithms are used.
         start_params: array_like, optional, default = None
             The start parameters for the fit.
@@ -1532,44 +1496,6 @@ class Fitter:
         return value, error
 
 
- 
-
-def print_scl(string, scl, align_numb = 60, level = "INFO"):
-    """Print aligned"""
-    logger.log(level, string.ljust(align_numb) + "%.6e" % scl)
-
-
-def print_res(string, res, res_err = None, chi_dof = None, align_numb = 60, level = "INFO"):
-    """Print aligned"""
-    if res is not None:
-        logger.log(level, (string.ljust(align_numb) + "[" + " ".join( ["%.6e"]*len(res) ) + "]") % tuple(res))
-    else:
-        logger.log(level, string.ljust(align_numb) + "None")
-    if res_err is not None:
-        logger.log(level, ("Fit error".ljust(align_numb) + "[" + " ".join( ["%.6e"]*len(res_err) ) + "]") % tuple(res_err))
-    if chi_dof is not None:
-        print_scl("chi^2/d.o.f.", chi_dof, level = level)
-
-
-def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-           algorithm = "curve_fit", xmin = -np.inf, xmax = np.inf, **kwargs):
-    """
-    Wrapper to fitter initialization and the fit in one step. See above for arguments
-    """
-    fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,
-                      xmin = xmin, xmax = xmax)
-
-
-def try_fit(func, algorithms, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-            xmin = -np.inf, xmax = np.inf, **kwargs):
-    """
-    Wrapper to fitter initialization and the fit in one step. See above for arguments.
-    For historical reasons algorithms has no default values here.
-    """
-    fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.try_fit(algorithms, start_params, priorval, priorsigma, xmin = xmin, xmax = xmax)
-
 
 def cut_eig_cov(ncov, ydata, numb_cut, percentage, method):
     """
@@ -1600,6 +1526,24 @@ def cut_eig_cov(ncov, ydata, numb_cut, percentage, method):
     ncov = np.real(w.dot(np.diag(v).dot(w.transpose())))
     return ncov
 
+def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
+           algorithm = "curve_fit", xmin = -np.inf, xmax = np.inf, **kwargs):
+    """
+    Wrapper to fitter initialization and the fit in one step. See above for arguments
+    """
+    fit = Fitter(func, xdata, ydata, edata, **kwargs)
+    return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,
+                      xmin = xmin, xmax = xmax)
+
+
+def try_fit(func, algorithms, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
+            xmin = -np.inf, xmax = np.inf, **kwargs):
+    """
+    Wrapper to fitter initialization and the fit in one step. See above for arguments.
+    For historical reasons algorithms has no default values here.
+    """
+    fit = Fitter(func, xdata, ydata, edata, **kwargs)
+    return fit.try_fit(algorithms, start_params, priorval, priorsigma, xmin = xmin, xmax = xmax)
 
 
 if __name__ == "__main__":
