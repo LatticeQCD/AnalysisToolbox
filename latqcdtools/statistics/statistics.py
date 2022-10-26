@@ -11,7 +11,8 @@ import mpmath
 import numpy as np
 import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
-#from latqcdtools.base.plotting import plotTauInt
+import matplotlib.pyplot as plt
+from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
 
 
 def reduce_tuple(func):
@@ -332,8 +333,10 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     acoutfile.close()
 
     if showPlot:
-#        plotTauInt(acoutfileName)
-         pass
+        clearPlot()
+        plot_file(acoutfileName, xcol=1, ycol=2, yecol=3, xlabel='conf', ylabel='$\\tau_{\\rm int}$')
+        plt.show()
+
     return tau_int, tau_inte, tau_intbias, itpick
 
 
@@ -357,3 +360,89 @@ def riseFactorial(n,m):
     for i in range(m):
         prod *= n+i
     return prod
+
+
+def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, swapXY=False, **params):
+    """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
+        To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
+        bars in the x-direction instead of the y-direction. """
+
+    fill_param_dict(params)
+    params['marker'] = None
+    xmin = params['xmin']
+    xmax = params['xmax']
+
+    if params['expand']:
+        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
+    else:
+        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
+
+    if xmin is None:
+        for line in plt.gca().lines:
+            xmin_new = np.min(line.get_xdata())
+            if xmin is None:
+                xmin = xmin_new
+            if xmin_new < xmin:
+                xmin = xmin_new
+    if xmax is None:
+        for line in plt.gca().lines:
+            xmax_new = np.max(line.get_xdata())
+            if xmax is None:
+                xmax = xmax_new
+            if xmax_new > xmax:
+                xmax = xmax_new
+
+    if xmin is None:
+        xmin = -10
+    if xmax is None:
+        xmax = 10
+
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
+
+    if func_sup_numpy:
+        ydata = wrap_func(xdata, *args)
+    else:
+        ydata = np.array([wrap_func(x, *args) for x in xdata])
+
+    if func_err is not None:
+        if func_sup_numpy:
+            ydata_err = wrap_func_err(xdata, *args_err)
+        else:
+            ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
+
+        if swapXY:
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **params)
+        else:
+            return plot_fill(xdata, ydata, ydata_err, **params)
+
+    elif len(args_err) > 0:
+        if grad is None:
+            logger.warn("Used numerical derivative!")
+            wrap_grad = None
+
+        # Arguments that are part of the error propagation
+        tmp_args = tuple(args)[0:len(args_err)]
+
+        # Optional arguments that are constant and, therefore, not part of the error propagation
+        tmp_opt = tuple(args)[len(args_err):]
+
+        if func_sup_numpy:
+            ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
+        else:
+            ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
+                                                  args = tmp_opt) for x in xdata])
+
+        if swapXY:
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **params)
+        else:
+            return plot_fill(xdata, ydata, ydata_err, **params)
+
+    else:
+        if swapXY:
+            return plot_lines(ydata, xdata, yedata=None, xedata=None, **params)
+        else:
+            return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)

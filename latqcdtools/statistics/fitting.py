@@ -1,5 +1,5 @@
 #
-# plotting.py
+# fitting.py
 #
 # H. Sandmeyer
 #
@@ -12,10 +12,10 @@ from scipy.linalg import inv
 import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import plot_func, save_func, latexify, plot_cov, plot_dots, plot_eig
+from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, set_xmin, set_xmax, set_ymin, set_ymax, plot_bar
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
-from latqcdtools.statistics.statistics import error_prop_func, norm_cov
+from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov
 from inspect import signature
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -1525,6 +1525,147 @@ def cut_eig_cov(ncov, ydata, numb_cut, percentage, method):
     logger.details(len(infl_eig), "of", len(v), "eigenvalues cut. Largest cut eigenvalue was", sorted_eig[numb_cut])
     ncov = np.real(w.dot(np.diag(v).dot(w.transpose())))
     return ncov
+
+
+
+def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
+    fill_param_dict(params)
+    xmin = params['xmin']
+    xmax = params['xmax']
+
+    if params['expand']:
+        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
+    else:
+        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
+        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
+
+    if xmin is None:
+        for line in plt.gca().lines:
+            xmin_new = np.min(line.get_xdata())
+            if xmin is None:
+                xmin = xmin_new
+            if xmin_new < xmin:
+                xmin = xmin_new
+    if xmax is None:
+        for line in plt.gca().lines:
+            xmax_new = np.max(line.get_xdata())
+            if xmax is None:
+                xmax = xmax_new
+            if xmax_new > xmax:
+                xmax = xmax_new
+
+    if xmin is None:
+        xmin = -10
+    if xmax is None:
+        xmax = 10
+
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
+
+    if func_sup_numpy:
+        ydata = wrap_func(xdata, *args)
+    else:
+        ydata = np.array([wrap_func(x, *args) for x in xdata])
+
+    if func_err is not None:
+        if func_sup_numpy:
+            ydata_err = wrap_func_err(xdata, *args_err)
+        else:
+            ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
+
+        with open(filename, "w") as fout:
+            for i in range(len(xdata)):
+                print(xdata[i], ydata[i], ydata_err[i], file = fout)
+
+    elif len(args_err) > 0:
+        if grad is None:
+            logger.warn("Used numerical derivative!")
+            wrap_grad = None
+
+        # Arguments that are part of the error propagation
+        tmp_args = tuple(args)[0:len(args_err)]
+
+        # Optional arguments that are constant and, therefore, not part of the error propagation
+        tmp_opt = tuple(args)[len(args_err):]
+
+        if func_sup_numpy:
+            ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
+        else:
+            ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
+                                                  args = tmp_opt) for x in xdata])
+
+        with open(filename, "w") as fout:
+            for i in range(len(xdata)):
+                print(xdata[i], ydata[i], ydata_err[i], file = fout)
+
+    else:
+        with open(filename, "w") as fout:
+            for i in range(len(xdata)):
+                print(xdata[i], ydata[i], file = fout)
+
+
+def plot_cov(cov, filename = None, title=None, ignore_first = 0, norm = True, xrange = None, yrange = None,
+             xmin = None, xmax = None, ymin = None, ymax = None, xlabel = "$n_{\\tau/\\sigma}$",
+             ylabel = "$n_{\\tau/\\sigma}$"):
+    if norm:
+        ncov = norm_cov(cov)
+    else:
+        ncov = cov
+    if title is not None:
+        plt.title(title)
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if xmin is None:
+        off_x = 0
+    else:
+        off_x = xmin
+
+    if ymin is None:
+        off_y = 0
+    else:
+        off_y = ymin
+
+    if xrange is None:
+        xrange = np.arange(off_x + ignore_first, off_x + len(cov)+1)
+    if yrange is None:
+        yrange = np.arange(off_y + ignore_first, off_y + len(cov)+1)
+
+    plt.pcolormesh(xrange, yrange, ncov[ignore_first:, ignore_first:], cmap = "Blues")
+
+    if xmin is not None:
+        set_xmin(xmin)
+    if ymin is not None:
+        set_ymin(ymin)
+    if xmax is not None:
+        set_xmax(xmax)
+    if ymax is not None:
+        set_ymax(ymax)
+
+    plt.gca().invert_yaxis()
+
+    cb = plt.colorbar()
+    cb.ax.tick_params(labelsize=12)
+    if filename is not None:
+        plt.savefig(filename)
+
+
+def plot_eig(cov, filename, title=None):
+    v, w = np.linalg.eig(cov)
+    eig_real = np.real(np.sort(v))
+    eig_imag = np.imag(np.sort(v))
+    plt.yscale('log')
+    plot_bar(range(len(eig_real), 0, -1), eig_real, color='#d32d11', label="real",
+            alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$")
+    if np.min(eig_imag) != 0:
+        plot_bar(range(len(eig_imag), 0, -1), eig_imag, color='#0081bf', label="imag",
+                alpha=0.7, title=title, xlabel = "$i$", ylabel = "$E_i$" )
+    plt.savefig(filename)
+    plt.clf()
+
+
 
 def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
            algorithm = "curve_fit", xmin = -np.inf, xmax = np.inf, **kwargs):

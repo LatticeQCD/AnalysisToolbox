@@ -10,9 +10,8 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from latqcdtools.base.plotting import error_prop_func, plot_func
 from latqcdtools.base.check import print_results
-from latqcdtools.statistics.statistics import error_prop
+from latqcdtools.statistics.statistics import error_prop, error_prop_func, plot_func
 
 
 def func(x, A, B, OPT):
