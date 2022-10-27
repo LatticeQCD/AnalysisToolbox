@@ -13,4 +13,4 @@ For each scale we have methods giving values in physical units along with the de
 can get the $r_1$ scale in [fm] using `r1_MILC_2010('fm')` along with its corresponding combined error bar
 `r1err_MILC_2010('fm')`.
 
-Have a look at these modules to see what other methods are available.
+Have a look at this module to see what other methods are available.

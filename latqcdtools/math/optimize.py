@@ -31,23 +31,27 @@ def timeout(func, args=(), kwargs={}, timeout_duration=300):
 
     # If thread is still active
     if p.is_alive():
-        # Terminate
         p.terminate()
         p.join()
         raise TimeoutError("Time out for " + str(func))
     return return_dict["ret"]
 
 
-def persistentSolve(LHS, guess):
+def persistentSolve(LHS, guess, tol=1e-8, careful=False):
     """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
+    exceptions = (NoConvergence, FloatingPointError, ValueError)
+    if careful:
+        np.seterr(all='warn')
+        exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning)
     try:
-        solution = newton_krylov(LHS, guess)
-    except (NoConvergence, FloatingPointError, ValueError):
+        solution = newton_krylov(LHS, guess, ftol=tol)
+    except exceptions:
         try:
-            solution = fsolve(LHS, guess)[0]
-        except (NoConvergence, FloatingPointError, ValueError):
-            solution = root(LHS, guess)[0]
+            solution = fsolve(LHS, guess, xtol=tol)
+        except exceptions:
+            solution = root(LHS, guess, tol=tol)
     return solution
+
 
 def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
 

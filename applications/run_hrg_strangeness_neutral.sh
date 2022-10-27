@@ -26,7 +26,7 @@ if [ ${runMode} -eq 0 ]; then
 
 elif [ ${runMode} -eq 1 ]; then
 
-  python3 main_HRG_measure.py --hadron_file ${filepath} --models QM --LCP_file HRG_LCP_T100.0_r0.4 --bqsc 2000 --obs cs2
+  python3 main_HRG_measure.py --hadron_file ${filepath} --models QM --LCP_file HRG_LCP_T100.0_r0.4 --bqsc 2000 --obs chi 
 
 elif [ ${runMode} -eq 2 ]; then
 

@@ -11,4 +11,5 @@ contributions/contributions.md
 base/base.md
 dataAnalysis/dataAnalysis.md
 physicsAnalysis/physicsAnalysis.md
+applications/applications.md
 ```
