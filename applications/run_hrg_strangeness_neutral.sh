@@ -14,15 +14,16 @@ NTASKS=2
 
 if [ ${runMode} -eq 0 ]; then
 
-  temps=($(seq 160 165))
+  temps=($(seq 165 165))
 
   task() {
     python3 main_HRG_LCP.py --r $r --hadron_file ${filepath} --models QM --T $1
   }
 
   for temp in "${temps[@]}"; do
-    ((i=i%NTASKS)); ((i++==0)) && wait
-    task "${temp}" &
+#    ((i=i%NTASKS)); ((i++==0)) && wait
+#    task "${temp}" &
+    task "${temp}"
   done
 
 elif [ ${runMode} -eq 1 ]; then

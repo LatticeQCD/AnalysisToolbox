@@ -12,12 +12,12 @@ from scipy.optimize import newton_krylov
 from latqcdtools.physics.HRG import HRG, EV_HRG, LCP_init_NS0
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
+from latqcdtools.base.readWrite import writeTable
 
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
 parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
                     help="Table with hadron properties")
-parser.add_argument("--tag", dest="particle_list", help="Name of the particle list", default=None)
 parser.add_argument("--b", dest="b", help="excluded volume parameter.", default=None, type=float)
 parser.add_argument("--Tpc", dest="Tpc", default=None,help="determine T(muB) along the pseudo-critical line", type=float)
 parser.add_argument("--T", dest="temp", default=None,help="perform all calculations at this constant T", type=float)
@@ -30,11 +30,11 @@ args = getArgs(parser)
 
 models   = args.models
 b        = args.b
-tag      = args.particle_list
 Tpc0     = args.Tpc
 r        = args.r
 temp     = args.temp
-muBmax   = 1650
+muBmax   = 3000
+
 
 printArg("  hadron_list:",args.hadron_file)
 printArg("     b [fm^3]:",args.b)
@@ -48,7 +48,7 @@ if (Tpc0 is not None) and (temp is not None):
     logger.TBError("Please choose between having a fixed temperature or moving along pseudocritical line.")
 
 
-muB =np.arange(10,muBmax,10)
+muB = np.arange(10,muBmax,10)
 
 
 hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
@@ -60,14 +60,11 @@ if Tpc0 is not None:
     t = Tpc0*(1.0-kap2*(muB/Tpc0)**2)
 else:
     t = np.repeat(temp,len(muB))
+
+
 muBh  = muB/t
-
-
 QMhrg = HRG(M, g, w, B, S, Q)
 evhrg = EV_HRG(M, g, w, B, S, Q)
-
-
-muQh, muSh = LCP_init_NS0(muBh)
 
 
 #
@@ -92,29 +89,20 @@ def strangeness_neutral_equations(muQSh,muh,T,hrg):
     return X1S, X1Q - r*X1B
 
 
-solution={}
-
-
 for model in models:
+
     print("  Solving for model",model)
-    solution[model] = newton_krylov(lambda p: strangeness_neutral_equations(p,muBh,t,model), (muQh, muSh))
 
+    muQhi, muShi = LCP_init_NS0(muBh[0])
+    muQh = [muQhi]
+    muSh = [muShi]
 
-if tag is not None:
-    outFileName="HRG_LCP_T%0.1f_"%temp + "r%0.1f%s"%(r,tag)
-else:
-    outFileName="HRG_LCP_T%0.1f_"%temp + "r%0.1f"%r
+    for i in range(1,len(muBh)):
 
+        muQhi, muShi = muQh[i-1], muSh[i-1]
+        muQhi, muShi = newton_krylov(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi))
+        muQh.append(muQhi)
+        muSh.append(muShi)
 
-outFileHeader = 'T     muB/T  '
-outFileFormat = '%0.6e %0.4f'
-outFileData   = [t, muBh]
-for model in models:
-    outFileHeader += 'muQ_' + model + '/T  '
-    outFileHeader += 'muS_' + model + '/T  '
-    outFileFormat += ' %0.6e %0.6e'
-    outFileData.append( solution[model][0] )
-    outFileData.append( solution[model][1] )
-
-
-np.savetxt(outFileName, np.transpose(outFileData),fmt=outFileFormat,header=outFileHeader)
+    outFileName="HRG_LCP_T%0.1f_"%temp + "r%0.1f"%r + model
+    writeTable(outFileName,t,muBh,muQh,muSh,header=['T [MeV]','muB/T','muQ/T','muS/T'])

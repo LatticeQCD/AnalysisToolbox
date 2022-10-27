@@ -214,9 +214,6 @@ class Fitter:
 
 
 
-
-
-
     """
     Initialize the arrays that are used for error handling of the fit data:
     Compute the weights, the covariance matrix and the error arrays.
@@ -299,7 +296,6 @@ class Fitter:
         self._always_return = kwargs.get('always_return', False)
         self._suppress_warning = kwargs.get('suppress_warning', False)
 
-
         self._args = kwargs.get('args', ())
         self._grad_args = kwargs.get('grad_args', None)
         if self._grad_args is None:
@@ -327,7 +323,6 @@ class Fitter:
                     "dogleg": 15000,
                     "trust-ncg": 15000
                     }
-
 
 
 
@@ -427,7 +422,6 @@ class Fitter:
 
 
 
-
     def _get_numb_params(self):
         """
         Find out the number of parameters that the fit function takes. In case of non expanded
@@ -456,7 +450,6 @@ class Fitter:
             raise IndexError("Fit function does not work with up to " + str(ntries)
                              + " parameters. Very probably you have an error in your fitting function."
                              + " Enable DEBUG level for more details.")
-
 
 
 
@@ -536,14 +529,12 @@ class Fitter:
         try:
             if self._func_sup_numpy:
                 if self._expand:
-                    self._func(self._fit_xdata, *(tuple(self._saved_params)
-                        + tuple(self._args)))
+                    self._func(self._fit_xdata, *(tuple(self._saved_params) + tuple(self._args)))
                 else:
                     self._func(self._fit_xdata, self._saved_params, *self._args)
             else:
                 if self._expand:
-                    self._func(self._xdata[0], *(tuple(self._saved_params)
-                        + tuple(self._args)))
+                    self._func(self._xdata[0], *(tuple(self._saved_params) + tuple(self._args)))
                 else:
                     self._func(self._xdata[0], self._saved_params, *self._args)
         except Exception as e:
@@ -630,7 +621,6 @@ class Fitter:
             return ret
         else:
             return np.copy(self._cache_jac)
-
 
 
     def hess_fit_ansatz_array(self, params):
@@ -756,9 +746,7 @@ class Fitter:
 
     def minimize_chi2(self, start_params, algorithm) :
         """
-        Minimize the chi^2 using the algorithm given in algorithm. For
-        algorithm = "levenberg", we use a self implemented version of the Levenberg-Marquardt
-        minimization algorithm. For all other algorithms, the scipy minimize routine is used.
+        Minimize the chi^2 using the scipy minimize routine is used.
 
         Parameters
         ----------
