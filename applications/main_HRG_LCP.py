@@ -8,11 +8,11 @@
 #
 import numpy as np
 import argparse
-from scipy.optimize import newton_krylov
 from latqcdtools.physics.HRG import HRG, EV_HRG, LCP_init_NS0
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import writeTable
+from latqcdtools.math.optimize import persistentSolve
 
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
@@ -33,7 +33,7 @@ b        = args.b
 Tpc0     = args.Tpc
 r        = args.r
 temp     = args.temp
-muBmax   = 3000
+muBmax   = max(1400,18*temp)
 
 
 printArg("  hadron_list:",args.hadron_file)
@@ -94,15 +94,23 @@ for model in models:
     print("  Solving for model",model)
 
     muQhi, muShi = LCP_init_NS0(muBh[0])
-    muQh = [muQhi]
-    muSh = [muShi]
-    
+    muQh      = [muQhi]
+    muSh      = [muShi]
+    tfinal    = [t[0]]
+    muBhfinal = [muBh[0]]    
+
     for i in range(1,len(muBh)):
 
         muQhi, muShi = muQh[i-1], muSh[i-1]
-        muQhi, muShi = newton_krylov(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi))
+        try:
+            muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi))
+        except: 
+            logger.warn("No algorithm converged--giving up at muB=",muB[i])
+            break
         muQh.append(muQhi)
         muSh.append(muShi)
+        tfinal.append(t[i])
+        muBhfinal.append(muBh[i])
 
     outFileName="HRG_LCP_T%0.1f_"%temp + "r%0.1f"%r + model
-    writeTable(outFileName,t,muBh,muQh,muSh,header=['T [MeV]','muB/T','muQ/T','muS/T'])
+    writeTable(outFileName,tfinal,muBhfinal,muQh,muSh,header=['T [MeV]','muB/T','muQ/T','muS/T'])

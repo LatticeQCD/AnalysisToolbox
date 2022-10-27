@@ -1,13 +1,17 @@
 # 
 # optimize.py
 # 
-# H. Sandmeyer
+# H. Sandmeyer, D. Clarke
 # 
 # Some methods related to minimization and Levenberg fits.
 #
+import warnings
 import multiprocessing
 import scipy.optimize as opt
+from scipy.optimize import newton_krylov, fsolve, root
 import numpy as np
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+from scipy.optimize.nonlin import NoConvergence
 import latqcdtools.base.logger as logger
 
 
@@ -33,6 +37,17 @@ def timeout(func, args=(), kwargs={}, timeout_duration=300):
         raise TimeoutError("Time out for " + str(func))
     return return_dict["ret"]
 
+
+def persistentSolve(LHS, guess):
+    """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
+    try:
+        solution = newton_krylov(LHS, guess)
+    except (NoConvergence, FloatingPointError, ValueError):
+        try:
+            solution = fsolve(LHS, guess)[0]
+        except (NoConvergence, FloatingPointError, ValueError):
+            solution = root(LHS, guess)[0]
+    return solution
 
 def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
 
