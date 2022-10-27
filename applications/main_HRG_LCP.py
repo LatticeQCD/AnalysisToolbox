@@ -96,7 +96,7 @@ for model in models:
     muQhi, muShi = LCP_init_NS0(muBh[0])
     muQh = [muQhi]
     muSh = [muShi]
-
+    
     for i in range(1,len(muBh)):
 
         muQhi, muShi = muQh[i-1], muSh[i-1]
