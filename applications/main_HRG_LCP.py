@@ -103,7 +103,7 @@ for model in models:
 
         muQhi, muShi = muQh[i-1], muSh[i-1]
         try:
-            muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi))
+            muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi), careful=True, tol=1e-9)
         except: 
             logger.warn("No algorithm converged--giving up at muB=",muB[i])
             break

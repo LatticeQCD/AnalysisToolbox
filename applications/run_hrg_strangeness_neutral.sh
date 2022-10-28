@@ -20,7 +20,7 @@ if [ ${runMode} -eq 0 ]; then
   }
 
   for temp in "${temps[@]}"; do
-    ((i=i%NTASKS)); ((i++==0)) && wait
+#    ((i=i%NTASKS)); ((i++==0)) && wait
     task "${temp}" &
   done
 

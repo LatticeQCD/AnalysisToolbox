@@ -37,18 +37,19 @@ def timeout(func, args=(), kwargs={}, timeout_duration=300):
     return return_dict["ret"]
 
 
-def persistentSolve(LHS, guess, tol=1e-8, careful=False):
+def persistentSolve(LHS, guess, tol=1e-8, careful=False, maxiter=200):
     """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
     exceptions = (NoConvergence, FloatingPointError, ValueError)
     if careful:
         np.seterr(all='warn')
         exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning)
     try:
-        solution = newton_krylov(LHS, guess, ftol=tol)
+        solution = newton_krylov(LHS, guess, ftol=tol, inner_maxiter=maxiter)
     except exceptions:
         try:
-            solution = fsolve(LHS, guess, xtol=tol)
+            solution = fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
         except exceptions:
+            # This should raise NoConvergence if he fails anyway.
             solution = root(LHS, guess, tol=tol)
     return solution
 
