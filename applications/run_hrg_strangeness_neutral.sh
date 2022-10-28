@@ -9,18 +9,18 @@ filepath="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
 # 1: Measure observables. 
 # 2: Measure observables at fixed muB/T with Ns=0 .
 runMode=0
-NTASKS=4
+NTASKS=25
 
 if [ ${runMode} -eq 0 ]; then
 
-  temps=($(seq 16 16))
+  temps=($(seq 10 165))
 
   task() {
     python3 main_HRG_LCP.py --r $r --hadron_file ${filepath} --models QM --T $1
   }
 
   for temp in "${temps[@]}"; do
-#    ((i=i%NTASKS)); ((i++==0)) && wait
+    ((i=i%NTASKS)); ((i++==0)) && wait
     task "${temp}" &
   done
 
