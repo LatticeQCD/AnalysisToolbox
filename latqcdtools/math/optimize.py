@@ -44,12 +44,15 @@ def persistentSolve(LHS, guess, tol=1e-8, careful=False, maxiter=200):
         np.seterr(all='warn')
         exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning)
     try:
+        logger.debug("Trying newton_krylov.")
         solution = newton_krylov(LHS, guess, ftol=tol, inner_maxiter=maxiter)
     except exceptions:
         try:
+            logger.debug("Trying fsolve.")
             solution = fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
         except exceptions:
             # This should raise NoConvergence if he fails anyway.
+            logger.debug("Trying root.")
             solution = root(LHS, guess, tol=tol)
     return solution
 

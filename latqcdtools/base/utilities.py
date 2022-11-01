@@ -33,14 +33,17 @@ def printDict(dic):
         print(key,dic[key])
 
 
-def printClean(*args):
+def printClean(*args,label=None):
     data = ()
     form = ''
+    if label is not None:
+        form += '%14s: '
+        data += (label,)
     for col in args:
         if isinstance(col,complex):
             data += (col.real,)
             data += (col.imag,)
-            form += '(%.8e  %8e)  '
+            form += '(%.8e  %.8e)  '
         else:
             data += (col,)
             form += '%.8e  '
