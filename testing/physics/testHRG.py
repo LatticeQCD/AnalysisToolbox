@@ -98,13 +98,13 @@ comparisonPlot(3*pdghrg.S_div_T3(T,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_div_
 
 
 refT, ref3CV_div_T3 = np.loadtxt("HRGcontrol/2014_CV_div_T3.d",unpack=True)
-testCV_div_T3       = pdghrg.CV_div_T3(refT,0,0,0)
+testCV_div_T3       = pdghrg.CV_div_T3_mu0(refT)
 print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 check")
-comparisonPlot(pdghrg.CV_div_T3(T,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
+comparisonPlot(pdghrg.CV_div_T3_mu0(T),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
 refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
-cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3(refT,0,0,0)
+cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3_mu0(refT)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
 #
@@ -158,7 +158,7 @@ comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Bc.d","2014 
 refT, _, _, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/OUT_5.0.DAT140_2022_hidden_charm_pressure",unpack=True)
 refT *= 1000 # He gives his temperatures in [GeV]
 baryonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
-print_results(baryonP_div_T4, refBaryonP_div_T4, prec=1e-3, text="2022 Frithjof code open charm")
+print_results(baryonP_div_T4, refBaryonP_div_T4, prec=1e-3, text="2022 F. Karsch code open charm")
 
 
 # Finally we check one of the derivatives. (Fig. 4 in paper.)

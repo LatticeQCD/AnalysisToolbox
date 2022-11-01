@@ -31,9 +31,10 @@ def RMS_mass(Nt, T):
 class HRG:
 
     """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. For
-        more information please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
-
+        B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state.
+        For more information please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
+        You can optionally adjust NMAX_light and NMAX_heavy, which control the number of terms to keep in the
+        Taylor expansion for species that are respectively lighter and heavier than the Kaon.
         Our pressure is given in terms of a Taylor series involving modified Bessel functions of the second kind, which
         needs to be truncated at some order. These functions get strongly suppressed when their argument is large.
         In our case, this argument is proportional to the mass. Hence we will sometimes take the Boltzmann
@@ -43,7 +44,7 @@ class HRG:
         We work in the grand canonical ensemble, i.e. we consider P(V,T,mu_i/T). Hence in this class, derivatives w.r.t.
         one of those N_chemical_potentials + 2 variables assume all others are held fixed. """
 
-    def __init__(self, Mass, g, w, B, S, Q, C = None):
+    def __init__(self, Mass, g, w, B, S, Q, C = None, NMAX_light=21, NMAX_heavy=2):
         # M = Mass of the hadron
         # Q = charge of the hadron
         # B = Baryon number of the hadron [B=1,-1,0,0 for baryon,anti-baryon,meson,anti-mesons]
@@ -57,6 +58,8 @@ class HRG:
         self.B = B
         self.Q = Q
         self.S = S
+        self.NMAX_light = NMAX_light
+        self.NMAX_heavy = NMAX_heavy
         # If we don't get a charm array, initialize to array of zeroes.
         if C is None:
             self.C = np.zeros(len(Mass))
@@ -69,10 +72,11 @@ class HRG:
 
 
     def Nmax(self,k):
+        """ Keep Nmax terms of the Taylor expansion. """
         if self.Mass[k] < APPROX_KAON_MASS:
-            return 21 # Keep 20 terms of Taylor expansion
+            return self.NMAX_light
         else:
-            return 2  # Keep 1 term of Taylor expansion
+            return self.NMAX_heavy
 
 
     # n represents the nth order of a Taylor expansion of a logarithm.
@@ -141,9 +145,8 @@ class HRG:
         return P
 
 
-    # TODO: not correct for mu>0, since C_V is evaluated at fixed nB, nS, which means there is a dependence between the mu_X
-    def CV_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        return 4*self.E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) + T*self.ddT_E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
+    def CV_div_T3_mu0(self, T):
+        return 4*self.E_div_T4(T, 0, 0, 0, 0) + T*self.ddT_E_div_T4(T, 0, 0, 0, 0)
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
