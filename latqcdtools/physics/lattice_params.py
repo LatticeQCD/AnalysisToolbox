@@ -109,4 +109,6 @@ class latticeParams:
             print(" ms/ml = ",self.msml)
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
+        if self.Ns is not None:
+            print("    L  = ",round(fm_to_MeVinv(self.Ns*self.geta()),4), "1/[MeV]")
         print("  beta = ",self.beta,"\n")

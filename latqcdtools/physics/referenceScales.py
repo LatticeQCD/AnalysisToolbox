@@ -163,7 +163,7 @@ def a_div_r1(beta, year, suppress_warnings=False):
         d2 = 4281.0
 
     else:
-        logger.TBError("No fit parameters for ", str(year))
+        logger.TBError("No fit parameters for year", str(year))
     return allton_type_ansatz(beta, c0, c2, d2)
 
 

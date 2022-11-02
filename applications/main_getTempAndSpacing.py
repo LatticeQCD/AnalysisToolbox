@@ -15,12 +15,13 @@ from latqcdtools.base.utilities import getArgs
 parser = argparse.ArgumentParser(description='Compute a and T.')
 
 parser.add_argument('--Nt', dest='Nt', type=int, default=8, help='euclidean time extension')
+parser.add_argument('--Ns', dest='Ns', type=int, default=None, help='spatial extension')
 parser.add_argument('--beta', dest='beta', type=float, default=6.285, help='bare coupling const')
 parser.add_argument('--scale', dest='scale', required=True, help='reference scale (r0, r1, or fk)')
-parser.add_argument('--year', help='select the fit parameters by specifying the year of the paper')
+parser.add_argument('--year', default=2021, help='select the fit parameters by specifying the year of the paper')
 
 args = getArgs(parser)
 
-lp = latticeParams(None, args.Nt, args.beta, None, None, args.scale, args.year)
+lp = latticeParams(args.Ns, args.Nt, args.beta, mass1=None, mass2=None, scaleType=args.scale, paramYear=args.year)
 
 lp.paramSummary()
