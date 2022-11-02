@@ -45,7 +45,7 @@ def persistentSolve(LHS, guess, tol=1e-8, careful=False, maxiter=200):
         exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning)
     try:
         logger.debug("Trying newton_krylov.")
-        solution = newton_krylov(LHS, guess, ftol=tol, inner_maxiter=maxiter)
+        solution = newton_krylov(LHS, guess, f_tol=tol, inner_maxiter=maxiter)
     except exceptions:
         try:
             logger.debug("Trying fsolve.")

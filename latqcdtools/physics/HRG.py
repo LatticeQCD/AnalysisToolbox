@@ -89,7 +89,7 @@ class HRG:
 
     def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
         """ mu_X * N_X, X = (B,Q,S,C) """
-        return self.B[k]*np.float128(muB_div_T) + self.Q[k]*np.float128(muQ_div_T) + self.S[k]*np.float128(muS_div_T) + self.C[k]*np.float128(muC_div_T)
+        return self.B[k]*muB_div_T + self.Q[k]*muQ_div_T + self.S[k]*muS_div_T + self.C[k]*muC_div_T
 
 
     def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
