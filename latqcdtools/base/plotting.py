@@ -64,10 +64,8 @@ default_params = {
     'font_size': 14,             # Default font size for text.
     'font_weight' : 'normal',    # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
-    'xscale': 1.0,               # Scale data in xdata by this factor.
-    'yscale': 1.0,               # Scale data in ydata by this factor.
-    'ticksintoplot' : True,      # Put ticks into plotting area.
-    'surroundWithTicks' : True,  # Put ticks also on top and right.
+    'ticksintoplot': True,       # Put ticks into plotting area.
+    'surroundWithTicks': True,   # Put ticks also on top and right.
     'labelsintoplot': True,      # Put xlabel and ylabel into plotting area.
     'xlabelpos': None,           # If labelsintplot=True, shift the position (x,y) of the x-label, expressed as percent.
     'ylabelpos': None,
@@ -92,7 +90,7 @@ default_params = {
     'legend_col_spacing': None,  # Spacing between columns in the legend.
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
     'legend_title': None,        # Title of the legend.
-    'alpha_legend': 0,           # Transperancy for the legend
+    'alpha_legend': 1,           # Transperancy for the legend
 
     # Options for plotting files and functions.
     'xcol': None,        # Column for the xdata when plotting a file.
@@ -102,15 +100,19 @@ default_params = {
     'style': "dots",     # Style when plotting a file.
     'npoints': 1000,     # Number of points for function plotting
 
-    # Adjust aspects of the plot's axes
+    # Adjust special aspects of the plot's axes
     'xtick_freq': None,
     'ytick_freq': None,
-    'xtick_every_n' : 2,   # If xtick_freq or ytick_freq is not None, label every nth tick.
-    'ytick_every_n' : 2,
+    'xtick_every_n': 2,    # If xtick_freq or ytick_freq is not None, label every nth tick.
+    'ytick_every_n': 2,
     'xmin': None,          # Does not directly change x-range
     'xmax': None,
     'ymin': None,          # Does not directly change y-range
     'ymax': None,
+    'xscale': 1.0,         # Scale data in xdata by this factor.
+    'yscale': 1.0,
+    'xlogscale': False,    # Should we use a log scale for the x-axis?
+    'ylogscale': False,
 }
 
 
@@ -135,9 +137,10 @@ def latexify(bold=False):
 
 def clearPlot():
     """ Clears plot object and legend handles. Useful if you want to do multiple plots in the same script. """
+    global initialize
+    initialize = True
     plt.clf()
     clear_legend_labels()
-
 
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
@@ -352,8 +355,20 @@ def set_params(**params):
     if params['title'] is not None:
         plt.title(params['title'])
 
+    if params['xlogscale'] and params['xtick_freq'] is not None:
+        logger.warn("xtick_freq assumes no log scale.")
+
+    if params['ylogscale'] and params['ytick_freq'] is not None:
+        logger.warn("ytick_freq assumes no log scale.")
+
+    if params['xlogscale']:
+        ax.set_xscale('log')
+
+    if params['ylogscale']:
+        ax.set_yscale('log')
+
     if params['ticksintoplot'] is not None:
-        ax.tick_params(direction='in')
+        ax.tick_params(which='both',direction='in')
 
     if params['surroundWithTicks']:
         ax.tick_params(top=True,right=True)
