@@ -8,18 +8,17 @@ matplotlib
 sklearn
 colorama
 lmfit
-sympy==1.9
+sympy
 cycler
-itertools
 
 # For the Documentation
 alabaster==0.7.12
 attrs==21.2.0
 Babel==2.9.1
-certifi==2021.10.8
-charset-normalizer==2.0.7
+certifi
+charset-normalizer
 docutils==0.17.1
-idna==3.3
+idna
 imagesize==1.2.0
 Jinja2==3.0.2
 markdown-it-py==1.1.0

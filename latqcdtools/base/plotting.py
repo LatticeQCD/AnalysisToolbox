@@ -62,7 +62,7 @@ default_params = {
     'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 3.5,           # Size of the symbols.
     'font_size': 14,             # Default font size for text.
-    'font_weight' : 'normal',    # Default style of font ('normal', 'bold', 'heavy', 'light')
+    'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
     'ticksintoplot': True,       # Put ticks into plotting area.
     'surroundWithTicks': True,   # Put ticks also on top and right.
@@ -408,7 +408,7 @@ def set_params(**params):
 
 def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), **params):
     fill_param_dict(params)
-    data = np.loadtxt(filename, dtype = np.str).transpose()
+    data = np.loadtxt(filename,unpack=True)
     if xcol is not None:
         xdata = np.array(data[xcol - 1], dtype = float)
     else:

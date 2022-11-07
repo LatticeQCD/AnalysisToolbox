@@ -70,9 +70,9 @@ print("     T [MeV]:",T[0],T[-1],"\n")
 muCh = 0.
 
 
-hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
+hadrons ,M ,Q ,B ,S ,C ,g  = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
-                                      dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
+                                        dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6))
 w  = np.array([1 if ba==0 else -1 for ba in B])
 w1 = np.array([1 if ba==0 else -1 for ba in B1])
 

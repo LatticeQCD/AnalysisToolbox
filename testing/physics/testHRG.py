@@ -7,7 +7,7 @@
 #
 
 import numpy as np
-from latqcdtools.physics.HRG import HRG,EV_HRG
+from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
@@ -39,22 +39,17 @@ def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
 
 
 # QM and PDG HRG files
-hadrons,M,Q,B,S,_,g = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
-                                 usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
-                                        dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
+hadrons ,M ,Q ,B ,S ,_ ,g ,w  = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
+                                           usecols=(0,1,2,3,4,5,6,7),dtype="U11,f8,i8,i8,i8,i8,i8,i8")
+hadrons1,M1,Q1,B1,S1,C1,g1,w1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
+                                           dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
-
-# Spin statistics. w= fermi(-1)/bose(1) statistics. (If baryon number is 1, you have three spin-1/2 constituents, which
-# allows only half-integer baryon spins.
-w  = np.array([1 if ba==0 else -1 for ba in B])
-w1 = np.array([1 if ba==0 else -1 for ba in B1])
 
 QMhrg      = HRG(M,g,w,B,S,Q)
 pdghrg     = HRG(M1,g1,w1,B1,S1,Q1)
 evhrg      = EV_HRG(M,g,w,B,S,Q)
 evpdghrg   = EV_HRG(M1,g1,w1,B1,S1,Q1)
-
+QMhrgexact = HRGexact(M,g,w,B,S,Q)
 
 #
 # Test: Calculate chi^200_BQS with b=1 and mu/T=1. Compare against trusted control result.
@@ -83,6 +78,10 @@ refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
 test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
 print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
 comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
+exact3p_div_T4=[]
+for i in range(len(refT)):
+    exact3p_div_T4.append( 3*QMhrgexact.P_div_T4(refT[i],0,0,0) )
+print_results(exact3p_div_T4, test3p_div_T4, prec=1e-1, text="exact 3p/T^4 check")
 
 
 refT, refE_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
@@ -198,4 +197,4 @@ exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,m
 def Ehat(muh):
     return QMhrg.E_div_T4(T,muB_div_T=muh)
 numerical = diff_deriv(muh,Ehat)
-print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dmuB")
+print_results(exact, numerical, prec=1e-4, text="d(E/T^4)/dmuB")

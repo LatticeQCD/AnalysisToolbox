@@ -8,11 +8,21 @@
 
 import numpy as np
 import sympy as sy
+import warnings
 from scipy.special import kn, lambertw
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
-
+import latqcdtools.base.logger as logger
+from latqcdtools.base.check import UnderflowError
+from latqcdtools.math.num_int import integrateFunction
+warnings.filterwarnings("error")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 APPROX_KAON_MASS = 500   # Mass cutoff in [MeV] for Boltzmann approximation.
+
+
+def checkType(input):
+    if not np.isscalar(input):
+        logger.TBError("Please pass a scalar to HRGexact.")
 
 
 def RMS_mass(Nt, T):
@@ -28,11 +38,48 @@ def RMS_mass(Nt, T):
     return pion_rms_mass, kaon_rms_mass
 
 
-class HRG:
+def LCP_init_NS0(muB):
+    """ Give a good initial guess for NS=0 LCP """
+    dS  = 0.214
+    eS  = 0.161
+    dQ  = 0.0211
+    eQ  = 0.106
+    muQ = -dQ / (1.0 + eQ * muB)
+    muS = dS / (1.0 + eS * muB)
+    return muQ, muS
 
-    """ Hadron resonance gas. Mass=mass of the Hadron , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state.
-        For more information please see, e.g. Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
+
+class HRGbase:
+
+    """ Hadron resonance gas base class. Here we collect methods and attributes that all HRG-type classes should have
+        in common. Mass=mass of the Hadron/resonance , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
+        B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. """
+    def __init__(self, Mass, g, w, B, S, Q, C = None):
+        self.Mass = Mass
+        self.g = g
+        self.w = w
+        self.B = B
+        self.Q = Q
+        self.S = S
+        if C is None:
+            self.C = np.zeros(len(Mass))
+        else:
+            self.C = C
+
+
+    def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
+        """ mu_X * N_X, X = (B,Q,S,C) """
+        return self.B[k]*muB_div_T + self.Q[k]*muQ_div_T + self.S[k]*muS_div_T + self.C[k]*muC_div_T
+
+
+    def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
+        """ e^(mu_X*N_X/T) , X = (B,Q,S,C) """
+        return np.exp( self.muN_div_T(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T) )
+
+
+class HRG(HRGbase):
+    """ HRG implemented through Taylor expasion of logarithm. For more information please see, e.g.
+        Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
         You can optionally adjust NMAX_light and NMAX_heavy, which control the number of terms to keep in the
         Taylor expansion for species that are respectively lighter and heavier than the Kaon.
         Our pressure is given in terms of a Taylor series involving modified Bessel functions of the second kind, which
@@ -45,26 +92,9 @@ class HRG:
         one of those N_chemical_potentials + 2 variables assume all others are held fixed. """
 
     def __init__(self, Mass, g, w, B, S, Q, C = None, NMAX_light=21, NMAX_heavy=2):
-        # M = Mass of the hadron
-        # Q = charge of the hadron
-        # B = Baryon number of the hadron [B=1,-1,0,0 for baryon,anti-baryon,meson,anti-mesons]
-        # S = Strangeness number of the hadron
-        # C = Charm number of the hadron
-        # g = degenracy of the hadron state
-        # w = spin statistics of hadron (eta)
-        self.Mass = Mass
-        self.g = g
-        self.w = w
-        self.B = B
-        self.Q = Q
-        self.S = S
+        HRGbase.__init__(self,Mass,g,w,B,S,Q,C)
         self.NMAX_light = NMAX_light
         self.NMAX_heavy = NMAX_heavy
-        # If we don't get a charm array, initialize to array of zeroes.
-        if C is None:
-            self.C = np.zeros(len(Mass))
-        else:
-            self.C = C
 
 
     def __repr__(self):
@@ -85,16 +115,6 @@ class HRG:
     def factor(self, k, n , T):
         """ (m/T)^2 g eta^(n+1) / 2pi^2 n^2 """
         return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
-
-
-    def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
-        """ mu_X * N_X, X = (B,Q,S,C) """
-        return self.B[k]*muB_div_T + self.Q[k]*muQ_div_T + self.S[k]*muS_div_T + self.C[k]*muC_div_T
-
-
-    def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
-        """ e^(mu_X*N_X/T) , X = (B,Q,S,C) """
-        return np.exp( self.muN_div_T(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T) ) 
 
 
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
@@ -215,20 +235,34 @@ class HRG:
         return chi
 
 
-# TODO: the __init__ can be inherited from the HRG class. This cannot really be done straightforwardly because gen_chi
-#       here has a different signature than in the HRG class. Initializing EV_HRG with b helps, but apparently in EV
-#       gen_chi(Bi=1) + gen_chi(Bi=-1) is different from gen_chi(abs(Bi)=1). No idea why.
-class EV_HRG:
+class HRGexact(HRGbase):
+
+    """ HRG implemented through numerical integration. """
+
+    def __init__(self, Mass, g, w, B, S, Q, C=None):
+        HRGbase.__init__(self,Mass,g,w,B,S,Q,C)
+
+
+    def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        P = 0.
+        for k in range(len(self.Mass)):
+            def P_integrand(E):
+                try:
+                    exp_E_div_T = np.exp(-E/T)
+                except UnderflowError:
+                    exp_E_div_T = 0.
+                return np.sqrt((E**2-self.Mass[k]**2)) * E * np.log( 1 - self.w[k]*self.z(k,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)*exp_E_div_T )
+            P -= self.w[k]*self.g[k] * integrateFunction(P_integrand,self.Mass[k],np.inf)
+        P /= (2*np.pi**2*T**3)
+        return P
+
+
+class EV_HRG(HRGbase):
 
     """ Excluded volume hadron resonance gas. b is excluded volume parameter. """
 
-    def __init__(self, Mass, g, w, B, S, Q):
-        self.Mass = Mass
-        self.g = g
-        self.w = w
-        self.B = B
-        self.S = Q
-        self.Q = S
+    def __init__(self, Mass, g, w, B, S, Q, C=None):
+        HRGbase.__init__(self,Mass,g,w,B,S,Q,C)
 
     def __repr__(self):
         return "evhrg"
@@ -293,14 +327,3 @@ class EV_HRG:
         chi_num = f(muB_div_T/T, muQ_div_T/T, muS_div_T/T, P, X_baryon, X_charge, X_strange, T, b*(T/197.3)**3).real
 
         return chi_num
-
-
-def LCP_init_NS0(muB):
-    """ Give a good initial guess for NS=0 LCP """
-    dS  = 0.214
-    eS  = 0.161
-    dQ  = 0.0211
-    eQ  = 0.106
-    muQ = -dQ / (1.0 + eQ * muB)
-    muS = dS / (1.0 + eS * muB)
-    return muQ, muS

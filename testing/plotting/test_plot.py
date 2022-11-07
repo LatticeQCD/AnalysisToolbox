@@ -9,7 +9,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from latqcdtools.base.plotting import latexify, plot_file, plot_bar, plot_func
+from latqcdtools.base.plotting import latexify, plot_file, plot_bar
+from latqcdtools.statistics.statistics import plot_func
 
 latexify()
 

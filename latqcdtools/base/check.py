@@ -3,11 +3,32 @@
 #
 # H. Sandmeyer, D. Clarke
 #
-# A collection of methods for comparing results and formatting test output.
+# A collection of methods for comparing results, formatting test output, and handling numpy exceptions.
 #
+
 import math
 import numpy as np
 import latqcdtools.base.logger as logger
+
+
+class DivideByZeroError(Exception): pass
+class UnderflowError(Exception): pass
+class InvalidValueError(Exception): pass
+
+
+def err_handler(err, flag):
+    if flag == 1:
+        raise DivideByZeroError(err)
+    elif flag == 2:
+        raise OverflowError
+    elif flag == 4:
+        raise UnderflowError(err)
+    elif flag == 8:
+        raise InvalidValueError(err)
+
+
+np.seterrcall(err_handler)
+np.seterr(all='call')
 
 
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
