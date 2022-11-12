@@ -26,7 +26,7 @@ class latticeParams:
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
-    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
         self.fK = fk_phys(scaleYear,"MeV")
         if isinstance(coupling, str):
             self.beta  = int(coupling)/1000
@@ -36,12 +36,15 @@ class latticeParams:
             self.cbeta = str(int(coupling*1000))
         self.cm1   = mass1
         self.cm2   = mass2
+        self.cm3   = mass3
         self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
         self.scale = scaleType
         self.Nf    = Nf
         if Nf=='21':
+            if mass3 is not None:
+                logger.TBError('Nf=2+1 expects only 2 mass parameters.')
             self.cml  = mass1
             self.cms  = mass2
             self.ml   = massStringToFloat(mass1)
@@ -50,7 +53,20 @@ class latticeParams:
             self.cpre = None
             self.m    = None
             self.pre  = None
-        else:
+        elif Nf == '211':
+            self.cml = mass1
+            self.cms = mass2
+            self.cmc = mass3
+            self.ml = massStringToFloat(mass1)
+            self.ms = massStringToFloat(mass2)
+            self.mc = massStringToFloat(mass3)
+            self.cm = None
+            self.cpre = None
+            self.m = None
+            self.pre = None
+        elif Nf=='3':
+            if mass3 is not None:
+                logger.TBError('Nf=3 expects only 2 mass parameters.')
             self.cml  = None
             self.cms  = None
             self.ml   = None

@@ -9,6 +9,17 @@ from subprocess import run, PIPE
 import time
 import numpy as np
 import latqcdtools.base.logger as logger
+import yaml
+
+
+def loadYAML(filename):
+    if not filename.endswith('yaml'):
+        logger.TBError('loadYAML expected a yaml file.')
+    with open(filename, 'r') as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            logger.TBError('Encountered exception:',exc)
 
 
 def getArgs(parser):

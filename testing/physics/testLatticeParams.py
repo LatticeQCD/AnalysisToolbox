@@ -7,7 +7,7 @@
 #
 
 from latqcdtools.physics.lattice_params import latticeParams
-from latqcdtools.physics.HotQCD import HotQCDParams
+from latqcdtools.interfaces.HotQCD import HotQCDParams
 from latqcdtools.base.check import print_results
 
 import params

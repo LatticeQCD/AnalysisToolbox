@@ -131,7 +131,7 @@ data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_c
 #
 
 # First exclude all states that have C = 0.
-openCharmStates = excludeAtCol(data,4,0)
+openCharmStates = excludeAtCol(np.array(data),4,0)
 
 # Mesons are those states with B = 0. (Fig. 1 in paper.)
 openCharmMesons = restrictAtCol(openCharmStates,2,0)

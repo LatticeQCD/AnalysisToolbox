@@ -9,6 +9,7 @@ import numpy as np
 from numpy.random import randint, normal, multivariate_normal
 from latqcdtools.statistics.statistics import std_mean, std_dev, std_median, dev_by_dist
 import concurrent.futures
+import latqcdtools.base.logger as logger
 
 
 # Recursive function to fill the sample
@@ -23,8 +24,7 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
             sample_sizes = [sample_size]*len(data)
 
         if not same_rand_for_obs:
-            randints = [randint(0, len(data[x]), size=sample_sizes[x])
-                    for x in range(numb_observe)]
+            randints = [randint(0, len(data[x]), size=sample_sizes[x]) for x in range(numb_observe)]
         else:
             tmp_rand = randint(0, len(data[0]), size=sample_sizes[0])
             randints = [tmp_rand]*numb_observe
@@ -54,10 +54,10 @@ class nimbleBoot:
         self._err_by_dist=err_by_dist
         self._args=args
 
-        try:
-            self._data[0][0]
-        except IndexError:
+        if  self._data.ndim == 1:
             self._conf_axis = 0
+        elif self._data.ndim > 2:
+            logger.TBError('Bootstrap accepts only 1d or 2d numpy arrays.')
 
         if self._seed is not None:
             my_seed = self._seed
@@ -140,16 +140,14 @@ def bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False
                 - Objects that are accessed by an axis >= conf_axis + 1 do always have the same random numbers.
                 - Objects that are accessed by axis conf_axis < conf_axis - 1 never share the same random numbers.
 
-        conf_axis : integer, optional, default = 0 for dim(data) = 1
-            or default = 1 for dim(data) >= 2
+        conf_axis : integer, optional, default = 0 for dim(data) = 1 or default = 1 for dim(data) >= 2
             Axis that should be resampled
 
         return_sample : boolean, optional, default = False
             Along with the mean and the error also return the results from the individual samples
 
         seed: integer, optional, default = None
-            seed for the random generator. If None, the default seed from numpy is used
-            (probably from time)
+            seed for the random generator. If None, the default seed from numpy is used (probably from time)
 
         same_rand_for_obs : boolean, optional, default = False
             same random numbers per observable
@@ -166,15 +164,15 @@ def bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False
         nproc : integer, optional, default = 32
             Number of threads to use if you choose to parallelize.
     """
-    bts = nimbleBoot(func, data, numb_samples, sample_size, same_rand_for_obs,
-        conf_axis, return_sample, seed, err_by_dist, args, parallelize, nproc)
+    bts = nimbleBoot(func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed,
+                     err_by_dist, args, parallelize, nproc)
     return bts.getResults()
 
 
 class nimbleGaussianBoot:
 
-    def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs,
-        return_sample, seed, err_by_dist, useCovariance, Covariance, args, parallelize, nproc, asym_err):
+    def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed,
+                 err_by_dist, useCovariance, Covariance, args, parallelize, nproc, asym_err):
 
         self._func=func
         self._data=np.array(data)
@@ -194,7 +192,7 @@ class nimbleGaussianBoot:
         if self._seed is not None:
             my_seed = self._seed
         else:
-            my_seed = randint(0, 4194304) # generate a time dependent seed
+            my_seed = randint(0, 7271978) # generate a time dependent seed
 
         if parallelize:
             sampleList=range(self._numb_samples)
