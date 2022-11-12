@@ -29,7 +29,7 @@ class latticeParams:
     def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
         self.fK = fk_phys(scaleYear,"MeV")
         if isinstance(coupling, str):
-            self.beta  = int(coupling)/1000
+            self.beta  = int(coupling)/10**(len(coupling)-1)
             self.cbeta = coupling
         else:
             self.beta  = coupling
@@ -78,7 +78,7 @@ class latticeParams:
         if (self.ml is not None) and (self.ms is not None):
             self.msml=int(round(self.ms/self.ml))
         if (self.beta<1.) or (10.<self.beta):
-            logger.TBError("Invalid beta.")
+            logger.TBError("Invalid beta =",self.beta)
         if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
             logger.TBError("Unknown reference scale",scaleType)
 

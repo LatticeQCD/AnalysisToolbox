@@ -7,7 +7,6 @@
 #
 
 
-import latqcdtools.base.logger as logger
 from latqcdtools.physics.lattice_params import latticeParams
 
 
