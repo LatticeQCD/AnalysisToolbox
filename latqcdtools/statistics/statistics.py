@@ -107,20 +107,21 @@ def norm_cov(cov):
 
 
 @reduce_tuple
-def dev_by_dist(data, axis=0, return_both_q=False):
+def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
     """Calculate the distance between the median and 68% quantiles. Returns the larger of the two distances. This
     method is used sometimes to estimate error, for example in the bootstrap."""
     data = np.asarray(data)
-    data = np.rollaxis(data, 0, axis + 1)
-    median = np.median(data, 0)
-    numb_data = data.shape[0]
-    idx_dn = int(numb_data / 2 - 0.68 * numb_data / 2)
-    idx_up = int(numb_data / 2 + 0.68 * numb_data / 2)
-    sorted_data = np.sort(data - median, axis = 0)
+    median = np.nanmedian(data, axis)
+    numb_data = data.shape[axis]
+    idx_dn = max(int(np.floor((numb_data-1) / 2 - percentile/100 * (numb_data-1) / 2)), 0)
+    idx_up = min(int(np.ceil((numb_data-1) / 2 + percentile/100 * (numb_data-1) / 2)), numb_data-1)
+    sorted_data = np.sort(data - np.expand_dims(median, axis), axis=axis)
+    q_l = np.take(sorted_data, idx_dn, axis)
+    q_r = np.take(sorted_data, idx_up, axis)
     if return_both_q:
-        return np.abs(sorted_data[idx_dn]), np.abs(sorted_data[idx_up])
+        return np.abs(q_l), np.abs(q_r)
     else:
-        return np.max(np.abs([sorted_data[idx_dn], sorted_data[idx_up]]), axis=0)
+        return np.max(np.stack((np.abs(q_l), np.abs(q_r)), axis=0), axis=0)
 
 
 def error_prop(func, means, errors, grad=None, args=()):
