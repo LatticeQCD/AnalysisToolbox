@@ -42,18 +42,21 @@ def std_mean(data, axis = 0):
 
 @reduce_tuple
 def std_var(data, axis = 0):
+    """ Calculate unbiased (ddof = 1) estimator for the variance. """
     data = np.asarray(data)
     return np.var(data, axis = axis, ddof = 1)
 
 
 @reduce_tuple
 def std_dev(data, axis = 0):
+    """ Calculate unbiased (ddof = 1) estimator for the standard deviation. """
     data = np.asarray(data)
     return np.std(data, axis = axis, ddof = 1)
 
 
 @reduce_tuple
 def std_err(data, axis = 0):
+    """ Standard deviation of the sample mean, according the the CLT. """
     data = np.asarray(data)
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
 

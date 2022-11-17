@@ -243,23 +243,21 @@ class HRGexact(HRGbase):
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         HRGbase.__init__(self,Mass,g,w,B,S,Q,C)
 
+
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        T         = envector(T)
-        muB_div_T = envector(muB_div_T)
-        muS_div_T = envector(muS_div_T)
-        muQ_div_T = envector(muQ_div_T)
-        muC_div_T = envector(muC_div_T)
+        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T ,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
         def g(Tvec, muBvec, muSvec, muQvec, muCvec):
             P = 0.
             for k in range(len(self.Mass)):
                 wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
-                def P_integrand(E):
+                def integrand(E):
                     try:
                         exp_E_div_T = np.exp(-E/Tvec)
                     except UnderflowError:
                         exp_E_div_T = 0.
-                    return -(wz/(3*Tvec)) * (E**2-self.Mass[k]**2)**(3/2) * exp_E_div_T / ( 1 - wz*exp_E_div_T )
-                P -= self.w[k] * self.g[k] * integrateFunction(P_integrand, self.Mass[k], np.inf)
+                    # Can be obtained from integration by parts (introduces the minus sign).
+                    return -(wz/(3*Tvec)) * (E**2-self.Mass[k]**2)**(3/2) * exp_E_div_T / ( 1-wz*exp_E_div_T )
+                P -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
             P /= (2*np.pi**2*Tvec**3)
             return P
         h = np.vectorize(g)
@@ -267,6 +265,30 @@ class HRGexact(HRGbase):
             return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))[0]
         else:
             return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))
+
+
+    def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T ,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
+        def g(Tvec, muBvec, muSvec, muQvec, muCvec):
+            eps = 0.
+            for k in range(len(self.Mass)):
+                wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
+                def integrand(E):
+                    try:
+                        exp_E_div_T = np.exp(-E/Tvec)
+                    except UnderflowError:
+                        exp_E_div_T = 0.
+                    # Here there is no log in the integrand, so we didn't integrate by parts first.
+                    return wz * E**2 * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / ( 1-wz*exp_E_div_T )
+                eps += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+            eps /= (2*np.pi**2*Tvec**4)
+            return eps
+        h = np.vectorize(g)
+        if len(T)==1:
+            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))[0]
+        else:
+            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))
+
 
 class EV_HRG(HRGbase):
 

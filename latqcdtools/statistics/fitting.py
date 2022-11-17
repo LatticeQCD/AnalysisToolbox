@@ -16,6 +16,7 @@ from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, set_
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov
+from latqcdtools.base.utilities import envector
 from inspect import signature
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -358,7 +359,6 @@ class Fitter:
         try:
             self._xdata[0][0]
             xdata_high_dim = True
-
         except (ValueError, IndexError):
             xdata_high_dim = False
 
@@ -424,9 +424,8 @@ class Fitter:
 
     def _get_numb_params(self):
         """
-        Find out the number of parameters that the fit function takes. In case of non expanded
-        parameters, we simply try how large the parameter array has to be without generating
-        an exception. Result is stored in self._numb_params
+        Find out the number of parameters that the fit function takes. In case of non expanded parameters, we simply
+        try how large the parameter array has to be without generating an exception. Result is stored in self._numb_params
         """
         ntries = 1000
         if self._expand:
@@ -523,8 +522,8 @@ class Fitter:
 
     def check_start_params(self):
         """
-        Check if the start parameters work with the fitting function. If not: Generate new default
-        start_parameters. These are stored in self._saved_params
+        Check if the start parameters work with the fitting function. If not: Generate new default start_parameters.
+        These are stored in self._saved_params
         """
         try:
             if self._func_sup_numpy:
@@ -938,11 +937,7 @@ class Fitter:
 
         # For a fit with only one parameter, we also accept a scalar. Check if this is the case.
         if start_params is not None:
-            try:
-                start_params[0]
-                self._saved_params = start_params
-            except (TypeError, IndexError): # If start_parameters is not a list.
-                self._saved_params = [start_params]
+            self._saved_params = envector(start_params)
 
         # Make sure we have a numpy object.
         self._saved_params = np.array(self._saved_params, dtype = float)

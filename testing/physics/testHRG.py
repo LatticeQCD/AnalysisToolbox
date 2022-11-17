@@ -20,7 +20,6 @@ import matplotlib.pyplot as plt
 EPSILON = 1e-6
 SHOW_PLOTS = False # In case you want a visual to see how comparisons with older results look.
 
-
 if SHOW_PLOTS:
     latexify()
 
@@ -74,21 +73,20 @@ print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
 #       tolerance because I had to fish the paper values out by eye and because we are using an updated resonance list
 #       compared to what was available in 2014.
 #
-refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
-test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
-exact3p_div_T4     = 3*QMhrgexact.P_div_T4(refT,0,0,0)
-print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
-comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
-#exact3p_div_T4=[]
-#for i in range(len(refT)):
-#    exact3p_div_T4.append( 3*QMhrgexact.P_div_T4(refT[i],0,0,0) )
-print_results(res_true=exact3p_div_T4, res=test3p_div_T4, prec=3e-1, text="exact 3p/T^4 check")
+#refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
+#test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
+#exact3p_div_T4     = 3*QMhrgexact.P_div_T4(refT,0,0,0)
+#print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
+#comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
+#print_results(res_true=exact3p_div_T4, res=test3p_div_T4, prec=3e-1, text="exact 3p/T^4 check")
 
 
 refT, refE_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
 testE_div_T4      = pdghrg.E_div_T4(refT,0,0,0)
+exactE_div_T4     = QMhrgexact.E_div_T4(refT,0,0,0)
 print_results(refE_div_T4, testE_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
 comparisonPlot(pdghrg.E_div_T4(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
+print_results(res_true=exactE_div_T4, res=testE_div_T4, prec=3e-1, text="exact e/T^4 check")
 
 
 refT, ref3S_div_4T3 = np.loadtxt("HRGcontrol/2014_3s_div_4T3.d",unpack=True)

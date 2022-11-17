@@ -11,13 +11,20 @@ import numpy as np
 import latqcdtools.base.logger as logger
 
 
-def envector(obj):
-    """ Change obj to a numpy array if it's a scalar. Sometimes required for vectorizing code. """
-    try:
-        obj[0]
-    except (TypeError,IndexError):
-        obj = np.array([obj])
-    return obj
+def envector(*args):
+    """ Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., vectorizing code. """
+    result = ()
+    for obj in args:
+        try:
+            obj[0]
+        except (TypeError,IndexError):
+            obj = np.array([obj])
+        result += (obj,)
+    if len(result)==1:
+        return result[0]
+    else:
+        return result
+
 
 def getArgs(parser):
     """ Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. """
