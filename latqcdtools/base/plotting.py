@@ -72,7 +72,7 @@ default_params = {
     'alpha_dots': None,          # Transperancy for different dots
     'alpha_lines': 1,            # Transperancy for different lines
     'alpha_fill_edge': 0,        # Transperancy for edges of error bands
-    'alpha_label': 1,            # Transperancy for labels
+    'alpha_label': 0,            # Transperancy for labels
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 0.5,           # Linewidth of the error bars of caps af error bars

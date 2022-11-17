@@ -9,18 +9,15 @@ from subprocess import run, PIPE
 import time
 import numpy as np
 import latqcdtools.base.logger as logger
-import yaml
 
 
-def loadYAML(filename):
-    if not filename.endswith('yaml'):
-        logger.TBError('loadYAML expected a yaml file.')
-    with open(filename, 'r') as stream:
-        try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            logger.TBError('Encountered exception:',exc)
-
+def envector(obj):
+    """ Change obj to a numpy array if it's a scalar. Sometimes required for vectorizing code. """
+    try:
+        obj[0]
+    except (TypeError,IndexError):
+        obj = np.array([obj])
+    return obj
 
 def getArgs(parser):
     """ Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. """
@@ -31,7 +28,7 @@ def getArgs(parser):
 
 
 def printArg(message,param):
-    """ Some arguments are None by default, and you only want to print the if they are set. """
+    """ Some arguments are None by default, and you only want to print them if they are set. """
     if param is not None:
         print(message,param)
 

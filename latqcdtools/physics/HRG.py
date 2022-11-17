@@ -14,14 +14,15 @@ from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import UnderflowError
 from latqcdtools.math.num_int import integrateFunction
+from latqcdtools.base.utilities import envector
 warnings.filterwarnings("error")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 APPROX_KAON_MASS = 500   # Mass cutoff in [MeV] for Boltzmann approximation.
 
 
-def checkType(input):
-    if not np.isscalar(input):
+def checkType(x):
+    if not np.isscalar(x):
         logger.TBError("Please pass a scalar to HRGexact.")
 
 
@@ -242,20 +243,30 @@ class HRGexact(HRGbase):
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         HRGbase.__init__(self,Mass,g,w,B,S,Q,C)
 
-
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        P = 0.
-        for k in range(len(self.Mass)):
-            def P_integrand(E):
-                try:
-                    exp_E_div_T = np.exp(-E/T)
-                except UnderflowError:
-                    exp_E_div_T = 0.
-                return np.sqrt((E**2-self.Mass[k]**2)) * E * np.log( 1 - self.w[k]*self.z(k,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)*exp_E_div_T )
-            P -= self.w[k]*self.g[k] * integrateFunction(P_integrand,self.Mass[k],np.inf)
-        P /= (2*np.pi**2*T**3)
-        return P
-
+        T         = envector(T)
+        muB_div_T = envector(muB_div_T)
+        muS_div_T = envector(muS_div_T)
+        muQ_div_T = envector(muQ_div_T)
+        muC_div_T = envector(muC_div_T)
+        def g(Tvec, muBvec, muSvec, muQvec, muCvec):
+            P = 0.
+            for k in range(len(self.Mass)):
+                wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
+                def P_integrand(E):
+                    try:
+                        exp_E_div_T = np.exp(-E/Tvec)
+                    except UnderflowError:
+                        exp_E_div_T = 0.
+                    return -(wz/(3*Tvec)) * (E**2-self.Mass[k]**2)**(3/2) * exp_E_div_T / ( 1 - wz*exp_E_div_T )
+                P -= self.w[k] * self.g[k] * integrateFunction(P_integrand, self.Mass[k], np.inf)
+            P /= (2*np.pi**2*Tvec**3)
+            return P
+        h = np.vectorize(g)
+        if len(T)==1:
+            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))[0]
+        else:
+            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))
 
 class EV_HRG(HRGbase):
 

@@ -9,10 +9,11 @@
 import numpy as np
 import scipy.integrate as integrate
 import latqcdtools.base.logger as logger
+from latqcdtools.base.utilities import envector
 from latqcdtools.math.spline import getSpline
 
 
-def integrateData(xdata,ydata,method='spline',getQ=False):
+def integrateData(xdata,ydata,method='spline'):
     """ Wrapper to integrate data. The default 'spline' will try fitting the data with a cubic spline, then integrate
         the spline function using Gaussian quadrature. """
     try:
@@ -30,11 +31,7 @@ def integrateData(xdata,ydata,method='spline',getQ=False):
     elif method=='spline':
         nknots = int(len(xdata)/3)
         data_spline = getSpline(xdata, ydata, num_knots=nknots, rand=False)
-        q = data_spline.get_residual()
-        if getQ:
-            return integrate.quad(data_spline, xdata[0], xdata[-1])[0], q
-        else:
-            return integrate.quad(data_spline, xdata[0], xdata[-1])[0]
+        return integrate.quad(data_spline, xdata[0], xdata[-1])[0]
 
     else:
         logger.TBError("Unknown integration method",method)
@@ -42,42 +39,41 @@ def integrateData(xdata,ydata,method='spline',getQ=False):
 
 # TODO: implement romberg?
 def integrateFunction(func,a,b,method='persistent_quad_trap',stepsize=None):
-    """ Wrapper to integrate functions. """
+    """ Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and will vectorize scipy.quad,
+        which otherwise does not like to handle numpy arrays. """
+    a = envector(a)
+    b = envector(b)
+    if not len(a) == len(b):
+        logger.TBError('Integration bounds must have the same length.')
+
     if method=='persistent_quad_trap':
         try:
-            return integrate.quad(func, a, b, limit=1000, epsrel=1e-8)[0]
+            return integrateFunction(func,a,b,method='quad',stepsize=None)
         except integrate.IntegrationWarning:
             return integrateFunction(func,a,b,method='trapezoid',stepsize=None)
-        # TODO: can you vectorize quad?
-    elif method=='quad':
-        return integrate.quad(func, a, b, limit=1000, epsrel=1e-8)[0]
-    elif method=='trapezoid':
-        # TODO: try changing b until you hit some relative tolerance? Take OOM steps?
-        if b == np.inf:
-            b = 10 * a
-        if stepsize is None:
-            x = np.linspace(a, b, 101)
-        else:
-            x = np.arange(start=a, stop=b, step=stepsize)
-        y = func(x)
-        return integrateData(x, y, method='trapezoid')
 
-#        import numpy as np
-#        import scipy.integrate
-#
-#        def new_quad(f, a, b):
-#            def g(a, b):
-#                return scipy.integrate.quad(f, a, b)
-#
-#            h = np.vectorize(g)
-#            res = h(a, b)
-#            # np.asarray ensures that we don't return 0d arrays
-#            # tuple is in case we care about returning a tuple
-#            return tuple(np.asarray(res))
-#
-#        def f(x):
-#            return x
-#
-#        a = 0
-#        b = [1, 2, 3]
-#        new_quad(f, a, b)  # (array([0.5, 2. , 4.5]), array([5.55111512e-15, 2.22044605e-14, 4.99600361e-14]))
+    elif method=='quad':
+        def g(A,B):
+            return integrate.quad(func, A, B, limit=1000, epsrel=1e-8)[0]
+        h = np.vectorize(g)
+        if len(a)==1:
+            return np.asarray(h(a,b))[0]
+        else:
+            return np.asarray(h(a,b))
+
+    elif method=='trapezoid':
+        for i in range(len(b)):
+            if b[i] == np.inf:
+                logger.TBError('Trapezoid rule is meant for definite integrals.')
+        if stepsize is None:
+            x = np.array([ np.linspace(a[i], b[i], 101) for i in range(len(b)) ])
+        else:
+            x = np.array([ np.arange(start=a[i], stop=b[i], step=stepsize) for i in range(len(b)) ])
+        y = func(x)
+        if len(a)==1:
+            return integrateData(x, y, method='trapezoid')[0]
+        else:
+            return integrateData(x, y, method='trapezoid')
+
+    else:
+        logger.TBError('Unrecognized integration method',method)

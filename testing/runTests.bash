@@ -33,6 +33,7 @@ cd ..
 
 cd math
 runTestRoutine testDeriv.py
+runTestRoutine testInt.py
 runTestRoutine testPolynomial.py
 runTestRoutine testSpline.py
 cd ..

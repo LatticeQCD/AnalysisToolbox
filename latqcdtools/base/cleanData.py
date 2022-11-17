@@ -17,6 +17,14 @@ def checkIfArray(array):
         logger.TBError('cleanData methods must be passed numpy arrays. Received',type(array))
 
 
+def deleteRow(array, row):
+    return np.delete(array,row,0)
+
+
+def deleteCol(array, col):
+    return np.delete(array,col,1)
+
+
 def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf):
     """ Throw out any elements of array that lie outside the interval [minVal,maxVal].  """
     checkIfArray(array)
