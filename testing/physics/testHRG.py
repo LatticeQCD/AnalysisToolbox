@@ -53,7 +53,7 @@ QMhrgexact = HRGexact(M,g,w,B,S,Q)
 #
 # Test: Calculate chi^200_BQS with b=1 and mu/T=1. Compare against trusted control result.
 #
-b        = 1
+b = 1
 
 chi_QM  = QMhrg.gen_chi(T , B_order=2, Q_order=0, S_order=0, muB_div_T=1)
 chi_pdg = pdghrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, muB_div_T=1)
@@ -73,12 +73,16 @@ print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
 #       tolerance because I had to fish the paper values out by eye and because we are using an updated resonance list
 #       compared to what was available in 2014.
 #
-#refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
-#test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
-#exact3p_div_T4     = 3*QMhrgexact.P_div_T4(refT,0,0,0)
-#print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
-#comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
-#print_results(res_true=exact3p_div_T4, res=test3p_div_T4, prec=3e-1, text="exact 3p/T^4 check")
+# Test: Compare the results from the Taylor series of Bessel functions to the results from the numerical integration.
+#       We allow a 30% error tolerance, because for higher temperatures, m/T becomes smaller, making the truncated
+#       series less exact.
+#
+refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
+test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
+exact3p_div_T4     = 3*QMhrgexact.P_div_T4(refT,0,0,0)
+print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
+comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
+print_results(res_true=exact3p_div_T4, res=test3p_div_T4, prec=3e-1, text="exact 3p/T^4 check")
 
 
 refT, refE_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
@@ -87,6 +91,11 @@ exactE_div_T4     = QMhrgexact.E_div_T4(refT,0,0,0)
 print_results(refE_div_T4, testE_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
 comparisonPlot(pdghrg.E_div_T4(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
 print_results(res_true=exactE_div_T4, res=testE_div_T4, prec=3e-1, text="exact e/T^4 check")
+
+
+testNB  = pdghrg.gen_chi(refT,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
+exactNB = QMhrgexact.number_density(refT,charge='B',muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
+print_results(res_true=exactNB, res=testNB, prec=3e-1, text="exact NB")
 
 
 refT, ref3S_div_4T3 = np.loadtxt("HRGcontrol/2014_3s_div_4T3.d",unpack=True)
@@ -105,29 +114,14 @@ refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
 cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3_mu0(refT)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
+
 #
-# Test: Calculate chi^1001_BQSC at muB/T=0. Update and uncomment this when the particle list is finalized.
+# Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
+#       here is even higher. But I expect only to get the right ballpark, since we are not using the same states.
 #
 
 data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
                   usecols=(1,2,3,4,5,6),dtype="f8,i8,i8,i8,i8,i8")
-
-#M, Q, B, S, C, g = data[0], data[1], data[2], data[3], data[4], data[5]
-#w = np.array([1 if ba==0 else -1 for ba in B])
-#
-#QMhrg   = HRG(M,g,w,B,S,Q,C)
-#chi_QM  = QMhrg.gen_chi(T , B_order=1, Q_order=0, S_order=0, C_order=1, muB_div_T=muB)
-#chi_pdg = pdghrg.gen_chi(T, B_order=1, Q_order=0, S_order=0, C_order=1, muB_div_T=muB)
-#
-#refT, refPDG, refQM = np.loadtxt("HRGcontrol/chiBQSC_1001_muB0.00_QMHRG2020_BI_charm.control",unpack=True)
-#print_results(chi_pdg, refPDG, prec=EPSILON, text="chiBQSC1001 PDG check")
-#print_results(chi_QM , refQM , prec=EPSILON, text="chiBQSC1001 QM check")
-
-
-#
-# Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
-#       here is even higher. But I expect only to get the right ballpark, since again we are not using the same states.
-#
 
 # First exclude all states that have C = 0.
 openCharmStates = excludeAtCol(np.array(data),4,0)
@@ -171,7 +165,7 @@ RSC13     = -chiBSC112/(chiSC13 - chiBSC112)
 print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
 
 #
-# Test: Compare numerical derivatives against analytic derivatives.
+# Test: Compare numerical derivatives against analytic derivatives. TODO: implement more of these, esp at finite mu
 #
 T   = np.linspace(100,150,101)
 def Ehat(t):

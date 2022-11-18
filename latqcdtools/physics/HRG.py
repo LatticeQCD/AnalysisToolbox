@@ -12,8 +12,9 @@ import warnings
 from scipy.special import kn, lambertw
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import UnderflowError
 from latqcdtools.math.num_int import integrateFunction
+from latqcdtools.base.check import UnderflowError
+from latqcdtools.math.math import underflowExp
 from latqcdtools.base.utilities import envector
 warnings.filterwarnings("error")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -236,6 +237,7 @@ class HRG(HRGbase):
         return chi
 
 
+# TODO: gen_chi can be implemented using multi-dimensional Leibniz rule
 class HRGexact(HRGbase):
 
     """ HRG implemented through numerical integration. """
@@ -246,48 +248,73 @@ class HRGexact(HRGbase):
 
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T ,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
-        def g(Tvec, muBvec, muSvec, muQvec, muCvec):
+        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             P = 0.
             for k in range(len(self.Mass)):
                 wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
                 def integrand(E):
-                    try:
-                        exp_E_div_T = np.exp(-E/Tvec)
-                    except UnderflowError:
-                        exp_E_div_T = 0.
-                    # Can be obtained from integration by parts (introduces the minus sign).
+                    exp_E_div_T = underflowExp(-E/Tvec)
                     return -(wz/(3*Tvec)) * (E**2-self.Mass[k]**2)**(3/2) * exp_E_div_T / ( 1-wz*exp_E_div_T )
                 P -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
             P /= (2*np.pi**2*Tvec**3)
             return P
-        h = np.vectorize(g)
+        int_vec = np.vectorize(int_wrapper)
         if len(T)==1:
-            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))[0]
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )[0]
         else:
-            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )
 
 
     def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T ,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
-        def g(Tvec, muBvec, muSvec, muQvec, muCvec):
+        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             eps = 0.
             for k in range(len(self.Mass)):
                 wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
                 def integrand(E):
-                    try:
-                        exp_E_div_T = np.exp(-E/Tvec)
-                    except UnderflowError:
-                        exp_E_div_T = 0.
-                    # Here there is no log in the integrand, so we didn't integrate by parts first.
+                    exp_E_div_T = underflowExp(-E/Tvec)
                     return wz * E**2 * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / ( 1-wz*exp_E_div_T )
                 eps += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
             eps /= (2*np.pi**2*Tvec**4)
             return eps
-        h = np.vectorize(g)
+        int_vec = np.vectorize(int_wrapper)
         if len(T)==1:
-            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))[0]
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )[0]
         else:
-            return np.asarray(h(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T))
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )
+
+
+    def number_density(self,T, charge='B',muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T ,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
+        if charge=='B':
+            X = self.B
+        elif charge=='Q':
+            X = self.Q
+        elif charge=='S':
+            X = self.S
+        elif charge=='C':
+            X = self.C
+        else:
+            logger.TBError('Unrecognized charge for number density',charge)
+        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
+            NX = 0.
+            for k in range(len(self.Mass)):
+                wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
+                def integrand(E):
+                    exp_E_div_T = underflowExp(-E/Tvec)
+                    return -wz * X[k] * E * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / ( 1 - wz*exp_E_div_T )
+                try:
+                    NX -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+                except UnderflowError:
+                    pass
+            NX /= (2*np.pi**2*Tvec**3)
+            return NX
+        int_vec = np.vectorize(int_wrapper)
+        if len(T)==1:
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )[0]
+        else:
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )
+
 
 
 class EV_HRG(HRGbase):

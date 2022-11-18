@@ -12,7 +12,7 @@ import latqcdtools.base.logger as logger
 
 
 def envector(*args):
-    """ Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., vectorizing code. """
+    """ Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., using np.vectorize. """
     result = ()
     for obj in args:
         try:

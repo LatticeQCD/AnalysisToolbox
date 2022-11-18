@@ -344,27 +344,6 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     return tau_int, tau_inte, tau_intbias, itpick
 
 
-def fallFactorial(n,m):
-    """ Falling factorial n fall to m. """
-    if m==0:
-        return 1
-    if m>n:
-        logger.TBError("m>n in falling factorial.")
-    prod=1
-    for i in range(m):
-        prod *= n-i
-    return prod
-
-
-def riseFactorial(n,m):
-    """ Rising factorial n rise to m. """
-    if m==0:
-        return 1
-    prod=1
-    for i in range(m):
-        prod *= n+i
-    return prod
-
 
 def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, swapXY=False, **params):
     """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
