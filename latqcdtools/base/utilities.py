@@ -1,13 +1,13 @@
 #
 # utilities.py
 #
-# D. Clarke
+# D. Clarke, L. Altenkort
 #
 # Some utilities that you might use in any program.
 #
 from subprocess import run, PIPE
-import time
 import numpy as np
+import concurrent.futures, time, re
 import latqcdtools.base.logger as logger
 
 
@@ -82,12 +82,6 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-#
-# A case where he fails:
-# ['thermalTable_mu0.0357', 'thermalTable_mu0.0952', 'thermalTable_mu0.1309', 'thermalTable_mu0.0833',
-#  'thermalTable_mu0.0595', 'thermalTable_mu0.0119', 'thermalTable_mu0.0', 'thermalTable_mu0.0714',
-#  'thermalTable_mu0.0476', 'thermalTable_mu0.1071', 'thermalTable_mu0.119', 'thermalTable_mu0.0238']
-#
 def naturalSort(l):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
@@ -124,3 +118,35 @@ class timer:
     def resetTimer(self):
         self._tstart = time.time()
         self._tend   = self._tstart
+
+
+class ComputationClass:
+
+    """ A class to parallelize functions. To be used with parallel_function_eval for convenience. """
+
+    def __init__(self, func, input_array, nproc, *add_param):
+        self._nproc = nproc  # number of processes
+        self._input_array = input_array
+        self._function = func
+
+        # additional arguments for actual_computation
+        self._add_param = add_param
+
+        # compute the result when class is initialized
+        self._result = self.parallelization_wrapper()
+
+    def parallelization_wrapper(self):
+        with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
+            result = executor.map(self.pass_argument_wrapper, self._input_array)
+        return list(result)
+
+    def pass_argument_wrapper(self, single_input):
+        return self._function(single_input, *self._add_param)
+
+    def getResult(self):
+        return self._result
+
+
+def parallel_function_eval(func, input_array, nproc, *add_param):
+    computer = ComputationClass(func, input_array, nproc, *add_param)
+    return computer.getResult()
