@@ -148,5 +148,7 @@ class ComputationClass:
 
 
 def parallel_function_eval(func, input_array, nproc, *add_param):
+    """ Paralellize the function func over the array input_array with nproc processors. add_param gives additional
+        arguments to the function. """
     computer = ComputationClass(func, input_array, nproc, *add_param)
     return computer.getResult()

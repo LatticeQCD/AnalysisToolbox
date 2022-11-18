@@ -7,14 +7,16 @@
 #
 
 import numpy as np
+import matplotlib.pyplot as plt
 from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
 from latqcdtools.math.num_deriv import diff_deriv
+from latqcdtools.base.utilities import timer, parallel_function_eval
 
 
-import matplotlib.pyplot as plt
+times = timer()
 
 
 EPSILON = 1e-6
@@ -73,29 +75,16 @@ print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
 #       tolerance because I had to fish the paper values out by eye and because we are using an updated resonance list
 #       compared to what was available in 2014.
 #
-# Test: Compare the results from the Taylor series of Bessel functions to the results from the numerical integration.
-#       We allow a 30% error tolerance, because for higher temperatures, m/T becomes smaller, making the truncated
-#       series less exact.
-#
 refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
 test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
-exact3p_div_T4     = 3*QMhrgexact.P_div_T4(refT,0,0,0)
 print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
 comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
-print_results(res_true=exact3p_div_T4, res=test3p_div_T4, prec=3e-1, text="exact 3p/T^4 check")
 
 
 refT, refE_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
 testE_div_T4      = pdghrg.E_div_T4(refT,0,0,0)
-exactE_div_T4     = QMhrgexact.E_div_T4(refT,0,0,0)
 print_results(refE_div_T4, testE_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
 comparisonPlot(pdghrg.E_div_T4(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
-print_results(res_true=exactE_div_T4, res=testE_div_T4, prec=3e-1, text="exact e/T^4 check")
-
-
-testNB  = pdghrg.gen_chi(refT,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
-exactNB = QMhrgexact.number_density(refT,charge='B',muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
-print_results(res_true=exactNB, res=testNB, prec=3e-1, text="exact NB")
 
 
 refT, ref3S_div_4T3 = np.loadtxt("HRGcontrol/2014_3s_div_4T3.d",unpack=True)
@@ -114,6 +103,48 @@ refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
 cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3_mu0(refT)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
+
+#
+# Test: Compare the results from the Taylor series of Bessel functions to the results from the numerical integration.
+#       We allow a 30% error tolerance, because for higher temperatures, m/T becomes smaller, making the truncated
+#       series less exact. These checks tend to be rather slow, so we parallelize them in a rather naive way.
+#
+def exactHRGTest(case): # TODO: load the charm and test NC
+
+    refT = np.linspace(40, 170, 10)
+
+    if case == 1:
+        testp_div_T4  = pdghrg.P_div_T4(refT,0,0,0)
+        exactp_div_T4 = QMhrgexact.P_div_T4(refT,0,0,0)
+        print_results(res_true=exactp_div_T4, res=testp_div_T4, prec=1e-1, text="exact p/T^4 check")
+
+    elif case == 2:
+        testE_div_T4  = pdghrg.E_div_T4(refT,0,0,0)
+        exactE_div_T4 = QMhrgexact.E_div_T4(refT,0,0,0)
+        print_results(res_true=exactE_div_T4, res=testE_div_T4, prec=2e-1, text="exact e/T^4 check")
+
+    elif case == 3:
+        testNX  = pdghrg.gen_chi(refT,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
+        exactNX = QMhrgexact.number_density(refT,charge='B',muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
+        print_results(res_true=exactNX, res=testNX, prec=3e-1, text="exact NB")
+
+    elif case == 4:
+        testNX  = pdghrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=0,muB_div_T=0,muQ_div_T=0,muS_div_T=0.1,muC_div_T=0)
+        exactNX = QMhrgexact.number_density(refT,charge='S',muB_div_T=0,muQ_div_T=0,muS_div_T=0.1,muC_div_T=0)
+        print_results(res_true=exactNX, res=testNX, prec=3e-1, text="exact NS")
+
+    elif case == 5:
+        testNX  = pdghrg.gen_chi(refT,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=0,muQ_div_T=0.2,muS_div_T=0,muC_div_T=0)
+        exactNX = QMhrgexact.number_density(refT,charge='Q',muB_div_T=0,muQ_div_T=0.2,muS_div_T=0,muC_div_T=0)
+        print_results(res_true=exactNX, res=testNX, prec=2e-1, text="exact NQ")
+
+    elif case == 6:
+        tests_div_T3  = pdghrg.S_div_T3(refT,muB_div_T=1,muQ_div_T=0.2,muS_div_T=0.1,muC_div_T=0)
+        exacts_div_T3 = QMhrgexact.S_div_T3(refT,muB_div_T=1,muQ_div_T=0.2,muS_div_T=0.1,muC_div_T=0)
+        print_results(res_true=exacts_div_T3, res=tests_div_T3, prec=2e-1, text="exact S")
+
+
+parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],8)
 
 #
 # Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
@@ -191,3 +222,6 @@ def Ehat(muh):
     return QMhrg.E_div_T4(T,muB_div_T=muh)
 numerical = diff_deriv(muh,Ehat)
 print_results(exact, numerical, prec=1e-4, text="d(E/T^4)/dmuB")
+
+
+times.printTiming()

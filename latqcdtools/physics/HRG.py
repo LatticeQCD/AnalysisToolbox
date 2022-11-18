@@ -123,7 +123,7 @@ class HRG(HRGbase):
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
-                P += self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n * kn(2,(n*self.Mass[k]/T))
+                P += self.factor(k, n, T) * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n * kn(2,(n*self.Mass[k]/T))
         return P
 
 
@@ -132,7 +132,7 @@ class HRG(HRGbase):
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
                 x = self.Mass[k]*n/T
-                eps += self.factor(k,n,T) * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * ( kn(2,x) * 3 + kn(1,x)*x )
+                eps += self.factor(k,n,T) * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n * ( kn(2,x) * 3 + kn(1,x)*x )
         return eps
 
 
@@ -143,7 +143,8 @@ class HRG(HRGbase):
         NQ = self.gen_chi(T,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
         NC = self.gen_chi(T,B_order=0,S_order=0,Q_order=0,C_order=1,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
         muxN_div_T = NB*muB_div_T + NS*muS_div_T + NQ*muQ_div_T + NC*muC_div_T
-        return  self.E_div_T4(T,muB_div_T,muS_div_T,muQ_div_T,muC_div_T) + self.P_div_T4(T,muB_div_T,muS_div_T,muQ_div_T,muC_div_T) - muxN_div_T
+        return  self.E_div_T4(T,muB_div_T=muB_div_T,muS_div_T=muS_div_T,muQ_div_T=muQ_div_T,muC_div_T=muC_div_T) \
+                + self.P_div_T4(T,muB_div_T=muB_div_T,muS_div_T=muS_div_T,muQ_div_T=muQ_div_T,muC_div_T=muC_div_T) - muxN_div_T
 
 
     def ddT_E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
@@ -152,7 +153,7 @@ class HRG(HRGbase):
             for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
-                eps += self.factor(k,n,T)*m*n * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**3
+                eps += self.factor(k,n,T)*m*n * self.z(k,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)**n * ( kn(0,x)*n*m + kn(1,x)*T )/T**3
         return eps
 
 
@@ -163,7 +164,7 @@ class HRG(HRGbase):
             for n in range(1,self.Nmax(k)):
                 m    = self.Mass[k]
                 x    = m*n/T
-                P += self.factor(k, n, T) * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n * m*n*kn(1,x) / T**2
+                P += self.factor(k, n, T) * self.z(k,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)**n * m*n*kn(1,x) / T**2
         return P
 
 
@@ -177,7 +178,7 @@ class HRG(HRGbase):
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                              * self.factor(k, n, T) * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
                                               * kn(2,(n*self.Mass[k]/T))
         return chi
 
@@ -190,7 +191,7 @@ class HRG(HRGbase):
                 m    = self.Mass[k]
                 x    = m*n/T
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n * m*n*kn(1,x) / T**2
+                                              * self.factor(k, n, T) * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n * m*n*kn(1,x) / T**2
         return chi
 
 
@@ -201,7 +202,7 @@ class HRG(HRGbase):
             for n in range(1,self.Nmax(k)):
                 x = self.Mass[k]*n/T
                 eps += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k,n,T) * self.z(k,muB_div_T,muQ_div_T,muS_div_T,muC_div_T)**n \
+                                              * self.factor(k,n,T) * self.z(k,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)**n \
                                               * ( kn(2,x)*3 + kn(1,x)*x )
         return eps
 
@@ -217,7 +218,7 @@ class HRG(HRGbase):
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[0]/T)**2 \
-                                                  * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
                                                   * kn(2, (n*rms_mass[0]/T)) / (np.pi*n)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
                 for n in range(1, 10):
@@ -225,14 +226,14 @@ class HRG(HRGbase):
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[1]/T)**2 \
-                                                  * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
                                                   * kn(2, (n*rms_mass[1]/T)) / (np.pi*n)**2 / 2
             else:
                 for n in range(1, 2):
                     chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
                                                   * (self.Q[k]*n)**Q_order \
                                                   * (self.C[k]*n)**C_order \
-                                                  * self.factor(k, n, T) * self.z(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)**n \
+                                                  * self.factor(k, n, T) * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
                                                   * kn(2,(n*self.Mass[k]/T))
         return chi
 
@@ -251,11 +252,14 @@ class HRGexact(HRGbase):
         def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             P = 0.
             for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
+                wz = self.w[k] * self.z(k, muB_div_T=muBvec, muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
                 def integrand(E):
                     exp_E_div_T = underflowExp(-E/Tvec)
                     return -(wz/(3*Tvec)) * (E**2-self.Mass[k]**2)**(3/2) * exp_E_div_T / ( 1-wz*exp_E_div_T )
-                P -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+                try:
+                    P -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+                except UnderflowError:
+                    pass
             P /= (2*np.pi**2*Tvec**3)
             return P
         int_vec = np.vectorize(int_wrapper)
@@ -270,11 +274,14 @@ class HRGexact(HRGbase):
         def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             eps = 0.
             for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
+                wz = self.w[k] * self.z(k, muB_div_T=muBvec, muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
                 def integrand(E):
                     exp_E_div_T = underflowExp(-E/Tvec)
                     return wz * E**2 * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / ( 1-wz*exp_E_div_T )
-                eps += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+                try:
+                    eps += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+                except UnderflowError:
+                    pass
             eps /= (2*np.pi**2*Tvec**4)
             return eps
         int_vec = np.vectorize(int_wrapper)
@@ -299,7 +306,7 @@ class HRGexact(HRGbase):
         def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             NX = 0.
             for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muBvec, muSvec, muQvec, muCvec)
+                wz = self.w[k] * self.z(k, muB_div_T=muBvec, muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
                 def integrand(E):
                     exp_E_div_T = underflowExp(-E/Tvec)
                     return -wz * X[k] * E * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / ( 1 - wz*exp_E_div_T )
@@ -315,6 +322,30 @@ class HRGexact(HRGbase):
         else:
             return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )
 
+
+    def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        """ s = e + p - mu_i n_i """
+        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T ,muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
+        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
+            S = 0.
+            for k in range(len(self.Mass)):
+                wz = self.w[k] * self.z(k, muB_div_T=muBvec, muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
+                def integrand(E):
+                    exp_E_div_T = underflowExp(-E/Tvec)
+                    P    = (E**2-self.Mass[k]**2)/3
+                    eps  =  E**2
+                    return wz * (E**2-self.Mass[k]**2)**(1/2) * (P + eps - Tvec*E*( self.B[k]*muBvec + self.Q[k]*muQvec + self.S[k]*muSvec + self.C[k]*muCvec ) ) * exp_E_div_T / ( 1-wz*exp_E_div_T )
+                try:
+                    S += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
+                except UnderflowError:
+                    pass
+            S /= (2*np.pi**2*Tvec**4)
+            return S
+        int_vec = np.vectorize(int_wrapper)
+        if len(T)==1:
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )[0]
+        else:
+            return np.asarray( int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) )
 
 
 class EV_HRG(HRGbase):
