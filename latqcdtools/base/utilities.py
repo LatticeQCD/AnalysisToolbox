@@ -124,10 +124,10 @@ class ComputationClass:
 
     """ A class to parallelize functions. To be used with parallel_function_eval for convenience. """
 
-    def __init__(self, func, input_array, nproc, *add_param):
+    def __init__(self, function, input_array, nproc, *add_param):
         self._nproc = nproc  # number of processes
         self._input_array = input_array
-        self._function = func
+        self._function = function
 
         # additional arguments for actual_computation
         self._add_param = add_param
@@ -136,9 +136,12 @@ class ComputationClass:
         self._result = self.parallelization_wrapper()
 
     def parallelization_wrapper(self):
+        results = []
         with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
-            result = executor.map(self.pass_argument_wrapper, self._input_array)
-        return list(result)
+            for result in executor.map(self.pass_argument_wrapper, self._input_array):
+                results.append(list(result))
+        results = list(map(list, zip(*results)))  # "transpose" the list to allow for multiple return values like a normal function.
+        return results
 
     def pass_argument_wrapper(self, single_input):
         return self._function(single_input, *self._add_param)
@@ -147,8 +150,9 @@ class ComputationClass:
         return self._result
 
 
-def parallel_function_eval(func, input_array, nproc, *add_param):
-    """ Paralellize the function func over the array input_array with nproc processors. add_param gives additional
+def parallel_function_eval(function, input_array, nproc, *add_param):
+    """ Paralellize the callable function over the array input_array with nproc processors. add_param gives additional
         arguments to the function. """
-    computer = ComputationClass(func, input_array, nproc, *add_param)
+    computer = ComputationClass(function, input_array, nproc, *add_param)
     return computer.getResult()
+
