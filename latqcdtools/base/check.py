@@ -32,12 +32,23 @@ np.seterrcall(err_handler)
 np.seterr(all='call')
 
 
+def checkType(instance, expectedType):
+    """ Only useful if you expect one particular type. """
+    if not isinstance(instance,expectedType):
+        logger.TBError('Expected type',expectedType,'but received',type(instance),frame=3)
+
+
+def checkIfArray(array):
+    if not type(array).__module__ == np.__name__:
+        logger.TBError('Expected numpy array but received',type(array),frame=3)
+
+
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
     """ Check whether two values are equal. Use especially when comparing to 0. """
     try:
         return math.isclose(a, b, rel_tol = prec, abs_tol = abs_prec)
     except TypeError:
-        logger.TBError('math.isclose expects real numbers. Received a, b =',a,',',b)
+        logger.TBError('Expected real numbers. Received a, b types = ',type(a),',',type(b))
 
 
 def rel_checkArrayScalar(arr, scal, prec = 1e-6, abs_prec = 1e-14):

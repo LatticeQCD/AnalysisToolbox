@@ -122,7 +122,7 @@ def fk_phys(year=2019,units="MeV"):
         # Kaon decay constant taken from PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
         fkMeV = 156.1 / np.sqrt(2.)
     else:
-        logger.TBError("Invalid year specification for physical value of fK.")
+        logger.TBError("Invalid year specification.")
     return MeVtoUnits(fkMeV,"fK",units)
 
 
@@ -284,7 +284,7 @@ def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
         # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
         LMS, LMSerr = 339, 12
     else:
-        logger.TBError("Invalid year specification for physical value of lambda-MSbar.")
+        logger.TBError("Invalid year specification.")
     if returnErr:
         return MeVtoUnits(LMS,"lambda-MSbar",units), MeVtoUnits(LMSerr,"lambda-MSbarerr",units)
     else:

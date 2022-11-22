@@ -41,7 +41,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6850': ['00157', '0424'],
                          '6910': ['00148', '0401']}
             else:
-                logger.TBError("Invalid ms/ml for quark mass table.")
+                logger.TBError("Invalid ms/ml.")
 
         elif Nt==8:
 
@@ -89,10 +89,10 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6474': ['00234', '0632'],
                          '6500': ['00228', '0614']}
             else:
-                logger.TBError("Invalid ms/ml for quark mass table.")
+                logger.TBError("Invalid ms/ml.")
 
         else:
-            logger.TBError("Invalid Nt for quark mass table.")
+            logger.TBError("Invalid Nt.")
 
     elif Nf=='3':
 
@@ -110,7 +110,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6285': ['00293', '07911'],
                          '6315': ['00281', '07587']}
             else:
-                logger.TBError("Invalid ms/ml for quark mass table.")
+                logger.TBError("Invalid ms/ml.")
 
         elif Nt==16:
 
@@ -118,10 +118,10 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                 Table = {'6050': ['00394', '1064'],
                          '6315': ['00281', '07587']}
             else:
-                logger.TBError("Invalid ms/ml for quark mass table.")
+                logger.TBError("Invalid ms/ml.")
 
         else:
-            logger.TBError("Invalid Nt for quark mass table.")
+            logger.TBError("Invalid Nt.")
 
     elif Nf=='5':
 
@@ -130,13 +130,13 @@ def quarkMassTableHISQ(Nf, Nt, msml):
             if msml==25:
                 Table = {'4637': ['002', '05'] }
             else:
-                logger.TBError("Invalid ms/ml for quark mass table.")
+                logger.TBError("Invalid ms/ml.")
 
         else:
-            logger.TBError("Invalid Nt for quark mass table.")
+            logger.TBError("Invalid Nt.")
 
 
     else:
-        logger.TBError("Invalid Nf for quark mass table.")
+        logger.TBError("Invalid Nf.")
 
     return Table

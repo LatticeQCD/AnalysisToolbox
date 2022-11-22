@@ -63,6 +63,7 @@ class O2_3d(UniversalityClass):
     alpha = 2.-beta*(1. + delta)
     gamma = beta*(delta-1.)
 
+
 class O3_3d(UniversalityClass):
     """ 3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class TODO: need better ref. """
     symm  = "O(3)"
@@ -72,6 +73,7 @@ class O3_3d(UniversalityClass):
     alpha = -0.12
     gamma = 1.395
     delta = (gamma+2*alpha)/(2*beta)
+
 
 class O4_3d(UniversalityClass):
     """ 3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). """

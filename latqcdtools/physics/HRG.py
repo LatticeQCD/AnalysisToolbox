@@ -22,11 +22,6 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 APPROX_KAON_MASS = 500   # Mass cutoff in [MeV] for Boltzmann approximation.
 
 
-def checkType(x):
-    if not np.isscalar(x):
-        logger.TBError("Please pass a scalar to HRGexact.")
-
-
 def RMS_mass(Nt, T):
     a             = 6924.46
     b             = 31881.4
@@ -302,7 +297,7 @@ class HRGexact(HRGbase):
         elif charge=='C':
             X = self.C
         else:
-            logger.TBError('Unrecognized charge for number density',charge)
+            logger.TBError('Unrecognized charge',charge)
         def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             NX = 0.
             for k in range(len(self.Mass)):

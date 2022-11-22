@@ -43,7 +43,7 @@ def printArg(message,param):
 def printDict(dic):
     """ Prints key, value pairs line by line. """
     if not isinstance(dic,dict):
-        logger.TBError("printDict should take a dictionary as argument.")
+        logger.TBError('Expected type', dict, 'but received', type(dic))
     for key in dic:
         print(key,dic[key])
 
@@ -139,7 +139,7 @@ class ComputationClass:
         results = []
         with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
             for result in executor.map(self.pass_argument_wrapper, self._input_array):
-                results.append(list(result))
+                results.append(list(envector(result)))
         results = list(map(list, zip(*results)))  # "transpose" the list to allow for multiple return values like a normal function.
         return results
 

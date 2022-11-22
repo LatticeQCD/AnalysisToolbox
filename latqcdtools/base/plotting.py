@@ -597,9 +597,9 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 
     if (yedata is None) and (xedata is None):
-        logger.TBError("Please pass plot_fill some error bars.")
+        logger.TBError("Please pass some error bars.")
     if (yedata is not None) and (xedata is not None):
-        logger.TBError("Please pass plot_fill either x-error or y-error, not both.")
+        logger.TBError("Please pass either x-error or y-error, not both.")
 
     fill_param_dict(params)
     optional = add_optional(params)

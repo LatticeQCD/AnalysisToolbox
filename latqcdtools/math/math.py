@@ -15,7 +15,7 @@ def fallFactorial(n,m):
     if m==0:
         return 1
     if m>n:
-        logger.TBError("m>n in falling factorial.")
+        logger.TBError("m>n.")
     prod=1
     for i in range(m):
         prod *= n-i
@@ -27,7 +27,7 @@ def riseFactorial(n,m):
     if m==0:
         return 1
     if n>m:
-        logger.TBError("n>m in rising factorial.")
+        logger.TBError("n>m.")
     prod=1
     for i in range(m):
         prod *= n+i

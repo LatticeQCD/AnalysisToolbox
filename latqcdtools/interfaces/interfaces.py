@@ -43,7 +43,7 @@ def loadGPL(filename,discardTag=True):
 def loadYAML(filename):
     """ Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. """
     if not filename.endswith('yaml'):
-        logger.TBError('loadYAML expected a yaml file.')
+        logger.TBError('Expected a yaml file.')
     with open(filename, 'r') as stream:
         try:
             return yaml.safe_load(stream)

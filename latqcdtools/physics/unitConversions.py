@@ -27,4 +27,4 @@ def gethc(units="MeVfm"):
     elif units=="GeVfm":
         return hcGeVfm
     else:
-        logger.TBError("Invalid unit specification for hc.")
+        logger.TBError("Invalid unit specification.")

@@ -20,7 +20,7 @@ def integrateData(xdata,ydata,method='spline'):
         xdata=np.array(xdata)
         ydata=np.array(ydata)
     except:
-        logger.TBError("integrateData must be passed array-like objects.")
+        logger.TBError("Must be passed array-like objects.")
 
     if method=='simpson':
         return integrate.simpson(ydata,xdata)

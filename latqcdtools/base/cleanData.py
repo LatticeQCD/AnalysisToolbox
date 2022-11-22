@@ -9,12 +9,7 @@
 
 
 import numpy as np
-import latqcdtools.base.logger as logger
-
-
-def checkIfArray(array):
-    if not type(array).__module__ == np.__name__:
-        logger.TBError('cleanData methods must be passed numpy arrays. Received',type(array))
+from latqcdtools.base.check import checkIfArray
 
 
 def deleteRow(array, row):
