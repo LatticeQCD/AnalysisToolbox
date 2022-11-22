@@ -56,8 +56,6 @@ class nimbleBoot:
 
         if  self._data.ndim == 1:
             self._conf_axis = 0
-        elif self._data.ndim > 2:
-            logger.TBError('Bootstrap accepts only 1d or 2d numpy arrays.')
 
         if self._seed is not None:
             my_seed = self._seed
