@@ -26,6 +26,7 @@ diff test.d control.d
 runTestRoutine "testReadWrite.py --type list"
 diff test.d control.d
 runTestRoutine testUtilities.py
+runTestRoutine testPrintErrorBars.py
 cd ..
 
 

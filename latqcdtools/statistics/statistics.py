@@ -9,10 +9,12 @@
 #
 import mpmath
 import numpy as np
+import matplotlib.pyplot as plt
 import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
-import matplotlib.pyplot as plt
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
+from latqcdtools.base.utilities import envector
+from latqcdtools.base.printErrorBars import get_err_str
 
 
 def reduce_tuple(func):
@@ -176,6 +178,8 @@ def gaudif(x1,e1,x2,e2):
 
      OUTPUT:
           q--q value."""
+    if e1<0 or e2<0:
+        logger.TBError('Error bars should be non-negative. Got',e1,e2)
     sigma=np.sqrt(e1**2 + e2**2)
     x=abs(x1-x2)/(sigma * np.sqrt(2.))
     q= 1.0 - mpmath.erf(x)
@@ -429,3 +433,30 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
             return plot_lines(ydata, xdata, yedata=None, xedata=None, **params)
         else:
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
+
+
+def gaudif_results(res, res_err, res_true, res_err_true, text = ""):
+    """ Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks
+        to see whether res and res_true are statistically compatible. """
+
+    test = True
+
+    res          = envector(res)
+    res_true     = envector(res_true)
+    res_err      = envector(res_err)
+    res_err_true = envector(res_err_true)
+
+    for i in range(len(res)):
+
+        q = gaudif(res[i], res_err[i], res_true[i], res_err_true[i])
+
+        if q < 0.05:
+            test = False
+            resstr     = get_err_str(res[i]     ,res_err[i])
+            restruestr = get_err_str(res_true[i],res_err_true[i])
+            print("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
+
+    if test:
+        logger.TBPass(text)
+    else:
+        logger.TBFail(text)
