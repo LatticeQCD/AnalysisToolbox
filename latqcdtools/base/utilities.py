@@ -11,6 +11,18 @@ import concurrent.futures, time, re
 import latqcdtools.base.logger as logger
 
 
+def unvector(obj):
+    """ Change obj to a scalar if it's an array-like object of length 1. Otherwise don't do anything. """
+    try:
+        N = len(obj)
+    except TypeError:
+        return obj
+    if N > 1:
+        return obj
+    else:
+        return obj[0]
+
+
 def envector(*args):
     """ Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., using np.vectorize. """
     result = ()
@@ -20,10 +32,7 @@ def envector(*args):
         except (TypeError,IndexError):
             obj = np.array([obj])
         result += (obj,)
-    if len(result)==1:
-        return result[0]
-    else:
-        return result
+    return unvector(result)
 
 
 def getArgs(parser):

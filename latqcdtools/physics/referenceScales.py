@@ -8,14 +8,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.unitConversions import fm_to_GeVinv, GeVinv_to_fm, fm_to_MeVinv, MeV_to_fminv
 from latqcdtools.math.polynomials import Polynomial,Rational
-
-
-def beta_func(beta):
-    """ Asymptotic scaling relation for Nf=3 up to two loops. """
-    nf = 3
-    b0 = (11 - 2 * nf / 3) / (4 * np.pi) ** 2
-    b1 = (102 - 38 * nf / 3) / (4 * np.pi) ** 4
-    return (b0 * 10 / beta) ** (-b1 / (2 * b0 ** 2)) * np.exp(-beta / (20 * b0))
+from latqcdtools.physics.betaFunction import beta_func
 
 
 def MeVtoUnits(value,name,units):

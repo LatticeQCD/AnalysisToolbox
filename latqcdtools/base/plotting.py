@@ -6,11 +6,12 @@
 # Collection of convenience tools for plotting using matplotlib.
 #
 
+import itertools, warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
-import itertools
 import latqcdtools.base.logger as logger
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # TODO: put in some docstrings for stuff that doesn't have it yet.
 #       finally check all the gcas, they may not be needed anymore. also you need to like make sure that all the
@@ -61,7 +62,7 @@ default_params = {
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
     'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 3.5,           # Size of the symbols.
-    'font_size': 14,             # Default font size for text.
+    'font_size': 12,             # Default font size for text.
     'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
     'ticksintoplot': True,       # Put ticks into plotting area.

@@ -26,6 +26,8 @@ def err_handler(err, flag):
         raise UnderflowError(err)
     elif flag == 8:
         raise InvalidValueError(err)
+    else:
+        logger.TBError('Encountered unknown exception',err,'with flag',flag)
 
 
 np.seterrcall(err_handler)
@@ -36,11 +38,6 @@ def checkType(instance, expectedType):
     """ Only useful if you expect one particular type. """
     if not isinstance(instance,expectedType):
         logger.TBError('Expected type',expectedType,'but received',type(instance),frame=3)
-
-
-def checkIfArray(array):
-    if not type(array).__module__ == np.__name__:
-        logger.TBError('Expected numpy array but received',type(array),frame=3)
 
 
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
@@ -59,9 +56,8 @@ def rel_checkArrayScalar(arr, scal, prec = 1e-6, abs_prec = 1e-14):
 
 def print_results(res, res_true, res_err = None, res_err_true = None, text = "", prec = 1e-10):
     """ Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
-    if you like.) Carries out with precision prec. """
+        if you like.) Carries out with precision prec. """
     test = True
-
 
     res = envector(res)
     res_true = envector(res_true)
