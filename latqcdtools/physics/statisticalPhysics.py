@@ -65,7 +65,7 @@ class O2_3d(UniversalityClass):
 
 
 class O3_3d(UniversalityClass):
-    """ 3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class TODO: need better ref. """
+    """ 3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class. """
     symm  = "O(3)"
     d     = 3
     beta  = 0.366
@@ -86,17 +86,33 @@ class O4_3d(UniversalityClass):
     nu    = (beta/d)*(1+delta)
 
 
+# 4d Ising model
+class Z2_4d(UniversalityClass):
+    """ Exact solution for 2d Z_2 class. """
+    symm  = "Z_2"
+    d     = 4
+    alpha = 0
+    beta  = 1/2
+    gamma = 1
+    delta = 3
+    nu    = 1/2
+    eta   = 0
+
+
+# 3d Ising model
 class Z2_3d(UniversalityClass):
-    """ 3d Z_2 critical exponents from Nucl. Phys. B 655, 277-299 (2003). """
+    """ 3d Z_2 critical exponents from J. Stat. Phys. 157. 869-914 (2014). """
     symm  = "Z_2"
     d     = 3
-    beta  = 0.3258
-    nu    = 0.6304
+    nu    = 0.62999
+    eta   = 0.03631
+    alpha = 2 - nu*d
+    gamma = nu*(2 - eta)
+    beta  = (nu*d -gamma)/2
     delta = nu*d/beta-1.
-    alpha = 2.-beta*(1.+delta)
-    gamma = beta*(delta-1.)
 
 
+# 2d Ising model
 class Z2_2d(UniversalityClass):
     """ Exact solution for 2d Z_2 class. """
     symm  = "Z_2"
