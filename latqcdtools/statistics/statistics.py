@@ -89,6 +89,66 @@ def jack_mean_and_err(data):
     return mean, err
 
 
+def weighted_mean(data, weights):
+    """Compute the weighted mean."""
+    data = np.asarray(data)
+    weights = np.asarray(weights)
+    return np.sum(data.dot(weights))/np.sum(weights)
+
+
+#https://mathoverflow.net/questions/11803/unbiased-estimate-of-the-variance-of-a-weighted-mean
+#In above source, the weights are normalized. We normalize like Wikipedia
+#https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
+
+
+def weighted_mean_variance(errors, weights = None):
+    """Compute the variance of the weighted mean based on error propagation. This is only valid if the
+    error bars of the data are of reasonable size, meaning that most of the error bars include the
+    mean value. If you expect that there are unknown systematic errors, you should use
+    unbiased_mean_variance instead.
+
+    Parameters
+    ----------
+
+    errors: array_like
+        The errors of the data points.
+    weights: array_like, optional, default = None
+        If you do not use weights = 1/errors**2, you can pass additional weights.
+        If None, weights = computed as 1/errors**2."""
+    errors = np.asarray(errors)
+    if weights is None:
+        errors = np.asarray(errors)
+        weights = 1 / errors**2
+    return np.sum(weights**2 * errors**2) / np.sum(weights)**2
+
+
+def biased_sample_variance(data, weights):
+    """Compute the biased weighted sample variance, i.e. the biased variance of an individual
+    measurement and not the variance of the mean."""
+    mean = weighted_mean(data, weights)
+    V1 = np.sum(weights)
+    return weights.dot((data - mean)**2) / V1
+
+
+def unbiased_sample_variance(data, weights):
+    """Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual
+    measurement and not the variance of the mean. Do not use this function if your weights
+    are frequency weights."""
+    V1 = np.sum(weights)
+    V2 = np.sum(weights**2)
+    return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
+
+
+def unbiased_mean_variance(data, weights):
+    """Compute the unbiased variance of a weighted mean. Do not use this function if your weights
+    are frequency weights. This is more like a systematic error. The absolute size of the weights
+    does not matter. The error is constructed using the deviations of the individual data
+    points."""
+    V1 = np.sum(weights)
+    V2 = np.sum(weights**2)
+    return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
+
+
 def calc_cov(data):
     """Calculate covariance matrix of last column in data."""
     data = np.asarray(data)
@@ -435,7 +495,7 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
 
 
-def gaudif_results(res, res_err, res_true, res_err_true, text = ""):
+def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, testMode=True):
     """ Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks
         to see whether res and res_true are statistically compatible. """
 
@@ -450,13 +510,16 @@ def gaudif_results(res, res_err, res_true, res_err_true, text = ""):
 
         q = gaudif(res[i], res_err[i], res_true[i], res_err_true[i])
 
-        if q < 0.05:
+        if q < qcut:
             test = False
             resstr     = get_err_str(res[i]     ,res_err[i])
             restruestr = get_err_str(res_true[i],res_err_true[i])
             print("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
 
-    if test:
-        logger.TBPass(text)
+    if testMode:
+        if test:
+            logger.TBPass(text)
+        else:
+            logger.TBFail(text)
     else:
-        logger.TBFail(text)
+        logger.info(text)

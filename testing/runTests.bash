@@ -51,6 +51,7 @@ runTestRoutine testBootstrap.py
 runTestRoutine testJackknife.py 
 runTestRoutine testErrorProp.py
 runTestRoutine testFit.py
+runTestRoutine testWeightedMean.py
 cd ..
 
 
