@@ -7,7 +7,7 @@
 #
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
+from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv
 from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
 
 

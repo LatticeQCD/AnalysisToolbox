@@ -90,8 +90,8 @@ def jack_mean_and_err(data):
 
 
 def weighted_mean(data, weights):
-    """Compute the weighted mean."""
-    data = np.asarray(data)
+    """ Compute the weighted mean. """
+    data    = np.asarray(data)
     weights = np.asarray(weights)
     return np.sum(data.dot(weights))/np.sum(weights)
 
@@ -102,10 +102,9 @@ def weighted_mean(data, weights):
 
 
 def weighted_mean_variance(errors, weights = None):
-    """Compute the variance of the weighted mean based on error propagation. This is only valid if the
-    error bars of the data are of reasonable size, meaning that most of the error bars include the
-    mean value. If you expect that there are unknown systematic errors, you should use
-    unbiased_mean_variance instead.
+    """ Compute the variance of the weighted mean based on error propagation. This is only valid if the error bars of
+    the data are of reasonable size, meaning that most of the error bars include the mean value. If you expect that
+    there are unknown systematic errors, you should use unbiased_mean_variance instead.
 
     Parameters
     ----------
@@ -114,43 +113,42 @@ def weighted_mean_variance(errors, weights = None):
         The errors of the data points.
     weights: array_like, optional, default = None
         If you do not use weights = 1/errors**2, you can pass additional weights.
-        If None, weights = computed as 1/errors**2."""
+        If None, weights = computed as 1/errors**2. """
     errors = np.asarray(errors)
     if weights is None:
-        errors = np.asarray(errors)
         weights = 1 / errors**2
     return np.sum(weights**2 * errors**2) / np.sum(weights)**2
 
 
 def biased_sample_variance(data, weights):
-    """Compute the biased weighted sample variance, i.e. the biased variance of an individual
-    measurement and not the variance of the mean."""
+    """ Compute the biased weighted sample variance, i.e. the biased variance of an individual measurement and not the
+    variance of the mean. """
     mean = weighted_mean(data, weights)
     V1 = np.sum(weights)
     return weights.dot((data - mean)**2) / V1
 
 
 def unbiased_sample_variance(data, weights):
-    """Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual
-    measurement and not the variance of the mean. Do not use this function if your weights
-    are frequency weights."""
+    """ Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
+    the variance of the mean. Do not use this function if your weights are frequency weights. """
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
 
 
 def unbiased_mean_variance(data, weights):
-    """Compute the unbiased variance of a weighted mean. Do not use this function if your weights
-    are frequency weights. This is more like a systematic error. The absolute size of the weights
-    does not matter. The error is constructed using the deviations of the individual data
-    points."""
+    """ Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
+    weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
+    constructed using the deviations of the individual data points. """
+    data    = np.asarray(data)
+    weights = np.asarray(weights)
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
 
 
 def calc_cov(data):
-    """Calculate covariance matrix of last column in data."""
+    """ Calculate covariance matrix of last column in data. """
     data = np.asarray(data)
     mean = np.mean(data, axis=0)
     newshape = np.hstack((data.shape[1:], data.shape[-1]))
@@ -163,7 +161,7 @@ def calc_cov(data):
 
 
 def norm_cov(cov):
-    """Normalize a covariance matrix to create the correlation matrix."""
+    """ Normalize a covariance matrix to create the correlation matrix. """
     res = np.zeros((len(cov), len(cov[0])))
     for i in range(len(cov)):
         for j in range(len(cov[0])):
@@ -173,8 +171,8 @@ def norm_cov(cov):
 
 @reduce_tuple
 def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
-    """Calculate the distance between the median and 68% quantiles. Returns the larger of the two distances. This
-    method is used sometimes to estimate error, for example in the bootstrap."""
+    """ Calculate the distance between the median and 68% quantiles. Returns the larger of the two distances. This
+    method is used sometimes to estimate error, for example in the bootstrap. """
     data = np.asarray(data)
     median = np.nanmedian(data, axis)
     numb_data = data.shape[axis]
@@ -229,7 +227,7 @@ def error_prop_func(x, func, means, errors, grad=None, args=()):
 
 
 def gaudif(x1,e1,x2,e2):
-    """Likelihood that observed difference between two estimates is due to chance, assuming that both estimates are
+    """ Likelihood that observed difference between two estimates is due to chance, assuming that both estimates are
     normally distributed with the same mean.
 
      INPUT:
@@ -237,7 +235,7 @@ def gaudif(x1,e1,x2,e2):
       eb1,2--Associated error bars.
 
      OUTPUT:
-          q--q value."""
+          q--q value. """
     if e1<0 or e2<0:
         logger.TBError('Error bars should be non-negative. Got',e1,e2)
     sigma=np.sqrt(e1**2 + e2**2)
@@ -247,13 +245,13 @@ def gaudif(x1,e1,x2,e2):
 
 
 def jackknifeFrom(x):
-    """Create jackknife data from float list. The number of bins is the number of data.
+    """ Create jackknife data from float list. The number of bins is the number of data.
 
     INPUT:
        x--List of data.
 
     OUTPUT:
-      xj--List of jackknife data."""
+      xj--List of jackknife data. """
     x=np.array(x)
     ndat=len(x)
     if ndat<2:
@@ -263,7 +261,7 @@ def jackknifeFrom(x):
 
 
 def tauint(nt,ts,xhat = None):
-    """Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
+    """ Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
 
     INPUT:
          nt--The largest you think tau_int could be.
@@ -272,7 +270,7 @@ def tauint(nt,ts,xhat = None):
        xhat--True mean of time series (if you know it).
 
     OUTPUT:
-      acint--List of integrated autocorrelation times."""
+      acint--List of integrated autocorrelation times. """
     ndat=len(ts)
     if ndat<2:
         logger.TBError("Need ndat>1.")
@@ -304,7 +302,7 @@ def tauint(nt,ts,xhat = None):
 
 
 def tauintj(nt,nbins,ts,xhat = None):
-    """Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
+    """ Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
 
     INPUT:
           nt--The largest nt at which you think your estimate for tau_int could lie.
@@ -314,7 +312,7 @@ def tauintj(nt,nbins,ts,xhat = None):
         xhat--True mean of time series (if you know it).
 
     OUTPUT:
-      acintj--2D list indexed by time, then bin number acintj[it][ibin]"""
+      acintj--2D list indexed by time, then bin number acintj[it][ibin] """
     ndat=len(ts)
     # The time series ought to have more than one element.
     if ndat<2:
@@ -358,7 +356,7 @@ def tauintj(nt,nbins,ts,xhat = None):
 
 
 def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
-    """Given a time series, return estimates for the integrated autocorrelation time and its error.
+    """ Given a time series, return estimates for the integrated autocorrelation time and its error.
 
     INPUT:
          tpickMax--The largest nt at which you think your estimate for tau_int could lie.
@@ -370,7 +368,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
           tau_int--Estimate for integrated autocorrelation time.
          tau_inte--Its (jackknife) error bar.
       tau_intbias--Its bias.
-           itpick--The Monte Carlo separation at which this method found its estimate for tau_int."""
+           itpick--The Monte Carlo separation at which this method found its estimate for tau_int. """
 
     acoutfile=open(acoutfileName,'w')
 

@@ -37,8 +37,7 @@ def getColorGradient(NUM_COLORS=None):
 
 
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
-colors   = colors_1
-#colors   = getColorGradient(14)
+colors   = getColorGradient(14)
 
 
 markers_1 = ['o', 'v', 'D', 's', 'p', '^', 'h', 'd', 'x', '+', '*']
