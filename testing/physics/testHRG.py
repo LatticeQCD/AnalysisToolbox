@@ -109,7 +109,7 @@ print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 #       We allow a 30% error tolerance, because for higher temperatures, m/T becomes smaller, making the truncated
 #       series less exact. These checks tend to be rather slow, so we parallelize them in a rather naive way.
 #
-def exactHRGTest(case): # TODO: load the charm and test NC
+def exactHRGTest(case): # TODO: The integration doesn't seem to be reliable yet...
 
     refT = np.linspace(40, 170, 10)
 
@@ -136,13 +136,15 @@ def exactHRGTest(case): # TODO: load the charm and test NC
     elif case == 5:
         testNX  = pdghrg.gen_chi(refT,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=0,muQ_div_T=0.2,muS_div_T=0,muC_div_T=0)
         exactNX = QMhrgexact.number_density(refT,charge='Q',muB_div_T=0,muQ_div_T=0.2,muS_div_T=0,muC_div_T=0)
-        print_results(res_true=exactNX, res=testNX, prec=2e-1, text="exact NQ")
+        print_results(res_true=exactNX, res=testNX, prec=1e-1, text="exact NQ")
 
     elif case == 6:
         tests_div_T3  = pdghrg.S_div_T3(refT,muB_div_T=1,muQ_div_T=0.2,muS_div_T=0.1,muC_div_T=0)
         exacts_div_T3 = QMhrgexact.S_div_T3(refT,muB_div_T=1,muQ_div_T=0.2,muS_div_T=0.1,muC_div_T=0)
         print_results(res_true=exacts_div_T3, res=tests_div_T3, prec=2e-1, text="exact S")
 
+    else:
+        pass
 
 parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],8)
 

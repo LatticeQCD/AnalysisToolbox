@@ -34,6 +34,7 @@ cd ..
 
 
 cd math
+runTestRoutine testMath.py
 runTestRoutine testDeriv.py
 runTestRoutine testInt.py
 runTestRoutine testPolynomial.py

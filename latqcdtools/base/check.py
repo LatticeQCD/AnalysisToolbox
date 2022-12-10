@@ -18,7 +18,7 @@ class InvalidValueError(Exception): pass
 
 
 def err_handler(err, flag):
-    if flag == 1:
+    if flag == 9:
         raise DivideByZeroError(err)
     elif flag == 2:
         raise OverflowError
@@ -54,10 +54,16 @@ def rel_checkArrayScalar(arr, scal, prec = 1e-6, abs_prec = 1e-14):
     return np.isclose(arr, comparisonArray, prec, abs_prec)
 
 
-def print_results(res, res_true, res_err = None, res_err_true = None, text = "", prec = 1e-10):
+def print_results(res, res_true, res_err = None, res_err_true = None, text = "", prec = 1e-10, abs_prec = None):
     """ Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
-        if you like.) Carries out with precision prec. """
+        if you like.) Carries out with precision prec. Use abs_prec for comparisons with zero. """
     test = True
+    compareZero = False
+
+    if abs_prec is not None:
+        compareZero = True
+    else:
+        abs_prec = 1e-14
 
     res = envector(res)
     res_true = envector(res_true)
@@ -67,15 +73,21 @@ def print_results(res, res_true, res_err = None, res_err_true = None, text = "",
         res_err_true = envector(res_err_true)
 
     for i in range(len(res)):
-        if not rel_check(res[i], res_true[i], prec):
+        if not rel_check(res[i], res_true[i], prec, abs_prec):
             test = False
             print("res[" + str(i) + "] = " + str(res[i]) + " != res_true[" + str(i) + "] = " + str(res_true[i]))
         if res_err is not None and res_err_true is not None:
-            if not rel_check(res_err[i], res_err_true[i], prec):
+            if not rel_check(res_err[i], res_err_true[i], prec, abs_prec):
                 test = False
                 print("res_err[" + str(i) + "] = " + str(res_err[i]) + " != res_err_true[" + str(i) + "] = " + str(res_err_true[i]))
 
     if test:
-        logger.TBPass(text,'(prec = %.2e)' % prec)
+        if compareZero:
+            logger.TBPass(text,'(abs_prec = %.2e)' % abs_prec)
+        else:
+            logger.TBPass(text,'(prec = %.2e)' % prec)
     else:
-        logger.TBFail(text,'(prec = %.2e)' % prec)
+        if compareZero:
+            logger.TBFail(text, '(abs_prec = %.2e)' % abs_prec)
+        else:
+            logger.TBFail(text, '(prec = %.2e)' % prec)

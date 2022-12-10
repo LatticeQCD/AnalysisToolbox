@@ -44,6 +44,7 @@ def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
 
 
 def getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None):
+    """ Simple wrapper for LSQUnivariateSpline that takes care of knots automatically. """
     if type(num_knots) is not int:
         logger.TBError("Please specify an integer number of knots.")
     nknots = num_knots
@@ -69,3 +70,13 @@ def getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None):
     logger.debug("Knots are:",knots)
     spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
     return spline
+
+
+def getSplineErr(xdata, xspline, ydata, ydatae, num_knots, order=3, rand=False, fixedKnots=None):
+    """ Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. """
+    spline_lower = getSpline(xdata[1:], ydata[1:] - ydatae[1:], num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots)(xspline)
+    spline_upper = getSpline(xdata[1:], ydata[1:] + ydatae[1:], num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots)(xspline)
+    spline_center = getSpline(xdata[1:], ydata[1:], num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots)(xspline)
+    spline_err = ((spline_upper - spline_center) + (spline_center - spline_lower)) / 2
+    return spline_center, spline_err
+
