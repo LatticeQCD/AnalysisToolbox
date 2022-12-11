@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-r=0.5 #nQ/nB
+r=0.4 #nQ/nB
 filepath="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
 
 
@@ -13,7 +13,7 @@ NTASKS=25
 
 if [ ${runMode} -eq 0 ]; then
 
-  temps=($(seq 10 165))
+  temps=($(seq 42 165))
 
   task() {
     python3 main_HRG_LCP.py --r $r --hadron_file ${filepath} --models QM --T $1

@@ -109,8 +109,8 @@ for model in models:
 
         muQhi, muShi = muQh[i-1], muSh[i-1]
         try:
-            muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi), careful=True, tol=1e-9)
-        except: 
+            muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi), tol=1e-9)
+        except:
             logger.warn("No algorithm converged--giving up at muB=",muB[i])
             break
 
@@ -118,7 +118,7 @@ for model in models:
         NB = QMhrg.gen_chi(t[i], B_order=1, muB_div_T=muBh[i], muQ_div_T=muQhi, muS_div_T=muShi)
         NQ = QMhrg.gen_chi(t[i], Q_order=1, muB_div_T=muBh[i], muQ_div_T=muQhi, muS_div_T=muShi)
         if not rel_check(NQ/NB,r,prec=1e-6):
-            logger.warn('Solver discrepancy! NQ/NB, r = %.8e %.8e %.8e' % (t[i],NQ/NB,r))
+            logger.warn('Solver discrepancy! T, NQ/NB, r = %.8e %.8e %.8e' % (t[i],NQ/NB,r))
 
         muQh.append(muQhi)
         muSh.append(muShi)
