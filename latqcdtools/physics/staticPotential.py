@@ -53,9 +53,9 @@ def impdist(Ns,r2max):
 
     # This part must be placed outside the jit, since numba doesn't know what do with sys.exit.
     if not Ns > 0:
-        logger.TBError("impdist--Need Ns>0")
+        logger.TBError("Need Ns>0")
     if r2max > (Ns / 2) ** 2:
-        logger.TBError("impdist--r2max is too large.")
+        logger.TBError("r2max is too large.")
 
     @jit(nopython=True)
     def compiledImpDist():

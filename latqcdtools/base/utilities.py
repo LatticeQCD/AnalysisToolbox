@@ -1,14 +1,38 @@
 #
 # utilities.py
 #
-# D. Clarke
+# D. Clarke, L. Altenkort
 #
 # Some utilities that you might use in any program.
 #
 from subprocess import run, PIPE
-import time
 import numpy as np
+import concurrent.futures, time, re
 import latqcdtools.base.logger as logger
+
+
+def unvector(obj):
+    """ Change obj to a scalar if it's an array-like object of length 1. Otherwise don't do anything. """
+    try:
+        N = len(obj)
+    except TypeError:
+        return obj
+    if N > 1:
+        return obj
+    else:
+        return obj[0]
+
+
+def envector(*args):
+    """ Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., using np.vectorize. """
+    result = ()
+    for obj in args:
+        try:
+            obj[0]
+        except (TypeError,IndexError):
+            obj = np.array([obj])
+        result += (obj,)
+    return unvector(result)
 
 
 def getArgs(parser):
@@ -20,7 +44,7 @@ def getArgs(parser):
 
 
 def printArg(message,param):
-    """ Some arguments are None by default, and you only want to print the if they are set. """
+    """ Some arguments are None by default, and you only want to print them if they are set. """
     if param is not None:
         print(message,param)
 
@@ -28,19 +52,22 @@ def printArg(message,param):
 def printDict(dic):
     """ Prints key, value pairs line by line. """
     if not isinstance(dic,dict):
-        logger.TBError("printDict should take a dictionary as argument.")
+        logger.TBError('Expected type', dict, 'but received', type(dic))
     for key in dic:
         print(key,dic[key])
 
 
-def printClean(*args):
+def printClean(*args,label=None):
     data = ()
     form = ''
+    if label is not None:
+        form += '%14s: '
+        data += (label,)
     for col in args:
         if isinstance(col,complex):
             data += (col.real,)
             data += (col.imag,)
-            form += '(%.8e  %8e)  '
+            form += '(%.8e  %.8e)  '
         else:
             data += (col,)
             form += '%.8e  '
@@ -64,12 +91,6 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-#
-# A case where he fails:
-# ['thermalTable_mu0.0357', 'thermalTable_mu0.0952', 'thermalTable_mu0.1309', 'thermalTable_mu0.0833',
-#  'thermalTable_mu0.0595', 'thermalTable_mu0.0119', 'thermalTable_mu0.0', 'thermalTable_mu0.0714',
-#  'thermalTable_mu0.0476', 'thermalTable_mu0.1071', 'thermalTable_mu0.119', 'thermalTable_mu0.0238']
-#
 def naturalSort(l):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
@@ -106,3 +127,41 @@ class timer:
     def resetTimer(self):
         self._tstart = time.time()
         self._tend   = self._tstart
+
+
+class ComputationClass:
+
+    """ A class to parallelize functions. To be used with parallel_function_eval for convenience. """
+
+    def __init__(self, function, input_array, nproc, *add_param):
+        self._nproc = nproc  # number of processes
+        self._input_array = input_array
+        self._function = function
+
+        # additional arguments for actual_computation
+        self._add_param = add_param
+
+        # compute the result when class is initialized
+        self._result = self.parallelization_wrapper()
+
+    def parallelization_wrapper(self):
+        results = []
+        with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
+            for result in executor.map(self.pass_argument_wrapper, self._input_array):
+                results.append(list(envector(result)))
+        results = list(map(list, zip(*results)))  # "transpose" the list to allow for multiple return values like a normal function.
+        return results
+
+    def pass_argument_wrapper(self, single_input):
+        return self._function(single_input, *self._add_param)
+
+    def getResult(self):
+        return self._result
+
+
+def parallel_function_eval(function, input_array, nproc, *add_param):
+    """ Paralellize the callable function over the array input_array with nproc processors. add_param gives additional
+        arguments to the function. """
+    computer = ComputationClass(function, input_array, nproc, *add_param)
+    return computer.getResult()
+

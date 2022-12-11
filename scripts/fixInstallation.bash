@@ -9,4 +9,4 @@
 # fix these problems. 
 #
 
-pip install --upgrade --force-reinstall -r ../requirements.txt
+pip3 install --upgrade --force-reinstall -r ../requirements.txt

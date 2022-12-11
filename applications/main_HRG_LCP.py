@@ -13,6 +13,10 @@ from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.math.optimize import persistentSolve
+from latqcdtools.base.check import rel_check
+
+
+logger.set_log_level('INFO')
 
 
 parser = argparse.ArgumentParser(description='Script to determine muB, muQ and muS along the strangeness neutral trajectory',allow_abbrev=False)
@@ -101,12 +105,21 @@ for model in models:
 
     for i in range(1,len(muBh)):
 
+        logger.details('muB/T = %8.e',muBh[i])
+
         muQhi, muShi = muQh[i-1], muSh[i-1]
         try:
             muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi), careful=True, tol=1e-9)
         except: 
             logger.warn("No algorithm converged--giving up at muB=",muB[i])
             break
+
+        # A quick check that the solver worked correctly.
+        NB = QMhrg.gen_chi(t[i], B_order=1, muB_div_T=muBh[i], muQ_div_T=muQhi, muS_div_T=muShi)
+        NQ = QMhrg.gen_chi(t[i], Q_order=1, muB_div_T=muBh[i], muQ_div_T=muQhi, muS_div_T=muShi)
+        if not rel_check(NQ/NB,r,prec=1e-6):
+            logger.warn('Solver discrepancy! NQ/NB, r = %.8e %.8e %.8e' % (t[i],NQ/NB,r))
+
         muQh.append(muQhi)
         muSh.append(muShi)
         tfinal.append(t[i])

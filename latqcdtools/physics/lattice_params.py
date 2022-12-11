@@ -7,7 +7,7 @@
 #
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.unitConversions import MeVinv_to_fm, fm_to_MeVinv
+from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv
 from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
 
 
@@ -26,22 +26,25 @@ class latticeParams:
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
-    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
         self.fK = fk_phys(scaleYear,"MeV")
         if isinstance(coupling, str):
-            self.beta  = int(coupling)/1000
+            self.beta  = int(coupling)/10**(len(coupling)-1)
             self.cbeta = coupling
         else:
             self.beta  = coupling
             self.cbeta = str(int(coupling*1000))
         self.cm1   = mass1
         self.cm2   = mass2
+        self.cm3   = mass3
         self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
         self.scale = scaleType
         self.Nf    = Nf
         if Nf=='21':
+            if mass3 is not None:
+                logger.TBError('Nf=2+1 expects only 2 mass parameters.')
             self.cml  = mass1
             self.cms  = mass2
             self.ml   = massStringToFloat(mass1)
@@ -50,7 +53,20 @@ class latticeParams:
             self.cpre = None
             self.m    = None
             self.pre  = None
-        else:
+        elif Nf == '211':
+            self.cml = mass1
+            self.cms = mass2
+            self.cmc = mass3
+            self.ml = massStringToFloat(mass1)
+            self.ms = massStringToFloat(mass2)
+            self.mc = massStringToFloat(mass3)
+            self.cm = None
+            self.cpre = None
+            self.m = None
+            self.pre = None
+        elif Nf=='3':
+            if mass3 is not None:
+                logger.TBError('Nf=3 expects only 2 mass parameters.')
             self.cml  = None
             self.cms  = None
             self.ml   = None
@@ -62,7 +78,7 @@ class latticeParams:
         if (self.ml is not None) and (self.ms is not None):
             self.msml=int(round(self.ms/self.ml))
         if (self.beta<1.) or (10.<self.beta):
-            logger.TBError("Invalid beta.")
+            logger.TBError("Invalid beta =",self.beta)
         if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
             logger.TBError("Unknown reference scale",scaleType)
 
@@ -109,4 +125,6 @@ class latticeParams:
             print(" ms/ml = ",self.msml)
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
+        if self.Ns is not None:
+            print("    L  = ",round(fm_to_MeVinv(self.Ns*self.geta()),4), "1/[MeV]")
         print("  beta = ",self.beta,"\n")

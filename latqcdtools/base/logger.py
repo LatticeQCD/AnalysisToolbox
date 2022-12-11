@@ -5,13 +5,13 @@
 # 
 # Methods for logging and output.
 # 
-import sys
+import sys, inspect
 from colorama import Fore
 
 
 class bcolors:
 
-    """ Colors for logging messages """
+    """ Colors for logging messages. """
 
     def __init__(self):
         pass
@@ -33,6 +33,15 @@ log_levels = {
         'NONE' : 6
         }
 
+
+def getCallerName(frame):
+    """ Gets the name of the function that calls the present function. """
+    currframe = inspect.currentframe()
+    callframe = inspect.getouterframes(currframe, 2)
+    # The way the frame works: Each nested function is labelled by the first index. 0 is the current function, i.e.
+    # getCallerName. 1 is the function that called this function, and so on. Second index = 3 retrieves the name.
+    callerName = str(callframe[frame][3])
+    return callerName
 
 # ----------------------------------------------------------------------------------------------- DEPENDENT ON LOG LEVEL
 
@@ -68,10 +77,11 @@ def info(*args):
         args = [str(s) for s in args]
         print('  INFO: '+(' '.join(args)))
 
-def warn(*args):
+def warn(*args,frame=2):
     if current_level <= 5:
         args = [str(s) for s in args]
-        print(bcolors.WARNING+'  WARNING: '+(' '.join(args))+bcolors.ENDC)
+        callerName = getCallerName(frame)
+        print(bcolors.WARNING+'  WARNING: '+callerName+'--'+(' '.join(args))+bcolors.ENDC)
 
 
 # --------------------------------------------------------------------------------------------- INDEPENDENT OF LOG LEVEL
@@ -81,9 +91,10 @@ def TBFail(*args):
     args = [str(s) for s in args]
     print(bcolors.FAIL+'  FAIL: '+(' '.join(args))+bcolors.ENDC)
 
-def TBError(*args):
+def TBError(*args,frame=2):
     args = [str(s) for s in args]
-    print(bcolors.FAIL+'  ERROR: '+(' '.join(args))+bcolors.ENDC)
+    callerName = getCallerName(frame)
+    print(bcolors.FAIL+'  ERROR: '+callerName+'--'+(' '.join(args))+bcolors.ENDC)
     sys.exit(-1)
 
 def TBPass(*args):

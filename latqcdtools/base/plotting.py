@@ -6,11 +6,13 @@
 # Collection of convenience tools for plotting using matplotlib.
 #
 
+import itertools, warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
-import itertools
 import latqcdtools.base.logger as logger
+warnings.filterwarnings("ignore", category=UserWarning)
+
 
 # TODO: put in some docstrings for stuff that doesn't have it yet.
 #       finally check all the gcas, they may not be needed anymore. also you need to like make sure that all the
@@ -35,7 +37,6 @@ def getColorGradient(NUM_COLORS=None):
 
 
 colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
-#colors   = colors_1
 colors   = getColorGradient(14)
 
 
@@ -62,19 +63,17 @@ default_params = {
     'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 3.5,           # Size of the symbols.
     'font_size': 14,             # Default font size for text.
-    'font_weight' : 'normal',    # Default style of font ('normal', 'bold', 'heavy', 'light')
+    'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
-    'xscale': 1.0,               # Scale data in xdata by this factor.
-    'yscale': 1.0,               # Scale data in ydata by this factor.
-    'ticksintoplot' : True,      # Put ticks into plotting area.
-    'surroundWithTicks' : True,  # Put ticks also on top and right.
+    'ticksintoplot': True,       # Put ticks into plotting area.
+    'surroundWithTicks': True,   # Put ticks also on top and right.
     'labelsintoplot': True,      # Put xlabel and ylabel into plotting area.
     'xlabelpos': None,           # If labelsintplot=True, shift the position (x,y) of the x-label, expressed as percent.
     'ylabelpos': None,
     'alpha_dots': None,          # Transperancy for different dots
     'alpha_lines': 1,            # Transperancy for different lines
     'alpha_fill_edge': 0,        # Transperancy for edges of error bands
-    'alpha_label': 1,            # Transperancy for labels
+    'alpha_label': 0,            # Transperancy for labels
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 0.5,           # Linewidth of the error bars of caps af error bars
@@ -92,7 +91,7 @@ default_params = {
     'legend_col_spacing': None,  # Spacing between columns in the legend.
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
     'legend_title': None,        # Title of the legend.
-    'alpha_legend': 0,           # Transperancy for the legend
+    'alpha_legend': 1,           # Transperancy for the legend
 
     # Options for plotting files and functions.
     'xcol': None,        # Column for the xdata when plotting a file.
@@ -102,15 +101,19 @@ default_params = {
     'style': "dots",     # Style when plotting a file.
     'npoints': 1000,     # Number of points for function plotting
 
-    # Adjust aspects of the plot's axes
+    # Adjust special aspects of the plot's axes
     'xtick_freq': None,
     'ytick_freq': None,
-    'xtick_every_n' : 2,   # If xtick_freq or ytick_freq is not None, label every nth tick.
-    'ytick_every_n' : 2,
+    'xtick_every_n': 2,    # If xtick_freq or ytick_freq is not None, label every nth tick.
+    'ytick_every_n': 2,
     'xmin': None,          # Does not directly change x-range
     'xmax': None,
     'ymin': None,          # Does not directly change y-range
     'ymax': None,
+    'xscale': 1.0,         # Scale data in xdata by this factor.
+    'yscale': 1.0,
+    'xlogscale': False,    # Should we use a log scale for the x-axis?
+    'ylogscale': False,
 }
 
 
@@ -135,9 +138,10 @@ def latexify(bold=False):
 
 def clearPlot():
     """ Clears plot object and legend handles. Useful if you want to do multiple plots in the same script. """
+    global initialize
+    initialize = True
     plt.clf()
     clear_legend_labels()
-
 
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
@@ -352,8 +356,20 @@ def set_params(**params):
     if params['title'] is not None:
         plt.title(params['title'])
 
+    if params['xlogscale'] and params['xtick_freq'] is not None:
+        logger.warn("xtick_freq assumes no log scale.")
+
+    if params['ylogscale'] and params['ytick_freq'] is not None:
+        logger.warn("ytick_freq assumes no log scale.")
+
+    if params['xlogscale']:
+        ax.set_xscale('log')
+
+    if params['ylogscale']:
+        ax.set_yscale('log')
+
     if params['ticksintoplot'] is not None:
-        ax.tick_params(direction='in')
+        ax.tick_params(which='both',direction='in')
 
     if params['surroundWithTicks']:
         ax.tick_params(top=True,right=True)
@@ -393,7 +409,7 @@ def set_params(**params):
 
 def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), **params):
     fill_param_dict(params)
-    data = np.loadtxt(filename, dtype = np.str).transpose()
+    data = np.loadtxt(filename,unpack=True)
     if xcol is not None:
         xdata = np.array(data[xcol - 1], dtype = float)
     else:
@@ -582,9 +598,9 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 
     if (yedata is None) and (xedata is None):
-        logger.TBError("Please pass plot_fill some error bars.")
+        logger.TBError("Please pass some error bars.")
     if (yedata is not None) and (xedata is not None):
-        logger.TBError("Please pass plot_fill either x-error or y-error, not both.")
+        logger.TBError("Please pass either x-error or y-error, not both.")
 
     fill_param_dict(params)
     optional = add_optional(params)

@@ -7,19 +7,20 @@
 #
 
 import numpy as np
-from latqcdtools.physics.HRG import HRG,EV_HRG
+import matplotlib.pyplot as plt
+from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
 from latqcdtools.math.num_deriv import diff_deriv
+from latqcdtools.base.utilities import timer, parallel_function_eval
 
 
-import matplotlib.pyplot as plt
+times = timer()
 
 
 EPSILON = 1e-6
 SHOW_PLOTS = False # In case you want a visual to see how comparisons with older results look.
-
 
 if SHOW_PLOTS:
     latexify()
@@ -39,27 +40,22 @@ def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
 
 
 # QM and PDG HRG files
-hadrons,M,Q,B,S,_,g = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
-                                 usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
-                                        dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
+hadrons ,M ,Q ,B ,S ,_ ,g ,w  = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
+                                           usecols=(0,1,2,3,4,5,6,7),dtype="U11,f8,i8,i8,i8,i8,i8,i8")
+hadrons1,M1,Q1,B1,S1,C1,g1,w1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
+                                           dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
-
-# Spin statistics. w= fermi(-1)/bose(1) statistics. (If baryon number is 1, you have three spin-1/2 constituents, which
-# allows only half-integer baryon spins.
-w  = np.array([1 if ba==0 else -1 for ba in B])
-w1 = np.array([1 if ba==0 else -1 for ba in B1])
 
 QMhrg      = HRG(M,g,w,B,S,Q)
 pdghrg     = HRG(M1,g1,w1,B1,S1,Q1)
 evhrg      = EV_HRG(M,g,w,B,S,Q)
 evpdghrg   = EV_HRG(M1,g1,w1,B1,S1,Q1)
-
+QMhrgexact = HRGexact(M,g,w,B,S,Q)
 
 #
 # Test: Calculate chi^200_BQS with b=1 and mu/T=1. Compare against trusted control result.
 #
-b        = 1
+b = 1
 
 chi_QM  = QMhrg.gen_chi(T , B_order=2, Q_order=0, S_order=0, muB_div_T=1)
 chi_pdg = pdghrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, muB_div_T=1)
@@ -98,41 +94,70 @@ comparisonPlot(3*pdghrg.S_div_T3(T,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_div_
 
 
 refT, ref3CV_div_T3 = np.loadtxt("HRGcontrol/2014_CV_div_T3.d",unpack=True)
-testCV_div_T3       = pdghrg.CV_div_T3(refT,0,0,0)
+testCV_div_T3       = pdghrg.CV_div_T3_mu0(refT)
 print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 check")
-comparisonPlot(pdghrg.CV_div_T3(T,0,0,0),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
+comparisonPlot(pdghrg.CV_div_T3_mu0(T),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
 refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
-cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3(refT,0,0,0)
+cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3_mu0(refT)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
+
 #
-# Test: Calculate chi^1001_BQSC at muB/T=0. Update and uncomment this when the particle list is finalized.
+# Test: Compare the results from the Taylor series of Bessel functions to the results from the numerical integration.
+#       We allow a 30% error tolerance, because for higher temperatures, m/T becomes smaller, making the truncated
+#       series less exact. These checks tend to be rather slow, so we parallelize them in a rather naive way.
+#
+def exactHRGTest(case): # TODO: The integration doesn't seem to be reliable yet...
+
+    refT = np.linspace(40, 170, 10)
+
+    if case == 1:
+        testp_div_T4  = pdghrg.P_div_T4(refT,0,0,0)
+        exactp_div_T4 = QMhrgexact.P_div_T4(refT,0,0,0)
+        print_results(res_true=exactp_div_T4, res=testp_div_T4, prec=1e-1, text="exact p/T^4 check")
+
+    elif case == 2:
+        testE_div_T4  = pdghrg.E_div_T4(refT,0,0,0)
+        exactE_div_T4 = QMhrgexact.E_div_T4(refT,0,0,0)
+        print_results(res_true=exactE_div_T4, res=testE_div_T4, prec=2e-1, text="exact e/T^4 check")
+
+    elif case == 3:
+        testNX  = pdghrg.gen_chi(refT,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
+        exactNX = QMhrgexact.number_density(refT,charge='B',muB_div_T=1,muQ_div_T=0,muS_div_T=0,muC_div_T=0)
+        print_results(res_true=exactNX, res=testNX, prec=3e-1, text="exact NB")
+
+    elif case == 4:
+        testNX  = pdghrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=0,muB_div_T=0,muQ_div_T=0,muS_div_T=0.1,muC_div_T=0)
+        exactNX = QMhrgexact.number_density(refT,charge='S',muB_div_T=0,muQ_div_T=0,muS_div_T=0.1,muC_div_T=0)
+        print_results(res_true=exactNX, res=testNX, prec=3e-1, text="exact NS")
+
+    elif case == 5:
+        testNX  = pdghrg.gen_chi(refT,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=0,muQ_div_T=0.2,muS_div_T=0,muC_div_T=0)
+        exactNX = QMhrgexact.number_density(refT,charge='Q',muB_div_T=0,muQ_div_T=0.2,muS_div_T=0,muC_div_T=0)
+        print_results(res_true=exactNX, res=testNX, prec=1e-1, text="exact NQ")
+
+    elif case == 6:
+        tests_div_T3  = pdghrg.S_div_T3(refT,muB_div_T=1,muQ_div_T=0.2,muS_div_T=0.1,muC_div_T=0)
+        exacts_div_T3 = QMhrgexact.S_div_T3(refT,muB_div_T=1,muQ_div_T=0.2,muS_div_T=0.1,muC_div_T=0)
+        print_results(res_true=exacts_div_T3, res=tests_div_T3, prec=2e-1, text="exact S")
+
+    else:
+        pass
+
+parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],8)
+
+#
+# Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
+#       here is even higher. But I expect only to get the right ballpark, since we are not using the same states.
 #
 
 data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
                   usecols=(1,2,3,4,5,6),dtype="f8,i8,i8,i8,i8,i8")
 
-#M, Q, B, S, C, g = data[0], data[1], data[2], data[3], data[4], data[5]
-#w = np.array([1 if ba==0 else -1 for ba in B])
-#
-#QMhrg   = HRG(M,g,w,B,S,Q,C)
-#chi_QM  = QMhrg.gen_chi(T , B_order=1, Q_order=0, S_order=0, C_order=1, muB_div_T=muB)
-#chi_pdg = pdghrg.gen_chi(T, B_order=1, Q_order=0, S_order=0, C_order=1, muB_div_T=muB)
-#
-#refT, refPDG, refQM = np.loadtxt("HRGcontrol/chiBQSC_1001_muB0.00_QMHRG2020_BI_charm.control",unpack=True)
-#print_results(chi_pdg, refPDG, prec=EPSILON, text="chiBQSC1001 PDG check")
-#print_results(chi_QM , refQM , prec=EPSILON, text="chiBQSC1001 QM check")
-
-
-#
-# Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
-#       here is even higher. But I expect only to get the right ballpark, since again we are not using the same states.
-#
-
 # First exclude all states that have C = 0.
-openCharmStates = excludeAtCol(data,4,0)
+openCharmStates = excludeAtCol(np.array(data),4,0)
 
 # Mesons are those states with B = 0. (Fig. 1 in paper.)
 openCharmMesons = restrictAtCol(openCharmStates,2,0)
@@ -158,7 +183,7 @@ comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Bc.d","2014 
 refT, _, _, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/OUT_5.0.DAT140_2022_hidden_charm_pressure",unpack=True)
 refT *= 1000 # He gives his temperatures in [GeV]
 baryonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
-print_results(baryonP_div_T4, refBaryonP_div_T4, prec=1e-3, text="2022 Frithjof code open charm")
+print_results(baryonP_div_T4, refBaryonP_div_T4, prec=1e-3, text="2022 F. Karsch code open charm")
 
 
 # Finally we check one of the derivatives. (Fig. 4 in paper.)
@@ -173,7 +198,7 @@ RSC13     = -chiBSC112/(chiSC13 - chiBSC112)
 print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
 
 #
-# Test: Compare numerical derivatives against analytic derivatives.
+# Test: Compare numerical derivatives against analytic derivatives. TODO: implement more of these, esp at finite mu
 #
 T   = np.linspace(100,150,101)
 def Ehat(t):
@@ -198,4 +223,7 @@ exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,m
 def Ehat(muh):
     return QMhrg.E_div_T4(T,muB_div_T=muh)
 numerical = diff_deriv(muh,Ehat)
-print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dmuB")
+print_results(exact, numerical, prec=1e-4, text="d(E/T^4)/dmuB")
+
+
+times.printTiming()

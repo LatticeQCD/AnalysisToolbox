@@ -6,16 +6,9 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.unitConversions import fm_to_GeVinv, GeVinv_to_fm, fm_to_MeVinv, MeV_to_fminv
+from latqcdtools.physics.constants import fm_to_GeVinv, GeVinv_to_fm, fm_to_MeVinv, MeV_to_fminv
 from latqcdtools.math.polynomials import Polynomial,Rational
-
-
-def beta_func(beta):
-    """ Asymptotic scaling relation for Nf=3 up to two loops. """
-    nf = 3
-    b0 = (11 - 2 * nf / 3) / (4 * np.pi) ** 2
-    b1 = (102 - 38 * nf / 3) / (4 * np.pi) ** 4
-    return (b0 * 10 / beta) ** (-b1 / (2 * b0 ** 2)) * np.exp(-beta / (20 * b0))
+from latqcdtools.physics.betaFunction import beta_func
 
 
 def MeVtoUnits(value,name,units):
@@ -122,7 +115,7 @@ def fk_phys(year=2019,units="MeV"):
         # Kaon decay constant taken from PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
         fkMeV = 156.1 / np.sqrt(2.)
     else:
-        logger.TBError("Invalid year specification for physical value of fK.")
+        logger.TBError("Invalid year specification.")
     return MeVtoUnits(fkMeV,"fK",units)
 
 
@@ -163,7 +156,7 @@ def a_div_r1(beta, year, suppress_warnings=False):
         d2 = 4281.0
 
     else:
-        logger.TBError("No fit parameters for ", str(year))
+        logger.TBError("No fit parameters for year", str(year))
     return allton_type_ansatz(beta, c0, c2, d2)
 
 
@@ -284,7 +277,7 @@ def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
         # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
         LMS, LMSerr = 339, 12
     else:
-        logger.TBError("Invalid year specification for physical value of lambda-MSbar.")
+        logger.TBError("Invalid year specification.")
     if returnErr:
         return MeVtoUnits(LMS,"lambda-MSbar",units), MeVtoUnits(LMSerr,"lambda-MSbarerr",units)
     else:

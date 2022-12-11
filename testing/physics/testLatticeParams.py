@@ -7,7 +7,8 @@
 #
 
 from latqcdtools.physics.lattice_params import latticeParams
-from latqcdtools.physics.HotQCD import HotQCDParams
+from latqcdtools.interfaces.HotQCD import HotQCDParams
+from latqcdtools.interfaces.MILC import MILCParams
 from latqcdtools.base.check import print_results
 
 import params
@@ -22,7 +23,11 @@ del lp
 
 lp = HotQCDParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms, Nf='3')
 lp.paramSummary()
-print(lp.getcparams())
+print('HotQCD:',lp.getcparams())
+del lp
+
+lp = MILCParams(params.Ns, params.Nt, 6.500, params.cml, params.cms, '411', Nf='211')
+print('MILC:',lp.getcparams())
 del lp
 
 import params_zeroTemp

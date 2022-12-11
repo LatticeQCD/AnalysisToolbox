@@ -25,6 +25,8 @@ runTestRoutine "testReadWrite.py --type str"
 diff test.d control.d
 runTestRoutine "testReadWrite.py --type list"
 diff test.d control.d
+runTestRoutine testUtilities.py
+runTestRoutine testPrintErrorBars.py
 cd ..
 
 
@@ -32,7 +34,9 @@ cd ..
 
 
 cd math
+runTestRoutine testMath.py
 runTestRoutine testDeriv.py
+runTestRoutine testInt.py
 runTestRoutine testPolynomial.py
 runTestRoutine testSpline.py
 cd ..
@@ -48,6 +52,7 @@ runTestRoutine testBootstrap.py
 runTestRoutine testJackknife.py 
 runTestRoutine testErrorProp.py
 runTestRoutine testFit.py
+runTestRoutine testWeightedMean.py
 cd ..
 
 

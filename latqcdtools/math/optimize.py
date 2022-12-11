@@ -5,14 +5,20 @@
 # 
 # Some methods related to minimization and Levenberg fits.
 #
-import warnings
-import multiprocessing
+import warnings, multiprocessing
 import scipy.optimize as opt
 from scipy.optimize import newton_krylov, fsolve, root
 import numpy as np
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("error", category=RuntimeWarning)
 from scipy.optimize.nonlin import NoConvergence
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import DivideByZeroError, InvalidValueError
+from latqcdtools.base.utilities import unvector
+
+
+# This is the base list of exceptions. If encountered, we treat the solve as unreliable.
+opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
 
 
 def timeout(func, args=(), kwargs={}, timeout_duration=300):
@@ -37,20 +43,23 @@ def timeout(func, args=(), kwargs={}, timeout_duration=300):
     return return_dict["ret"]
 
 
-def persistentSolve(LHS, guess, tol=1e-8, careful=False, maxiter=200):
+def persistentSolve(LHS, guess, tol=1e-8, maxiter=200):
     """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
-    exceptions = (NoConvergence, FloatingPointError, ValueError)
-    if careful:
-        np.seterr(all='warn')
-        exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning)
     try:
-        solution = newton_krylov(LHS, guess, ftol=tol, inner_maxiter=maxiter)
-    except exceptions:
+        logger.debug("Trying newton_krylov.")
+        solution = unvector( newton_krylov(LHS, guess, f_tol=tol, inner_maxiter=maxiter) )
+    except opt_exceptions:
         try:
-            solution = fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
-        except exceptions:
-            # This should raise NoConvergence if he fails anyway.
-            solution = root(LHS, guess, tol=tol)
+            logger.debug("Trying fsolve.")
+            solution = unvector( fsolve(LHS, guess, xtol=tol, maxfev=maxiter) )
+        except opt_exceptions:
+            try:
+                logger.debug("Trying root.")
+                solution = unvector( root(LHS, guess, tol=tol) )
+                if type(solution).__name__ == "OptimizeResult":
+                    raise RuntimeWarning('RuntimeWarning: Bad progress on root solve.')
+            except Exception as e:
+                raise e
     return solution
 
 
