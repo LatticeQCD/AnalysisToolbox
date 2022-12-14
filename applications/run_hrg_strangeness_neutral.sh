@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-r=0.5 #nQ/nB
+r=0.4 #nQ/nB
 filepath="../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
 
 

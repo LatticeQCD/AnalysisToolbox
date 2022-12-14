@@ -7,7 +7,7 @@
 #
 import math
 import numpy as np
-from latqcdtools.math.math import fallFactorial, underflowPower, underflowExp
+from latqcdtools.math.math import fallFactorial, underflowPower, underflowExp, underflowMultiply
 from latqcdtools.base.check import print_results
 
 
@@ -23,5 +23,6 @@ b = np.array([0,0,-1000,0,0])
 c = np.array([1,1,0,1,1])
 
 
-print_results( underflowPower(a,2), c, text='underflowPower')
-print_results( underflowExp(b)    , c, text='underflowExp')
+print_results( underflowPower(a,2)     , c, text='underflowPower')
+print_results( underflowExp(b)         , c, text='underflowExp')
+print_results( underflowMultiply(a,a,a), c, text='underflowMultiply')

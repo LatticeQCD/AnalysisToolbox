@@ -18,7 +18,7 @@ class InvalidValueError(Exception): pass
 
 
 def err_handler(err, flag):
-    if flag == 9:
+    if flag == 1:
         raise DivideByZeroError(err)
     elif flag == 2:
         raise OverflowError
@@ -26,6 +26,8 @@ def err_handler(err, flag):
         raise UnderflowError(err)
     elif flag == 8:
         raise InvalidValueError(err)
+    elif flag == 9:
+        raise DivideByZeroError(err)
     else:
         logger.TBError('Encountered unknown exception',err,'with flag',flag)
 

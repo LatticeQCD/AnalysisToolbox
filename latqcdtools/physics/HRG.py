@@ -14,7 +14,7 @@ from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
 import latqcdtools.base.logger as logger
 from latqcdtools.math.num_int import integrateFunction
 from latqcdtools.base.check import UnderflowError
-from latqcdtools.math.math import underflowExp, underflowPower
+from latqcdtools.math.math import underflowExp, underflowPower, underflowMultiply
 from latqcdtools.base.utilities import envector, unvector
 warnings.filterwarnings("error")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -119,7 +119,9 @@ class HRG(HRGbase):
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
-                P += self.factor(k, n, T) * underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n) * kn(2, (n * self.Mass[k] / T))
+                P += underflowMultiply( self.factor(k, n, T),
+                                        underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n),
+                                        kn(2, (n * self.Mass[k] / T)) )
         return P
 
 
@@ -128,7 +130,9 @@ class HRG(HRGbase):
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
                 x = self.Mass[k]*n/T
-                eps += self.factor(k,n,T) * underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n) * (kn(2, x) * 3 + kn(1, x) * x)
+                eps += underflowMultiply( self.factor(k,n,T),
+                                          underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n),
+                                          (kn(2, x) * 3 + kn(1, x) * x) )
         return eps
 
 
@@ -174,7 +178,7 @@ class HRG(HRGbase):
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
-                zn_Kn = underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n) * kn(2,(n*self.Mass[k]/T))
+                zn_Kn = underflowMultiply( underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n), kn(2,(n*self.Mass[k]/T)) )
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * self.factor(k, n, T) * zn_Kn
         return chi
 
@@ -188,8 +192,22 @@ class HRG(HRGbase):
                 x    = m*n/T
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
                                               * self.factor(k, n, T) \
-                                              * underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n) \
-                                              * m*n*kn(1,x) / T**2
+                                              * underflowMultiply( underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n),
+                                                                   m*n*kn(1,x) / T**2 )
+        return chi
+
+
+    def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
+        """ d^2(chi_BQSC)/dT^2 """
+        chi = 0.0
+        for k in range(len(self.Mass)):
+            for n in range(1,self.Nmax(k)):
+                m    = self.Mass[k]
+                x    = m*n/T
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                                              * self.factor(k, n, T) \
+                                              * underflowMultiply( underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T), n),
+                                                                   m*n* ( m*n*kn(0,x) - 3*T*kn(1,x) )/T**4 )
         return chi
 
 
@@ -238,6 +256,7 @@ class HRG(HRGbase):
 
 
 # TODO: gen_chi can be implemented using multi-dimensional Leibniz rule
+# TODO: should probably just delete this eventually, it seems to be crap
 class HRGexact(HRGbase):
 
     """ HRG implemented through numerical integration. """

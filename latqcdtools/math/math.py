@@ -6,7 +6,7 @@
 # A handful of wrappers for math functions, as well as functions that I couldn't find in numpy or scipy.
 # 
 import numpy as np
-from scipy.special import kn, poch
+from scipy.special import poch
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import UnderflowError
 
@@ -45,3 +45,17 @@ def underflowPower(x,n):
         return np.power(x,n)
     except UnderflowError:
         return np.power(np.log(np.exp(x)),n)
+
+
+def underflowMultiply(*args):
+    """ Product of arbitrary number of reals/np.arrays that replaces underflows with 0. """
+    prod = 1
+    try:
+        for x in args:
+            prod *= x
+        return prod
+    except UnderflowError:
+        exponent = 0
+        for x in args:
+            exponent += np.log(x)
+        return underflowExp(exponent)

@@ -8,12 +8,13 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
-from latqcdtools.math.num_deriv import diff_deriv
 from latqcdtools.base.utilities import timer, parallel_function_eval
+from latqcdtools.math.num_deriv import diff_deriv
+from latqcdtools.math.spline import getSpline
+from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 
 
 times = timer()
@@ -217,6 +218,9 @@ exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
 numerical = diff_deriv(T,chiBQ11)
 print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
 
+exact     = QMhrg.d2dT2_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
+numerical = diff_deriv(T,getSpline(T,diff_deriv(T,chiBQ11),8))
+print_results(exact, numerical, prec=1e-2, text="d^2(chi11BQ)/dT^2")
 
 muh = np.linspace(0,1.5,len(T))
 exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
