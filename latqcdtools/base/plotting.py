@@ -20,24 +20,11 @@ warnings.filterwarnings("ignore", category=UserWarning)
 #       the changes you made are stable. also expand a bit in the documentation
 
 
-zod        = 1
-initialize = True
+ZOD        = 1
+INITIALIZE = True
 
 
-def getColorGradient(NUM_COLORS=None):
-    """ Return a preceptually uniform set of NUM_COLORS colors. """
-    if NUM_COLORS is None:
-        logger.TBError("Give me a number of colors.")
-    cm = plt.get_cmap('viridis')
-    gradColors=[]
-    for i in range(NUM_COLORS):
-        color = cm(1.*i/NUM_COLORS)
-        gradColors.append(color)
-    return gradColors
-
-
-colors_1 = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
-colors   = getColorGradient(14)
+colors = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
 
 
 markers_1 = ['o', 'v', 'D', 's', 'p', '^', 'h', 'd', 'x', '+', '*']
@@ -78,7 +65,7 @@ default_params = {
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 0.5,           # Linewidth of the error bars of caps af error bars
     'point_fill_color': "None",  # Fill color of points. Set to None (not as string) to have filled symbols
-    'zod': None,                 # Controls where in foreground/background data/lines/bands appear.
+    'ZOD': None,                 # Controls where in foreground/background data/lines/bands appear.
 
     # Options for the legend.
     # legendpos:
@@ -138,21 +125,35 @@ def latexify(bold=False):
 
 def clearPlot():
     """ Clears plot object and legend handles. Useful if you want to do multiple plots in the same script. """
-    global initialize
-    initialize = True
+    global INITIALIZE
+    INITIALIZE = True
     plt.clf()
     clear_legend_labels()
+
+
+def getColorGradient(NUM_COLORS=None):
+    """ Return a preceptually uniform set of NUM_COLORS colors. Use this if you need more than 8 colors! """
+    if NUM_COLORS is None:
+        logger.TBError("Give me a number of colors.")
+    cm = plt.get_cmap('viridis')
+    gradColors=[]
+    for i in range(NUM_COLORS):
+        color = cm(1.*i/NUM_COLORS)
+        gradColors.append(color)
+    return gradColors
+
 
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
 def initializePlt(size,xmin,xmax,ymin,ymax):
-    global initialize
-    if initialize:
+    global INITIALIZE
+    if INITIALIZE:
         logger.debug("Plot initializer called!")
         logger.debug("Many of the plotting functions call set_params, which can reset what you pass as argument.")
         logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
-        initialize = False
+        logger.debug()
+        INITIALIZE = False
         plt.rcParams['figure.autolayout'] = True
         plt.rcParams['axes.titlesize'] = size
         plt.rcParams['savefig.bbox'] = 'standard'
@@ -164,7 +165,6 @@ def initializePlt(size,xmin,xmax,ymin,ymax):
         plt.rcParams['font.weight'] = default_params['font_weight']
         set_xrange(xmin,xmax)
         set_yrange(ymin,ymax)
-
 
 
 def remove_points(data, *args, minval = None, maxval = None):
@@ -326,10 +326,10 @@ def set_params(**params):
     initializePlt(params['font_size'],params['xmin'],params['xmax'],params['ymin'],params['ymax'])
 
     ax  = getAxObject(params)
-    zod = params['zod']
+    ZOD = params['ZOD']
 
-    if zod is None:
-         zod = globals()['zod']
+    if ZOD is None:
+         ZOD = globals()['ZOD']
 
     if params['xlabel'] is not None:
         if params['labelsintoplot'] or params['xlabelpos'] is not None:
@@ -337,7 +337,7 @@ def set_params(**params):
                 params['xlabelpos'] = (0.95,0.027)
             ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black',
                         fontsize=params['font_size'], fontweight=params['font_weight'], ha='right', va='bottom',
-                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=zod)
+                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=ZOD)
         else:
             ax.xlabel(params['xlabel'])
             ax.xaxis.get_label().set_fontsize(params['font_size'])
@@ -348,7 +348,7 @@ def set_params(**params):
                 params['ylabelpos'] = (0.025,0.972)
             ax.annotate(params['ylabel'], xy=params['ylabelpos'], xycoords='axes fraction', color='black',
                         fontsize=params['font_size'], ha='left', va='top', fontweight=params['font_weight'],
-                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=zod)
+                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=ZOD)
         else:
             ax.ylabel(params['ylabel'])
             ax.yaxis.get_label().set_fontsize(params['font_size'])
@@ -379,7 +379,7 @@ def set_params(**params):
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
-        leg.set_zorder(zod)
+        leg.set_zorder(ZOD)
 
     if params['xtick_freq'] is not None:
         start, end = ax.get_xlim()
@@ -463,9 +463,9 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     if yedata is not None:
         yedata=np.copy(yedata*yscale)
 
-    zod = params['zod']
-    if zod is None:
-         zod = globals()['zod']
+    ZOD = params['ZOD']
+    if ZOD is None:
+         ZOD = globals()['ZOD']
 
     marker = params['marker']
     if marker == "iter":
@@ -473,12 +473,12 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     if params['color'] is not None:
         ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
                            linewidth=params['linewidth'], alpha=params['alpha_dots'],  color=params['color'],
-                           zorder=zod, markersize=params['markersize'], capsize=params['capsize'],
+                           zorder=ZOD, markersize=params['markersize'], capsize=params['capsize'],
                            elinewidth=params['elinewidth'], markeredgewidth=params['elinewidth'],
                            markerfacecolor = params['point_fill_color'], **optional)
     else:
         ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=zod,
+                           linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], markerfacecolor = params['point_fill_color'],
                            **optional)
@@ -487,7 +487,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         legend_labels.append(params['label'])
         legend_handles.append(ebar)
 
-    globals()['zod'] += 1
+    globals()['ZOD'] += 1
     set_params(**params)
     
     return ebar
@@ -505,22 +505,22 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
     optional = add_optional(params)
     ax  = getAxObject(params)
 
-    zod = params['zod']
-    if zod is None:
-         zod = globals()['zod']
+    ZOD = params['ZOD']
+    if ZOD is None:
+         ZOD = globals()['ZOD']
 
     if params['color'] is not None:
-        bar = ax.bar(xdata, ydata, color=params['color'], zorder=zod, width=width, align=align, edgecolor=edgecolor,
+        bar = ax.bar(xdata, ydata, color=params['color'], zorder=ZOD, width=width, align=align, edgecolor=edgecolor,
                      linewidth=linewidth, alpha=alpha, **optional)
     else:
-        bar = ax.bar(xdata, ydata, zorder=zod, width=width, align=align, edgecolor=edgecolor,
+        bar = ax.bar(xdata, ydata, zorder=ZOD, width=width, align=align, edgecolor=edgecolor,
                      linewidth=linewidth, alpha=alpha, **optional)
 
     if params['label'] is not None:
         legend_labels.append(params['label'])
         legend_handles.append(bar)
 
-    globals()['zod'] += 1
+    globals()['ZOD'] += 1
     set_params(**params)
 
     return bar
@@ -558,9 +558,9 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     if yedata is not None:
         yedata=np.copy(yedata*yscale)
 
-    zod = params['zod']
-    if zod is None:
-        zod = globals()['zod']
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
 
     marker = params['marker']
     if marker == "iter":
@@ -568,22 +568,22 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 
     if params['color'] is not None:
         ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], color=params['color'], zorder=zod,
+                           linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
                            markerfacecolor = params['point_fill_color'])
     else:
         ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], zorder=zod, markersize=params['markersize'],
+                           linewidth=params['linewidth'], zorder=ZOD, markersize=params['markersize'],
                            capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
                            markerfacecolor = params['point_fill_color'])
 
-    globals()['zod'] += 1
+    globals()['ZOD'] += 1
 
     col = ebar[0].get_color()
 
-    line = ax.errorbar(xdata*xscale, ydata*yscale, color = col, linewidth=params['linewidth'], zorder = zod,
+    line = ax.errorbar(xdata*xscale, ydata*yscale, color = col, linewidth=params['linewidth'], zorder = ZOD,
                        alpha = params["alpha_lines"], **optional)
 
     if params['label'] is not None:
@@ -615,18 +615,18 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     xscale = params['xscale']
     yscale = params['yscale']
     ax  = getAxObject(params)
-    zod    = params['zod']
-    if zod is None:
-         zod = globals()['zod']
+    ZOD    = params['ZOD']
+    if ZOD is None:
+         ZOD = globals()['ZOD']
 
     if params['color'] is not None:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], color=params['color'], zorder=zod,
+        ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
                            alpha = params['alpha_lines'], **optional)
     else:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], zorder=zod,
+        ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], zorder=ZOD,
                            alpha = params['alpha_lines'], **optional)
 
-    globals()['zod'] += 1
+    globals()['ZOD'] += 1
 
     col = ebar[0].get_color()
     if xedata is None:
@@ -661,11 +661,11 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     yscale=params['yscale']
     ax  = getAxObject(params)
 
-    zod = params['zod']
-    if zod is None:
-         zod = globals()['zod']
+    ZOD = params['ZOD']
+    if ZOD is None:
+         ZOD = globals()['ZOD']
 
-    globals()['zod'] += 1
+    globals()['ZOD'] += 1
 
     if params['color'] is None:
         pl = ax.fill_between(xdata*xscale, yscale*low_lim, yscale*up_lim, alpha=params['alpha'], linewidth=0, zorder=1)
@@ -676,14 +676,14 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     col = cl.rgb2hex(pl.get_facecolor()[0])
 
     if params['alpha_lines'] != 0:
-        ax.errorbar(xdata*xscale, yscale*low_lim, color = col, linewidth=params['linewidth'], zorder = zod,
+        ax.errorbar(xdata*xscale, yscale*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
                     alpha = params["alpha_fill_edge"])
-        ax.errorbar(xdata*xscale, yscale*up_lim, color = col, linewidth=params['linewidth'], zorder = zod,
+        ax.errorbar(xdata*xscale, yscale*up_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
                     alpha = params["alpha_fill_edge"])
 
     ebar = None
     if center is not None:
-        ebar = ax.errorbar(xdata*xscale, center*yscale, linewidth=params['linewidth'], color=col, zorder=zod,
+        ebar = ax.errorbar(xdata*xscale, center*yscale, linewidth=params['linewidth'], color=col, zorder=ZOD,
                            alpha = params['alpha_lines'], **optional)
 
     if params['label'] is not None:
