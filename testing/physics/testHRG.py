@@ -198,32 +198,48 @@ chiSC13   = QMhrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=3)
 RSC13     = -chiBSC112/(chiSC13 - chiBSC112)
 print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
 
+
 #
-# Test: Compare numerical derivatives against analytic derivatives. TODO: implement more of these, esp at finite mu
+# Test: Compare numerical derivatives against analytic derivatives.
 #
-T   = np.linspace(100,150,101)
-def Ehat(t):
-    return QMhrg.E_div_T4(t,muB_div_T=1)
-exact     = QMhrg.ddT_E_div_T4(T, muB_div_T=1)
-numerical = diff_deriv(T,Ehat)
-print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dT")
+T   = np.linspace(10,150,140)
 
-exact     = QMhrg.ddT_P_div_T4(T)
-numerical = diff_deriv(T,QMhrg.P_div_T4)
-print_results(exact, numerical, prec=EPSILON, text="d(P/T^4)/dT")
+muBList = [1,3,10,30,100]
+for muBh in muBList:
 
-def chiBQ11(t):
-    return QMhrg.gen_chi(t,B_order=1,Q_order=1,S_order=0,C_order=0)
-exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
-numerical = diff_deriv(T,chiBQ11)
-print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
+    print("\nTESTS AT muB/T = ",muBh,"\n")
 
-exact     = QMhrg.d2dT2_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0)
-numerical = diff_deriv(T,getSpline(T,diff_deriv(T,chiBQ11),8))
-print_results(exact, numerical, prec=1e-2, text="d^2(chi11BQ)/dT^2")
+    left  = QMhrg.P_div_T4(T,muB_div_T=muBh)
+    right = QMhrg.gen_chi(T,B_order=0,Q_order=0,S_order=0,muB_div_T=muBh)
+    print_results(left, right, prec=EPSILON, text="P vs gen_chi")
+
+    def Ehat(t):
+        return QMhrg.E_div_T4(t,muB_div_T=muBh)
+    exact     = QMhrg.ddT_E_div_T4(T, muB_div_T=muBh)
+    numerical = diff_deriv(T,Ehat)
+    print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dT")
+
+    def Phat(t):
+        return QMhrg.P_div_T4(t,muB_div_T=muBh)
+    exact     = QMhrg.ddT_P_div_T4(T, muB_div_T=muBh)
+    numerical = diff_deriv(T,Phat)
+    print_results(exact, numerical, prec=EPSILON, text="d(P/T^4)/dT")
+
+    def chiBQ11(t):
+        return QMhrg.gen_chi(t,B_order=1,Q_order=1,S_order=0,C_order=0,muB_div_T=muBh)
+    exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0,muB_div_T=muBh)
+    numerical = diff_deriv(T,chiBQ11)
+    print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
+
+    def ddT_chiBQ11(t):
+        return QMhrg.ddT_gen_chi(t, B_order=1, Q_order=1, S_order=0, C_order=0, muB_div_T=muBh)
+    exact     = QMhrg.d2dT2_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0, muB_div_T=muBh)
+    numerical = diff_deriv(T,ddT_chiBQ11)
+    print_results(exact, numerical, prec=EPSILON, text="d^2(chi11BQ)/dT^2")
+
 
 muh = np.linspace(0,1.5,len(T))
-exact     = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
+exact = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
 def Ehat(muh):
     return QMhrg.E_div_T4(T,muB_div_T=muh)
 numerical = diff_deriv(muh,Ehat)

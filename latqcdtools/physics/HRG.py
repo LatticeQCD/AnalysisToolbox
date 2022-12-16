@@ -205,9 +205,9 @@ class HRG(HRGbase):
                 m    = self.Mass[k]
                 x    = m*n/T
                 chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
-                                              * self.factor(k, n, T) \
+                                              * self.factor(k, n, T) *m*n \
                                               * underflowMultiply( underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T), n),
-                                                                   m*n* ( m*n*kn(0,x) - 3*T*kn(1,x) )/T**4 )
+                                                                   (m*n*kn(0,x)/T**4 - 3*kn(1,x)/T**3) )
         return chi
 
 
