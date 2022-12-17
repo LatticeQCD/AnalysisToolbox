@@ -13,7 +13,6 @@ from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
 from latqcdtools.base.utilities import timer, parallel_function_eval
 from latqcdtools.math.num_deriv import diff_deriv
-from latqcdtools.math.spline import getSpline
 from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 
 
@@ -147,7 +146,7 @@ def exactHRGTest(case): # TODO: The integration doesn't seem to be reliable yet.
     else:
         pass
 
-parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],8)
+#parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],8)
 
 #
 # Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
@@ -205,45 +204,69 @@ print_results(RSC13, refRSC13, prec=1.4e-1, text="2014 HotQCD RSC13")
 T   = np.linspace(10,150,140)
 
 muBList = [1,3,10,30,100]
+muSList = [1,3,10,30,100]
 for muBh in muBList:
+    for muSh in muBList:
 
-    print("\nTESTS AT muB/T = ",muBh,"\n")
+        print("\nTESTS AT muB/T, muS/T = ",muBh,muSh,"\n")
 
-    left  = QMhrg.P_div_T4(T,muB_div_T=muBh)
-    right = QMhrg.gen_chi(T,B_order=0,Q_order=0,S_order=0,muB_div_T=muBh)
-    print_results(left, right, prec=EPSILON, text="P vs gen_chi")
+        left  = QMhrg.P_div_T4(T,muB_div_T=muBh,muS_div_T=muSh)
+        right = QMhrg.gen_chi(T,B_order=0,Q_order=0,S_order=0,muB_div_T=muBh,muS_div_T=muSh)
+        print_results(left, right, prec=EPSILON, text="P vs gen_chi")
 
-    def Ehat(t):
-        return QMhrg.E_div_T4(t,muB_div_T=muBh)
-    exact     = QMhrg.ddT_E_div_T4(T, muB_div_T=muBh)
-    numerical = diff_deriv(T,Ehat)
-    print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dT")
+        def Ehat(t):
+            return QMhrg.E_div_T4(t,muB_div_T=muBh,muS_div_T=muSh)
+        exact     = QMhrg.ddT_E_div_T4(T, muB_div_T=muBh,muS_div_T=muSh)
+        numerical = diff_deriv(T,Ehat)
+        print_results(exact, numerical, prec=EPSILON, text="d(E/T^4)/dT")
 
-    def Phat(t):
-        return QMhrg.P_div_T4(t,muB_div_T=muBh)
-    exact     = QMhrg.ddT_P_div_T4(T, muB_div_T=muBh)
-    numerical = diff_deriv(T,Phat)
-    print_results(exact, numerical, prec=EPSILON, text="d(P/T^4)/dT")
+        def Phat(t):
+            return QMhrg.P_div_T4(t,muB_div_T=muBh,muS_div_T=muSh)
+        exact     = QMhrg.ddT_P_div_T4(T, muB_div_T=muBh,muS_div_T=muSh)
+        numerical = diff_deriv(T,Phat)
+        print_results(exact, numerical, prec=EPSILON, text="d(P/T^4)/dT")
 
-    def chiBQ11(t):
-        return QMhrg.gen_chi(t,B_order=1,Q_order=1,S_order=0,C_order=0,muB_div_T=muBh)
-    exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0,muB_div_T=muBh)
-    numerical = diff_deriv(T,chiBQ11)
-    print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
+        def Shat(t):
+            return QMhrg.S_div_T3(t,muB_div_T=muBh,muS_div_T=muSh)
+        exact     = QMhrg.ddT_S_div_T3(T, muB_div_T=muBh,muS_div_T=muSh)
+        numerical = diff_deriv(T,Shat)
+        print_results(exact, numerical, prec=3*EPSILON, text="d(S/T^4)/dT")
 
-    def ddT_chiBQ11(t):
-        return QMhrg.ddT_gen_chi(t, B_order=1, Q_order=1, S_order=0, C_order=0, muB_div_T=muBh)
-    exact     = QMhrg.d2dT2_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0, muB_div_T=muBh)
-    numerical = diff_deriv(T,ddT_chiBQ11)
-    print_results(exact, numerical, prec=EPSILON, text="d^2(chi11BQ)/dT^2")
+        def chiBQ11(t):
+            return QMhrg.gen_chi(t,B_order=1,Q_order=1,S_order=0,C_order=0,muB_div_T=muBh,muS_div_T=muSh)
+        exact     = QMhrg.ddT_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0,muB_div_T=muBh,muS_div_T=muSh)
+        numerical = diff_deriv(T,chiBQ11)
+        print_results(exact, numerical, prec=EPSILON, text="d(chi11BQ)/dT")
+
+        def ddT_chiBQ11(t):
+            return QMhrg.ddT_gen_chi(t, B_order=1, Q_order=1, S_order=0, C_order=0, muB_div_T=muBh,muS_div_T=muSh)
+        exact     = QMhrg.d2dT2_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0, muB_div_T=muBh,muS_div_T=muSh)
+        numerical = diff_deriv(T,ddT_chiBQ11)
+        print_results(exact, numerical, prec=EPSILON, text="d^2(chi11BQ)/dT^2")
 
 
 muh = np.linspace(0,1.5,len(T))
+
+
 exact = QMhrg.gen_ddmuh_E_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
 def Ehat(muh):
     return QMhrg.E_div_T4(T,muB_div_T=muh)
 numerical = diff_deriv(muh,Ehat)
 print_results(exact, numerical, prec=1e-4, text="d(E/T^4)/dmuB")
+
+
+exact = QMhrg.gen_ddmuh_P_div_T4(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
+def Phat(muh):
+    return QMhrg.P_div_T4(T,muB_div_T=muh)
+numerical = diff_deriv(muh,Phat)
+print_results(exact, numerical, prec=1e-4, text="d(P/T^4)/dmuB")
+
+
+exact = QMhrg.gen_ddmuh_S_div_T3(T,B_order=1,Q_order=0,S_order=0,C_order=0,muB_div_T=muh)
+def Shat(muh):
+    return QMhrg.S_div_T3(T,muB_div_T=muh)
+numerical = diff_deriv(muh,Shat)
+print_results(exact, numerical, prec=1e-4, text="d(S/T^4)/dmuB")
 
 
 times.printTiming()

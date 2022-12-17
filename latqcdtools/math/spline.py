@@ -66,7 +66,7 @@ def getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None):
             knots.append(knot)
     knots = sorted(knots)
     if knots[0]<xdata[0]:
-        logger.TBError("You can't put a knot to the left of the x-data...")
+        logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
     logger.debug("Knots are:",knots)
     spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
     return spline

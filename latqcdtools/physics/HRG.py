@@ -47,6 +47,16 @@ def LCP_init_NS0(muB):
     return muQ, muS
 
 
+def dmuh(order,muh):
+    """ d^order/dmuh^order derivative of muh """
+    if order == 0:
+        return muh
+    elif order == 1:
+        return 1
+    else:
+        return 0
+
+
 class HRGbase:
 
     """ Hadron resonance gas base class. Here we collect methods and attributes that all HRG-type classes should have
@@ -148,6 +158,7 @@ class HRG(HRGbase):
 
 
     def ddT_E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        """ d(E/T^4)/dT at fixed mu/T """
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
@@ -159,7 +170,7 @@ class HRG(HRGbase):
 
 
     def ddT_P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ (m/T)^2 g eta^(n+1) / 2pi^2 n^2 """
+        """ d(P/T^4)/dT at fixed mu/T """
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
@@ -170,7 +181,19 @@ class HRG(HRGbase):
 
 
     def CV_div_T3_mu0(self, T):
+        """ C_V/T^3 at mu=0. """
         return 4*self.E_div_T4(T, 0, 0, 0, 0) + T*self.ddT_E_div_T4(T, 0, 0, 0, 0)
+
+
+    def ddT_S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        """ d(s/T^3)/dT at fixed mu/T """
+        ddTNB = self.ddT_gen_chi(T,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        ddTNS = self.ddT_gen_chi(T,B_order=0,S_order=1,Q_order=0,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        ddTNQ = self.ddT_gen_chi(T,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        ddTNC = self.ddT_gen_chi(T,B_order=0,S_order=0,Q_order=0,C_order=1,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        muxddTN_div_T = ddTNB*muB_div_T + ddTNS*muS_div_T + ddTNQ*muQ_div_T + ddTNC*muC_div_T
+        return  self.ddT_E_div_T4(T,muB_div_T=muB_div_T,muS_div_T=muS_div_T,muQ_div_T=muQ_div_T,muC_div_T=muC_div_T) \
+                + self.ddT_P_div_T4(T,muB_div_T=muB_div_T,muS_div_T=muS_div_T,muQ_div_T=muQ_div_T,muC_div_T=muC_div_T) - muxddTN_div_T
 
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
@@ -184,7 +207,7 @@ class HRG(HRGbase):
 
 
     def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
-        """ d(chi_BQSC)/dT """
+        """ d(chi_BQSC)/dT at fixed mu/T """
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
@@ -198,7 +221,7 @@ class HRG(HRGbase):
 
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
-        """ d^2(chi_BQSC)/dT^2 """
+        """ d^2(chi_BQSC)/dT^2 at fixed mu/T """
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
@@ -212,7 +235,7 @@ class HRG(HRGbase):
 
 
     def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ Arbitrary muX/T derivatives of E/T^4 """
+        """ Arbitrary mu/T derivatives of E/T^4 at fixed T """
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1,self.Nmax(k)):
@@ -221,6 +244,34 @@ class HRG(HRGbase):
                                               * self.factor(k,n,T) * underflowPower(self.z(k,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T),n) \
                                               * ( kn(2,x)*3 + kn(1,x)*x )
         return eps
+
+
+    def gen_ddmuh_P_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        """ Arbitrary mu/T derivatives of P/T^4 at fixed T """
+        P = 0.
+        for k in range(len(self.Mass)):
+            for n in range(1, self.Nmax(k)):
+                P += underflowMultiply( (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order,
+                                        self.factor(k, n, T),
+                                        underflowPower(self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T),n),
+                                        kn(2, (n * self.Mass[k] / T)) )
+        return P
+
+
+    def gen_ddmuh_S_div_T3(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        """ s = e + p - mu_i n_i """
+        NB     = self.gen_chi(T,B_order=1,S_order=0,Q_order=0,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        NS     = self.gen_chi(T,B_order=0,S_order=1,Q_order=0,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        NQ     = self.gen_chi(T,B_order=0,S_order=0,Q_order=1,C_order=0,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        NC     = self.gen_chi(T,B_order=0,S_order=0,Q_order=0,C_order=1,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        dmuhNB = self.gen_chi(T,B_order=1+B_order,S_order=  S_order,Q_order=  Q_order,C_order=  C_order,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        dmuhNS = self.gen_chi(T,B_order=  B_order,S_order=1+S_order,Q_order=  Q_order,C_order=  C_order,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        dmuhNQ = self.gen_chi(T,B_order=  B_order,S_order=  S_order,Q_order=1+Q_order,C_order=  C_order,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        dmuhNC = self.gen_chi(T,B_order=  B_order,S_order=  S_order,Q_order=  Q_order,C_order=1+C_order,muB_div_T=muB_div_T,muQ_div_T=muQ_div_T,muS_div_T=muS_div_T,muC_div_T=muC_div_T)
+        return   self.gen_ddmuh_E_div_T4(T,B_order=B_order,S_order=S_order,Q_order=Q_order,C_order=C_order,muB_div_T=muB_div_T,muS_div_T=muS_div_T,muQ_div_T=muQ_div_T,muC_div_T=muC_div_T) \
+               + self.gen_ddmuh_P_div_T4(T,B_order=B_order,S_order=S_order,Q_order=Q_order,C_order=C_order,muB_div_T=muB_div_T,muS_div_T=muS_div_T,muQ_div_T=muQ_div_T,muC_div_T=muC_div_T) \
+               - muB_div_T*dmuhNB           - muQ_div_T*dmuhNQ           - muS_div_T*dmuhNS           - muC_div_T*dmuhNC \
+               - NB*dmuh(B_order,muB_div_T) - NQ*dmuh(Q_order,muQ_div_T) - NS*dmuh(S_order,muS_div_T) - NC*dmuh(C_order,muC_div_T)
 
 
     def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
