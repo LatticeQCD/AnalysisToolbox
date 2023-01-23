@@ -430,6 +430,7 @@ class Fitter:
         ntries = 1000
         if self._expand:
             self._numb_params = len(signature(self._func).parameters) - 1 - len(self._args)
+            logger.debug("number params:", self._numb_params)
         else:
             params = []
             for i in range(ntries):
@@ -441,6 +442,7 @@ class Fitter:
                     else:
                         self._func(self._xdata[0], params, *self._args)
                     self._numb_params = i
+                    logger.debug("number params:", self._numb_params)
                     return
                 except Exception as e:
                     if i == ntries:
@@ -449,7 +451,6 @@ class Fitter:
             raise IndexError("Fit function does not work with up to " + str(ntries)
                              + " parameters. Very probably you have an error in your fitting function."
                              + " Enable DEBUG level for more details.")
-
 
 
     def set_func(self, func, grad = None, hess = None, args = None, grad_args = None, hess_args = None):
@@ -1358,7 +1359,7 @@ class Fitter:
             if 'color' not in args_data:
                 args_data['color'] = 'black'
 
-            self.plot_data(norm_func = norm_func, ylog = ylog, zod = 1000, **args_data)
+            self.plot_data(norm_func = norm_func, ylog = ylog, **args_data)
 
             if fix_ylim:
                 ylims = plt.gca().get_ylim()

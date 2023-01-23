@@ -54,6 +54,7 @@ def integrateFunction(func,a,b,method='persistent_quad_trap',stepsize=None):
 
     elif method=='quad':
         def g(A,B):
+            # TODO: put a check to make sure the integration error is small compared to result
             return integrate.quad(func, A, B, limit=1000, epsrel=1e-8)[0]
         h = np.vectorize(g)
         if len(a)==1:

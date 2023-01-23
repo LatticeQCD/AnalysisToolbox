@@ -19,6 +19,8 @@ warnings.filterwarnings("ignore", category=UserWarning)
 #       external methods here have some sort of test; you changed a lot of things and it's important to verify that
 #       the changes you made are stable. also expand a bit in the documentation
 
+# TODO: introduce horizontal line function; otherwise axvspan and so won't know about legend_labels
+#
 
 ZOD        = 1
 INITIALIZE = True
@@ -147,6 +149,8 @@ def getColorGradient(NUM_COLORS=None):
 
 
 def initializePlt(size,xmin,xmax,ymin,ymax):
+    """ Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
+        so that this only gets called once per plot script. """
     global INITIALIZE
     if INITIALIZE:
         logger.debug("Plot initializer called!")

@@ -11,6 +11,8 @@ from latqcdtools.statistics.fitting import Fitter
 
 print("\n Example of a simple 3-parameter quadratic fit.\n")
 
+# Here we define our fit function. we pass it its independent variable followed by the fit parameters we are
+# trying to determine.
 def fit_func(x, params):
     a = params[0]
     b = params[1]
@@ -19,10 +21,15 @@ def fit_func(x, params):
 
 xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,2,3), unpack=True)
 
+# We initialize our Fitter object. If expand = True, fit_func has to look like
+#            func(x, a, b, *args)
+#        otherwise it has to look like
+#            func(x, params, *args).
 fitter = Fitter(fit_func, xdata, ydata, expand = False)
 
-res, res_err, chi_dof, pcov = fitter.try_fit(start_params = [1, 2, 3], algorithms = ['levenberg', 'curve_fit'], 
-                                             ret_pcov = True)
+# Here we try a fit, using the 'curve_fit' method, specifying the starting guesses for the fit parameters. Since
+# ret_pcov = True, we will get back the covariance matrix as well.
+res, res_err, chi_dof, pcov = fitter.try_fit(start_params = [1, 2, 3], algorithms = ['curve_fit'], ret_pcov = True)
 
 print(" a , b,  c : ",res)
 print(" ae, be, ce: ",res_err)
