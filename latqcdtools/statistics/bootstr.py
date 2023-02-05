@@ -9,7 +9,6 @@ import numpy as np
 from numpy.random import randint, normal, multivariate_normal
 from latqcdtools.statistics.statistics import std_mean, std_dev, std_median, dev_by_dist
 import concurrent.futures
-import latqcdtools.base.logger as logger
 
 
 # Recursive function to fill the sample

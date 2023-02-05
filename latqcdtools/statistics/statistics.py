@@ -188,6 +188,8 @@ def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
 
 
 def error_prop(func, means, errors, grad=None, args=()):
+    """ Use error propagation to propagate some errors through function func. The function should have the form
+        func( data ), where data is your array of input variables. """
     errors = np.asarray(errors)
     means  = np.asarray(means)
     mean   = func(means, *args)
@@ -195,7 +197,7 @@ def error_prop(func, means, errors, grad=None, args=()):
         # Test if we got a covariance matrix
         errors[0][0]
     except:
-        errors = np.diag(errors ** 2)
+        errors = np.diag(errors**2)
     if type(mean) is tuple:
         raise TypeError("Tuples are not supported for error propagation")
 

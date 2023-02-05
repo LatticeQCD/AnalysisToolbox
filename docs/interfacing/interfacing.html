@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reference scales &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Interfacing &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -19,13 +19,11 @@
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The zero-temperature static potential" href="staticPotential.html" />
-    <link rel="prev" title="Computing Observables" href="observables.html" /> 
+    <link rel="next" title="Dealing with naming conventions from other collaborations" href="fileNamingConventions.html" />
+    <link rel="prev" title="Hadron resonance gas" href="../physicsAnalysis/HRG.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,16 +45,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Reference scales</a></li>
-<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interfacing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fileNamingConventions.html">Dealing with naming conventions from other collaborations</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
 </ul>
 
@@ -74,10 +67,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
-      <li>Reference scales</li>
+      <li>Interfacing</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/physicsAnalysis/referenceScales.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/interfacing/interfacing.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -85,19 +77,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="reference-scales">
-<h1>Reference scales<a class="headerlink" href="#reference-scales" title="Permalink to this headline"></a></h1>
-<p>In this module you find lots of functions for scale setting, along with references for each scale determination.
-Supported scales include: <span class="math notranslate nohighlight">\(f_K\)</span>, <span class="math notranslate nohighlight">\(t_0\)</span>, <span class="math notranslate nohighlight">\(r_0\)</span>, <span class="math notranslate nohighlight">\(r_1\)</span>, and <span class="math notranslate nohighlight">\(r_1m_s\)</span>.</p>
-<p>You can get scales in lattice units
-through methods like <code class="docutils literal notranslate"><span class="pre">a_times_fk_2014(beta)</span></code>, which takes the bare coupling as input and returns <span class="math notranslate nohighlight">\(a\,f_K(\beta)\)</span>
-using a parameterization from a 2014 paper.
-Please note that the parameterizations for <span class="math notranslate nohighlight">\(a\)</span> have closed intervals <span class="math notranslate nohighlight">\([\beta_{\rm min},~\beta_{\rm max}]\)</span> in
-which they are valid.</p>
-<p>For each scale we have methods giving values in physical units along with the determination year. For example you
-can get the <span class="math notranslate nohighlight">\(r_1\)</span> scale in [fm] using <code class="docutils literal notranslate"><span class="pre">r1_MILC_2010('fm')</span></code> along with its corresponding combined error bar
-<code class="docutils literal notranslate"><span class="pre">r1err_MILC_2010('fm')</span></code>.</p>
-<p>Have a look at this module to see what other methods are available.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="interfacing">
+<h1>Interfacing<a class="headerlink" href="#interfacing" title="Permalink to this headline"></a></h1>
+<p>Here are some more detailed articles:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fileNamingConventions.html">Dealing with naming conventions from other collaborations</a></li>
+</ul>
+</div>
 </section>
 
 

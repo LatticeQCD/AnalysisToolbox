@@ -108,6 +108,8 @@ def writeTable(filename,*args,**kwargs):
         else:
             data += (col,)
             form += '%.8e  '
-    np.savetxt(filename,np.transpose(data),fmt=form,header=head)
+
+
+    np.savetxt( filename, np.transpose(data), fmt=form, header=head )
 
 

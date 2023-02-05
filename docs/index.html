@@ -45,6 +45,7 @@
 <li class="toctree-l1"><a class="reference internal" href="base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfacing/interfacing.html">Interfacing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="applications/applications.html">Applications</a></li>
 </ul>
 
@@ -74,13 +75,40 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="analysistoolbox">
 <h1>AnalysisToolbox<a class="headerlink" href="#analysistoolbox" title="Permalink to this headline"></a></h1>
-<p>The AnalysisToolbox is a collection of Python tools written for statistical data analysis, with an aim specifically toward lattice field theory. It contains a variety of useful methods for these purposes, for example general jackknife and bootstrap routines that can calculate error bars of arbitrary functions of data. It also includes modules tailored for lattice field theory, such as methods for scale setting and universal quantities from commonly examined 3-d universality classes.</p>
+<p>The AnalysisToolbox is a collection of Python tools written for statistical data analysis, with an aim specifically
+toward lattice field theory. It contains a variety of useful methods for these purposes, for example general jackknife
+and bootstrap routines that can calculate error bars of arbitrary functions of data. It also includes modules tailored
+for lattice field theory, such as methods for scale setting and universal quantities from commonly examined
+3-d universality classes.</p>
+<p>The source code is inside the <code class="docutils literal notranslate"><span class="pre">latqcdtools</span></code> folder. It is organized into several subfolders:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">applications</span></code>: Ready-to-use applications.
+Discussed in more detail in the <a class="reference internal" href="applications/applications.html"><span class="doc std std-doc">applications</span></a> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base</span></code>: Fundamental classes and methods that are common to many other methods.
+Discussed in more detail in the <a class="reference internal" href="base/base.html"><span class="doc std std-doc">base</span></a> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">experimental</span></code>: Modules that were used in an older version of the AnalysisToolbox that are not yet part of this new
+version. These may be incorporated eventually.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interfaces</span></code>: Allows interfacing with other entities present in lattice QCD. This includes things like
+collaboration-specific naming conventions for configurations, as well as output into niche data file formats.
+The interfacing methods may require installation of packages that are not needed for the rest of the toolbox.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">math</span></code>: Modules and classes for doing general math without any physics context.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">physics</span></code>: Physics-focused modules and classes. This includes the HRG classes, as well as classes that make analyzing
+lattice quantities like the Polyakov loop easier. Discussed in more detail in
+Discussed in more detail in the <a class="reference internal" href="dataAnalysis/dataAnalysis.html"><span class="doc std std-doc">dataAnalysis</span></a> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">statistics</span></code>: Modules and classes for doing general statistics without any physics context.
+Discussed in more detail in the <a class="reference internal" href="physicsAnalysis/physicsAnalysis.html"><span class="doc std std-doc">physicsAnalysis</span></a> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts</span></code>: Bash scripts that help write comments for AnalysisToolbox code, or to help repair it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">testing</span></code>: Python scripts that test the AnalysisToolbox methods.</p></li>
+</ul>
+<p>We would love it if you are interested in helping develop the AnalysisToolbox! Please have a look to the
+<a class="reference internal" href="contributions/contributions.html"><span class="doc std std-doc">contributions</span></a> section to learn how to do this in a nice way.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfacing/interfacing.html">Interfacing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="applications/applications.html">Applications</a></li>
 </ul>
 </div>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bootstrap &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Bootstrapping routines &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -50,10 +50,11 @@
 <li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve Fitting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jackknife.html">Jackknife</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Bootstrap</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Bootstrapping routines</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
 </ul>
 
@@ -72,7 +73,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="dataAnalysis.html">Data Analysis Modules</a> &raquo;</li>
-      <li>Bootstrap</li>
+      <li>Bootstrapping routines</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/dataAnalysis/bootstrap.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -82,18 +83,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="bootstrap">
-<h1>Bootstrap<a class="headerlink" href="#bootstrap" title="Permalink to this headline"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="bootstrapping-routines">
+<h1>Bootstrapping routines<a class="headerlink" href="#bootstrapping-routines" title="Permalink to this headline"></a></h1>
+<p>Given a set of <span class="math notranslate nohighlight">\(N\)</span> measurements <span class="math notranslate nohighlight">\(\{x_1,...,x_N\}\)</span>, the statistical bootstrap allows one to estimate the error in
+some function of the measurements <span class="math notranslate nohighlight">\(f\)</span>. Sometimes this is advantageous to error propagation, since analytically
+calculating the error in the original function is too complicated to do analytically. In the context of lattice
+field theory, this happens e.g. when fitting correlators and trying to get the error from a fit parameter.
+In the Analysistoolbox, these methods can be found in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.bootstr</span>
+</pre></div>
+</div>
+<section id="ordinary-bootstrap">
+<h2>Ordinary bootstrap<a class="headerlink" href="#ordinary-bootstrap" title="Permalink to this headline"></a></h2>
+<p>Starting with our original measurements, one builds a bootstrap sample by drawing <span class="math notranslate nohighlight">\(N\)</span> data from the original sample
+with replacement. One repeats this process <span class="math notranslate nohighlight">\(K\)</span> times. From bootstrap sample <span class="math notranslate nohighlight">\(i\)</span>, one gets an estimate of the mean
+of interest. Averaging the <span class="math notranslate nohighlight">\(K\)</span> means from each bootstrap sample gives a bootstrap mean.
+The method</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">same_rand_for_obs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">parallelize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>accomplishes this for an arbitrary <span class="math notranslate nohighlight">\(f\)</span> <code class="docutils literal notranslate"><span class="pre">func</span></code>. By default the bootstrap samples are created with 32 threads in parallel,
+controlled with the <code class="docutils literal notranslate"><span class="pre">parallelize</span></code> and <code class="docutils literal notranslate"><span class="pre">nproc</span></code> options.</p>
+</section>
+<section id="gaussian-bootstrap">
+<h2>Gaussian bootstrap<a class="headerlink" href="#gaussian-bootstrap" title="Permalink to this headline"></a></h2>
 <p>Quantities such as masses are extracted by fitting some function plotted
 against an independent variable, here called <span class="math notranslate nohighlight">\(r\)</span>. Sometimes it is not clear what a good fitting range
 for <span class="math notranslate nohighlight">\(r\)</span> is. For example Debye masses can be extracted by fitting to an exponential that is only valid
 for long distances, and there can be ambiguity in selecting an <span class="math notranslate nohighlight">\(r_{\text{min}}\)</span>. In such a case, one
 may obtain multiple estimates <span class="math notranslate nohighlight">\(m(r_{\text{min}})\)</span> for different <span class="math notranslate nohighlight">\(r_{\text{min}}\)</span> that are all similar
-to each other and highly correlated. The Gaussian bootstrap, found in</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.bootstr</span>
-</pre></div>
-</div>
-<p>allows one to obtain an average and error bar under these circumstances. The method</p>
+to each other and highly correlated. The Gaussian bootstrap
+allows one to obtain an average and error bar under these circumstances. The method</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">avg</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">bootstr_add_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">nstat</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">plot_hist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -103,6 +124,7 @@ from a Gaussian distribution with mean <code class="docutils literal notranslate
 these <code class="docutils literal notranslate"><span class="pre">ndata*nstat</span></code> resampled measurements into a new distribution. The average <code class="docutils literal notranslate"><span class="pre">avg</span></code> is taken as
 the median of this new distribution, and the error <code class="docutils literal notranslate"><span class="pre">err</span></code> is the distance between the median and
 the 68% quantile.</p>
+</section>
 </section>
 
 
