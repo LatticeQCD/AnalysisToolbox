@@ -39,6 +39,7 @@ runTestRoutine testDeriv.py
 runTestRoutine testInt.py
 runTestRoutine testPolynomial.py
 runTestRoutine testSpline.py
+runTestRoutine testSU3.py
 cd ..
 
 
