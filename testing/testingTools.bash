@@ -18,9 +18,11 @@ function runTestRoutine {
     routine="$1"
     outFile='OUT_'${routine%%.py*}
     errFile='runERR_'${routine%%.py*}
+    echo
     echo '  '${routine}
     if [ ${showOutputOnScreen} ]; then
         echo "  -------------------------"
+        echo
         python3 ./${routine}
     else
         python3 ./${routine} >> ${outFile} 2>> ${errFile}

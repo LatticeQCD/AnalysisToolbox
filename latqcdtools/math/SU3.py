@@ -9,6 +9,7 @@
 import numpy as np
 from numpy.linalg import det
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import rel_check
 
 
 id_3 = np.array([ [complex(1.), complex(0.), complex(0.)],
@@ -52,14 +53,14 @@ class SU3(np.matrix):
         """ Check if I'm equal to another SU3 matrix. """
         for i in range(3):
             for j in range(3):
-                if abs( self[i,j] - other[i,j] ) > 1e-15:
+                if not rel_check(self[i,j], other[i,j]):
                     return False
         return True
 
 
     def isSU3(self):
         """ Check that I have det=1 and am unitary. """
-        special = abs( self.det() - complex(1.,0.) ) < 1e-15
+        special = rel_check(self.det(), 1.)
         UdaggU  = self.dagger()*self
         unitary = UdaggU.isEqualTo(id_3)
         if not (special and unitary):

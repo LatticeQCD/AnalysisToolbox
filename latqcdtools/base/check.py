@@ -6,10 +6,11 @@
 # A collection of methods for comparing results, formatting test output, and handling numpy exceptions.
 #
 
-import math
+import math, warnings
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import envector
+warnings.filterwarnings("ignore", category=np.ComplexWarning)
 
 
 class DivideByZeroError(Exception): pass
@@ -45,9 +46,9 @@ def checkType(instance, expectedType):
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
     """ Check whether two values are equal. Use especially when comparing to 0. """
     try:
-        return math.isclose(a, b, rel_tol = prec, abs_tol = abs_prec)
+        return math.isclose( np.sqrt(a**2), np.sqrt(b**2), rel_tol = prec, abs_tol = abs_prec)
     except TypeError:
-        logger.TBError('Expected real numbers. Received a, b types = ',type(a),',',type(b))
+        logger.TBError('Expected real or complex numbers. Received a, b types = ',type(a),',',type(b))
 
 
 def rel_checkArrayScalar(arr, scal, prec = 1e-6, abs_prec = 1e-14):

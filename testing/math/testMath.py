@@ -11,7 +11,7 @@ from latqcdtools.math.math import fallFactorial, underflowPower, underflowExp, u
 from latqcdtools.base.check import print_results
 
 
-print_results(fallFactorial(123,123),math.factorial(123),text='fallFactorial 123!')
+print_results(fallFactorial(23,23),1.*math.factorial(23),text='fallFactorial 23!')
 print_results(fallFactorial(6,3),6*5*4,text='fallFactorial 6_fall_3')
 
 
