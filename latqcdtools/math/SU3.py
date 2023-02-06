@@ -39,6 +39,11 @@ class SU3(np.matrix):
         return obj
 
 
+    def trace(self, **kwargs):
+        """ Trace. In np.matrix, this returns a 2d object for some reason. """
+        return complex( super().trace(**kwargs) )
+
+
     def dagger(self):
         """ Conjugate transpose. """
         return self.getH()

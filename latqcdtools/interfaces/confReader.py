@@ -4,34 +4,19 @@
 # D. Clarke
 # 
 # Tools for reading and writing gauge configurations in Python. To interact with binary configurations, we can use
-# Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html.
+# Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html. Inspired by
+# QCDUtils https://github.com/mdipierro/qcdutils.
 #
-# Read/write code was created by closely following QCDUtils https://github.com/mdipierro/qcdutils as an example.
-# Unfortunately that was written for Python 2. Anyway it is useful to have such methods incorporated into the toolbox.
-#
-
 
 import struct
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import rel_check
+from latqcdtools.math.SU3 import SU3
 
 
-def reconstruct(link):
-    """ Reconstruct a unitary 3x3 matrix from its first two rows. """
-    (a1re, a1im, a2re, a2im, a3re, a3im, b1re, b1im, b2re, b2im, b3re, b3im) = link
-    c1re =   a2re * b3re - a2im * b3im - a3re * b2re + a3im * b2im
-    c1im = -(a2re * b3im + a2im * b3re - a3re * b2im - a3im * b2re)
-    c2re =   a3re * b1re - a3im * b1im - a1re * b3re + a1im * b3im
-    c2im = -(a3re * b1im + a3im * b1re - a1re * b3im - a1im * b3re)
-    c3re =   a1re * b2re - a1im * b2im - a2re * b1re + a2im * b1im
-    c3im = -(a1re * b2im + a1im * b2re - a2re * b1im - a2im * b1re)
-    return (a1re, a1im, a2re, a2im, a3re, a3im,
-            b1re, b1im, b2re, b2im, b3re, b3im,
-            c1re, c1im, c2re, c2im, c3re, c3im)
+class confReader:
 
-
-class gaugeField:
-
-    """ Base class for gauge fields. """
+    """ Base class for reading configurations. """
 
     def __init__(self, Ns=None, Nt=None):
         self.Ns = Ns           # Spatial extension
@@ -40,20 +25,34 @@ class gaugeField:
         self.endianness = '>'  # Big endian by default
         self.precision = 'f'   # Single precision by default
         self.file = None       # File handle
+        self.linkTrace = None  # <tr U>
+        self.rows = 3          # Number of saved rows
+        logger.warn('This feature is still under construction.')
         if (Ns is None) or (Nt is None):
            logger.TBError("gaugeField objects must be initialized with a size!")
         logger.info("Initialized "+str(self.Ns)+"^3x"+str(self.Nt)+" gaugeField object.")
 
+
     def unpack(self, data):
-        """ Unpack a string of bytes from file into a list of float/double. """
+        """ Unpack a string of bytes from file into an SU3 object. """
         numData = int(len(data)/self.getByteSize())
-        items = struct.unpack(self.endianness + str(numData) + self.precision, data)
-        return items
+        linkTuple = struct.unpack( self.endianness + str(numData) + self.precision, data )
+        link = SU3()
+        i = 0
+        for j in range(self.rows):
+            for k in range(3):
+                link[j,k] = complex( linkTuple[i], linkTuple[i+1] )
+                i += 2
+        if self.rows==2:
+            link.su3unitarize()
+        return link
+
 
     def pack(self, items):
-        """ Packs a list of float/double into a string of bytes. """
+        """ Packs an SU3 object into a string of bytes. """
         numData = len(items)
         return struct.pack(self.endianness + str(numData) + self.precision, *items)
+
 
     def getByteSize(self):
         if self.precision == 'f':
@@ -64,12 +63,13 @@ class gaugeField:
             logger.TBError('Unknown precision',self.precision,'(expected f or d)')
 
 
-class fieldNERSC(gaugeField):
+
+class NERSCReader(confReader):
 
     def readHeader(self,fileName):
 
-        """ Extract offset, endianness, and precision from the header. Do a few checks to make sure the read-in went
-        smoothly. This method assumes all NERSC headers have the minimal entries
+        """ Extract metadata from the header. Do a few checks to make sure the read-in went smoothly. This method
+        assumes all NERSC headers have the minimal entries
             BEGIN_HEADER
             DATATYPE
             DIMENSION_1
@@ -127,32 +127,27 @@ class fieldNERSC(gaugeField):
         else:
             logger.TBError('Unrecognized precision.')
 
+        # Extract number of rows
+        if metaData[b'DATATYPE'].endswith(b'3x3'):
+            self.rows = 3
+        else:
+            self.rows = 2
 
-#    template<class f1, class f2>
-#    void to_buf(f1 *buf, const GSU3<f2> &U) const {
-#        int i = 0;
-#        for (int j = 0; j < rows; j++)
-#            for (int k = 0; k < 3; k++) {
-#                buf[i++] = U(j, k).cREAL;
-#                buf[i++] = U(j, k).cIMAG;
-#            }
-#    }
+        # Extract trace of average link
+        try:
+            self.linkTrace = float( metaData[b'LINK_TRACE'] )
+        except:
+            pass
 
-#    template<class floatT>
-#    void put(GSU3<floatT> U) {
-#        char *start = &buf[index];
-#        if (float_size == 4)
-#            to_buf((float *) start, U);
-#        else if (float_size == 8)
-#            to_buf((double *) start, U);
-#        index += su3_size;
-#    }
 
     def readConf(self,fileName):
+        """ Read in the configuration. Check what you find in the binary against its metadata. """
 
         self.readHeader(fileName)
 
-        bytesPerLink = 6*2*self.getByteSize()
+        bytesPerLink = 3*self.rows*2*self.getByteSize()
+
+        linkTrace = 0.
 
         for t in range(self.Nt):
             for z in range(self.Ns):
@@ -163,11 +158,13 @@ class fieldNERSC(gaugeField):
                             self.file.seek(byteIndex)
                             data = self.file.read(bytesPerLink)
                             link = self.unpack(data)
+                            link.su3unitarize()
+                            linkTrace += link.trace().real
 
-                        exit()
-#        if self.reunitarize:
-#            new_items = []
-#            for i in range(4):
-#                new_items += reunitarize(items[i*12:(i+1)*12])
-#            items = new_items
-#        return items
+        linkTrace /= (self.Ns**3*self.Nt*4*3)
+
+        # Check <tr U>
+        if self.linkTrace is not None:
+            if not rel_check(linkTrace, self.linkTrace):
+                logger.TBError('<tr U> is wrong. Compare:',linkTrace,'with',self.linkTrace)
+            logger.details('Configuration',fileName,'has correct <tr U>.')
