@@ -137,9 +137,9 @@ def a_div_r1(beta, year, suppress_warnings=False):
         beta_range = [7.030, 8.4]
         if not suppress_warnings:
             print_out_of_beta_range_warning(beta, beta_range)
-        c0 = 43.1
-        c2 = 343236.0
-        d2 = 5514.0
+        c0 = 43.12
+        c2 = 347008
+        d2 = 5584
 
     # https://arxiv.org/pdf/1407.6387.pdf
     elif str(year) == "2014":
