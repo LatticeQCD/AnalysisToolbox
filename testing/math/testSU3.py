@@ -6,7 +6,7 @@
 # Test some of the basic methods for SU3 matrices.
 # 
 
-from latqcdtools.math.SU3 import SU3
+from latqcdtools.math.SU3 import SU3, id_3
 import latqcdtools.base.logger as logger
 
 g = SU3()
@@ -28,13 +28,15 @@ if g.trace() != complex(4):
     logger.TBFail('Trace.')
 
 # Making a random matrix
-g.randomize()
+g.setToRandom()
 if not g.isSU3():
     ltest = False
-    print(g)
-    print(g.det())
-    logger.TBFail('Random matrix.')
+    logger.TBFail('Set to random.')
 
+g.setToIdentity()
+if not g.isEqualTo(id_3):
+    ltest = False
+    logger.TBFail('Set to identity.')
 
 if ltest:
     logger.TBPass('SU3 tests passed.')

@@ -110,9 +110,30 @@ class SU3(np.matrix):
                             -( self[0,0].imag*self[1,1].real + self[0,0].real*self[1,1].imag ) + ( self[0,1].imag*self[1,0].real + self[0,1].real*self[1,0].imag ) )
 
 
-    def randomize(self):
+    def setToRandom(self):
         """ Turn into a randomly chosen SU(3) matrix. """
         for i in range(3):
             for j in range(3):
                 self[i,j] = complex( 1 - 2*np.random.random(), 1 - 2*np.random.random() )
         self.su3unitarize()
+
+
+    def setToZero(self):
+        """ Turn into zero matrix. """
+        for i in range(3):
+            for j in range(3):
+                self[i,j] = complex(0)
+
+
+    def setToIdentity(self):
+        """ Turn into identity matrix. """
+        self.setToZero()
+        for i in range(3):
+            self[i,i] = complex(1.)
+
+
+    def setToMatrix(self,other):
+        """ Turn into RHS link. """
+        for i in range(3):
+            for j in range(3):
+                self[i,j] = complex( other[i,j] )

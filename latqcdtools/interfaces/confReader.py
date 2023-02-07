@@ -12,6 +12,7 @@ import struct
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import rel_check
 from latqcdtools.math.SU3 import SU3
+from latqcdtools.physics.gauge import gaugeField
 
 
 class confReader:
@@ -26,6 +27,7 @@ class confReader:
         self.precision = 'f'   # Single precision by default
         self.file = None       # File handle
         self.linkTrace = None  # <tr U>
+        self.plaquette = None  # <tr U^[]>
         self.rows = 3          # Number of saved rows
         logger.warn('This feature is still under construction.')
         if (Ns is None) or (Nt is None):
@@ -139,6 +141,12 @@ class NERSCReader(confReader):
         except:
             pass
 
+        # Extract average plaquette
+        try:
+            self.plaquette = float( metaData[b'PLAQUETTE'] )
+        except:
+            pass
+
 
     def readConf(self,fileName):
         """ Read in the configuration. Check what you find in the binary against its metadata. """
@@ -147,7 +155,7 @@ class NERSCReader(confReader):
 
         bytesPerLink = 3*self.rows*2*self.getByteSize()
 
-        linkTrace = 0.
+        gauge = gaugeField(self.Ns,self.Nt)
 
         for t in range(self.Nt):
             for z in range(self.Ns):
@@ -159,12 +167,18 @@ class NERSCReader(confReader):
                             data = self.file.read(bytesPerLink)
                             link = self.unpack(data)
                             link.su3unitarize()
-                            linkTrace += link.trace().real
-
-        linkTrace /= (self.Ns**3*self.Nt*4*3)
+                            gauge.setLink(link,x,y,z,t,mu)
 
         # Check <tr U>
         if self.linkTrace is not None:
+            linkTrace = gauge.getLinkTrace()
             if not rel_check(linkTrace, self.linkTrace):
                 logger.TBError('<tr U> is wrong. Compare:',linkTrace,'with',self.linkTrace)
             logger.details('Configuration',fileName,'has correct <tr U>.')
+
+        # Check <tr U^[]>
+        if self.plaquette is not None:
+            plaq = gauge.getPlaquette()
+            if not rel_check( plaq, self.plaquette):
+                logger.TBError('<tr U^[]> is wrong. Compare:',plaq,'with',self.plaquette)
+            logger.details('Configuration', fileName, 'has correct <tr U>.')
