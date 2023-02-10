@@ -29,7 +29,6 @@ class confReader:
         self.linkTrace = None  # <tr U>
         self.plaquette = None  # <tr U^[]>
         self.rows = 3          # Number of saved rows
-        logger.warn('This feature is still under construction.')
         if (Ns is None) or (Nt is None):
            logger.TBError("gaugeField objects must be initialized with a size!")
         logger.info("Initialized "+str(self.Ns)+"^3x"+str(self.Nt)+" gaugeField object.")
@@ -182,3 +181,5 @@ class NERSCReader(confReader):
             if not rel_check( plaq, self.plaquette):
                 logger.TBError('<tr U^[]> is wrong. Compare:',plaq,'with',self.plaquette)
             logger.details('Configuration', fileName, 'has correct <tr U>.')
+
+        return gauge

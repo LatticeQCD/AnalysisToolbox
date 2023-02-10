@@ -11,6 +11,9 @@ import latqcdtools.base.logger as logger
 
 reader = NERSCReader(Ns=8, Nt=4)
 
-reader.readConf('nersc.l8t4b3360')
+gauge = reader.readConf('nersc.l8t4b3360')
+
+# Get the link at site (0,0,1,1) pointing in the 0 direction.
+print(gauge.getLink(0,0,1,1,0))
 
 logger.TBPass('All tests passed!')
