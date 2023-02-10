@@ -61,6 +61,7 @@ cd ..
 
 
 cd physics
+runTestRoutine testContExtrap.py
 runTestRoutine testLatticeParams.py
 runTestRoutine testPolyakovTools.py
 runTestRoutine testScales.py
