@@ -145,6 +145,21 @@ class Fitter:
         if len(diff) != 0:
             raise IllegalArgumentError("Illegal argument(s) to fitter", *diff)
 
+        # Some attributes that are set in functions other than __init__.
+        self._xmin        = None
+        self._xmax        = None
+        self._fit_cov     = None
+        self._fit_cor     = None
+        self._fit_weights = None
+        self._numb_params = 0
+        self._numb_data   = None
+        self._fit_inv_cov = None
+        self._fit_inv_cor = None
+        self._grad        = None
+        self._hess        = None
+        self.hess         = None
+        self.grad         = None
+
         # Store data
         self._xdata = np.array(xdata, dtype = float)
         self._ydata = np.array(ydata, dtype = float)
@@ -153,128 +168,6 @@ class Fitter:
         self._fit_xdata = self._xdata
         self._fit_ydata = self._ydata
 
-        self._init_options(kwargs)
-
-        # Initialize func. This is also done in set_func, but we need it before that
-        self._func = func
-
-        # Get number of parameters
-        self._get_numb_params()
-
-        # This variable store the result from the last fit. This is used as start parameters
-        # for the next fit, if no new start parameters are provided
-        self._saved_params = np.ones(self._numb_params)
-        # Current status of the fit errors. Initialize with inf
-        self._saved_errors = np.full(self._numb_params, np.inf)
-        self._saved_pcov = np.full((self._numb_params, self._numb_params), np.inf)
-
-        self.set_func(func, kwargs.get('grad', None), kwargs.get('hess', None))
-
-        # If the derivatives are computed by the minimization algorithms itself, meaning
-        # that the derivatives are applied to the chi_square and not to the fit function,
-        # we have to switch of caching. Otherwise the numerical derivatives will fail as they
-        # work on the cache.
-        if self._derive_chisq:
-            self._no_cache = True
-
-        # Caching variables. In order to boost performance, we cache results.
-        self._cache_array = None
-        self._cache_jac   = None
-        self._cache_hess  = None
-
-        # Variables that hold the parameters that belong to the above caching variables
-        self._cache_p_array = self._numb_params*[None]
-        self._cache_p_jac   = self._numb_params*[None]
-        self._cache_p_hess  = self._numb_params*[None]
-
-        # For constrained fits. If these are used, they are set in general_fit, and then utilized elsewhere.
-        self._priorval   = np.ones(self._numb_params)
-        self._priorsigma = np.ones(self._numb_params)
-
-        # Flag if we perform constraint fits
-        self._checkprior = False
-
-        # It might be necessary to prevent generation of new fit data when doing a fit.
-        # If this variable is set, the fit is performed on the current fit data
-        self._no_new_data = False
-
-        # Check if we have the covariance matrix available and compute weights etc.
-        self._init_edata(edata)
-        self._xmin = None
-        self._xmax = None
-
-        self._cut_eig = kwargs.get('cut_eig', False)
-        self._cut_perc = kwargs.get('cut_perc', 0.0)
-        if self._cut_eig and self._use_corr:
-            raise ValueError("cut_eig and use_corr are in conflict")
-
-
-    def _init_edata(self, edata):
-        """
-        Initialize the arrays that are used for error handling of the fit data:
-        Compute the weights, the covariance matrix and the error arrays.
-
-        Parameters
-        ----------
-        edata: array_like
-            Array of errors or covariance matrix or None
-        """
-        # Check if we have the covariance matrix available and compute weights etc.
-        if edata is not None:
-            edata = np.asarray(edata, dtype = float)
-            try:
-                edata[0][0]
-                self._cov_avail = True
-
-                # Weights of a normal non-correlated fit
-                self._weights = 1 / np.diag(edata)
-
-                # Errors of a normal non-correlated fit
-                self._edata = np.sqrt(np.diag(edata))
-
-                # Initialize fit error data
-                self._fit_edata = self._edata
-
-                # Covariance matrix
-                self._cov = edata
-
-            except (IndexError, TypeError):
-                self._cov_avail = False
-
-                # Covariance matrix is diagonal
-                self._cov = np.diag(np.array(edata)**2)
-
-                # Errors of a normal non-correlated fit
-                self._edata = np.asarray(edata)
-
-                # Initialize fit error data
-                self._fit_edata = self._edata
-
-                # Weights of a normal non-correlated fit
-                self._weights = 1 / self._edata**2
-        else:
-            # Initialize everything to one in case of non-available error information
-            self._cov = np.diag(np.ones(len(self._ydata)))
-            self._cov_avail = False
-            self._edata = None
-            self._weights = np.ones_like(self._ydata)
-
-
-        # Correlation matrix
-        self._cor = norm_cov(self._cov)
-
-        # Initialize if we perform a correlated fit. This can be switched off later on.
-        self._correlated_fit = self._cov_avail
-
-
-    def _init_options(self, kwargs):
-        """
-        Initialize all the options
-        Parameters
-        ----------
-        kwargs: dictionary
-            Dictionary with all options passed to __init__
-        """
         # Parameters defined by the use. See above documentation
         self._no_cache = kwargs.get('no_cache', True)
         self._use_diff = kwargs.get('use_diff', True)
@@ -289,7 +182,6 @@ class Fitter:
         self._use_corr = kwargs.get('use_corr', False)
         self._always_return = kwargs.get('always_return', False)
         self._suppress_warning = kwargs.get('suppress_warning', False)
-
         self._args = kwargs.get('args', ())
         self._grad_args = kwargs.get('grad_args', None)
         if self._grad_args is None:
@@ -317,6 +209,84 @@ class Fitter:
                     "dogleg": 15000,
                     "trust-ncg": 15000
                     }
+
+        # Initialize func. This is also done in set_func, but we need it before that
+        self._func = func
+
+        # Get number of parameters
+        self._get_numb_params()
+
+        # This variable stores the result from the last fit. This is used as start parameters for the next fit, if no
+        # new start parameters are provided
+        self._saved_params = np.ones(self._numb_params)
+
+        # Current status of the fit errors. Initialize with inf
+        self._saved_errors = np.full(self._numb_params, np.inf)
+        self._saved_pcov = np.full((self._numb_params, self._numb_params), np.inf)
+
+        self.set_func(func, kwargs.get('grad', None), kwargs.get('hess', None))
+
+        # If the derivatives are computed by the minimization algorithm itself, meaning that the derivatives are
+        # applied to the chi_square and not to the fit function, we have to switch off caching. Otherwise the numerical
+        # derivatives will fail as they work on the cache.
+        if self._derive_chisq:
+            self._no_cache = True
+
+        # Caching variables. In order to boost performance, we cache results.
+        self._cache_array = None
+        self._cache_jac   = None
+        self._cache_hess  = None
+
+        # Variables that hold the parameters that belong to the above caching variables
+        self._cache_p_array = self._numb_params*[None]
+        self._cache_p_jac   = self._numb_params*[None]
+        self._cache_p_hess  = self._numb_params*[None]
+
+        # For constrained fits. If these are used, they are set in general_fit, and then utilized elsewhere.
+        self._priorval   = np.ones(self._numb_params)
+        self._priorsigma = np.ones(self._numb_params)
+
+        # Flag if we perform constraint fits
+        self._checkprior = False
+
+        # It might be necessary to prevent generation of new fit data when doing a fit.
+        # If this variable is set, the fit is performed on the current fit data
+        self._no_new_data = False
+
+        # Check if we have the covariance matrix available and compute weights etc.
+        if edata is not None:
+            edata = np.asarray(edata, dtype = float)
+            try:
+                edata[0][0]
+                self._cov_avail = True
+                self._weights = 1 / np.diag(edata)    # Weights of a normal non-correlated fit
+                self._edata = np.sqrt(np.diag(edata)) # Errors of a normal non-correlated fit
+                self._fit_edata = self._edata         # Initialize fit error data
+                self._cov = edata                     # Covariance matrix
+
+            except (IndexError, TypeError):
+                self._cov_avail = False
+                self._cov = np.diag(np.array(edata)**2) # Covariance matrix is diagonal
+                self._edata = np.asarray(edata)         # Errors of a normal non-correlated fit
+                self._fit_edata = self._edata           # Initialize fit error data
+                self._weights = 1 / self._edata**2      # Weights of a normal non-correlated fit
+        else:
+            # Initialize everything to one in case of non-available error information
+            self._cov = np.diag(np.ones(len(self._ydata)))
+            self._cov_avail = False
+            self._edata = None
+            self._weights = np.ones_like(self._ydata)
+
+        # Correlation matrix
+        self._cor = norm_cov(self._cov)
+
+        # Initialize if we perform a correlated fit. This can be switched off later on.
+        self._correlated_fit = self._cov_avail
+
+        self._cut_eig = kwargs.get('cut_eig', False)
+        self._cut_perc = kwargs.get('cut_perc', 0.0)
+        if self._cut_eig and self._use_corr:
+            logger.TBError("cut_eig and use_corr are in conflict")
 
 
     def gen_fit_data(self, xmin, xmax, correlated = None, ind = None):
@@ -472,8 +442,8 @@ class Fitter:
         self._grad = grad
         self._hess = hess
 
-        # Later we only access self.func, self.grad, and self.hess. These are wrappers around
-        # the user function or the numerical derivatives. Below choose the right wrappers
+        # Later we only access self.func, self.grad, and self.hess. These are wrappers around the user function or the
+        # numerical derivatives. The code below chooses the right wrappers
 
         if self._hess is None:
             if self._use_diff and not self._derive_chisq:
@@ -715,15 +685,6 @@ class Fitter:
             for i in range(len(self._priorsigma)):
                 res += ((params[i] - self._priorval[i])**2 / self._priorsigma[i]**2)
         return res
-
-    
-    def calc_chisquare_dof(self, params, xmin = -np.inf, xmax = np.inf):
-        """
-        Compute the normalized chisqare, i.e. the chi^2/d.o.f.
-        """
-        self.gen_fit_data(xmin, xmax)
-        dof = len(self._fit_ydata) - len(params)
-        return self.calc_chisquare(params) / dof
 
 
     def _num_func_jacobian(self, params):
@@ -1027,6 +988,8 @@ class Fitter:
         ind: array of bools, optional, default = None
             array of bools that corresponds to the fitting points that should be used. This is useful if you want to
             apply more complex filters than default.
+        ret_pcov : bool, optional. default = False
+            If True, return the covariance matrix of the fit parameters.
 
         Returns
         -------
@@ -1307,8 +1270,6 @@ class Fitter:
             In that case params and params_err also need to be arrays of parameters.
         ylog:
             Use an logarithmic y-scale.
-        size: 2D-tuple
-            Size of the plot.
         **kwargs
             Additional arguments that can be passed to the plotting functions. See plotting.py.
         """

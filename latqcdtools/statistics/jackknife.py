@@ -11,6 +11,7 @@ from latqcdtools.statistics.statistics import std_mean, std_err
 import latqcdtools.base.logger as logger
 import concurrent.futures
 
+
 def pseudo(mean, mean_i, numb_blocks):
     """ Calculate pseudo values of elements of objects that are not tuple. """
     return numb_blocks * mean - (numb_blocks - 1) * mean_i

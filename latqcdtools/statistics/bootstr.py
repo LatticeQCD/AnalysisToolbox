@@ -11,14 +11,14 @@ from latqcdtools.statistics.statistics import std_mean, std_dev, std_median, dev
 import concurrent.futures
 
 
-# Recursive function to fill the sample
 def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for_obs, i, my_seed):
+    """ Recursive function to fill the sample. """
 
     np.random.seed(my_seed+i)
     if axis + 1 == conf_axis:
         numb_observe = len(data)
         if sample_size == 0:
-            sample_sizes = [ len(i) for i in data ]
+            sample_sizes = [ len(j) for j in data ]
         else:
             sample_sizes = [sample_size]*len(data)
 
@@ -32,9 +32,9 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
         return
 
     else:
-        for i in range(len(data)):
+        for j in range(len(data)):
             sample_data.append([])
-            recurs_append(data[i], sample_data[i], axis + 1, conf_axis, sample_size, same_rand_for_obs, my_seed)
+            recurs_append(data[j], sample_data[j], axis + 1, conf_axis, sample_size, same_rand_for_obs, i, my_seed)
 
 
 class nimbleBoot:

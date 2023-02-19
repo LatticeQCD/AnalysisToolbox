@@ -34,11 +34,15 @@ def reduce_tuple(func):
 
 @reduce_tuple
 def std_median(data, axis = 0):
+    """ Compute the median. The default behavior of numpy is to flatten the data, flagged by axis=None. This can be
+    inconvenient, for example in the bootstrap and jackknife routines. """
     return np.median(data, axis)
 
 
 @reduce_tuple
 def std_mean(data, axis = 0):
+    """ Compute the mean. The default behavior of numpy is to flatten the data, flagged by axis=None. This can be
+    inconvenient, for example in the bootstrap and jackknife routines. """
     return np.mean(data, axis)
 
 
