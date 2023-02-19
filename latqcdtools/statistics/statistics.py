@@ -63,29 +63,20 @@ def std_err(data, axis = 0):
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
 
 
-def mean_and_err(data, axis = 0):
-    mean = std_mean(data, axis = axis)
-    error = std_err(data, axis = axis)
-    return mean, error
-
-
-def mean_and_cov(data, axis = 0):
-    mean = std_mean(data, axis = axis)
-    cov = calc_cov(data)
-    return mean, cov
-
-
-def mean_and_std_dev(data, axis=0):
-    mean = std_mean(data, axis = axis)
-    std = std_dev(data, axis = axis)
-    return mean, std
+# TODO: should this be true or false?
+def std_cov(data):
+    """ If data is a table indexed by observable and measurement number, calculate covariance between observables. """
+    data = np.asarray(data)
+    if not data.ndim==2:
+        logger.TBError('Expected 2d table.')
+    return np.cov( data, bias=True )
 
 
 def jack_mean_and_err(data):
     data   = np.asarray(data)
     n      = len(data)
     mean   = np.mean(data)
-    err    = np.sqrt( (n-1)*np.mean((data - mean)**2) )
+    err    = np.sqrt( (n-1)*np.mean((data-mean)**2) )
     return mean, err
 
 
@@ -145,19 +136,6 @@ def unbiased_mean_variance(data, weights):
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
-
-
-def calc_cov(data):
-    """ Calculate covariance matrix of last column in data. """
-    data = np.asarray(data)
-    mean = np.mean(data, axis=0)
-    newshape = np.hstack((data.shape[1:], data.shape[-1]))
-    res = np.zeros(newshape)
-    for l in range(0, len(data)):
-        diff = data[l] - mean
-        tmp = np.einsum('...j,...k->...jk', diff, diff)
-        res += tmp
-    return (1 / (len(data) - 1)) * res
 
 
 def norm_cov(cov):

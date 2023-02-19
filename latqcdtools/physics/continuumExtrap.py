@@ -20,23 +20,33 @@ def powerSeries(x,coeffs):
     return result
 
 
-def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=False,obsName=None):
-    """ Do a continuum limit extrapolation at some order in a^2. """
+def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,
+                       prior_err=None,**kwargs):
+    """ Do a continuum limit extrapolation at some order in a^2. Allows the option for priors in case you want
+        to fit to a higher order series, and you have some idea what the coefficients should be like. """
     if order<1:
         logger.TBError('Please input order > 1.')
+
     coeffs = ()
     for i in range(order+1):
         coeffs += (1.0,)
     a = np.array(a)**2
-    fit = Fitter( powerSeries, a, obs, obs_err, func_sup_numpy=False, expand=False )
-    result, result_err, chidof = fit.do_fit(algorithm = 'curve_fit',start_params=coeffs)
+    fit = Fitter( powerSeries, a, obs, obs_err, norm_err_chi2=False, cut_eig=True, func_sup_numpy=False, expand=False )
+    result, result_err, chidof = fit.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err)
+
     if show_results:
+        print()
         for i in range(len(coeffs)):
-            print('c_'+str(i)+' = '+get_err_str(result[i],result_err[i]))
-        print('chi2/d.o.f. = ',round(chidof,3))
+            if paramLabels is None:
+                print('c_'+str(i)+' = '+get_err_str(result[i],result_err[i]))
+            else:
+                print(paramLabels[i] + ' = ' + get_err_str(result[i], result_err[i]))
+        print('chi2/d.o.f. = ',round(chidof,3),'\n')
+
     if plot_results:
         latexify()
-        fit.plot_fit(xlabel='$a^2$ [fm]',ylabel=obsName)
+        fit.plot_fit(**kwargs)
         plot_dots([0],result[0],result_err[0],color='red')
         plt.show()
+
     return result, result_err, chidof

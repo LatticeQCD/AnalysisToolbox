@@ -52,11 +52,10 @@ def divnp1(a, b, c):
 A, B = (np.array(range(1000)),
         np.array(range(1000, 2000)))
 
-
 def Test_Jackknife():
     REFm = 499.5
     REFe = 95.74271077563381
-    TESTm, TESTe = jackknife(simple_mean, A, numb_blocks=10, conf_axis=1, args=(), cov=False, parallelize=False)
+    TESTm, TESTe = jackknife(simple_mean, A, numb_blocks=10, conf_axis=1, parallelize=False)
     print_results(TESTm, REFm, TESTe, REFe, "single proc simple mean test", EPSILON)
     TESTm, TESTe = jackknife(simple_mean, A, numb_blocks=10, conf_axis=1)
     print_results(TESTm, REFm, TESTe, REFe, "simple mean test", EPSILON)

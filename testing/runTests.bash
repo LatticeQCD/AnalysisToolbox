@@ -47,12 +47,13 @@ cd ..
 
 
 cd statistics
-runTestRoutine testGauDif.py
 runTestRoutine testautocor.py 
 runTestRoutine testBootstrap.py 
-runTestRoutine testJackknife.py 
+runTestRoutine testGauDif.py
 runTestRoutine testErrorProp.py
 runTestRoutine testFit.py
+runTestRoutine testJackknife.py 
+runTestRoutine testStats.py 
 runTestRoutine testWeightedMean.py
 cd ..
 

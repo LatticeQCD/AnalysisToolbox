@@ -72,6 +72,20 @@ way to force better performance; if it were a typical loop it would be slow. If 
 trouble figuring out how to write your function in a way to handle arrays, a good starting point 
 can be to use [np.vectorize](https://numpy.org/doc/stable/reference/generated/numpy.vectorize.html).
 
+The covariance matrix of the fit parameters are computed through error propagation of the covariance matrix
+of the $y$-data. The error is then obtained by
+
+$\sigma = \sqrt{\diag{\text{cov}}}$
+
+In some codes, such as `gnuplot`, it is customary to multiply this error by a further factor $\chi^2/{\rm d.o.f.}$.
+The intuition behind this is that the error will be increased if the fit is poor. This is okay if you would like to be
+somewhat more conservative with your error bar, but it is strictly speaking not necessary. It also makes the error bar
+more difficult to interpret clearly, i.e. if your input data and errors were well estimated, then it's not clear that
+the true fit parameters will fall within one $\sigma$ of the estimators 67% of the time. The default behavior
+is not to include this factor, but in case you would like it in your fits, for example because you are feeling
+conservative, or for comparison with `gnuplot`, you can pass the option
+`norm_err_chi2=True` to your `try_fit` or `do_fit` call.
+
 ## Splines
 
 There are several methods in the toolbox to fit a 1D spline to some `xdata` and `ydata`.

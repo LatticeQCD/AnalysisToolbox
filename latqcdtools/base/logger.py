@@ -43,6 +43,7 @@ def getCallerName(frame):
     callerName = str(callframe[frame][3])
     return callerName
 
+
 # ----------------------------------------------------------------------------------------------- DEPENDENT ON LOG LEVEL
 
 
@@ -57,10 +58,11 @@ def log(level, *args, **kwargs):
     if log_levels[level] >= current_level:
         print(*args, **kwargs)
 
-def debug(*args):
+def debug(*args,frame=2):
     if current_level <= 1:
         args = [str(s) for s in args]
-        print('  DEBUG: '+(' '.join(args)))
+        callerName = getCallerName(frame)
+        print('  DEBUG: '+callerName+'--'+(' '.join(args)))
 
 def details(*args):
     if current_level <= 2:

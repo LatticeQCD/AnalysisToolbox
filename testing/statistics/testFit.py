@@ -14,6 +14,7 @@ import latqcdtools.statistics.statistics as stats
 from latqcdtools.base.readWrite import read_in_pure
 from scipy.optimize import curve_fit
 
+
 def simple(x, a):
     return a * x
 
@@ -61,28 +62,29 @@ res, tmp = curve_fit(fit_func, xdata, ydata, sigma = edata)
 res_err = np.sqrt(np.diag(tmp))
 print_results(res, res_true, res_err, res_err_true, "Curve_fit", prec=EPSILON)
 
+
 res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="BFGS", grad = grad_fit_func,
-                                       func_sup_numpy=False)
+                                 func_sup_numpy=False, norm_err_chi2=True)
 print_results(res, res_true, res_err, res_err_true, "Exact BFGS",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="TNC", grad = grad_fit_func,
-                                       func_sup_numpy=False)
+                                 func_sup_numpy=False, norm_err_chi2=True)
 print_results(res, res_true, res_err, res_err_true, "Exact TNC",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="L-BFGS-B",
-                                       derive_chisq = True, func_sup_numpy=False)
+                                 derive_chisq = True, func_sup_numpy=False, norm_err_chi2=True )
 print_results(res, res_true, res_err, res_err_true,"Numerical L-BFGS-B using built-in derivative",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="SLSQP",
-                                       derive_chisq= True, func_sup_numpy=False)
+                                 derive_chisq= True, func_sup_numpy=False, norm_err_chi2=True )
 print_results(res, res_true, res_err, res_err_true,"Numerical SLSQP using built-in derivative",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="Powell",
-                                       func_sup_numpy=False)
+                                 func_sup_numpy=False, norm_err_chi2=True )
 print_results(res, res_true, res_err, res_err_true, "Powell quadratic ",prec=EPSILON)
 
 
@@ -98,29 +100,32 @@ res_err_true = [5.042611e-08, 8.380914e-05]
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata,[1, 1], grad=grad_one_state, hess=hess_one_state,
-                                       args=(64,), func_sup_numpy=False, algorithm="curve_fit")
+                                 args=(64,), func_sup_numpy=False, norm_err_chi2=True, algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
-                                       args=(64,), use_corr = True, func_sup_numpy=False, algorithm="curve_fit" )
+                                 args=(64,), use_corr = True, norm_err_chi2=True, func_sup_numpy=False,
+                                 algorithm="curve_fit" )
 print_results(res, res_true, res_err, res_err_true,"Exact curve_fit using normalized covariance matrix",prec=EPSILON)
 
 
-res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, np.diag(edata) ** 2, [1, 1], grad=grad_one_state,
-                                       hess=hess_one_state, args=(64,), func_sup_numpy=False, algorithm="curve_fit")
+res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, np.diag(edata)**2, [1, 1], grad=grad_one_state,
+                                 hess=hess_one_state, args=(64,), func_sup_numpy=False, norm_err_chi2=True,
+                                 algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "Diagonal correlation matrix",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = False,
-                                       func_sup_numpy=False, algorithm="curve_fit")
-print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit with difference quotient applied on chisquare",prec=EPSILON)
+                                 func_sup_numpy=False, norm_err_chi2=True, algorithm="curve_fit")
+print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit with difference quotient applied on chisquare"
+              ,prec=EPSILON)
 
 
 # Numerical derivative gives a slightly different result
 res_err_true = [5.0425819803e-08, 8.38114689761e-05]
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = True,
-                                       func_sup_numpy=False, algorithm="curve_fit", )
+                                 func_sup_numpy=False, norm_err_chi2=True, algorithm="curve_fit", )
 print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
 
 
@@ -153,14 +158,15 @@ else:
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
-                                       hess=hess_one_state, args=(64,), func_sup_numpy=False, algorithm="curve_fit")
+                                 hess=hess_one_state, args=(64,), func_sup_numpy=False, norm_err_chi2=True,
+                                 algorithm="curve_fit")
 res_true = [4.988713e-05, 2.950030e-01]
 res_err_true = [1.176005e-06, 5.573209e-04]
 print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data",prec=EPSILON)
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, res_true, args=(64,),
-                                       algorithm = "curve_fit", func_sup_numpy=False)
+                                 algorithm = "curve_fit", norm_err_chi2=True, func_sup_numpy=False)
 print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit for correlated data",prec=EPSILON)
 
 
@@ -170,20 +176,22 @@ print_results(res, res_true, res_err, res_err_true, "As a reference: Direct corr
 
 
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, grad=grad_one_state, hess=hess_one_state,
-                                       args=(64,), use_corr = True, no_cache = True, func_sup_numpy=False,
-                                       algorithm="curve_fit")
-print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data, normalized covariance matrix",prec=EPSILON)
+                                 args=(64,), use_corr = True, no_cache = True, func_sup_numpy=False,
+                                 norm_err_chi2=True, algorithm="curve_fit")
+print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data, normalized covariance matrix",
+              prec=EPSILON)
 
 
 
 
-print("Testing constraint fit...\n")
+print("Testing Bayesian fit...\n")
 
 
-startparam=[5e-05,3e-01]
-sigma=[5e-05,3e-01]
-res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, priorval = startparam, priorsigma = sigma,
-                                       args=(64,), func_sup_numpy = True, algorithm="curve_fit")
+prior        = [5e-05,3e-01]
+prior_err    = [5e-05,3e-01]
+res_err_true = [1.148967933055725e-06, 0.0005445077355994696]
+res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err,
+                                 args=(64,), func_sup_numpy = True, norm_err_chi2=True, algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
 
@@ -205,5 +213,6 @@ def func_2d(x, a):
 
 res_true = [5.102041e-01]
 res_err_true = [1.189990e-01]
-res, res_err, _ = fitting.do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, algorithm="curve_fit" )
+res, res_err, _ = fitting.do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, norm_err_chi2=True,
+                                 algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "2D xdata fit",prec=EPSILON)

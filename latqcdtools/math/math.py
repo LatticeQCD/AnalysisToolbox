@@ -25,6 +25,12 @@ def riseFactorial(n,m):
     return poch(n,m)
 
 
+def logDet(mat):
+    """ Logarithm of determinant. """
+    _, ans = np.linalg.slogdet(mat)
+    return ans
+
+
 # Some methods for dealing with underflow, which is when a number gets so small, it is smaller than the smallest number
 # that Python can represent. If you like, you can suppress underflow errors with these functions.
 
