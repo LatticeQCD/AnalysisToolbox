@@ -21,7 +21,7 @@ def powerSeries(x,coeffs):
 
 
 def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,
-                       prior_err=None,**kwargs):
+                       prior_err=None,error_strat='propagation',**kwargs):
     """ Do a continuum limit extrapolation at some order in a^2. Allows the option for priors in case you want
         to fit to a higher order series, and you have some idea what the coefficients should be like. """
     if order<1:
@@ -31,7 +31,8 @@ def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=Fal
     for i in range(order+1):
         coeffs += (1.0,)
     a = np.array(a)**2
-    fit = Fitter( powerSeries, a, obs, obs_err, norm_err_chi2=False, cut_eig=True, func_sup_numpy=False, expand=False )
+    fit = Fitter( powerSeries, a, obs, obs_err, norm_err_chi2=False, func_sup_numpy=False, expand=False,
+                  error_strat = error_strat)
     result, result_err, chidof = fit.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err)
 
     if show_results:

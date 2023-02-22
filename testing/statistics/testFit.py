@@ -104,12 +104,6 @@ res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata,[1, 1], grad=gra
 print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
 
 
-res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
-                                 args=(64,), use_corr = True, norm_err_chi2=True, func_sup_numpy=False,
-                                 algorithm="curve_fit" )
-print_results(res, res_true, res_err, res_err_true,"Exact curve_fit using normalized covariance matrix",prec=EPSILON)
-
-
 res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, np.diag(edata)**2, [1, 1], grad=grad_one_state,
                                  hess=hess_one_state, args=(64,), func_sup_numpy=False, norm_err_chi2=True,
                                  algorithm="curve_fit")
@@ -175,13 +169,6 @@ res_err = np.sqrt(np.diag(tmp))
 print_results(res, res_true, res_err, res_err_true, "As a reference: Direct correlated curve fit",prec=EPSILON)
 
 
-res, res_err, _ = fitting.do_fit(one_state, xdata, ydata, cov / nconfs, grad=grad_one_state, hess=hess_one_state,
-                                 args=(64,), use_corr = True, no_cache = True, func_sup_numpy=False,
-                                 norm_err_chi2=True, algorithm="curve_fit")
-print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data, normalized covariance matrix",
-              prec=EPSILON)
-
-
 
 
 print("Testing Bayesian fit...\n")
@@ -216,3 +203,10 @@ res_err_true = [1.189990e-01]
 res, res_err, _ = fitting.do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, norm_err_chi2=True,
                                  algorithm="curve_fit")
 print_results(res, res_true, res_err, res_err_true, "2D xdata fit",prec=EPSILON)
+
+
+res_err_true = [0.08414503]
+res, res_err, _ = fitting.do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, norm_err_chi2=True,
+                                 algorithm="curve_fit",error_strat='hessian')
+print_results(res, res_true, res_err, res_err_true, "2D xdata fit with hessian error",prec=EPSILON)
+
