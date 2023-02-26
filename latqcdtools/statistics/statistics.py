@@ -147,7 +147,7 @@ def norm_cov(cov):
     res = np.zeros((len(cov), len(cov[0])))
     for i in range(len(cov)):
         for j in range(len(cov[0])):
-            res[i][j] = cov[i][j] / np.sqrt((cov[j][j] * cov[i][i]))
+            res[i][j] = cov[i][j] / np.sqrt( cov[j][j] * cov[i][i] )
     return np.array(res)
 
 
@@ -450,7 +450,6 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
 
     elif len(args_err) > 0:
         if grad is None:
-            logger.warn("Used numerical derivative!")
             wrap_grad = None
 
         # Arguments that are part of the error propagation

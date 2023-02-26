@@ -67,52 +67,30 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
 
     args = (func, start_params)
 
+    kwargs = {'method': algorithm,
+                 'tol': tol}
+
     if algorithm == "BFGS":
-        kwargs = {'method': algorithm,
-                  'jac': jack,
-                  'tol': tol,
-                  'options': {'gtol': tol, 'maxiter': maxiter}}
+        kwargs['jac'] = jack
+        kwargs['options'] = {'gtol': tol, 'maxiter': maxiter}
+        logger.details('I am using a gradient.')
 
-    elif algorithm == "TNC":
-        kwargs = {'method': algorithm,
-                  'jac': jack,
-                  'tol': tol,
-                  'options': {'maxiter': maxiter}}
+    elif algorithm in ["TNC","SLSQP","L-BFGS-B","CG"]:
+        kwargs['jac'] = jack
+        kwargs['options'] = {'maxiter': maxiter}
+        logger.details('I am using a gradient.')
 
-    elif algorithm == "COBYLA":
-        kwargs = {'method': algorithm,
-                  'tol': tol,
-                  'options': {'maxiter': maxiter}}
-
-    elif algorithm == "SLSQP":
-        kwargs = {'method': algorithm,
-                  'jac': jack,
-                  'tol': tol,
-                  'options': {'maxiter': maxiter}}
-
-    elif algorithm == "L-BFGS-B":
-        kwargs = {'method': algorithm,
-                  'jac': jack,
-                  'tol': tol,
-                  'options': {'maxiter': maxiter}}
+    elif algorithm in ["COBYLA","Nelder-Mead"]:
+        kwargs['options'] = {'maxiter': maxiter}
 
     elif algorithm == "Powell":
-        kwargs = {'method': algorithm,
-                  'tol': tol,
-                  'options': {'xtol': tol, 'ftol': tol,
-                              'maxfev': maxiter}}
-
-    elif algorithm == "Nelder-Mead":
-        kwargs = {'method': algorithm,
-                  'tol': tol,
-                  'options': {'maxiter': maxiter}}
+        kwargs['options'] = {'xtol': tol, 'ftol': tol, 'maxfev': maxiter}
 
     else:
-        kwargs = {'method': algorithm,
-                  'jac': jack,
-                  'hess': hess,
-                  'tol': tol,
-                  'options': {'maxiter': maxiter}}
+        kwargs['jac'] = jack
+        kwargs['hess'] = hess
+        kwargs['options'] = {'maxiter': maxiter}
+        logger.details('I am using a gradient and hessian.')
 
     # At least COBYLA sometimes gets stuck in an endless loop.
     res = timeout(opt.minimize, args=args, kwargs=kwargs, timeout_duration=100)

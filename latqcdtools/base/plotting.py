@@ -498,16 +498,17 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
 
 def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#666677',linewidth=0.2, **params):
-    if width is None:
-        width = xdata[1] - xdata[0]
-
-    if alpha is None:
-        alpha=params['alpha']
 
     xdata, ydata = check_numpy(xdata, ydata)
     fill_param_dict(params)
     optional = add_optional(params)
     ax  = getAxObject(params)
+
+    if width is None:
+        width = xdata[1] - xdata[0]
+
+    if alpha is None:
+        alpha=params['alpha']
 
     ZOD = params['ZOD']
     if ZOD is None:

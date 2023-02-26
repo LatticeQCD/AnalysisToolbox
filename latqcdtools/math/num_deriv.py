@@ -41,8 +41,8 @@ def diff_grad(params, func, args = (), eps = None, expand = False):
     return np.array(ret)
 
 
-# Hessian using difference quotient
 def diff_hess(params, func, args = (), eps = None, expand = False):
+    """ Hessian using difference quotient. """
     if expand:
         wrap_func = lambda params: func(*(tuple(params) + tuple(args)))
         return diff_hess(params, wrap_func, eps = eps, expand = False)
@@ -96,13 +96,12 @@ def diff_hess(params, func, args = (), eps = None, expand = False):
         downdown[i] = down[i]
         downup[i] = down[i]
 
-
     return np.array(ret)
 
 
 def diff_fit_grad(x, params, func, args = (), eps = None, expand = False):
-# For fitting or plotting we expect the first argument of func to be x instead of params.
-# Therefore we have to change the order using this wrapper
+    """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
+    change the order using this wrapper. """
     if expand:
         f = lambda p: func(x, *(tuple(p) + tuple(args)))
     else:
@@ -111,8 +110,8 @@ def diff_fit_grad(x, params, func, args = (), eps = None, expand = False):
 
 
 def diff_fit_hess(x, params, func, args = (), eps = None, expand = False):
-# For fitting or plotting we expect the first argument of func to be x instead of params.
-# Therefore we have to change the order using this wrapper
+    """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
+    change the order using this wrapper. """
     if expand:
         f = lambda p: func(x, *(tuple(p) + tuple(args)))
     else:
