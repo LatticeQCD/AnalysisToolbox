@@ -6,6 +6,7 @@
 # Some parameter combinations and naming conventions special to projects of the HotQCD collaboration.
 #
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import rel_check
 from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params
 
 
@@ -31,6 +32,7 @@ def massRatioToMasses(msml, Nt, cbeta, Nf='21'):
 
 def quarkMassTableHISQ(Nf, Nt, msml):
     """Lookup tables for HotQCD HISQ runs."""
+    Table = None
 
     if Nf=='21':
 
@@ -140,3 +142,123 @@ def quarkMassTableHISQ(Nf, Nt, msml):
         logger.TBError("Invalid Nf.")
 
     return Table
+
+
+def loadDens(densFile,confID,lp,inTable=None):
+    """ Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
+    relevant calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
+    conveniently combine data when there are multiple dense files per configuration. Here we update the table
+    inTable for the new read-in, which yields outTable. Only supports Nf=2+1 configurations for the time being.
+
+    Parameters
+    ----------
+    densFile : str
+        Name of the Dense code file to be read.
+    confID : str
+        A unique identifier for the configuration on which dense calculation was performed. Every person seems to have a
+        different scheme for labelling configurations, so this needs to be a string to be as flexible as possible.
+    lp : latticeParams
+        Parameters for the ensemle the configuration belongs to.
+    inTable : dict
+        A table indexed by confID. Its values are a list of operators that have been measured.
+
+    Returns
+    -------
+    outTable : dict
+        A table indexed by confID. Its values are a list of operators that have been measured.
+    """
+
+    if inTable is None:
+        outTable  = {}
+    elif not isinstance(inTable,dict):
+        logger.TBError("Must pass dict to inTable, or else pass None.")
+    else:
+        outTable = inTable
+
+    try:
+        infile = open(densFile, 'r')
+    except Exception as e:
+        logger.TBError("Unable to open file",densFile)
+
+    Nc = lp.Nc
+
+    # In the following light and strange quarks are indexed by l and s, respectively.
+    if not confID in outTable:
+        nlVec      = []  # quark number density, n
+        nsVec      = []
+        nl2Vec     = []  # tr ( M^-1 d M )^2
+        ns2Vec     = []
+        MddMlVec   = []  # tr M^-1 dd M
+        MddMsVec   = []
+        trMinvlVec = []  # tr M^-1
+        trMinvsVec = []
+    else:
+        nlVec      = outTable[confID][0]
+        nsVec      = outTable[confID][1]
+        nl2Vec     = outTable[confID][2]
+        ns2Vec     = outTable[confID][3]
+        MddMlVec   = outTable[confID][4]
+        MddMsVec   = outTable[confID][5]
+        trMinvlVec = outTable[confID][6]
+        trMinvsVec = outTable[confID][7]
+
+    # Read in data from the dense file.
+    lineno = 0
+    for line in infile:
+
+        lineno += 1
+        col = line.split()
+
+        # Parse the densFile.
+        try:
+            OPID = int(col[0])
+        except ValueError:
+            logger.TBError("Encountered problem on line", lineno, "of file", densFile)
+        mass = float(col[2])
+        try:
+            ReOP = float(col[3])
+        except IndexError:
+            logger.TBError("Encountered problem on line", lineno, "of file", densFile)
+        ImOP = float(col[4])
+
+        # If you have a trace squared, you must normalize by volume. Each trace must be normalized by Nc.
+        if OPID == 1:  # tr M^-1
+            if rel_check(mass, lp.ml):
+                trMinvlVec.append(Nc * complex(ReOP, ImOP))
+            elif rel_check(mass, lp.ms):
+                trMinvsVec.append(Nc * complex(ReOP, ImOP))
+            else:
+                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+
+        elif OPID == 2:  # D1 = tr M^-1 d M
+            if rel_check(mass, lp.ml):
+                nlVec.append(Nc * complex(ReOP, ImOP))
+            elif rel_check(mass, lp.ms):
+                nsVec.append(Nc * complex(ReOP, ImOP))
+            else:
+                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+
+        elif OPID == 3:  # tr M^-1 dd M
+            if rel_check(mass, lp.ml):
+                MddMlVec.append(Nc * complex(ReOP, ImOP))
+            elif rel_check(mass, lp.ms):
+                MddMsVec.append(Nc * complex(ReOP, ImOP))
+            else:
+                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+
+        elif OPID == 12:  # tr (M^-1 d M)**2
+            if rel_check(mass, lp.ml):
+                nl2Vec.append(Nc * complex(ReOP, ImOP))
+            elif rel_check(mass, lp.ms):
+                ns2Vec.append(Nc * complex(ReOP, ImOP))
+            else:
+                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+
+        else:
+            continue
+
+        outTable[confID] = [nlVec, nsVec, nl2Vec, ns2Vec, MddMlVec, MddMsVec, trMinvlVec, trMinvsVec]
+
+    infile.close()
+
+    return outTable

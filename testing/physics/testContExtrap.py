@@ -10,9 +10,9 @@ import numpy as np
 from latqcdtools.base.check import print_results
 from latqcdtools.physics.continuumExtrap import extrapolate_from_a
 from latqcdtools.physics.constants import MeV_to_fminv
-from latqcdtools.base.logger import set_log_level
+import latqcdtools.base.logger as logger
 
-set_log_level('INFO')
+logger.set_log_level('INFO')
 
 PREC = 1e-4
 

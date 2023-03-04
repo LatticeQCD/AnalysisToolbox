@@ -81,8 +81,16 @@ def read_in(filename, *args):
 
 
 def writeTable(filename,*args,**kwargs):
-    """ Wrapper for np.savetxt, which would otherwise output in a way that is not very intuitive for tables.
-        Additionally constructs format string to include only 8 digits after the decimal point. """
+    """ Wrapper for np.savetxt, which is in the author's opinion the single worst piece of trash in the entire numpy
+    package. Looking at how much effort it took me to tame it, I'm not sure if it was ever worth using to being with.
+
+    Parameters
+    ----------
+    filename : str
+        Name of output file.
+    args :
+        Put in all the 1-d numpy arrays you would like to write out.
+    """
     if 'header' in kwargs:
         head = kwargs['header']
         if isinstance(head,list):
@@ -91,25 +99,42 @@ def writeTable(filename,*args,**kwargs):
             if len(head[0]) > 12:
                 logger.warn("writeTable header[0] should be kept under 12 characters.")
             for label in head[1:]:
-                if len(label)>14:
+                if len(label)>15:
                     logger.warn("writeTable header labels should be kept under 14 characters.")
-                form += '  %14s'
+                form += '  %15s'
                 temp += label,
             head = form % temp
     else:
         head = ''
     data = ()
+    dtypes = []
     form = ''
+    colno = 0
     for col in args:
-        if isinstance(col[0],complex):
-            data += (col.real,)
-            data += (col.imag,)
-            form += '%.8e  %8e  '
+        col_arr = np.array(col)
+        if isinstance(col_arr[0],complex):
+            data += (col_arr.real,)
+            data += (col_arr.imag,)
+            form += '  %15.8e  %15.8e'
+            dtypes.append( (lab(colno), float) )
+            dtypes.append( (lab(colno+1), float) )
+            colno += 2
+        elif isinstance(col_arr[0],str):
+            data += (col_arr,)
+            form += '  %12s'
+            dtypes.append( (lab(colno), 'U12' ) ) # 12 characters
+            colno += 1
         else:
-            data += (col,)
-            form += '%.8e  '
+            data += (col_arr,)
+            form += '  %15.8e'
+            dtypes.append( (lab(colno), float) )
+            colno += 1
+    ab = np.zeros(data[0].size, dtype=dtypes)
+    for i in range(colno):
+        ab[lab(i)] = data[i]
+    np.savetxt(filename, ab, fmt=form, header=head)
 
 
-    np.savetxt( filename, np.transpose(data), fmt=form, header=head )
-
-
+def lab(num):
+    """ Create a short string label for each column of a data table. Needed for writeTable. """
+    return 'var' + str(num)

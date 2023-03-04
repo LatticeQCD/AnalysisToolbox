@@ -26,7 +26,33 @@ class latticeParams:
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
-    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=2021, Nf='21', scaleYear=2019):
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=2021,
+                 Nf='21', scaleYear=2019, mu=0):
+        """ Based on some input, determine all parameters relevant to the ensemble.
+
+        Parameters
+        ----------
+            Nsigma : int
+            Ntau : int
+            coupling : str, float
+                beta = 6/g^2, where g is the bare coupling.
+            mass1 : str
+                Light-type mass.
+            mass2 : str
+                Strange-type mass. For degenerate Nf, can also be an auxiliary mass.
+            mass3 : str
+                Charm-type mass.
+            scaleType : str
+                Reference scale.
+            paramYear : int
+                Year during which the parameters of the rational function or polynomial function used for
+                continuum limit extrapolations were determined.
+            Nf : str
+            scaleYear : int
+                Year during which the value of the scale in physical units was determined.
+            mu : float
+                Baryon chemical potential.
+        """
         self.fK = fk_phys(scaleYear,"MeV")
         if isinstance(coupling, str):
             self.beta  = int(coupling)/10**(len(coupling)-1)
@@ -34,6 +60,8 @@ class latticeParams:
         else:
             self.beta  = coupling
             self.cbeta = str(int(coupling*1000))
+        self.Nc    = 3
+        self.mu    = mu
         self.cm1   = mass1
         self.cm2   = mass2
         self.cm3   = mass3
@@ -42,6 +70,7 @@ class latticeParams:
         self.Nt    = Ntau
         self.scale = scaleType
         self.Nf    = Nf
+        self.vol4  = self.Ns**3 * self.Nt
         if Nf=='21':
             if mass3 is not None:
                 logger.TBError('Nf=2+1 expects only 2 mass parameters.')

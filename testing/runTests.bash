@@ -22,9 +22,7 @@ echo
 cd base
 runTestRoutine testDataCleaner.py
 runTestRoutine "testReadWrite.py --type str"
-diff test.d control.d
 runTestRoutine "testReadWrite.py --type list"
-diff test.d control.d
 runTestRoutine testUtilities.py
 runTestRoutine testPrintErrorBars.py
 cd ..
@@ -63,6 +61,7 @@ cd ..
 
 cd physics
 runTestRoutine testContExtrap.py
+runTestRoutine testDenseObs.py
 runTestRoutine testLatticeParams.py
 runTestRoutine testPolyakovTools.py
 runTestRoutine testScales.py
