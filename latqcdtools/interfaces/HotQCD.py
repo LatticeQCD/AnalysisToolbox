@@ -213,13 +213,13 @@ def loadDens(densFile,confID,lp,inTable=None):
         try:
             OPID = int(col[0])
         except ValueError:
-            logger.TBError("Encountered problem on line", lineno, "of file", densFile)
-        mass = float(col[2])
+            logger.TBError("Read error on line", lineno, "of file", densFile)
         try:
+            mass = float(col[2])
             ReOP = float(col[3])
+            ImOP = float(col[4])
         except IndexError:
-            logger.TBError("Encountered problem on line", lineno, "of file", densFile)
-        ImOP = float(col[4])
+            logger.TBError("Read error on line", lineno, "of file", densFile)
 
         # If you have a trace squared, you must normalize by volume. Each trace must be normalized by Nc.
         if OPID == 1:  # tr M^-1

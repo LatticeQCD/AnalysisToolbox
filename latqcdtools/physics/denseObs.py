@@ -129,7 +129,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
 
         # Any time you see this np.sum subtraction, we are using the unbiased estimators method. I follow the
         # QCD Thermodynamics section of my researchNotes.
-        if mu == 0:
+        if abs(mu) < 1e-12:
             # At mu=0, the n_f should be pure imaginary configuration by configuration. This introduces a minus sign
             # on some of the terms.
             chi2l   = - (1/4)*np.mean(nl2Vec.real) + (1/4)*np.mean(MddMlVec.real) \
