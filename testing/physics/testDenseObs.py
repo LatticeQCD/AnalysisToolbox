@@ -14,40 +14,40 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.cleanData import restrictAtCol
 from latqcdtools.base.check import rel_check
 
+
 logger.set_log_level('INFO')
 
 lp = HotQCDParams(Nsigma=40, Ntau=8, coupling='6260',mass1='002025',mass2='0810')
 
-initialize=True
-
-# Initialize the dense observables you want to measure.
-obs = observablesOfInterest(["confID",
-                        "Nl", "NB", "NQ", "NS", "NI",
-                        "dN/dmul", "dN/dmus", "dN/dmuB", "dN/dmuQ", "dN/dmuS", "dN/dmuI",
-                        "Nl^2", "NB^2", "NQ^2", "NS^2",
-                        "chi2l", "chi2s", "chi11ll", "chi11ls", "chi2B", "chi2Q"])
-
-logger.info('Testing for mu=0...')
-for stream in [0,1]:
-
-    directory = 'denseObs/str'+str(stream)
-
-    for filename in glob.iglob(f'{directory}/*'):
-
-        logger.details('Process file',filename)
-        confID = filename.split('_')[1]
-
-        if initialize:
-            opTable = loadDens(filename, confID, lp)
-            initialize = False
-        else:
-            opTable = loadDens(filename, confID, lp, opTable)
-
-op_to_obs(opTable,lp,filename='denseObs/denseObservables.d')
-
-
 
 def testDensObs():
+
+    initialize = True
+
+    # Initialize the dense observables you want to measure.
+    obs = observablesOfInterest(["confID",
+                                 "Nl", "NB", "NQ", "NS", "NI",
+                                 "dN/dmul", "dN/dmus", "dN/dmuB", "dN/dmuQ", "dN/dmuS", "dN/dmuI",
+                                 "Nl^2", "NB^2", "NQ^2", "NS^2",
+                                 "chi2l", "chi2s", "chi11ll", "chi11ls", "chi2B", "chi2Q"])
+
+    logger.info('Testing for mu=0...')
+    for stream in [0, 1]:
+
+        directory = 'denseObs/str' + str(stream)
+
+        for filename in glob.iglob(f'{directory}/*'):
+
+            logger.details('Process file', filename)
+            confID = filename.split('_')[1]
+
+            if initialize:
+                opTable = loadDens(filename, confID, lp)
+                initialize = False
+            else:
+                opTable = loadDens(filename, confID, lp, opTable)
+
+    op_to_obs(opTable, lp, filename='denseObs/denseObservables.d')
 
     REFdata = np.loadtxt('denseObs/n_n2_dn_table_ms40_b6260.d', unpack=True)
     data = np.genfromtxt('denseObs/denseObservables.d', dtype=obs.dtypes, unpack=True)

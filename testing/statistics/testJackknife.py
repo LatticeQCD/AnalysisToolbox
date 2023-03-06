@@ -5,52 +5,48 @@
 # 
 # Quick test to make sure the jackknife works. Do not adjust the values of any of the variables, arrays, or arguments.
 # 
+
 from latqcdtools.statistics.jackknife import jackknife
 from latqcdtools.base.check import print_results
+import latqcdtools.base.logger as logger
 import numpy as np
+
+logger.set_log_level('INFO')
 
 EPSILON=1e-15 # test precision
 
 def simple_mean(a):
     return np.mean(a)
 
-
 def div_simple(a, b, c):
     return b * a[0] / (c * a[1])
-
 
 def div_old(a, b, c):
     return b * np.mean(a[0]) / (c * np.mean(a[1]))
 
-
 def f(a, b, c):
     return b * np.mean(a[0]) / (c * np.mean(a[1]))
-
 
 def div1(a, b, c):
     return ([[f(a, b, c), f(a, b, c)], [f(a, b, c), f(a, b, c)]],
             [f(a, b, c), f(a, b, c)], f(a, b, c))
 
-
 def div2(a, b, c):
     return [[f(a, b, c), f(a, b, c)], [f(a, b, c), f(a, b, c)]]
-
 
 def div3(a, b, c):
     return [f(a, b, c), f(a, b, c)]
 
-
 def div4(a, b, c):
     return f(a, b, c)
-
 
 def divnp1(a, b, c):
     return (np.array([[f(a, b, c), f(a, b, c)], [f(a, b, c), f(a, b, c)]]),
             np.array([f(a, b, c), f(a, b, c)]), np.array(f(a, b, c)))
 
-
 A, B = (np.array(range(1000)),
         np.array(range(1000, 2000)))
+
 
 def Test_Jackknife():
     REFm = 499.5
@@ -93,6 +89,7 @@ def Test_Jackknife():
     REFe = 0.042622475647127026
     TESTm, TESTe = jackknife(div4, [A, B], numb_blocks=10, args=(2, 2))
     print_results(TESTm, REFm, TESTe, REFe, "div4", EPSILON)
+
 
 if __name__ == '__main__':
     Test_Jackknife()

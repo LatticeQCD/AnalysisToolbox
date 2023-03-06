@@ -14,6 +14,9 @@ from latqcdtools.math.polynomials import Polynomial
 import latqcdtools.base.logger as logger
 
 
+logger.set_log_level('INFO')
+
+
 def print_results_iter(res,  res_true, text):
     test = True
     res = np.asarray(res)
@@ -57,10 +60,6 @@ def fit_func(x, params, b):
     return params[0]**2*x**2 + params[0]*params[1]*x + b/params[2]
 
 
-def func(params, b):
-    return params[0]**2*x**2 + params[0]*params[1]*x + b/params[2]
-
-
 def fit_grad_ref(x, params, b):
     return np.array([2*params[0]*x**2  + params[1]*x, params[0]*x, -b/params[2]**2])
 
@@ -69,20 +68,24 @@ def fit_hess_ref(x, params, b):
     return np.array([[2*x**2, x, 0], [x, 0, 0], [0, 0, 2*b/params[2]**3]])
 
 
-test_param = [1, -2, 3]
-x = 1
-opt = -1
-res = diff_fit_grad(x, test_param, fit_func, args=(opt,))
-res_true = fit_grad_ref(x, test_param, opt)
-print_results_iter(res, res_true, "numerical gradient for fitting functions")
+def testDeriv():
+
+    test_param = [1, -2, 3]
+    x   = 1
+    opt = -1
+    res = diff_fit_grad(x, test_param, fit_func, args=(opt,))
+    res_true = fit_grad_ref(x, test_param, opt)
+    print_results_iter(res, res_true, "numerical gradient for fitting functions")
+
+    res      = diff_fit_hess(x, test_param, fit_func, args=(opt,), eps = 1e-5)
+    res_true = fit_hess_ref(x, test_param, opt)
+    print_results_iter(res, res_true, "numerical hessian for fitting functions")
+
+    x     = np.linspace(0,1,11)
+    poly  = Polynomial([1 ,-1,1 ,-1, 1])
+    dpoly = Polynomial([-1,2 ,-3, 4, 0])
+    print_results(dpoly(x), diff_deriv(x,poly), text="diff_deriv", prec=1e-6)
 
 
-res = diff_fit_hess(x, test_param, fit_func, args=(opt,), eps = 1e-5)
-res_true = fit_hess_ref(x, test_param, opt)
-print_results_iter(res, res_true, "numerical hessian for fitting functions")
-
-
-x = np.linspace(0,1,11)
-poly  = Polynomial([1 ,-1,1 ,-1, 1])
-dpoly = Polynomial([-1,2 ,-3, 4, 0])
-print_results(dpoly(x), diff_deriv(x,poly), text="diff_deriv", prec=1e-6)
+if __name__ == '__main__':
+    testDeriv()

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
-from latqcdtools.base.utilities import timer, parallel_function_eval
+from latqcdtools.base.utilities import timer
 from latqcdtools.math.num_deriv import diff_deriv
 from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
 

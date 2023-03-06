@@ -28,6 +28,14 @@ runTestRoutine testPrintErrorBars.py
 cd ..
 
 
+# ---------------- INTERFACE TESTS
+
+
+cd interfaces
+runTestRoutine testReadWriteConf.py
+cd ..
+
+
 # --------------------- MATH TESTS
 
 
@@ -45,7 +53,7 @@ cd ..
 
 
 cd statistics
-runTestRoutine testautocor.py 
+runTestRoutine testAutocor.py 
 runTestRoutine testBootstrap.py 
 runTestRoutine testGauDif.py
 runTestRoutine testErrorProp.py

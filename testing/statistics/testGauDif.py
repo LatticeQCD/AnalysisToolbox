@@ -8,6 +8,8 @@
 from latqcdtools.statistics.statistics import gaudif
 import latqcdtools.base.logger as logger
 
+logger.set_log_level('INFO')
+
 eps=1e-7
 
 # Some measurements and error
@@ -30,16 +32,22 @@ q12control=0.4387984
 q13control=0.5559897
 q14control=0.4056413
 
-# The simple test.
-lerror=False
-if abs(q12-q12control) > eps:
-  lerror=True
-if abs(q13-q13control) > eps:
-  lerror=True
-if abs(q14-q14control) > eps:
-  lerror=True
+def testGauDif():
 
-if lerror:
-  logger.TBError("At least one test failed!")
-else:
-  logger.TBPass("All tests passed!")
+    # The simple test.
+    lerror=False
+    if abs(q12-q12control) > eps:
+      lerror=True
+    if abs(q13-q13control) > eps:
+      lerror=True
+    if abs(q14-q14control) > eps:
+      lerror=True
+
+    if lerror:
+      logger.TBError("At least one test failed!")
+    else:
+      logger.TBPass("All tests passed!")
+
+
+if __name__ == '__main__':
+    testGauDif()

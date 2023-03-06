@@ -9,34 +9,44 @@
 from latqcdtools.math.SU3 import SU3, id_3
 import latqcdtools.base.logger as logger
 
-g = SU3()
-h = SU3()
 
-ltest = True
+logger.set_log_level('INFO')
 
-# Assignment and comparison tests
-g[0,0]=2
-h[0,0]=2
 
-if not g.isEqualTo(h):
-   ltest = False
-   logger.TBFail('Assignment and comparison.')
+def testSU3():
 
-# Trace
-if g.trace() != complex(4):
-    ltest = False
-    logger.TBFail('Trace.')
+    g = SU3()
+    h = SU3()
 
-# Making a random matrix
-g.setToRandom()
-if not g.isSU3():
-    ltest = False
-    logger.TBFail('Set to random.')
+    ltest = True
 
-g.setToIdentity()
-if not g.isEqualTo(id_3):
-    ltest = False
-    logger.TBFail('Set to identity.')
+    # Assignment and comparison tests
+    g[0,0]=2
+    h[0,0]=2
 
-if ltest:
-    logger.TBPass('SU3 tests passed.')
+    if not g.isEqualTo(h):
+       ltest = False
+       logger.TBFail('Assignment and comparison.')
+
+    # Trace
+    if g.trace() != complex(4):
+        ltest = False
+        logger.TBFail('Trace.')
+
+    # Making a random matrix
+    g.setToRandom()
+    if not g.isSU3():
+        ltest = False
+        logger.TBFail('Set to random.')
+
+    g.setToIdentity()
+    if not g.isEqualTo(id_3):
+        ltest = False
+        logger.TBFail('Set to identity.')
+
+    if ltest:
+        logger.TBPass('SU3 tests passed.')
+
+
+if __name__ == '__main__':
+    testSU3()

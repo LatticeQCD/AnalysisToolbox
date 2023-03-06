@@ -12,30 +12,41 @@ from scipy.interpolate import LSQUnivariateSpline
 from latqcdtools.math.spline import even_knots,random_knots
 from latqcdtools.base.plotting import plot_dots, plot_lines, set_params
 from latqcdtools.base.check import print_results
+import latqcdtools.base.logger as logger
 
-x = np.linspace(-1, 1, 101)
-y = 10*x**2 + np.random.randn(len(x))
 
-knots = even_knots(x, 3)
+logger.set_log_level('INFO')
 
-print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
 
-spline = LSQUnivariateSpline(x, y, knots, k=3)
+def testSpline():
 
-plot_dots(x, y)
-plot_lines(x,spline(x),marker=None)
-set_params(xlabel='x',ylabel='y')
+    x = np.linspace(-1, 1, 101)
+    y = 10*x**2 + np.random.randn(len(x))
 
-plt.savefig('autoSpline.pdf')
-plt.clf()
+    knots = even_knots(x, 3)
 
-knots=random_knots(x, 3, SEED=7271978)
+    print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
 
-print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
+    spline = LSQUnivariateSpline(x, y, knots, k=3)
 
-spline = LSQUnivariateSpline(x, y, knots, k=3)
+    plot_dots(x, y)
+    plot_lines(x,spline(x),marker=None)
+    set_params(xlabel='x',ylabel='y')
 
-plot_dots(x, y)
-plot_lines(x,spline(x),marker=None)
-set_params(xlabel='x',ylabel='y')
-plt.savefig('randomSpline.pdf')
+    plt.savefig('autoSpline.pdf')
+    plt.clf()
+
+    knots=random_knots(x, 3, SEED=7271978)
+
+    print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
+
+    spline = LSQUnivariateSpline(x, y, knots, k=3)
+
+    plot_dots(x, y)
+    plot_lines(x,spline(x),marker=None)
+    set_params(xlabel='x',ylabel='y')
+    plt.savefig('randomSpline.pdf')
+
+
+if __name__ == '__main__':
+    testSpline()

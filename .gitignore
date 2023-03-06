@@ -8,6 +8,7 @@ P_div*
 s_div*
 testing/experimental/*
 pycharmCheck/*
+testing/base/test.d
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
