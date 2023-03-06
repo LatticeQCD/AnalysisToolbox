@@ -19,6 +19,7 @@ logger.set_log_level('INFO')
 
 lp = HotQCDParams(Nsigma=40, Ntau=8, coupling='6260',mass1='002025',mass2='0810')
 
+EPSILON = 1e-5
 
 def testDensObs():
 
@@ -63,18 +64,20 @@ def testDensObs():
 
         REFdata_sc = restrictAtCol( restrictAtCol(REFdata,0,stream), 1, conf )
 
-        REFReN     = REFdata_sc[2]
-        REFImN     = REFdata_sc[3]
-        REFReN2    = REFdata_sc[4]
-        REFImN2    = REFdata_sc[5]
-        REFReDN    = REFdata_sc[6]
-        REFImDN    = REFdata_sc[7]
-        REFchi2l   = REFdata_sc[8]
-        REFchi2s   = REFdata_sc[9]
-        REFchi11ll = REFdata_sc[10]
-        REFchi11ls = REFdata_sc[11]
-        REFchi2B   = REFdata_sc[12]
-        REFchi2Q   = REFdata_sc[13]
+        # When the reference data were calculated, n_B used a different convention, because I was following a paper
+        # that did not include a factor 1/3.
+        REFReN     = float( REFdata_sc[2]/3 )
+        REFImN     = float( REFdata_sc[3]/3 )
+        REFReN2    = float( REFdata_sc[4]/9 )
+        REFImN2    = float( REFdata_sc[5]/9 )
+        REFReDN    = float( REFdata_sc[6]/9 )
+        REFImDN    = float( REFdata_sc[7]/9 )
+        REFchi2l   = float( REFdata_sc[8]   )
+        REFchi2s   = float( REFdata_sc[9]   )
+        REFchi11ll = float( REFdata_sc[10]  )
+        REFchi11ls = float( REFdata_sc[11]  )
+        REFchi2B   = float( REFdata_sc[12]  )
+        REFchi2Q   = float( REFdata_sc[13]   )
 
         ReN     = data[obs.getCol('Re','NB')][iconf]
         ImN     = data[obs.getCol('Im','NB')][iconf]
@@ -89,27 +92,27 @@ def testDensObs():
         chi2B   = data[obs.getCol('Re','chi2B')][iconf]
         chi2Q   = data[obs.getCol('Re','chi2Q')][iconf]
 
-        if not rel_check(ReN,REFReN):
+        if not rel_check(ReN,REFReN,prec=EPSILON):
             lpass = False
             logger.TBFail('Re NB',ReN,'ref',REFReN,'conf',confID)
 
-        if not rel_check(ImN,REFImN):
+        if not rel_check(ImN,REFImN,prec=EPSILON):
             lpass = False
             logger.TBFail('Im NB',ImN,'ref',REFImN,'conf',confID)
 
-        if not rel_check(ReN2,REFReN2):
+        if not rel_check(ReN2,REFReN2,prec=EPSILON):
             lpass = False
             logger.TBFail('Re NB^2',ReN2,'ref',REFReN2,'conf',confID)
 
-        if not rel_check(ImN2,REFImN2):
+        if not rel_check(ImN2,REFImN2,prec=EPSILON):
             lpass = False
             logger.TBFail('Im NB^2',ImN2,'ref',REFImN2,'conf',confID)
 
-        if not rel_check(ReDN,REFReN2):
+        if not rel_check(ReDN,REFReDN,prec=EPSILON):
             lpass = False
             logger.TBFail('Re dN/dmuB',ReDN,'ref',REFReDN,'conf',confID)
 
-        if not rel_check(ImDN,REFImN2):
+        if not rel_check(ImDN,REFImDN,prec=EPSILON):
             lpass = False
             logger.TBFail('Im dN/dmuB',ImDN,'ref',REFImDN,'conf',confID)
 

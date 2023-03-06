@@ -127,7 +127,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             logger.warn("Found zero random vectors for an observable, cID = "+cID)
             continue
 
-        # Any time you see this np.sum subtraction, we are using the unbiased estimators method.
+        # Any time you see this np.sum subtraction, we are using the unbiased estimators method. I follow the
+        # QCD Thermodynamics section of my researchNotes.
         if mu == 0:
             # At mu=0, the n_f should be pure imaginary configuration by configuration. This introduces a minus sign
             # on some of the terms.
@@ -139,9 +140,9 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             chi11ls = - vol4*(1/4)**2*( np.sum(nlVec.imag)*np.sum(nsVec.imag) )/( numVec_l*numVec_s )
 
             # Get n**2. Each n_f is pure imaginary, so we will get an i**2=-1 at the very end. Note that n_I**2=0.
-            nl2  = (-np.sum(nlVec.imag**2) + np.sum(nlVec.imag)**2) * vol4/16
-            ns2  = (-np.sum(nsVec.imag**2) + np.sum(nsVec.imag)**2) * vol4/16
-            nlns = np.mean(nlVec.imag) * np.mean(nsVec.imag) * vol4/16
+            nl2  = - ( -np.sum(nlVec.imag**2) + np.sum(nlVec.imag)**2 )*vol4/16
+            ns2  = - ( -np.sum(nsVec.imag**2) + np.sum(nsVec.imag)**2 )*vol4/16
+            nlns = - np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16
 
             # Change type for compatibility with the rest of the module. (Otherwise when initializing my
             # observablesOfInterest object I have to know which are real and complex ahead of time.
@@ -154,17 +155,22 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             nlns    = complex(nlns)
 
         else:
-            # TODO: these are wrong atm
-            logger.warn('Many observables are not yet correct for mu>0!')
-            chi2l   = - (1/4)*np.mean(nl2Vec.real) + (1/4)*np.mean(MddMlVec.real) \
-                      - vol4*(1/4)**2*( np.sum(nlVec.imag)**2 - np.sum(nlVec.imag**2) )/( numVec_l*(numVec_l-1) )
-            chi2s   = - (1/4)*np.mean(ns2Vec.real) + (1/4)*np.mean(MddMsVec.real) \
-                      - vol4*(1/4)**2*( np.sum(nsVec.imag)**2 - np.sum(nsVec.imag**2) )/( numVec_s*(numVec_s-1) )
-            chi11ll = - vol4*(1/4)**2*( np.sum(nlVec.imag)**2 - np.sum(nlVec.imag**2) )/( numVec_l*(numVec_l-1) )
-            chi11ls = - vol4*(1/4)**2*( np.sum(nlVec.imag)*np.sum(nsVec.imag) )/( numVec_l*numVec_s )
-            nl2     = (-np.sum(nlVec.imag**2) + np.sum(nlVec.imag)**2) * vol4/16
-            ns2     = (-np.sum(nsVec.imag**2) + np.sum(nsVec.imag)**2) * vol4/16
-            nlns    = np.mean(nlVec.imag) * np.mean(nsVec.imag) * vol4/16
+            chi2l   = - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec) \
+                      + vol4*(1/4)**2*( np.sum(nlVec)**2 - np.sum(nlVec**2) )/( numVec_l*(numVec_l-1) ) \
+                      - vol4*(1/4)**2*np.mean(nlVec)**2
+            chi2s   = - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec) \
+                      + vol4*(1/4)**2*( np.sum(nsVec)**2 - np.sum(nsVec**2) )/( numVec_s*(numVec_s-1) ) \
+                      - vol4*(1/4)**2*np.mean(nlVec)**2
+            chi11ll =   vol4*(1/4)**2*( np.sum(nlVec)**2 - np.sum(nlVec**2) )/( numVec_l*(numVec_l-1) ) \
+                      - vol4*(1/4)**2*np.mean(nlVec)**2
+            chi11ls =   vol4*(1/4)**2*( np.sum(nlVec)*np.sum(nsVec) )/( numVec_l*numVec_s ) \
+                      - vol4*(1/4)**2*np.mean(nlVec)*np.mean(nsVec)
+            nl2     = - ( -np.sum(nlVec**2) + np.sum(nlVec)**2 )*vol4/16
+            ns2     = - ( -np.sum(nsVec**2) + np.sum(nsVec)**2 )*vol4/16
+            nlns    = - np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16
+
+        nl2 /= numVec_l*(numVec_l-1)
+        ns2 /= numVec_s*(numVec_s-1)
 
         chi2Q = (1/9)*( 5*chi2l + chi2s - 4*chi11ll - 2*chi11ls )
         chi2B = (1/9)*( 2*chi2l + chi2s + 2*chi11ll + 4*chi11ls )
@@ -172,7 +178,6 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         dnl  = -( np.mean(nl2Vec) - np.mean(MddMlVec) )/4
         dns  = -( np.mean(ns2Vec) - np.mean(MddMsVec) )/4
 
-        # TODO: compare these formulas against the gluonic observables paper
         dnS  =           dns
         dnQ  = ( 5*dnl + dns )/9
         dnI  =     dnl + dns
@@ -185,12 +190,10 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         nQ   =  (  nl - ns)/3
         nI   = complex(0)
 
-        nl2 /= numVec_l*(numVec_l-1)
-        ns2 /= numVec_s*(numVec_s-1)
-        nS2  = -          ns2
-        nQ2  = -(   nl2 + ns2 - 2*nlns )/9
-        n2   = -( 4*nl2 + ns2 + 4*nlns )/9
-        nl2  = -    nl2
+        nS2  =            ns2
+        nQ2  =  (   nl2 + ns2 - 2*nlns )/9
+        n2   =  ( 4*nl2 + ns2 + 4*nlns )/9
+        nl2  =      nl2
 
         outTable["confID"].append(cID)
         outTable["Nl"].append(nl)
