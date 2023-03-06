@@ -178,7 +178,8 @@ def loadDens(densFile,confID,lp,inTable=None):
     try:
         infile = open(densFile, 'r')
     except Exception as e:
-        logger.TBError("Unable to open file",densFile)
+        logger.warn("Unable to open file",densFile)
+        raise e
 
     Nc = lp.Nc
 
@@ -215,8 +216,10 @@ def loadDens(densFile,confID,lp,inTable=None):
             mass = float(col[2])
             ReOP = float(col[3])
             ImOP = float(col[4])
-        except (IndexError, ValueError):
-            logger.TBError("Read error on line", lineno, "of file", densFile)
+        except Exception as e:
+            infile.close()
+            logger.warn("Read error on line", lineno, "of file", densFile)
+            raise e
 
         # If you have a trace squared, you must normalize by volume. Each trace must be normalized by Nc.
         if OPID == 1:  # tr M^-1
