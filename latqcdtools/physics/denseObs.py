@@ -97,7 +97,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         numVec_s=len(nsVec)
 
         if not numVec_l==numVec_s:
-            logger.TBError("Unexpected numVec for nf, cID = "+cID)
+            logger.warn("Unexpected numVec for nf, cID = "+cID+"... skipping")
+            continue
 
         nl2Vec=np.array(opTable[cID][2])
         ns2Vec=np.array(opTable[cID][3])
@@ -105,7 +106,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         numVec_s2=len(ns2Vec)
 
         if not numVec_l2==numVec_s2:
-            logger.TBError("Unexpected numVec for nf**2, cID = "+cID)
+            logger.warn("Unexpected numVec for nf**2, cID = "+cID+"... skipping")
+            continue
 
         MddMlVec=np.array(opTable[cID][4])
         MddMsVec=np.array(opTable[cID][5])
@@ -113,7 +115,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         numVec_Ms=len(MddMsVec)
 
         if not numVec_Ml==numVec_Ms:
-            logger.TBError("Unexpected numVec for tr M^-1 dd M, cID = "+cID)
+            logger.warn("Unexpected numVec for tr M^-1 dd M, cID = "+cID+"... skipping")
+            continue
 
         trMinvlVec=np.array(opTable[cID][6])
         trMinvsVec=np.array(opTable[cID][7])
@@ -121,10 +124,11 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         numVec_trMinvs=len(trMinvsVec)
 
         if not numVec_trMinvl==numVec_trMinvs:
-            logger.TBError("Unexpected numVec for tr M^-1, cID = "+cID)
+            logger.warn("Unexpected numVec for tr M^-1, cID = "+cID+"... skipping")
+            continue
 
         if numVec_l==0 or numVec_l2==0 or numVec_Ml==0 or numVec_trMinvl==0:
-            logger.warn("Found zero random vectors for an observable, cID = "+cID)
+            logger.warn("Found zero random vectors for an observable, cID = "+cID+"... skipping")
             continue
 
         # Any time you see this np.sum subtraction, we are using the unbiased estimators method. I follow the
