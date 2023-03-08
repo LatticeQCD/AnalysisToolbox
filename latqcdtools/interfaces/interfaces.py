@@ -11,6 +11,7 @@ import numpy as np
 from latqcdtools.physics.lattice_params import latticeParams
 import latqcdtools.base.logger as logger
 
+
 class HotQCD_MILC_Params(latticeParams):
     """ A class to handle and check the input parameters of a lattice run using conventions common to both the
         HotQCD and MILC collaborations. """
@@ -26,18 +27,32 @@ class HotQCD_MILC_Params(latticeParams):
 
 
 def loadGPL(filename,discardTag=True):
-    """ Load GPL files from Peter Lepage's g-2 tools as 2d array. Ignore column 0, which is just a label. Implemented
-        in this way rather than using genfromtxt to allow the possibility of ragged tables. """
+    """ Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
+    tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
+    rather than using genfromtxt to allow the possibility of ragged tables. """
     gplFile = open(filename,'r')
     minIndex = 0
     data = []
     if discardTag:
         minIndex = 1
+    colLengths = []
     for line in gplFile:
         parse = line.split()
-        data.append( [ parse[i] for i in range(minIndex,len(parse)) ] )
+        colLengths.append(len(parse))
     gplFile.close()
-    return np.array(data,dtype=object)
+    gplFile = open(filename,'r')
+    minLength = min(colLengths)
+    maxLength = max(colLengths)
+    if minLength != maxLength:
+        logger.warn('Loaded ragged table. Using minLength =',minLength,'and truncating the rest.')
+    for line in gplFile:
+        parse = line.split()
+        data.append( [ parse[i] for i in range(minIndex,minLength) ] )
+    gplFile.close()
+    if discardTag:
+        return np.array(data,dtype=float)
+    else:
+        return np.array(data,dtype=object)
 
 
 def loadYAML(filename):
