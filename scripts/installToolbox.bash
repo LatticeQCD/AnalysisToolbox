@@ -1,11 +1,12 @@
 #!/bin/bash
 
+cd ..
 currentDirectory=$(pwd)
 bashrcFile=${HOME}/.bashrc
 
 echo "" >> ${bashrcFile}
 echo "# For the AnalysisToolbox" >> ${bashrcFile}
-echo "export PYTHONPATH=\"\${PYTHONPATH}:\${currentDirectory}\"" >> ${bashrcFile}
+echo "export PYTHONPATH=\"\${PYTHONPATH}:${currentDirectory}\"" >> ${bashrcFile}
 
 source ${bashrcFile}
 
