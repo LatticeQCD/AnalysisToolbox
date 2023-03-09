@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to do pull requests &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Gaugefields &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Documenting your code" href="documentation.html" />
-    <link rel="prev" title="Writing Tests" href="testing.html" /> 
+    <link rel="next" title="Statistical Physics" href="statisticalPhysics.html" />
+    <link rel="prev" title="Physics Modules" href="physicsAnalysis.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,17 +42,20 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="contributions.html">Contributions</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="testing.html">Writing Tests</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">How to do pull requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="documentation.html">Documenting your code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Gaugefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
 </ul>
@@ -71,10 +74,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="contributions.html">Contributions</a> &raquo;</li>
-      <li>How to do pull requests</li>
+          <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
+      <li>Gaugefields</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/contributions/git.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/physicsAnalysis/gauge.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -82,19 +85,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="how-to-do-pull-requests">
-<h1>How to do pull requests<a class="headerlink" href="#how-to-do-pull-requests" title="Permalink to this headline"></a></h1>
-<p>You just finished your feature branch and want to merge it with the main. Please follow this procedure to make sure
-that nothing has been broken:</p>
-<ol class="simple">
-<li><p>Call <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span> <span class="pre">main</span> <span class="pre">feature</span></code>.</p></li>
-<li><p>Run all the tests. Please make sure that every single test passes.</p></li>
-<li><p>Once every single test passes, you can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span> <span class="pre">feature</span> <span class="pre">main</span></code>.</p></li>
-<li><p>Finally you are ready to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>. This will create a pull request.</p></li>
-<li><p>It is helpful if you say a few words about your feature branch in the pull request. Moreover you should emphasize that you followed the procedure listed here.</p></li>
-<li><p>One of us will then approve your request, assuming we don’t find anything strange.
-Congratulations! You are now a contributor!</p></li>
-</ol>
+  <section class="tex2jax_ignore mathjax_ignore" id="gaugefields">
+<h1>Gaugefields<a class="headerlink" href="#gaugefields" title="Permalink to this headline"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">gaugeField</span></code> object, found in <code class="docutils literal notranslate"><span class="pre">latqcdtools/physics/gauge.py</span></code>, is a collection of <code class="docutils literal notranslate"><span class="pre">SU(3)</span></code> objects,
+described <a class="reference internal" href="../math/SU3.html"><span class="doc std std-doc">here</span></a>. This is useful
+whenever one needs to store a configuration in memory. Such objects can be instantiated as</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gauge</span> <span class="o">=</span> <span class="n">gaugeField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ns</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Its links can be read and manipulated through the accessors <code class="docutils literal notranslate"><span class="pre">getLink</span></code> and <code class="docutils literal notranslate"><span class="pre">setLink</span></code>. The <code class="docutils literal notranslate"><span class="pre">gaugeField</span></code> object is the
+place to set up basic observables. For instance one can already compute the plaquette using</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gauge</span><span class="o">.</span><span class="n">getPlaquette</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 
 

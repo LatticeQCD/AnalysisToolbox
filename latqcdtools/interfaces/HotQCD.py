@@ -137,11 +137,18 @@ def quarkMassTableHISQ(Nf, Nt, msml):
         else:
             logger.TBError("Invalid Nt.")
 
-
     else:
         logger.TBError("Invalid Nf.")
 
     return Table
+
+
+def makeConfTag(conf,stream):
+    """ This takes a configuration number conf and stream label stream to make a tag labelling a configuration.
+    Implementing this as a function makes sure everyone using the Toolbox as the same convention and, more importantly,
+    ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in
+    the denseObs module. """
+    return str(stream)+':'+str(conf)
 
 
 def loadDens(densFile,confID,lp,inTable=None):
@@ -167,6 +174,10 @@ def loadDens(densFile,confID,lp,inTable=None):
     outTable : dict
         A table indexed by confID. Its values are a list of operators that have been measured.
     """
+
+    if len(confID) != len(confID.strip()):
+        logger.TBError('confID must not contain whitespace.')
+
 
     if inTable is None:
         outTable  = {}

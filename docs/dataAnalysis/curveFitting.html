@@ -46,6 +46,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Curve Fitting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
@@ -153,6 +154,17 @@ E.g. you pass it <code class="docutils literal notranslate"><span class="pre">[x
 way to force better performance; if it were a typical loop it would be slow. If you are having
 trouble figuring out how to write your function in a way to handle arrays, a good starting point
 can be to use <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vectorize.html">np.vectorize</a>.</p>
+<p>The covariance matrix of the fit parameters are computed through error propagation of the covariance matrix
+of the <span class="math notranslate nohighlight">\(y\)</span>-data. The error is then obtained by</p>
+<p><span class="math notranslate nohighlight">\(\sigma = \sqrt{\diag{\text{cov}}}\)</span></p>
+<p>In some codes, such as <code class="docutils literal notranslate"><span class="pre">gnuplot</span></code>, it is customary to multiply this error by a further factor <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span>.
+The intuition behind this is that the error will be increased if the fit is poor. This is okay if you would like to be
+somewhat more conservative with your error bar, but it is strictly speaking not necessary. It also makes the error bar
+more difficult to interpret clearly, i.e. if your input data and errors were well estimated, then it’s not clear that
+the true fit parameters will fall within one <span class="math notranslate nohighlight">\(\sigma\)</span> of the estimators 67% of the time. The default behavior
+is not to include this factor, but in case you would like it in your fits, for example because you are feeling
+conservative, or for comparison with <code class="docutils literal notranslate"><span class="pre">gnuplot</span></code>, you can pass the option
+<code class="docutils literal notranslate"><span class="pre">norm_err_chi2=True</span></code> to your <code class="docutils literal notranslate"><span class="pre">try_fit</span></code> or <code class="docutils literal notranslate"><span class="pre">do_fit</span></code> call.</p>
 </section>
 <section id="splines">
 <h2>Splines<a class="headerlink" href="#splines" title="Permalink to this headline"></a></h2>

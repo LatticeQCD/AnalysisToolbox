@@ -13,6 +13,7 @@ Here are some more detailed articles:
 ---
 maxdepth: 1
 ---
+gauge.md
 statisticalPhysics.md
 latticeParameters.md
 observables.md

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Statistical Physics &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Loading configurations &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Handling Lattice Parameters" href="latticeParameters.html" />
-    <link rel="prev" title="Gaugefields" href="gauge.html" /> 
+    <link rel="next" title="Applications" href="../applications/applications.html" />
+    <link rel="prev" title="Dealing with naming conventions from other collaborations" href="fileNamingConventions.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,17 +48,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="gauge.html">Gaugefields</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Statistical Physics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
-<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="interfacing.html">Interfacing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fileNamingConventions.html">Dealing with naming conventions from other collaborations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Loading configurations</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
 </ul>
 
@@ -76,10 +71,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
-      <li>Statistical Physics</li>
+          <li><a href="interfacing.html">Interfacing</a> &raquo;</li>
+      <li>Loading configurations</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/physicsAnalysis/statisticalPhysics.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/interfacing/confLoader.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -87,27 +82,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="statistical-physics">
-<h1>Statistical Physics<a class="headerlink" href="#statistical-physics" title="Permalink to this headline"></a></h1>
-<p>This module collects some basic methods and classes related to statistical physics.</p>
-<section id="critical-exponents">
-<h2>Critical exponents<a class="headerlink" href="#critical-exponents" title="Permalink to this headline"></a></h2>
-<p>There is a base <code class="docutils literal notranslate"><span class="pre">UniversailtyClass</span></code> object from which all universality classes inherit. It holds critical exponents
-as attributes along with an <code class="docutils literal notranslate"><span class="pre">exponentSummary()</span></code> method that prints to screen all critical exponents. If you want to
-access 3<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span> critical exponents, you can simply use</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">univ</span> <span class="o">=</span> <span class="n">Z2_3d</span>
-<span class="n">univ</span><span class="o">.</span><span class="n">alpha</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="loading-configurations">
+<h1>Loading configurations<a class="headerlink" href="#loading-configurations" title="Permalink to this headline"></a></h1>
+<p>There are a handful of gauge configuration formats on the market, including</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/milc-qcd/milc_qcd">MILC</a></p></li>
+<li><p>NERSC</p></li>
+<li><p>ILDG, which you can learn about <a class="reference external" href="https://hpc.desy.de/ildg/">here</a> and <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0010465511000476">here</a></p></li>
+</ul>
+<p>It is sometimes convenient to have the ability to read these configurations in Python. For instance lots of
+machine learning code is in Python. It may also be easier to use Python to write short scripts to convert between
+one format and another. To this end, we have implemented <code class="docutils literal notranslate"><span class="pre">latqcdtools/interfaces/confReader.py</span></code>.</p>
+<p>At the moment it only reads NERSC format, but one can easily extend this, by following the example of
+the <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> class, which inherits from a more general <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class. If you want to implement your own class,
+please have it inherit from <code class="docutils literal notranslate"><span class="pre">confReader</span></code> as well.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> object is easily instantiated with just information about <span class="math notranslate nohighlight">\(N_s\)</span> and <span class="math notranslate nohighlight">\(N_\tau\)</span> as</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reader</span> <span class="o">=</span> <span class="n">NERSCReader</span><span class="p">(</span><span class="n">Ns</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>At present one finds the universality classes</p>
-<ul class="simple">
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((2)\)</span></p></li>
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((3)\)</span></p></li>
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((4)\)</span></p></li>
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
-<li><p>2<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
-</ul>
-</section>
+<p>One then loads a gauge field using</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gauge</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">readConf</span><span class="p">(</span><span class="s1">&#39;nersc.l8t4b3360&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can access the link at site <span class="math notranslate nohighlight">\((0,0,1,1)\)</span> pointing in the 0-direction through</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gauge</span><span class="o">.</span><span class="n">getLink</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 
 

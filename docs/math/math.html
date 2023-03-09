@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to do pull requests &mdash; AnalysisToolbox 0.1 documentation</title>
+  <title>Math &mdash; AnalysisToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Documenting your code" href="documentation.html" />
-    <link rel="prev" title="Writing Tests" href="testing.html" /> 
+    <link rel="next" title="SU(3) matrices" href="SU3.html" />
+    <link rel="prev" title="Plotting" href="../base/plotting.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,15 +42,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="contributions.html">Contributions</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="testing.html">Writing Tests</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">How to do pull requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="documentation.html">Documenting your code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Math</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="SU3.html">SU(3) matrices</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
@@ -71,10 +68,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="contributions.html">Contributions</a> &raquo;</li>
-      <li>How to do pull requests</li>
+      <li>Math</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/contributions/git.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/math/math.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -82,19 +78,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="how-to-do-pull-requests">
-<h1>How to do pull requests<a class="headerlink" href="#how-to-do-pull-requests" title="Permalink to this headline"></a></h1>
-<p>You just finished your feature branch and want to merge it with the main. Please follow this procedure to make sure
-that nothing has been broken:</p>
-<ol class="simple">
-<li><p>Call <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span> <span class="pre">main</span> <span class="pre">feature</span></code>.</p></li>
-<li><p>Run all the tests. Please make sure that every single test passes.</p></li>
-<li><p>Once every single test passes, you can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">main</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span> <span class="pre">feature</span> <span class="pre">main</span></code>.</p></li>
-<li><p>Finally you are ready to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>. This will create a pull request.</p></li>
-<li><p>It is helpful if you say a few words about your feature branch in the pull request. Moreover you should emphasize that you followed the procedure listed here.</p></li>
-<li><p>One of us will then approve your request, assuming we don’t find anything strange.
-Congratulations! You are now a contributor!</p></li>
-</ol>
+  <section class="tex2jax_ignore mathjax_ignore" id="math">
+<h1>Math<a class="headerlink" href="#math" title="Permalink to this headline"></a></h1>
+<p>In general, we try to use <code class="docutils literal notranslate"><span class="pre">scipy</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code> methods whenever possible, as these tend to be fast and well-tested.
+Unfortunately sometimes there is missing functionality, and we need to make our own methods. Additionally it is
+sometimes useful to have convenience wrappers for already existing <code class="docutils literal notranslate"><span class="pre">scipy</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code> methods. This is the
+subject of the following articles.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SU3.html">SU(3) matrices</a></li>
+</ul>
+</div>
 </section>
 
 

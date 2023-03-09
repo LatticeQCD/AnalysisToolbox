@@ -35,6 +35,7 @@ maxdepth: 1
 ---
 contributions/contributions.md
 base/base.md
+math/math.md
 dataAnalysis/dataAnalysis.md
 physicsAnalysis/physicsAnalysis.md
 interfacing/interfacing.md

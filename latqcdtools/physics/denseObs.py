@@ -91,6 +91,9 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
     # Construct the output table
     for cID in opTable:
 
+        if len(cID) != len(cID.strip()):
+            logger.TBError('confIDs must not have whitespace! This throws off the column indexing.')
+
         nlVec=np.array(opTable[cID][0])
         nsVec=np.array(opTable[cID][1])
         numVec_l=len(nlVec)

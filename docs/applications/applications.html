@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Dealing with naming conventions from other collaborations" href="../interfacing/fileNamingConventions.html" /> 
+    <link rel="prev" title="Loading configurations" href="../interfacing/confLoader.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +45,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
@@ -79,6 +80,14 @@
 <h1>Applications<a class="headerlink" href="#applications" title="Permalink to this headline"></a></h1>
 <p>We have a few ready-to-use applications for some basic physics calculations. If you make a new application,
 please make sure it starts with <code class="docutils literal notranslate"><span class="pre">main_</span></code>.</p>
+<section id="main-getbeta-py">
+<h2>main_getBeta.py<a class="headerlink" href="#main-getbeta-py" title="Permalink to this headline"></a></h2>
+<p>Given a reference scale, <span class="math notranslate nohighlight">\(N_\tau\)</span>, and <span class="math notranslate nohighlight">\(T\)</span> in [MeV], this script calculates the corresponding <span class="math notranslate nohighlight">\(\beta\)</span>. An
+example calling is</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py<span class="w"> </span>--Nt<span class="w"> </span><span class="m">8</span><span class="w"> </span>--scale<span class="w"> </span>r0<span class="w"> </span>--T<span class="w"> </span><span class="m">300</span><span class="w"> </span>
+</pre></div>
+</div>
+</section>
 <section id="main-gettempandspacing-py">
 <h2>main_getTempAndSpacing.py<a class="headerlink" href="#main-gettempandspacing-py" title="Permalink to this headline"></a></h2>
 <p>Given a reference scale, <span class="math notranslate nohighlight">\(N_\tau\)</span>, and <span class="math notranslate nohighlight">\(\beta\)</span> value, this script calculates <span class="math notranslate nohighlight">\(T\)</span> in [MeV] and <span class="math notranslate nohighlight">\(a\)</span> in [fm]. An

@@ -4,6 +4,13 @@ Applications
 We have a few ready-to-use applications for some basic physics calculations. If you make a new application,
 please make sure it starts with `main_`.
 
+## main_getBeta.py
+Given a reference scale, $N_\tau$, and $T$ in [MeV], this script calculates the corresponding $\beta$. An
+example calling is
+```shell
+./main_getTempandSpacing.py --Nt 8 --scale r0 --T 300 
+```
+
 ## main_getTempAndSpacing.py
 Given a reference scale, $N_\tau$, and $\beta$ value, this script calculates $T$ in [MeV] and $a$ in [fm]. An
 example calling is
