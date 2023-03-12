@@ -3,7 +3,7 @@
 # 
 # D. Clarke
 # 
-# Test some of the methods in the utilities header.
+# Test some of the methods in the utilities module.
 # 
 
 import numpy as np

@@ -61,10 +61,15 @@ def printClean(*args,label=None):
     data = ()
     form = ''
     if label is not None:
-        form += '%14s: '
+        if not isinstance(label,str):
+            logger.TBError('label must be a string')
+        form += '%'+str(len(label))+'s: '
         data += (label,)
     for col in args:
-        if isinstance(col,complex):
+        if col is None:
+            data += ('',)
+            form += '%16s'
+        elif isinstance(col,complex):
             data += (col.real,)
             data += (col.imag,)
             form += '(%.8e  %.8e)  '

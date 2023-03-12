@@ -34,6 +34,33 @@ log_levels = {
         }
 
 
+recordLog = False
+logFile   = None
+def createLogFile(filename="Toolbox.log"):
+    """ Have output sent also to a log file. """
+    global recordLog
+    global logFile
+    logFile = open(filename,'w')
+    recordLog = True
+
+
+def closeLogFile():
+    """ Close the log file. """
+    global recordLog
+    global logFile
+    if not recordLog:
+        warn('Attempted to close log file with makeLog=False.')
+    logFile.close()
+    recordLog = False
+
+
+def log(outString):
+    global recordLog
+    global logFile
+    if recordLog:
+        logFile.write(outString)
+
+
 def getCallerName(frame):
     """ Gets the name of the function that calls the present function. """
     currframe = inspect.currentframe()
@@ -50,40 +77,53 @@ def getCallerName(frame):
 def isLevel(level):
     return log_levels[level] >= current_level
 
+
 def set_log_level(level):
     global current_level
     current_level = log_levels[level]
 
-def log(level, *args, **kwargs):
-    if log_levels[level] >= current_level:
-        print(*args, **kwargs)
+
 
 def debug(*args,frame=2):
     if current_level <= 1:
         args = [str(s) for s in args]
         callerName = getCallerName(frame)
-        print('  DEBUG: '+callerName+'--'+(' '.join(args)))
+        output = '  DEBUG: '+callerName+'--'+(' '.join(args))
+        print(output)
+        log(output+'\n')
+
 
 def details(*args):
     if current_level <= 2:
         args = [str(s) for s in args]
-        print('  DETAILS: '+(' '.join(args)))
-        
+        output = '  DETAILS: '+(' '.join(args))
+        print(output)
+        log(output+'\n')
+
+
 def progress(*args):
     if current_level <= 3:
         args = [str(s) for s in args]
-        print('  PROGRESS: '+(' '.join(args)))
+        output = '  PROGRESS: '+(' '.join(args))
+        print(output)
+        log(output+'\n')
+
 
 def info(*args):
     if current_level <= 4:
         args = [str(s) for s in args]
-        print('  INFO: '+(' '.join(args)))
+        output = '  INFO: '+(' '.join(args))
+        print(output)
+        log(output+'\n')
+
 
 def warn(*args,frame=2):
     if current_level <= 5:
         args = [str(s) for s in args]
         callerName = getCallerName(frame)
-        print(bcolors.WARNING+'  WARNING: '+callerName+'--'+(' '.join(args))+bcolors.ENDC)
+        output = bcolors.WARNING+'  WARNING: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
+        print(output)
+        log(output+'\n')
 
 
 # --------------------------------------------------------------------------------------------- INDEPENDENT OF LOG LEVEL
@@ -91,22 +131,23 @@ def warn(*args,frame=2):
 
 def TBFail(*args):
     args = [str(s) for s in args]
-    print(bcolors.FAIL+'  FAIL: '+(' '.join(args))+bcolors.ENDC)
+    output = bcolors.FAIL+'  FAIL: '+(' '.join(args))+bcolors.ENDC
+    print(output)
+    log(output + '\n')
+
 
 def TBError(*args,frame=2):
     args = [str(s) for s in args]
     callerName = getCallerName(frame)
-    print(bcolors.FAIL+'  ERROR: '+callerName+'--'+(' '.join(args))+bcolors.ENDC)
+    output = bcolors.FAIL+'  ERROR: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
+    print(output)
+    log(output + '\n')
     sys.exit(-1)
+
 
 def TBPass(*args):
     args = [str(s) for s in args]
-    print(bcolors.PASS+'  SUCCESS: '+(' '.join(args))+bcolors.ENDC)
+    output = bcolors.PASS+'  SUCCESS: '+(' '.join(args))+bcolors.ENDC
+    print(output)
+    log(output + '\n')
 
-def TBRed(*args):
-    args = [str(s) for s in args]
-    print(bcolors.FAIL+(' '.join(args))+bcolors.ENDC)
-
-def TBGreen(*args):
-    args = [str(s) for s in args]
-    print(bcolors.PASS+(' '.join(args))+bcolors.ENDC)

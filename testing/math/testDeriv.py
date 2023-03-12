@@ -77,7 +77,7 @@ def testDeriv():
     res_true = fit_grad_ref(x, test_param, opt)
     print_results_iter(res, res_true, "numerical gradient for fitting functions")
 
-    res      = diff_fit_hess(x, test_param, fit_func, args=(opt,), eps = 1e-5)
+    res      = diff_fit_hess(x, test_param, fit_func, args=(opt,), h = 1e-5)
     res_true = fit_hess_ref(x, test_param, opt)
     print_results_iter(res, res_true, "numerical hessian for fitting functions")
 

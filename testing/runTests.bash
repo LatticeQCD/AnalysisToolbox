@@ -21,10 +21,13 @@ echo
 
 cd base
 runTestRoutine testDataCleaner.py
+runTestRoutine testLogger.py
+_compareFiles control.log Toolbox.log
+_checkPassError $? "testLogger" 
+runTestRoutine testPrintErrorBars.py
 runTestRoutine "testReadWrite.py --type str"
 runTestRoutine "testReadWrite.py --type list"
 runTestRoutine testUtilities.py
-runTestRoutine testPrintErrorBars.py
 cd ..
 
 
