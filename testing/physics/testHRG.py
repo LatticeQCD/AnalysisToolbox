@@ -1,7 +1,7 @@
 # 
 # testHRG.py                                                               
 # 
-# D. Clarke 
+# D. Clarke, J. Goswami 
 # 
 # A test for some of the HRG methods. 
 #
@@ -13,7 +13,7 @@ from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
 from latqcdtools.base.utilities import timer,parallel_function_eval
 from latqcdtools.math.num_deriv import diff_deriv
-from latqcdtools.physics.HRG import HRG,EV_HRG,HRGexact
+from latqcdtools.physics.HRG import HRG,EVHRG,HRGexact
 
 
 times = timer()
@@ -48,8 +48,8 @@ hadrons1,M1,Q1,B1,S1,C1,g1,w1 = np.loadtxt("../../latqcdtools/physics/HRGtables/
 
 QMhrg      = HRG(M,g,w,B,S,Q)
 pdghrg     = HRG(M1,g1,w1,B1,S1,Q1)
-evhrg      = EV_HRG(M,g,w,B,S,Q)
-evpdghrg   = EV_HRG(M1,g1,w1,B1,S1,Q1)
+evhrg      = EVHRG(M,g,w,B,S,Q)
+evpdghrg   = EVHRG(M1,g1,w1,B1,S1,Q1)
 QMhrgexact = HRGexact(M,g,w,B,S,Q)
 
 #
@@ -68,6 +68,20 @@ print_results(chi_pdg, refPDG, prec=EPSILON, text="chiB2 PDG check")
 print_results(chi_QM , refQM , prec=EPSILON, text="chiB2 QM check")
 print_results(chi_ev , refEV , prec=EPSILON, text="chiB2 EV check")
 print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
+
+#
+# Test : Calculate chi^{101}_uds with b=1 and mu/T=0. Compare against trusted control result.
+
+chiusPDG = pdghrg.genChiFlavor(T,  u_order = 1, d_order = 0, s_order = 1)
+chiusQM  = QMhrg.genChiFlavor(T,  u_order = 1, d_order = 0, s_order = 1)
+
+
+_, refPDGBS, refQMBS = np.loadtxt("HRGcontrol/chiBQSC1010_muBh0.0.txt.control",unpack=True)
+_, refPDGQS, refQMQS = np.loadtxt("HRGcontrol/chiBQSC0110_muBh0.0.txt.control",unpack=True)
+
+
+print_results(chiusQM / (refQMBS + refQMQS) , np.ones(chiusQM.size)  , prec=EPSILON , text="chius QM check")
+print_results(chiusPDG / (refPDGBS + refPDGQS) , np.ones(chiusQM.size) , prec=EPSILON , text="chius PDG check")
 
 
 #
