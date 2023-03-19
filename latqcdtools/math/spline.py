@@ -6,9 +6,11 @@
 # Generally speaking, one should use scipy's methods for splines, like interp1d, UnivariateSpline, etc. However
 # it is a bit inconvenient to use when one wants control over the knots and endpoints. That is what this module is for.
 # 
+
 import numpy as np
 from scipy.interpolate import LSQUnivariateSpline
 import latqcdtools.base.logger as logger
+
 
 def even_knots(xdata, nknots):
     """ Return a list of nknots evenly spaced knots. """
