@@ -6,24 +6,30 @@
 # Python implementation of the spectrum of the Lattice QCD dirac operators.
 #
 
-import pylab as plt
-from latqcdtools.physics.diraFreespectra import DiracOp
-from multiprocessing import Pool
+from latqcdtools.physics.diracFreespectra import DiracOp
+from latqcdtools.base.plotting import latexify, set_params, plot_dots, plt
+
+latexify()
 
 N = 16
-Lx, Ly, Lz, Lt = N, N, N, 16
-mass = 0.25
+Lx, Ly, Lz, Lt = N, N, N, 8
+mass = 0.0
 
-def Teseignevals():
+
+def testEigenevals():
+
     DW = DiracOp(Lx, Ly, Lz, Lt, fermion='Wilson')
     eig_vals = DW.eigvalues(mass)
-    plt.plot(eig_vals.real, eig_vals.imag, 'r.', mfc='None')
+    set_params(xlabel='${\\rm Re}\\,\\lambda$', ylabel='${\\rm Im}\\,\\lambda$')
+    plot_dots(eig_vals.real, eig_vals.imag)
     plt.show()
 
     MDW = DiracOp(Lx, Ly, Lz, Lt, fermion="DwMobius")
     eig_vals = MDW.eigvalues(mass)
-    plt.plot(eig_vals.real, eig_vals.imag, 'r.', mfc='None')
+    set_params(xlabel='${\\rm Re}\\,\\lambda$', ylabel='${\\rm Im}\\,\\lambda$')
+    plot_dots(eig_vals.real, eig_vals.imag)
     plt.show()
 
+
 if __name__ == '__main__':
-    Teseignevals()
+    testEigenevals()
