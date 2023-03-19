@@ -11,7 +11,7 @@ from latqcdtools.statistics.fitting import do_fit, try_fit, Fitter
 from latqcdtools.base.check import print_results, rel_check
 import latqcdtools.base.logger as logger
 import latqcdtools.statistics.statistics as stats
-from latqcdtools.base.readWrite import read_in_pure
+from latqcdtools.base.readWrite import readTable, readCorrelatorTable
 from scipy.optimize import curve_fit
 
 
@@ -140,11 +140,11 @@ def testFit():
     print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
 
 
-    xdata, data, nconfs = read_in_pure("corr_pure.dat",1,2)
+    xdata, data, nconfs = readCorrelatorTable("corr_pure.dat",1,2)
 
     cov   = calc_cov_OLD(data)
     ydata = stats.std_mean(data, axis = 1)
-    cov_true = np.loadtxt("cov.txt")
+    cov_true = readTable("cov.txt")
     cov_test = True
     for i in range(len(cov)):
         for j in range(len(cov[i])):

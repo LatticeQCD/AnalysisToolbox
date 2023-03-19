@@ -8,10 +8,10 @@
 #
 import numpy as np
 import argparse
-from latqcdtools.physics.HRG import HRG, EV_HRG, LCP_init_NS0
+from latqcdtools.physics.HRG import HRG, EVHRG, LCP_init_NS0
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
-from latqcdtools.base.readWrite import writeTable
+from latqcdtools.base.readWrite import readTable, writeTable
 from latqcdtools.math.optimize import persistentSolve
 from latqcdtools.base.check import rel_check
 
@@ -55,7 +55,7 @@ if (Tpc0 is not None) and (temp is not None):
 muB = np.arange(10,muBmax,10)
 
 
-hadrons,M,Q,B,S,C,g,w = np.loadtxt(args.hadron_file,unpack=True,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
+hadrons,M,Q,B,S,C,g,w = readTable(args.hadron_file,dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
 
 if Tpc0 is not None:
@@ -68,7 +68,7 @@ else:
 
 muBh  = muB/t
 QMhrg = HRG(M, g, w, B, S, Q)
-evhrg = EV_HRG(M, g, w, B, S, Q)
+evhrg = EVHRG(M, g, w, B, S, Q)
 
 
 #

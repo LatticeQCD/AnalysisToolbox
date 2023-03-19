@@ -17,6 +17,7 @@ import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt
+from latqcdtools.base.readWrite import writeTable
 from latqcdtools.math.math import logDet
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
@@ -1051,7 +1052,7 @@ class Fitter:
 
 
     def save_func(self, filename, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
-                  no_error = False, **kwargs):
+                  no_error = False, header=None, **kwargs):
         """ Save fit data to table. """
 
         if params_err is None and params is None:
@@ -1079,9 +1080,10 @@ class Fitter:
             grad = lambda x, *params: np.asarray(self.grad(x, params))
 
             save_func(func, filename, xmin = xmin, xmax = xmax, args = params, args_err = params_err, grad = grad,
-                      color = color, alpha = alpha, func_sup_numpy = self._func_sup_numpy, expand = True, **kwargs)
+                      color = color, alpha = alpha, func_sup_numpy = self._func_sup_numpy, expand = True,
+                      header = header, **kwargs)
         else:
-            save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color,
+            save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color, header = header,
                       func_sup_numpy = self._func_sup_numpy, expand = True, **kwargs)
 
         
@@ -1309,7 +1311,8 @@ def cut_eig(corr, threshold):
     return vecs.dot( np.diag(vals).dot( vecs.transpose() ) )
 
 
-def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, **params):
+def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False,
+              header=None, **params):
     fill_param_dict(params)
     xmin = params['xmin']
     xmax = params['xmax']
@@ -1377,14 +1380,10 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
             ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
                                                   args = tmp_opt) for x in xdata])
 
-        with open(filename, "w") as fout: # TODO: replace with writeTable
-            for i in range(len(xdata)):
-                print(xdata[i], ydata[i], ydata_err[i], file = fout)
+        writeTable(filename,xdata,ydata,ydata_err,header=header)
 
     else:
-        with open(filename, "w") as fout:
-            for i in range(len(xdata)):
-                print(xdata[i], ydata[i], file = fout)
+        writeTable(filename,xdata,ydata,header=header)
 
 
 def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,

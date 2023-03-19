@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
+from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
 from latqcdtools.base.utilities import timer,parallel_function_eval
 from latqcdtools.math.num_deriv import diff_deriv
@@ -40,9 +41,9 @@ def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
 
 
 # QM and PDG HRG files
-hadrons ,M ,Q ,B ,S ,_ ,g ,w  = np.loadtxt("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",unpack=True,
+hadrons ,M ,Q ,B ,S ,_ ,g ,w  = readTable("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
                                            usecols=(0,1,2,3,4,5,6,7),dtype="U11,f8,i8,i8,i8,i8,i8,i8")
-hadrons1,M1,Q1,B1,S1,C1,g1,w1 = np.loadtxt("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
+hadrons1,M1,Q1,B1,S1,C1,g1,w1 = readTable("../../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",
                                            dtype="U11,f8,i8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6,7))
 
 
@@ -62,7 +63,7 @@ chi_pdg = pdghrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, muB_div_T=1)
 chi_ev  = evhrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) + evhrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
 chi_ev1 = evpdghrg.gen_chi(T, b, 1, B_order=2, Q_order=0, S_order=0) + evpdghrg.gen_chi(T, b, -1, B_order=2, Q_order=0, S_order=0)
 
-_, refPDG, refQM, refEV, refEV1 = np.loadtxt("HRGcontrol/chiBQS_200_muB1.00_b1.00_QMHRG2020_BI.control",unpack=True)
+_, refPDG, refQM, refEV, refEV1 = readTable("HRGcontrol/chiBQS_200_muB1.00_b1.00_QMHRG2020_BI.control")
 
 print_results(chi_pdg, refPDG, prec=EPSILON, text="chiB2 PDG check")
 print_results(chi_QM , refQM , prec=EPSILON, text="chiB2 QM check")
@@ -76,8 +77,8 @@ chiusPDG = pdghrg.genChiFlavor(T,  u_order = 1, d_order = 0, s_order = 1)
 chiusQM  = QMhrg.genChiFlavor(T,  u_order = 1, d_order = 0, s_order = 1)
 
 
-_, refPDGBS, refQMBS = np.loadtxt("HRGcontrol/chiBQSC1010_muBh0.0.txt.control",unpack=True)
-_, refPDGQS, refQMQS = np.loadtxt("HRGcontrol/chiBQSC0110_muBh0.0.txt.control",unpack=True)
+_, refPDGBS, refQMBS = readTable("HRGcontrol/chiBQSC1010_muBh0.0.txt.control")
+_, refPDGQS, refQMQS = readTable("HRGcontrol/chiBQSC0110_muBh0.0.txt.control")
 
 
 print_results(chiusQM / (refQMBS + refQMQS) , np.ones(chiusQM.size)  , prec=EPSILON , text="chius QM check")
@@ -89,31 +90,31 @@ print_results(chiusPDG / (refPDGBS + refPDGQS) , np.ones(chiusQM.size) , prec=EP
 #       tolerance because I had to fish the paper values out by eye and because we are using an updated resonance list
 #       compared to what was available in 2014.
 #
-refT, ref3p_div_T4 = np.loadtxt("HRGcontrol/2014_3P_div_T4.d",unpack=True)
+refT, ref3p_div_T4 = readTable("HRGcontrol/2014_3P_div_T4.d")
 test3p_div_T4      = 3*pdghrg.P_div_T4(refT,0,0,0)
 print_results(ref3p_div_T4, test3p_div_T4, prec=2e-2, text="2014 HotQCD 3p/T^4 check")
 comparisonPlot(3*pdghrg.P_div_T4(T,0,0,0),"$3P/T^4$","HRGcontrol/2014_3P_div_T4.d","2014 HotQCD")
 
 
-refT, refE_div_T4 = np.loadtxt("HRGcontrol/2014_e_div_T4.d",unpack=True)
+refT, refE_div_T4 = readTable("HRGcontrol/2014_e_div_T4.d")
 testE_div_T4      = pdghrg.E_div_T4(refT,0,0,0)
 print_results(refE_div_T4, testE_div_T4, prec=3e-2, text="2014 HotQCD e/T^4 check")
 comparisonPlot(pdghrg.E_div_T4(T,0,0,0),"$E/T^4$","HRGcontrol/2014_e_div_T4.d","2014 HotQCD")
 
 
-refT, ref3S_div_4T3 = np.loadtxt("HRGcontrol/2014_3s_div_4T3.d",unpack=True)
+refT, ref3S_div_4T3 = readTable("HRGcontrol/2014_3s_div_4T3.d")
 test3s_div_4T3      = 3*pdghrg.S_div_T3(refT,0,0,0)/4
 print_results(ref3S_div_4T3, test3s_div_4T3, prec=3e-2, text="2014 HotQCD 3s/4T^3 check")
 comparisonPlot(3*pdghrg.S_div_T3(T,0,0,0)/4,"$3s/4T^3$","HRGcontrol/2014_3s_div_4T3.d","2014 HotQCD")
 
 
-refT, ref3CV_div_T3 = np.loadtxt("HRGcontrol/2014_CV_div_T3.d",unpack=True)
+refT, ref3CV_div_T3 = readTable("HRGcontrol/2014_CV_div_T3.d")
 testCV_div_T3       = pdghrg.CV_div_T3_mu0(refT)
 print_results(ref3CV_div_T3, testCV_div_T3, prec=3e-2, text="2014 HotQCD CV/T^3 check")
 comparisonPlot(pdghrg.CV_div_T3_mu0(T),"$C_V/T^3$","HRGcontrol/2014_CV_div_T3.d","2014 HotQCD")
 
 
-refT, refcs2 = np.loadtxt("HRGcontrol/2014_cs2.d",unpack=True)
+refT, refcs2 = readTable("HRGcontrol/2014_cs2.d")
 cs2 = pdghrg.S_div_T3(refT,0,0,0,0)/pdghrg.CV_div_T3_mu0(refT)
 print_results(refcs2, cs2, prec=3e-2, text="2014 HotQCD cs^2 check")
 
@@ -167,7 +168,7 @@ def exactHRGTest(case): # TODO: The integration doesn't seem to be reliable yet.
 #       here is even higher. But I expect only to get the right ballpark, since we are not using the same states.
 #
 
-data = np.loadtxt("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",unpack=True,
+data = readTable("../../latqcdtools/physics/HRGtables/hadron_list_ext_strange_charm_2020.txt",
                   usecols=(1,2,3,4,5,6),dtype="f8,i8,i8,i8,i8,i8")
 
 # First exclude all states that have C = 0.
@@ -178,7 +179,7 @@ openCharmMesons = restrictAtCol(openCharmStates,2,0)
 M, Q, B, S, C, g = openCharmMesons[0], openCharmMesons[1], openCharmMesons[2], openCharmMesons[3], openCharmMesons[4], openCharmMesons[5]
 w = np.array([1 if ba==0 else -1 for ba in B])
 QMhrg = HRG(M,g,w,B,S,Q,C)
-refT, refMesonP_div_T4 = np.loadtxt("HRGcontrol/2014_P_Mc.d",unpack=True)
+refT, refMesonP_div_T4 = readTable("HRGcontrol/2014_P_Mc.d")
 mesonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
 print_results(mesonP_div_T4, refMesonP_div_T4, prec=1.8e-1, text="2014 HotQCD meson open charm")
 comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Mc.d","2014 open charm meson")
@@ -188,13 +189,13 @@ openCharmBaryons = excludeAtCol(openCharmStates,2,0)
 M, Q, B, S, C, g = openCharmBaryons[0], openCharmBaryons[1], openCharmBaryons[2], openCharmBaryons[3], openCharmBaryons[4], openCharmBaryons[5]
 w = np.array([1 if ba==0 else -1 for ba in B])
 QMhrg = HRG(M,g,w,B,S,Q,C)
-refT, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/2014_P_Bc.d",unpack=True)
+refT, refBaryonP_div_T4 = readTable("HRGcontrol/2014_P_Bc.d")
 baryonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
 print_results(baryonP_div_T4, refBaryonP_div_T4, prec=2.2e-1, text="2014 HotQCD baryon open charm")
 comparisonPlot(QMhrg.P_div_T4(T,0,0,0),"$P/T^4$","HRGcontrol/2014_P_Bc.d","2014 open charm baryon")
 
 # Do another check against Frithjof's data.
-refT, _, _, refBaryonP_div_T4 = np.loadtxt("HRGcontrol/OUT_5.0.DAT140_2022_hidden_charm_pressure",unpack=True)
+refT, _, _, refBaryonP_div_T4 = readTable("HRGcontrol/OUT_5.0.DAT140_2022_hidden_charm_pressure")
 refT *= 1000 # He gives his temperatures in [GeV]
 baryonP_div_T4 = QMhrg.P_div_T4(refT,0,0,0)
 print_results(baryonP_div_T4, refBaryonP_div_T4, prec=1e-3, text="2022 F. Karsch code open charm")
@@ -205,7 +206,7 @@ M, Q, B, S, C, g = openCharmStates[0], openCharmStates[1], openCharmStates[2], o
 
 w = np.array([1 if ba==0 else -1 for ba in B])
 QMhrg = HRG(M,g,w,B,S,Q,C)
-refT, refRSC13 = np.loadtxt("HRGcontrol/2014_chi_charm_ratio.d",unpack=True)
+refT, refRSC13 = readTable("HRGcontrol/2014_chi_charm_ratio.d")
 chiBSC112 = QMhrg.gen_chi(refT,B_order=1,S_order=1,Q_order=0,C_order=2)
 chiSC13   = QMhrg.gen_chi(refT,B_order=0,S_order=1,Q_order=0,C_order=3)
 RSC13     = -chiBSC112/(chiSC13 - chiBSC112)

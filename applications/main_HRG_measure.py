@@ -14,7 +14,7 @@ import numpy as np
 from latqcdtools.physics.HRG import HRG
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import getArgs, printArg
-from latqcdtools.base.readWrite import writeTable
+from latqcdtools.base.readWrite import readTable, writeTable
 
 
 parser = argparse.ArgumentParser(description='Script to carry out HRG calculations.',allow_abbrev=False)
@@ -65,13 +65,13 @@ if muBh is not None:
     muQh = 0.
     muSh = 0.
 else:
-    T, muBh, muQh, muSh = np.loadtxt(LCP_file, unpack=True, usecols=(0, 1, 2, 3))
+    T, muBh, muQh, muSh = readTable(LCP_file, usecols=(0, 1, 2, 3))
 print("     T [MeV]:",T[0],T[-1],"\n")
 muCh = 0.
 
 
-hadrons ,M ,Q ,B ,S ,C ,g  = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
-hadrons1,M1,Q1,B1,S1,C1,g1 = np.loadtxt("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",unpack=True,
+hadrons ,M ,Q ,B ,S ,C ,g  = readTable(args.hadron_file,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
+hadrons1,M1,Q1,B1,S1,C1,g1 = readTable("../latqcdtools/physics/HRGtables/PDG_hadron_list_ext_2020.txt",
                                         dtype="U11,f8,i8,i8,i8,i8,i8",usecols=(0,1,2,3,4,5,6))
 w  = np.array([1 if ba==0 else -1 for ba in B])
 w1 = np.array([1 if ba==0 else -1 for ba in B1])

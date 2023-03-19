@@ -5,6 +5,7 @@ import numpy as np
 import argparse
 from latqcdtools.physics.HRG import HRG
 from latqcdtools.base.utilities import getArgs
+from latqcdtools.base.readWrite import readTable
 
 
 parser = argparse.ArgumentParser(description='Script to calculate chiBQS along the pseudo-critical line',allow_abbrev=False)
@@ -20,7 +21,7 @@ parser.add_argument("--r", dest="r", required=True, help="nQ/nB = 0.4", type=flo
 args = getArgs(parser)
 r = args.r
 
-hadrons,M,Q,B,S,C,g = np.loadtxt(args.hadron_file,unpack=True,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
+hadrons,M,Q,B,S,C,g = readTable(args.hadron_file,usecols=(0,1,2,3,4,5,6),dtype="U11,f8,i8,i8,i8,i8,i8")
 
 tag = str(args.particle_list)
 
@@ -28,7 +29,7 @@ tag = str(args.particle_list)
 w  = np.array([1 if ba==0 else -1 for ba in B])
 
 #muB muQ muS file
-tpc, muBh, muQh, muSh = np.loadtxt(args.fixedmuB.name,unpack=True,usecols=(0,1,2,3))
+tpc, muB, muQ, muS = readTable(args.fixedmuB.name,usecols=(0,1,2,3))
 
 T=tpc
 
@@ -47,9 +48,6 @@ elif args.obs == "pressure":
     np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 elif args.obs == "energy":
     obs = QMhrg.E_div_T4(T, muB_div_T=muB, muS_div_T = muS, muQ_div_T = muQ)
-    np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
-elif args.obs == "specificheat":
-    obs = QMhrg.CV_div_T3(T, muB_div_T=muB, muS_div_T = muS, muQ_div_T = muQ)
     np.savetxt("muB_divT%0.1f_%s_Hrg_BI_%sr%0.1f" % (muB[0]/T[0],args.obs,tag,r), np.c_[T,muB,obs], fmt='%.4f %0.4e %0.6e', header='T muB HRG')
 elif args.obs == "cs2":
     num = 4*QMhrg.P_div_T4(T, muB_div_T=muB,muS_div_T = muS, muQ_div_T = muQ) + T * QMhrg.ddT_P_div_T4(T, muB_div_T=muB,muS_div_T = muS, muQ_div_T = muQ)
