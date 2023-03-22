@@ -5,9 +5,8 @@
 #
 # Fitter class, along with functions for fitting data. The goal is to be able to carry out simple fits, trying many
 # fitting algorithms. Bayesian priors are supported. You can judge the quality of your fit by quantities like
-# chi^2/d.o.f., logGBF, and AICc, which are also implemented here. Errors in the fit parameters can be calculated via
-# error propgation, or through the Hessian of the chi^2. It also has a variety of "saved" attributes which can be used
-# for repeated, automated curve fitting.
+# chi^2/d.o.f. and logGBF. Errors in the fit parameters can be calculated via error propgation, or through the Hessian
+# of the chi^2. It also has a variety of "saved" attributes which can be used for repeated, automated curve fitting.
 #
 
 import numpy as np
@@ -16,22 +15,16 @@ from scipy.linalg import inv
 import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt
+from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt, clearPlot
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.math.math import logDet
+from latqcdtools.base.check import IllegalArgumentError
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
-from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, clearPlot
+from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, funcExpand
 from latqcdtools.base.utilities import envector
 from inspect import signature
 import matplotlib as mpl
 import traceback
-
-
-class NotAvailableError(Exception):
-    pass
-class IllegalArgumentError(ValueError):
-    pass
 
 
 class Fitter:
@@ -59,7 +52,7 @@ class Fitter:
         elements in ydata.
     ydata : array_like
         ydata used for fit.
-    edata : arry_like, optional, default: None
+    edata : array_like, optional, default: None
         Data for the error. Either pass an 1D array of errors of a full covariance matrix. In case of errors, the
         errors are interpreted as edata = sqrt(variance). For the case of the covariance matrix no root has to be
         taken: variance = diag(edata).
@@ -124,7 +117,7 @@ class Fitter:
     # Allowed keys for the constructor
     _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
                      'no_cache', 'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev',
-                     'try_all', 'func_sup_numpy', 'always_return', 'suppress_warning']
+                     'try_all', 'func_sup_numpy', 'always_return', 'suppress_warning' ]
 
     # All possible algorithms.
     _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG",
@@ -268,9 +261,8 @@ class Fitter:
         self._cor = norm_cov(self._cov)
 
 
-
     def gen_fit_data(self, xmin, xmax, ind = None):
-        """ Generate the data that are used for the fit. The data for the fit are stored in variables called self._fit_...
+        """ Generate the data that are used for the fit. The data for the fit are stored in variables called self._fit*
         A filter is applied to the data to make sure they lie between xmin and xmax. If self._cut_eig is set, the
         eigenvalues of the covariance matrix are cut. This function is called before each fit and creates copies of the
         actual fitting data in case of non-trivial xmin and xmax.
@@ -422,15 +414,9 @@ class Fitter:
         These are stored in self._saved_params. """
         try:
             if self._func_sup_numpy:
-                if self._expand:
-                    self._func(self._fit_xdata, *(tuple(self._saved_params) + tuple(self._args)))
-                else:
-                    self._func(self._fit_xdata, self._saved_params, *self._args)
+                funcExpand(self._func,self._fit_xdata,self._saved_params,self._args,self._expand)
             else:
-                if self._expand:
-                    self._func(self._xdata[0], *(tuple(self._saved_params) + tuple(self._args)))
-                else:
-                    self._func(self._xdata[0], self._saved_params, *self._args)
+                funcExpand(self._func,self._fit_xdata[0],self._saved_params,self._args,self._expand)
         except Exception as e:
             logger.info("Function cannot handle start_parameters. Generate new defaults")
             if logger.isLevel("DEBUG"):
@@ -438,6 +424,7 @@ class Fitter:
             self._get_numb_params()
             self._saved_params = np.ones(self._numb_params)
             raise e
+
         if any(np.isnan(self._saved_params) | np.isinf(self._saved_params)):
             logger.info("Nan or inf in start parameters. Generate new defaults")
             self._get_numb_params()
@@ -445,37 +432,17 @@ class Fitter:
 
 
     def num_grad(self, x, params):
-        """ Numerical gradient using the difference quotient. """
         return diff_fit_grad(x, params, self._func, self._args, expand = self._expand)
-
-
     def num_hess(self, x, params):
-        """ Numerical Hessian using the difference quotient. """
         return diff_fit_hess(x, params, self._func, self._args, expand = self._expand)
 
 
     def wrap_grad(self, x, params):
-        """ Wrap the gradient provided by the user. """
-        if self._expand:
-            return self._grad(x, *(tuple(params) + tuple(self._grad_args)))
-        else:
-            return self._grad(x, params, *self._grad_args)
-
-
+        return funcExpand(self._grad,x,params,self._grad_args,expand=self._expand)
     def wrap_hess(self, x, params):
-        """ Wrap the Hessian provided by the user. """
-        if self._expand:
-            return self._hess(x, *(tuple(params) + tuple(self._hess_args)))
-        else:
-            return self._hess(x, params, *self._hess_args)
-
-
+        return funcExpand(self._hess,x,params,self._hess_args,expand=self._expand)
     def wrap_func(self, x, params):
-        """ Wrap the function provided by the user. """
-        if self._expand:
-            return self._func(x, *(tuple(params) + tuple(self._args)))
-        else:
-            return self._func(x, params, *self._args)
+        return funcExpand(self._func,x,params,self._args,expand=self._expand)
 
 
     def fit_ansatz_array(self, params):
@@ -488,7 +455,7 @@ class Fitter:
             if self._func_sup_numpy:
                 ret = self.wrap_func(self._fit_xdata, params)
             else:
-                ret = np.array( [self.wrap_func(value, params) for value in self._fit_xdata])
+                ret = np.array( [self.wrap_func(value, params) for value in self._fit_xdata] )
             self._cache_array = np.copy(ret)
             self._cache_p_array = params
             return ret
@@ -536,17 +503,17 @@ class Fitter:
 
     def calc_chisquare(self, params):
         """ Compute the chisquare, i.e. the chi^2. This is the function that will be minimized. """
-        diff = self._fit_ydata - self.fit_ansatz_array(params)
-        diff /= np.sqrt(np.diag(self._fit_cov))
-        res = diff.dot(self._fit_inv_cor.dot(diff))
         if self._checkprior:
-            res += np.sum( ( np.array(params) - self._priorval )**2 / self._priorsigma**2 )
-        return res
+            prior, prior_err = self._priorval, self._priorsigma
+        else:
+            prior, prior_err = None, None
+        return chisquare(self._fit_xdata, self._fit_ydata, self._fit_cov, self._func, self._args, params, prior=prior,
+                         prior_err=prior_err, expand=self._expand, supNumpy=self._func_sup_numpy)
 
 
     def grad_chisquare(self, params):
         """ Compute the gradient of the chisquare. Used by some solvers in the minimization routine. """
-        jac = self.jacobian_fit_ansatz_array(params).transpose()     # df/dp
+        jac  = self.jacobian_fit_ansatz_array(params).transpose()    # df/dp
         diff = self.fit_ansatz_array(params) - self._fit_ydata       # Dy
 
         sigma = np.sqrt(np.diag(self._fit_cov))
@@ -563,7 +530,7 @@ class Fitter:
     def hess_chisquare(self, params):
         """ Compute the hessian of the chisquare. Used by some solvers in the minimization routine. """
         hess = self.hess_fit_ansatz_array(params).transpose()
-        jac = self.jacobian_fit_ansatz_array(params).transpose()
+        jac  = self.jacobian_fit_ansatz_array(params).transpose()
         diff = self.fit_ansatz_array(params) - self._fit_ydata
 
         sigma = np.sqrt(np.diag(self._fit_cov))
@@ -852,7 +819,7 @@ class Fitter:
 
 
     def try_fit(self, algorithms = None, start_params = None, priorval = None, priorsigma = None, xmin = -np.inf,
-                xmax=np.inf, ind = None, ret_pcov = False):
+                xmax=np.inf, ind = None, detailedInfo = False):
         """ Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
         smallest chi^2. By default this method does a standard statistical fit. One can also include priors to obtain
         posteriors using Bayesian statistics. A well known summary of the latter strategy in the context of lattice QCD
@@ -877,8 +844,8 @@ class Fitter:
         ind: array of bools, optional, default = None
             array of bools that corresponds to the fitting points that should be used. This is useful if you want to
             apply more complex filters than default.
-        ret_pcov : bool, optional. default = False
-            If True, return the covariance matrix of the fit parameters.
+        detailedInfo : bool, optional. default = False
+            If True, return also the covariance matrix of the fit parameters and logGBF
 
         Returns
         -------
@@ -955,16 +922,18 @@ class Fitter:
         else:
             chidof = all_chi2[min_ind]/dof
 
-        if ret_pcov:
-            if self._checkprior:
-                return np.copy(self._saved_params), all_fit_errors[min_ind], chidof, self.logGBF(self._saved_params), np.copy(self._saved_pcov)
-            else:
-                return np.copy(self._saved_params), all_fit_errors[min_ind], chidof, np.copy(self._saved_pcov)
+        if detailedInfo:
+            return ( np.copy(self._saved_params),
+                     all_fit_errors[min_ind],
+                     chidof,
+                     self.logGBF(self._saved_params),
+                     np.copy(self._saved_pcov)
+                   )
         else:
-            if self._checkprior:
-                return np.copy(self._saved_params), all_fit_errors[min_ind], chidof, self.logGBF(self._saved_params)
-            else:
-                return np.copy(self._saved_params), all_fit_errors[min_ind], chidof
+            return ( np.copy(self._saved_params),
+                     all_fit_errors[min_ind],
+                     chidof
+                   )
 
 
     def do_fit(self, algorithm="curve_fit", **kwargs):
@@ -972,53 +941,9 @@ class Fitter:
         return self.try_fit([algorithm], **kwargs)
 
 
-    def likelihood(self, params = None, xmin = np.inf, xmax = -np.inf, correlated = None):
-        """ The estimated likelihood of the fit parameters. """
-        return np.exp(self.loglikelihood(params, xmin, xmax, correlated))
-
-
-    def loglikelihood(self, params = None, xmin = None, xmax = None, correlated = None):
-        """ The estimated logarithm of the likelihood of the fit parameters. """
-        if params is None:
-            params = self._saved_params
-        if xmin is not None or xmax is not None:
-            self.gen_fit_data(xmin, xmax, correlated)
-        chi2  = self.calc_chisquare(params)
-        cov   = self._fit_cov
-        ldetc = float(mpm.log(mpm.det(mpm.matrix(cov))))
-        llkh  = - 0.5*( self._numb_data*np.log(2*np.pi) + ldetc + chi2 )
-        return llkh
-
-
     def logGBF(self,params):
-        """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
-        have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
-        Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed. """
-        if not self._checkprior:
-            logger.TBFail('Gaussian Bayes factor only makes sense with priors.')
-        return 0.5*( - logDet(self._fit_cov) + logDet(np.diag(self._priorsigma**2))
-                     - self.calc_chisquare(params) - self.getDOF(params)*np.log(2*np.pi) )
-
-
-    def aic(self, params = None, xmin = None, xmax = None, correlated = None):
-        """ Akaike information criterion. """
-        if params is None:
-            params = self._saved_params
-        llkh = self.loglikelihood(params, xmin, xmax, correlated)
-        return 2 * len(params) - 2 * llkh
-
-
-    def aicc(self, params = None, xmin = None, xmax = None, correlated = None):
-        """ Corrected Akaike information criterion (AICc). """
-        if params is None:
-            params = self._saved_params
-        aic = self.aic(params, xmin, xmax, correlated)
-        k = len(params)
-        n = self._numb_data
-        if n - k - 1 > 0:
-            return aic + 2 * k * (k + 1) / (n - k - 1)
-        else:
-            return np.inf
+        return logGBF(self._fit_xdata, self._fit_ydata, self._fit_cov, self._func, self._args, params,
+                      prior=self._priorval,prior_err=self._priorsigma, expand=self._expand, supNumpy=self._func_sup_numpy)
 
 
     def plot_func(self, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
@@ -1297,20 +1222,6 @@ class Fitter:
 
 
 
-def cut_eig(corr, threshold):
-    """ Cut eigenvalues of the correlation matrix. If they are smaller than the threshold, replace them with the
-    threshold. When needed, this replaces a small eigenvalue by a larger, small eigenvalue, which has the effect of
-    slightly overestimating the errors. The alternative would be to ignore them, in which case the program would
-    crash because the matrix is singular, or to discard them, which is like setting the variance to infinity.
-    This procedure is more accurate than the latter option. """
-    vals, vecs = np.linalg.eig(corr)
-    for i, value in enumerate(vals):
-        if value < threshold:
-            logger.details('Set small eigenvalue',value,'from correlation matrix to threshold',threshold)
-            vals[i] = threshold
-    return vecs.dot( np.diag(vals).dot( vecs.transpose() ) )
-
-
 def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False,
               header=None, **params):
     fill_param_dict(params)
@@ -1387,19 +1298,19 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
 
 
 def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-           algorithm = "curve_fit", xmin = -np.inf, xmax = np.inf, **kwargs):
+           algorithm = "curve_fit", detailedInfo=False, xmin = -np.inf, xmax = np.inf, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,
-                      xmin = xmin, xmax = xmax)
+                      xmin = xmin, xmax = xmax, detailedInfo=detailedInfo)
 
 
 def try_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-            algorithms = None, xmin = -np.inf, xmax = np.inf, **kwargs):
+            algorithms = None, detailedInfo=False, xmin = -np.inf, xmax = np.inf, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
     algorithms has no default values here. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.try_fit(algorithms, start_params, priorval, priorsigma, xmin = xmin, xmax = xmax)
+    return fit.try_fit(algorithms, start_params, priorval, priorsigma, xmin = xmin, xmax = xmax, detailedInfo=detailedInfo)
 
 
 if __name__ == "__main__":

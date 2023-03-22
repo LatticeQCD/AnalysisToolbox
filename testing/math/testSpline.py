@@ -7,21 +7,22 @@
 # 
 
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.interpolate import LSQUnivariateSpline
-from latqcdtools.math.spline import even_knots,random_knots
-from latqcdtools.base.plotting import plot_dots, plot_lines, set_params
+from latqcdtools.math.spline import even_knots,random_knots, getSpline
+from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.base.check import print_results
 import latqcdtools.base.logger as logger
 
 
 logger.set_log_level('INFO')
+SHOWPLOT = False
 
 
 def testSpline():
 
-    x = np.linspace(-1, 1, 101)
-    y = 10*x**2 + np.random.randn(len(x))
+    x  = np.linspace(-1, 1, 101)
+    y  = 10*x**2 + np.random.randn(len(x))
+    ye = np.repeat(1.,len(y))
 
     knots = even_knots(x, 3)
 
@@ -29,12 +30,11 @@ def testSpline():
 
     spline = LSQUnivariateSpline(x, y, knots, k=3)
 
-    plot_dots(x, y)
-    plot_lines(x,spline(x),marker=None)
-    set_params(xlabel='x',ylabel='y')
-
-    plt.savefig('autoSpline.pdf')
-    plt.clf()
+    if SHOWPLOT:
+        set_params(xlabel='x',ylabel='y')
+        plot_dots(x, y)
+        plot_lines(x,spline(x),marker=None)
+        plt.show()
 
     knots=random_knots(x, 3, SEED=7271978)
 
@@ -42,10 +42,31 @@ def testSpline():
 
     spline = LSQUnivariateSpline(x, y, knots, k=3)
 
-    plot_dots(x, y)
-    plot_lines(x,spline(x),marker=None)
-    set_params(xlabel='x',ylabel='y')
-    plt.savefig('randomSpline.pdf')
+    if SHOWPLOT:
+        set_params(xlabel='x',ylabel='y')
+        plot_dots(x, y)
+        plot_lines(x,spline(x),marker=None)
+        plt.show()
+
+    aicc_arr = []
+    for knots in [10,30,60]:
+
+        spline, aicc = getSpline(x,y,num_knots=knots,order=3,edata=ye,getAICc=True)
+
+        aicc_arr.append(aicc)
+
+        if SHOWPLOT:
+            set_params(xlabel='x',ylabel='y')
+            plot_dots(x, y, ye)
+            plot_lines(x,spline(x),marker=None)
+            plt.show()
+
+        logger.info('Try spline with knots =',knots,'AICc =',aicc)
+
+    if aicc_arr[0]>aicc_arr[-1]:
+        logger.TBFail("AICc should penalize overfitting.")
+    else:
+        logger.TBPass("AICc penalizes overfitting.")
 
 
 if __name__ == '__main__':

@@ -17,6 +17,7 @@ class DivideByZeroError(Exception): pass
 class UnderflowError(Exception): pass
 class InvalidValueError(Exception): pass
 
+class IllegalArgumentError(ValueError): pass
 
 def err_handler(err, flag):
     if flag == 1:

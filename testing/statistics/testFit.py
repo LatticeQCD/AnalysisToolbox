@@ -180,12 +180,13 @@ def testFit():
 
     print("\nTesting Bayesian fit...\n")
 
+
     prior        = [5e-05,3e-01]
     prior_err    = [5e-05,3e-01]
     res_err_true = [1.148967933055725e-06, 0.0005445077355994696]
-    res, res_err, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err, args=(64,),
-                                 func_sup_numpy = True, norm_err_chi2=True,
-                                 algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "BFGS", "dogleg", "trust-ncg"])
+    res, res_err, _, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err, args=(64,),
+                                    func_sup_numpy = True, norm_err_chi2=True, detailedInfo=True,
+                                    algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "BFGS", "dogleg", "trust-ncg"])
     print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
 
@@ -201,8 +202,7 @@ def testFit():
 
     res_true = [5.102041e-01]
     res_err_true = [1.189990e-01]
-    res, res_err, _ = do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, norm_err_chi2=True,
-                                     algorithm="curve_fit")
+    res, res_err, _ = do_fit(func_2d, xdata, ydata, edata, func_sup_numpy=False, norm_err_chi2=True, algorithm="curve_fit")
     print_results(res, res_true, res_err, res_err_true, "2D xdata fit",prec=EPSILON)
 
 

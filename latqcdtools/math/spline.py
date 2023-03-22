@@ -10,6 +10,7 @@
 import numpy as np
 from scipy.interpolate import LSQUnivariateSpline
 import latqcdtools.base.logger as logger
+from latqcdtools.statistics.statistics import AICc
 
 
 def even_knots(xdata, nknots):
@@ -45,7 +46,7 @@ def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     return ret
 
 
-def getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None):
+def getSpline(xdata, ydata, num_knots, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False):
     """ Simple wrapper for LSQUnivariateSpline that takes care of knots automatically. """
     if type(num_knots) is not int:
         logger.TBError("Please specify an integer number of knots.")
@@ -71,7 +72,11 @@ def getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None):
         logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
     logger.debug("Knots are:",knots)
     spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
-    return spline
+    if getAICc:
+        cov = np.diag(edata**2)
+        return spline, AICc(xdata, ydata, cov, spline)
+    else:
+        return spline
 
 
 def getSplineErr(xdata, xspline, ydata, ydatae, num_knots, order=3, rand=False, fixedKnots=None):
