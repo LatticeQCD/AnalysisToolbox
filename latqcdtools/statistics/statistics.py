@@ -450,7 +450,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     """ Given a time series, return estimates for the integrated autocorrelation time and its error.
 
     INPUT:
-         tpickMax--The largest nt at which you think your estimate for tau_int could lie.
+         tpickMax--The largest nt where you think your estimate might become unreliable.
             nbins--The number of jackknife bins (for estimating the error in tau_int)
                ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
                    time translation invariance holds. List must be in order of markov chain generation

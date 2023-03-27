@@ -59,7 +59,7 @@ class latticeParams:
             self.cbeta = coupling
         else:
             self.beta  = coupling
-            self.cbeta = str(int(coupling*1000))
+            self.cbeta = str(coupling).replace('.','')
         self.Nc    = 3
         self.mu    = mu
         self.cm1   = mass1
