@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
 import latqcdtools.base.logger as logger
+from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
@@ -19,8 +20,6 @@ warnings.filterwarnings("ignore", category=UserWarning)
 #       external methods here have some sort of test; you changed a lot of things and it's important to verify that
 #       the changes you made are stable. also expand a bit in the documentation
 
-# TODO: introduce horizontal line function; otherwise axvspan and so won't know about legend_labels
-#
 
 ZOD        = 1
 INITIALIZE = True
@@ -413,7 +412,7 @@ def set_params(**params):
 
 def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), **params):
     fill_param_dict(params)
-    data = np.loadtxt(filename,unpack=True)
+    data = readTable(filename)
     if xcol is not None:
         xdata = np.array(data[xcol - 1], dtype = float)
     else:

@@ -11,6 +11,9 @@ import concurrent.futures, time, re
 import latqcdtools.base.logger as logger
 
 
+# ---------------------------------------------------------------------------------- MAKE INTERNAL FUNCTIONS MORE SMOOTH
+
+
 def unvector(obj):
     """ Change obj to a scalar if it's an array-like object of length 1. Otherwise don't do anything. """
     try:
@@ -33,6 +36,12 @@ def envector(*args):
             obj = np.array([obj])
         result += (obj,)
     return unvector(result)
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
 
 
 def getArgs(parser):
@@ -96,7 +105,11 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
+# ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
+
+
 def naturalSort(l):
+    """ Sort list of strings so that, e.g. '10' comes after '9' rather than before it. """
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(l, key=alphanum_key)

@@ -10,8 +10,10 @@
 import mpmath
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.linalg import inv
 import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
+from latqcdtools.math.math import logDet
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
 from latqcdtools.base.utilities import envector
 from latqcdtools.base.printErrorBars import get_err_str
@@ -91,6 +93,97 @@ def weighted_mean(data, weights):
     return np.sum(data.dot(weights))/np.sum(weights)
 
 
+def funcExpand(func, x, params=(), args=(), expand=True):
+    """ In the context of modelling, one likes to do maximum likelihood estimates to select a best model. In the context
+    of LQCD this is most usually a curve fit, but in principle it can be something else. Best-model algorithms involve
+    varying some of the function func's arguments, trying to look out for the best ones, here set aside as params. On
+    the other hand, the function may take other arguments that should not be varied. When constructing func, the author
+    may have chosen to collect all parameters together as a tuple/list and similarly collect all args as a tuple/list.
+    Depending on this choice, one may have to wrap the function differently.
+
+    What if the function has no arguments? This isn't a problem. When the function has no arguments, this is handled
+    as a default args=(). It turns out that for a general function, python treats func(x,*()) as func(x).
+    """
+    if expand:
+        return func(x, *(tuple(params) + tuple(args)))
+    else:
+        return func(x, params, *args)
+
+
+def checkPrior(prior,prior_err):
+    """ Make sure prior and prior_err status are compatible. """
+    if prior is None and prior_err is not None:
+        logger.TBError('prior = None, prior_err != None')
+    if prior_err is None and prior is not None:
+        logger.TBError('prior != None, prior_err = None')
+
+
+def countParams(func,params):
+    """ If we have a function, return length of params. Else, we must have a spline, so use get_coeffs(). """
+    nparams = len(params)
+    if nparams == 0:
+        nparams = len(func.get_coeffs())
+    return nparams
+
+
+def DOF(ndat,nparam,prior):
+    """ Compute the number of degrees of freedom. Depends on whether you use priors. You can think of priors as
+    extra data points. Hence if you use a prior for every fit parameter, it follows that the number of degrees of
+    freedom always equals the number of data. """
+    if prior is not None:
+        dof = ndat
+    else:
+        dof = ndat - nparam
+    return dof
+
+
+def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,expand=True,supNumpy=True):
+    checkPrior(prior,prior_err)
+    if supNumpy:
+        y = funcExpand(func,xdata,params,args,expand)
+    else:
+        y = np.array( [funcExpand(func,value,params,args,expand) for value in xdata] )
+    cor = norm_cov(cov)
+    diff = ( ydata - y )/np.sqrt( np.diag(cov) )
+    res = diff.dot( inv(cor).dot(diff) )
+    if prior is not None:
+        res += np.sum((np.array(params) - prior)**2 / prior_err**2)
+    return res
+
+
+def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True, supNumpy=True):
+    """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
+    have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
+    Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed. """
+    chi2    = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand, supNumpy)
+    nparams = countParams(func,params)
+    dof     = DOF(len(ydata),nparams,prior)
+    if prior is None:
+        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) )
+    else:
+        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(prior_err**2)) )
+
+
+def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True, supNumpy=True):
+    """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
+    function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
+    choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
+    overfitting. The preferred model minimizes the AIC. """
+    nparams    = countParams(func,params)
+    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err, expand, supNumpy)
+    return 2*nparams - 2*likelihood
+
+
+def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True, supNumpy=True):
+    """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
+    many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
+    infinity, one recovers the AIC. """
+    nparams = countParams(func,params)
+    ndat    = len(ydata)
+    aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err, expand, supNumpy)
+    return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
+
+
 #https://mathoverflow.net/questions/11803/unbiased-estimate-of-the-variance-of-a-weighted-mean
 #In above source, the weights are normalized. We normalize like Wikipedia
 #https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
@@ -149,6 +242,20 @@ def norm_cov(cov):
         for j in range(len(cov[0])):
             res[i][j] = cov[i][j] / np.sqrt( cov[j][j] * cov[i][i] )
     return np.array(res)
+
+
+def cut_eig(corr, threshold):
+    """ Cut eigenvalues of the correlation matrix. If they are smaller than the threshold, replace them with the
+    threshold. When needed, this replaces a small eigenvalue by a larger, small eigenvalue, which has the effect of
+    slightly overestimating the errors. The alternative would be to ignore them, in which case the program would
+    crash because the matrix is singular, or to discard them, which is like setting the variance to infinity.
+    This procedure is more accurate than the latter option. """
+    vals, vecs = np.linalg.eig(corr)
+    for i, value in enumerate(vals):
+        if value < threshold:
+            logger.details('Set small eigenvalue',value,'from correlation matrix to threshold',threshold)
+            vals[i] = threshold
+    return vecs.dot( np.diag(vals).dot( vecs.transpose() ) )
 
 
 @reduce_tuple
@@ -343,7 +450,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     """ Given a time series, return estimates for the integrated autocorrelation time and its error.
 
     INPUT:
-         tpickMax--The largest nt at which you think your estimate for tau_int could lie.
+         tpickMax--The largest nt where you think your estimate might become unreliable.
             nbins--The number of jackknife bins (for estimating the error in tau_int)
                ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
                    time translation invariance holds. List must be in order of markov chain generation

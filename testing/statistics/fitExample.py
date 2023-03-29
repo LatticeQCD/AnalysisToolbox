@@ -34,8 +34,8 @@ def fitExample():
     fitter = Fitter(fit_func, xdata, ydata, expand = False)
 
     # Here we try a fit, using the 'curve_fit' method, specifying the starting guesses for the fit parameters. Since
-    # ret_pcov = True, we will get back the covariance matrix as well.
-    res, res_err, chi_dof, pcov = fitter.try_fit(start_params = [1, 2, 3], algorithms = ['curve_fit'], ret_pcov = True)
+    # detailedInfo = True, we will get back the covariance matrix as well.
+    res, res_err, chi_dof, _, pcov = fitter.try_fit(start_params = [1, 2, 3], algorithms = ['curve_fit'], detailedInfo = True)
 
     print(" a , b,  c : ",res)
     print(" ae, be, ce: ",res_err)

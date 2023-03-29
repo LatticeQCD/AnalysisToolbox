@@ -13,7 +13,7 @@ from latqcdtools.physics.denseObs import op_to_obs, observablesOfInterest
 import latqcdtools.base.logger as logger
 from latqcdtools.base.cleanData import restrictAtCol
 from latqcdtools.base.check import rel_check
-
+from latqcdtools.base.readWrite import readTable
 
 logger.set_log_level('INFO')
 
@@ -50,7 +50,7 @@ def testDensObs():
 
     op_to_obs(opTable, lp, filename='denseObs/denseObservables.d')
 
-    REFdata = np.loadtxt('denseObs/n_n2_dn_table_ms40_b6260.d', unpack=True)
+    REFdata = readTable('denseObs/n_n2_dn_table_ms40_b6260.d')
     data = np.genfromtxt('denseObs/denseObservables.d', dtype=obs.dtypes, unpack=True)
 
     # Compare new class to reference

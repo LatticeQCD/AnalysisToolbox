@@ -1,5 +1,5 @@
 # 
-# diraFreespectra.py                                                               
+# diracFreespectra.py
 # 
 # J. Goswami
 # 
@@ -88,7 +88,7 @@ class DiracOp(GammaMatrix):
         hkNum = (b + c) * self.WilsonOp(p, -M)
         hkDen = 2 * I4 + (b - c) * self.WilsonOp(p, -M)
         hk = gamma_5 @ hkNum @ np.linalg.inv(hkDen)
-        sgnHk = np.matmul((np.linalg.matrix_power(I4 + hk, Ls) - np.linalg.matrix_power(I4 - hk, Ls)), \
+        sgnHk = np.matmul((np.linalg.matrix_power(I4 + hk, Ls) - np.linalg.matrix_power(I4 - hk, Ls)),
                           np.linalg.inv(np.linalg.matrix_power(I4 + hk, Ls) + np.linalg.matrix_power(I4 - hk, Ls)))
         Ddw = (1 + mass) / 2 * I4 + (1 - mass) / 2 * np.matmul(gamma_5, sgnHk)
         return Ddw

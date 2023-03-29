@@ -21,6 +21,7 @@ echo
 
 cd base
 runTestRoutine testDataCleaner.py
+rm Toolbox.log
 runTestRoutine testLogger.py
 _compareFiles control.log Toolbox.log
 _checkPassError $? "testLogger" 

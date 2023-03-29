@@ -40,7 +40,8 @@ def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=Fal
     if prior is None:
         result, result_err, chidof = fit.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err, algorithms=algorithms)
     else:
-        result, result_err, chidof, logGBF = fit.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err, algorithms=algorithms)
+        result, result_err, chidof, logGBF, _ = fit.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err,
+                                                            algorithms=algorithms, detailedInfo=True)
 
     if show_results:
         print()
