@@ -76,7 +76,7 @@ class EOS:
     def createCoeffs(self, y, par):
         return Rational([par[0], par[1], par[2], par[3], par[4]], [1, par[5], par[6], par[7], par[8]])(y)
 
-    def ObsEoSfixedmuB(self, Np, qP, muB=1.0):
+    def ObsEoSfixedmuB(self, Np, qP, muB = 1.0):
         """
         calculation of equation of state( pressure, energy density and
         entropy density for the functional form given in,
@@ -134,7 +134,7 @@ class EOS:
 
         return P, NB, E, S
 
-    def ObsEoSfixedsnB(self, Np, qP, snB=50):
+    def ObsEoSfixedsnB(self, Np, qP, snB = 50):
         """
         calculation of equation of state( pressure,
         energy density and entropy density for the functional
