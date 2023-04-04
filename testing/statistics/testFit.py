@@ -221,9 +221,9 @@ def testFit():
     fitter = Fitter(fit_func,xdata,ydata,edata,func_sup_numpy=False, norm_err_chi2=True)
     fitter.do_fit(start_params=None)
 
-    fitter.plot_fit(showPlot=False)
-    fitter.plot_cor(showPlot=False)
-    fitter.plot_eig(showPlot=False)
+    fitter.plot_fit()
+    fitter.plot_cor()
+    fitter.plot_eig()
 
     logger.TBPass("No problems encountered.")
 
