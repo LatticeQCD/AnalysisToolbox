@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from latqcdtools.base.check import print_results
 from latqcdtools.statistics.statistics import error_prop, error_prop_func, plot_func
-from latqcdtools.physics.constants import m_mu_MeV, m_mu_MeV_err
+from latqcdtools.physics.constants import M_mu_phys 
 import latqcdtools.base.logger as logger
 
 
@@ -29,8 +29,9 @@ def err_func(x, A, B, A_err, B_err, OPT):
     return np.sqrt((OPT*2*A*np.sin(x)*A_err)**2+B_err**2)
 
 
-pi          = np.pi
-gamma_E     = np.euler_gamma
+pi                     = np.pi
+gamma_E                = np.euler_gamma
+m_mu_MeV, m_mu_MeV_err = M_mu_phys(2020,"MeV",True)
 
 
 def K_G(data):

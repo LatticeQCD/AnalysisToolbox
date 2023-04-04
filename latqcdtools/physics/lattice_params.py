@@ -128,6 +128,14 @@ class latticeParams:
             if self.Ns == self.Nt:
                 return 0.
         return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
+    
+    
+    # L in spacelike direction in [1/MeV]
+    def getLs(self):
+        if self.Ns is not None:
+            return fm_to_MeVinv(self.Ns*self.geta())
+        else:
+            logger.TBError('Must specify Ns get get Ls.')
 
 
     # A nicely formatted summary of the lattice parameters.
@@ -155,5 +163,5 @@ class latticeParams:
         print("    T  = ",round(self.getT(),2), "[MeV]")
         print("    a  = ",round(self.geta(),4), "[fm]")
         if self.Ns is not None:
-            print("    L  = ",round(fm_to_MeVinv(self.Ns*self.geta()),4), "1/[MeV]")
+            print("    Ls = ",round(self.getLs(),4), "1/[MeV]")
         print("  beta = ",self.beta,"\n")

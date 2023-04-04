@@ -85,7 +85,10 @@ def printClean(*args,label=None):
         else:
             data += (col,)
             form += '%.8e  '
-    print(form % data)
+    try:
+        print(form % data)
+    except TypeError:
+        logger.TBError('args',args,'is not list-type of floats.')
 
 
 def shell(*args):

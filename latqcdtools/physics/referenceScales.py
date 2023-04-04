@@ -6,40 +6,20 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.constants import fm_to_GeVinv, GeVinv_to_fm, fm_to_MeVinv, MeV_to_fminv
+from latqcdtools.physics.constants import fm_to_GeVinv, GeVinv_to_fm, fmtoUnits, fk_phys
 from latqcdtools.math.polynomials import Polynomial,Rational
 from latqcdtools.physics.betaFunction import beta_func
-
-
-def MeVtoUnits(value,name,units):
-    if units == "MeV":
-        return value
-    elif units == "fminv":
-        return MeV_to_fminv(value)
-    else:
-        logger.TBError("Invalid unit specification for " + name + ".")
-
-
-def fmtoUnits(value,name,units):
-    if units == "fm":
-        return value
-    elif units == "MeVinv":
-        return fm_to_MeVinv(value)
-    elif units == "GeVinv":
-        return fm_to_GeVinv(value)
-    else:
-        logger.TBError("Invalid unit specification for " + name + ".")
 
 
 # -------------------------------------------------------------------------------------------------------- FITTING FORMS
 
 
 def fit_2014Eos_eqB2(beta,c0,c2,d2):
-   return Rational([0,c0,0,c2*10/beta],[1,0,d2*10/beta])(beta_func(beta))
+    return Rational([0,c0,0,c2*10/beta],[1,0,d2*10/beta])(beta_func(beta))
 
 
 def fit_tayloraLambda(beta,a,b,c):
-   return Polynomial([0,a,0,b,0,c])(beta_func(beta))
+    return Polynomial([0,a,0,b,0,c])(beta_func(beta))
 
 
 # ----------------------------------------------------------------------------------------------- 2+1 FLAVOR HISQ SCALES
@@ -101,23 +81,6 @@ def a_fk_invGeV(beta: float, year, suppress_warnings=False):
 
 def a_fk_fm(beta, year):
     return GeVinv_to_fm(a_fk_invGeV(beta, year))
-
-
-def fk_phys(year=2019,units="MeV"):
-    """ Physical value of Kaon decay constant. """
-    if year==2019:
-        # Kaon decay constant taken from FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6.
-        fkMeV = 155.7 / np.sqrt(2.)
-    elif year==2018:
-        # Kaon decay constant taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
-        fkMeV = 155.72 / np.sqrt(2.)
-    elif year==2012:
-        # Kaon decay constant taken from PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
-        fkMeV = 156.1 / np.sqrt(2.)
-    else:
-        logger.TBError("Invalid year specification.")
-    return MeVtoUnits(fkMeV,"fK",units)
-
 
 
 # ====================================================== r1 scales
@@ -266,22 +229,6 @@ def a_t0_invGeV(beta):
 
 def a_t0_fm(beta):
     return GeVinv_to_fm(a_t0_invGeV(beta))
-
-
-# --------------------------------------------------------------------------------------------------------- OTHER SCALES
-
-
-def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
-    """ Physical value of MS-bar lambda parameter. """
-    if year==2021:
-        # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
-        LMS, LMSerr = 339, 12
-    else:
-        logger.TBError("Invalid year specification.")
-    if returnErr:
-        return MeVtoUnits(LMS,"lambda-MSbar",units), MeVtoUnits(LMSerr,"lambda-MSbarerr",units)
-    else:
-        return MeVtoUnits(LMS,"lambda-MSbar",units)
 
 
 # ------------------------------------------------------------------------------------------------------ LEGACY WRAPPERS

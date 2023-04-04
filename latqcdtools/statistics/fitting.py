@@ -15,7 +15,7 @@ from scipy.linalg import inv
 import mpmath as mpm
 mpm.mp.dps = 100  # Set precision to 100 digits.
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt, clearPlot
+from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.check import IllegalArgumentError
 from latqcdtools.math.optimize import minimize
@@ -1031,15 +1031,12 @@ class Fitter:
             plot_dots(self._fit_xdata, self._fit_ydata, **kwargs)
 
 
-    def plot_fit(self, filename = None, params = None, params_err = None, notex = False, ranges = None, ylog = False,
-                 no_error = False, args_data = None, args_func = None, xmin = None, xmax = None, showPlot = False, **kwargs):
+    def plot_fit(self, params = None, params_err = None, notex = False, ranges = None, ylog = False,
+                 no_error = False, args_data = None, args_func = None, xmin = None, xmax = None, **kwargs):
         """ Plot the fit and the fit data.
 
         Parameters
         ----------
-        filename : string, optional
-            The filename for the plot. If None, the plot is not saved and you can add further changes via
-            matplotlib.pyplot.
         params : array_like, optional
             Parameters for the fit function.
         params_err : array_like, optional
@@ -1077,10 +1074,6 @@ class Fitter:
         if xmax is not None:
             args_data['xmax'] = xmax
 
-        if filename is not None:
-            if not notex:
-                latexify()
-
         try:
             # Save xmin and xmax, as they will be overwritten in plot_data
             try:
@@ -1113,13 +1106,6 @@ class Fitter:
                         self.plot_func(params[i], params_err[i], xmin = val[0], xmax = val[1], color = col,
                                        no_error = no_error, **args_func)
 
-            if filename is not None:
-                plt.savefig(filename)
-
-            if showPlot:
-                plt.show()
-
-            clearPlot()
 
         except Exception as e:
             if logger.isLevel("DEBUG"):
@@ -1158,8 +1144,6 @@ class Fitter:
         if showPlot:
             plt.show()
 
-        clearPlot()
-
 
     def plot_eig(self, filename = None, xmin = -np.inf, xmax = np.inf, notex = False, xlabel="$i$", ylabel="$\\lambda_i$",
                  title = 'Eigenvalues of data correlation matrix', showPlot=False):
@@ -1169,7 +1153,7 @@ class Fitter:
 
         self.gen_fit_data(xmin, xmax)
 
-        vals, vecs = np.linalg.eig(self._fit_cor)
+        vals, _ = np.linalg.eig(self._fit_cor)
 
         eig_real = np.real(vals)
         eig_imag = np.imag(vals)
@@ -1183,8 +1167,6 @@ class Fitter:
 
         if showPlot:
             plt.show()
-
-        clearPlot()
 
 
     def get_func(self, x, params = None, params_err = None):

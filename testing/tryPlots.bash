@@ -15,9 +15,9 @@ echo "Running plotting tests:"
 echo
 
 cd plotting 
-runTestRoutine plot_random.py
-runTestRoutine test_plot_formats.py
-runTestRoutine test_plot.py
+runTestRoutine plotRandom.py
+runTestRoutine testPlotFormats.py
+runTestRoutine testPlot.py
 
 echo
 echo "Done!"
