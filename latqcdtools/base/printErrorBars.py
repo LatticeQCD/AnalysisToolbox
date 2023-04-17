@@ -6,8 +6,40 @@
 # Methods for printing measurements with error bars as they typically appear in lattice publications. The default is
 # 2 significant digits on an error bar in parentheses: measurement = X.XXXX(YY)
 #
+
 import math
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkType
+
+
+def getValuesFromErrStr(errStr):
+    """ Convert A string of the form XX.XX(YY) into a float mean and error bar. Scientific notation not yet supported.
+
+    Args:
+        errStr (str): string of the form XX.XX(YY).
+
+    Returns:
+        float, float: mean, error. 
+    """
+    checkType(errStr,str)
+    try:
+        meanStr = errStr.split('(')[0]
+        mean  = float(meanStr)
+        err   = float(errStr.split('(')[1][:-1])
+        e_exp = get_exp(err)
+        m_exp = get_exp(mean)
+        if e_exp==0:
+            return mean, err
+        if m_exp < 0:
+            err *= pow(10,m_exp-e_exp)
+        elif m_exp==0:
+            err *= pow(10,-e_exp-1)
+        else:
+            if '.' in meanStr and not meanStr.endswith('.'):
+                err *= pow(10,-e_exp-1)
+        return mean, err        
+    except:
+        logger.TBError('Expected string of form XX.XX(YY).')
 
 
 def get_exp(param):
@@ -17,6 +49,8 @@ def get_exp(param):
 
 def get_err_str(param, param_err, numb_err_dig=2):
     """ Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). """
+
+    checkType(numb_err_dig,int)
 
     if numb_err_dig < 1:
         logger.TBError("Number of error digits has to be larger than 0!")

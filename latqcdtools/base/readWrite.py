@@ -6,13 +6,37 @@
 # Methods for convenient reading and writing, some tailored to specific contexts like correlator measurements.
 #
 
+
 import numpy as np
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkType
+from latqcdtools.base.cleanData import clipRange
 
 
-def readTable(filename,unpack=True,**kwargs):
-    """ Wrapper for np.loadtxt that unpacks by default. This is important to prevent transposition mistakes. """
-    return np.loadtxt(filename,unpack=unpack,**kwargs)
+def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwargs):
+    """ Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally
+    allows the user to restrict the table based on the range of one of the columns.
+
+    Args:
+        filename (str):
+            Name of the file to open. 
+        unpack (bool, optional): 
+            If False, reads the table in a confusing, useless way. Defaults to True.
+        col (int, optional): 
+            Use this column to restrict the range of the rest of the table. Defaults to None.
+        minVal (float, optional): 
+            Minimum value for above restriction. Defaults to None.
+        maxVal (float, optional):
+            Maximum value for above restriction. Defaults to None.
+
+    Returns:
+        np.array: Data table. 
+    """
+    checkType(filename,str) 
+    data = np.loadtxt(filename,unpack=unpack,**kwargs)
+    if col is not None:
+        data = clipRange(data,col=col,minVal=minVal,maxVal=maxVal)
+    return data
 
 
 def writeTable(filename,*args,**kwargs):

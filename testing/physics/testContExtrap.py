@@ -8,7 +8,7 @@
 
 import numpy as np
 from latqcdtools.base.check import print_results
-from latqcdtools.physics.continuumExtrap import extrapolate_from_a
+from latqcdtools.physics.continuumExtrap import continuumExtrapolate 
 from latqcdtools.physics.constants import MeV_to_fminv
 import latqcdtools.base.logger as logger
 
@@ -26,7 +26,7 @@ def testContExtrap():
     prior     = [-0.51180259,2,0.0]
     prior_err = [0.02250462,1,1]
 
-    result, result_err, chidof = extrapolate_from_a(a,a_mu,a_mu_err,show_results=True,plot_results=False)
+    result, result_err, chidof = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,plot_results=False)
 
     REFresult     = [-0.51180259, 16.18682616]
     REFresult_err = [0.01217944250306863, 0.8188262377288199]
@@ -42,8 +42,8 @@ def testContExtrap():
     lam = MeV_to_fminv(500)
     a *= lam
 
-    result, result_err, chidof  = extrapolate_from_a(a,a_mu,a_mu_err,show_results=True,plot_results=False,order=2,
-                                                     prior=prior,prior_err=prior_err,error_strat='hessian')
+    result, result_err, chidof  = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,plot_results=False,order=2,
+                                                       prior=prior,prior_err=prior_err,error_strat='hessian')
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]
     REFresult_err = [0.00930215, 0.1100613,  0.10344893]
     REFchidof     = 1.2219934235330452

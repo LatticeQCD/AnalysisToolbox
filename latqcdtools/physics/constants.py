@@ -148,7 +148,7 @@ def fk_phys(year=2019,units="MeV"):
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
 
 
-def alpha(year=2018,returnErr=False):
+def alpha_e(year=2018,returnErr=False):
     """ Fine structure constant. """
     # NIST 2018 CODATA recommended value.
     if year==2018:

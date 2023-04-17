@@ -530,7 +530,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
     return bar
 
 
-def plot_hist(data, logx = False, bins = None):
+def plot_hist(data, logx = False, bins = None, **kwargs):
     if logx:
         xmin = np.min(data)
         xmax = np.max(data)
@@ -540,12 +540,12 @@ def plot_hist(data, logx = False, bins = None):
         else:
             bins = bins
         bins = np.logspace(np.log10(xmin),np.log10(xmax), bins)
-        plt.hist(data, bins = bins)
+        plt.hist(data, bins = bins, **kwargs)
         plt.xscale('log')
     else:
         if bins is None:
             bins = 'auto'
-        plt.hist(data, bins = bins)
+        plt.hist(data, bins = bins, **kwargs)
 
 
 def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):

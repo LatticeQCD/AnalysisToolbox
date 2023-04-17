@@ -16,16 +16,24 @@ warnings.filterwarnings("ignore", category=np.ComplexWarning)
 class DivideByZeroError(Exception): pass
 class UnderflowError(Exception): pass
 class InvalidValueError(Exception): pass
-
 class IllegalArgumentError(ValueError): pass
 
+
+CATCHUNDERFLOW = True 
+
+
 def err_handler(err, flag):
+    """ This method lets us control in detail how different types of errors are treated. """
+    global CATCHUNDERFLOW
     if flag == 1:
         raise DivideByZeroError(err)
     elif flag == 2:
         raise OverflowError
     elif flag == 4:
-        raise UnderflowError(err)
+        if CATCHUNDERFLOW: 
+            raise UnderflowError(err)
+        else:
+            pass
     elif flag == 8:
         raise InvalidValueError(err)
     elif flag == 9:
@@ -36,6 +44,13 @@ def err_handler(err, flag):
 
 np.seterrcall(err_handler)
 np.seterr(all='call')
+
+
+def ignoreUnderflow():
+    """ Turn off underflow crashes. """
+    global CATCHUNDERFLOW
+    CATCHUNDERFLOW = False
+    logger.warn("Underflow behavior set to pass.")
 
 
 def checkType(instance, expectedType):

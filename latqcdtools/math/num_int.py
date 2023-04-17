@@ -38,7 +38,7 @@ def integrateData(xdata,ydata,method='spline'):
 
 
 # TODO: implement romberg?
-def integrateFunction(func,a,b,method='persistent_quad_trap',stepsize=None):
+def integrateFunction(func,a,b,method='persistent_quad_trap',stepsize=None,limit=1000,epsrel=1e-8,vectorize=False):
     """ Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and will vectorize scipy.quad,
         which otherwise does not like to handle numpy arrays. """
     a = envector(a)
@@ -52,15 +52,18 @@ def integrateFunction(func,a,b,method='persistent_quad_trap',stepsize=None):
         except integrate.IntegrationWarning:
             return integrateFunction(func,a,b,method='trapezoid',stepsize=None)
 
-    elif method=='quad':
+    elif method=='vec_quad':
         def g(A,B):
             # TODO: put a check to make sure the integration error is small compared to result
-            return integrate.quad(func, A, B, limit=1000, epsrel=1e-8)[0]
+            return integrate.quad(func, A, B, limit=limit, epsrel=epsrel)[0]
         h = np.vectorize(g)
         if len(a)==1:
             return np.asarray(h(a,b))[0]
         else:
             return np.asarray(h(a,b))
+
+    elif method=='quad':
+        return integrate.quad(func, a, b, limit=limit, epsrel=epsrel)[0]
 
     elif method=='trapezoid':
         for i in range(len(b)):

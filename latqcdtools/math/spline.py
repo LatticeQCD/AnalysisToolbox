@@ -8,9 +8,10 @@
 # 
 
 import numpy as np
-from scipy.interpolate import LSQUnivariateSpline
+from scipy.interpolate import LSQUnivariateSpline, UnivariateSpline, CubicSpline
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import AICc
+from latqcdtools.base.check import checkType
 
 
 def even_knots(xdata, nknots):
@@ -46,10 +47,37 @@ def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     return ret
 
 
-def getSpline(xdata, ydata, num_knots, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False):
-    """ Simple wrapper for LSQUnivariateSpline that takes care of knots automatically. """
-    if type(num_knots) is not int:
-        logger.TBError("Please specify an integer number of knots.")
+def getSpline(xdata, ydata, num_knots, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False):
+    """ This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
+    by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
+    since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can't specify
+    the knots, so you can't both pick knots and smooth.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        num_knots (int):
+            The number of knots.
+        edata (array-like, optional): 
+            Error data. Defaults to None.
+        order (int, optional):
+            Order of the spline. Defaults to 3.
+        rand (bool, optional): 
+            Use randomly placed knots? Defaults to False.
+        fixedKnots (array-like, optional):
+            List of user-specified knots. Defaults to None.
+        getAICc (bool, optional): 
+            Return corrected Aikake information criterion? Defaults to False.
+        natural (bool, optional): 
+            Try a natural (no change in slope at the endpoints) cubic spline. Defaults to False. 
+
+    Returns:
+        spl: Spline object, spl(x). 
+        AICc (optionally)
+    """
+    checkType(num_knots,int)
+
+    # Generate knots
     nknots = num_knots
     if fixedKnots is not None:
         if type(fixedKnots) is not list:
@@ -71,7 +99,16 @@ def getSpline(xdata, ydata, num_knots, edata=None, order=3, rand=False, fixedKno
     if knots[0]<xdata[0]:
         logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
     logger.debug("Knots are:",knots)
-    spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
+
+    # Generate spline. 
+    # Add some kind of spline fit that gives a shit about error bars. Ask chatGPT: is there a way to add a spline
+    # fit that can force a derivative to be zero somewhere? (Yes, use CubicSpline) 
+    if natural:
+        if order != 3:
+            logger.TBError("Natural fit only implemented for cubic splines.")
+        spline = CubicSpline(x=xdata,y=ydata,bc_type='natural')
+    else:
+        spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
     if getAICc:
         cov = np.diag(edata**2)
         return spline, AICc(xdata, ydata, cov, spline)

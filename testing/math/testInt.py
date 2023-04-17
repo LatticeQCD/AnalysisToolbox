@@ -57,8 +57,8 @@ def testInt():
     # try some vectorization
     print_results(integrateFunction(f,[0,0],[1,2],method='trapezoid'), [0.5,2], text="trapezoid vector function")
     print_results(integrateFunction(f,0,1,method='trapezoid'), 0.5, text="trapezoid scalar function")
-    print_results(integrateFunction(f,[0,0],[1,2],method='quad'), [0.5,2], text="quadrature vector function")
-    print_results(integrateFunction(f,0,1,method='quad'), 0.5, text="quadrature scalar function")
+    print_results(integrateFunction(f,[0,0],[1,2],method='vec_quad'), [0.5,2], text="quadrature vector function")
+    print_results(integrateFunction(f,0,1,method='vec_quad'), 0.5, text="quadrature scalar function")
 
 
 if __name__ == '__main__':

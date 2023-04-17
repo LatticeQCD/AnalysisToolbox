@@ -20,8 +20,8 @@ def powerSeries(x,coeffs):
     return result
 
 
-def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,
-                       prior_err=None,error_strat='propagation',algorithms=None,**kwargs):
+def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,
+                         prior_err=None,error_strat='propagation',algorithms=None,xtype="a",**kwargs):
     """ Do a continuum limit extrapolation at some order in a^2. Allows the option for priors in case you want
         to fit to a higher order series, and you have some idea what the coefficients should be like. """
     if order<1:
@@ -33,8 +33,15 @@ def extrapolate_from_a(a,obs,obs_err,order=1,show_results=False,plot_results=Fal
     coeffs = ()
     for i in range(order+1):
         coeffs += (1.0,)
-    a = np.array(a)**2
-    fit = Fitter(powerSeries, a, obs, obs_err, norm_err_chi2=False, func_sup_numpy=False, expand=False,
+
+    if xtype == "a":
+        x = np.array(x)**2
+    elif xtype == "Nt":
+        x = 1/np.array(x)**2
+    else:
+        logger.TBError('Unknown xtype',xtype)
+
+    fit = Fitter(powerSeries, x, obs, obs_err, norm_err_chi2=False, func_sup_numpy=False, expand=False,
                  error_strat = error_strat)
 
     if prior is None:

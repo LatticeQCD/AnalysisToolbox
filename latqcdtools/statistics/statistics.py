@@ -119,10 +119,15 @@ def checkPrior(prior,prior_err):
 
 
 def countParams(func,params):
-    """ If we have a function, return length of params. Else, we must have a spline, so use get_coeffs(). """
+    """ If we have a function, return length of params. Else, we must have a spline. """
     nparams = len(params)
     if nparams == 0:
-        nparams = len(func.get_coeffs())
+        try:
+            # LSQUnivariateSpline
+            nparams = len(func.get_coeffs())
+            # CubicSpline
+        except AttributeError:
+            nparams = len(func.c)
     return nparams
 
 
