@@ -5,12 +5,14 @@
 #
 # A collection of basic methods for statistical analysis. The following methods have been adapted from software of
 # Bernd Berg, Markov Chain Monte Carlo and their Statistical Analysis, World Scientific, 2004, ISBN=978-981-3106-37-6:
-#     gaudif, jackknifeFrom, tauint, tauintj, getTauInt
+#     gaudif, studif, jackknifeFrom, tauint, tauintj, getTauInt
 #
-import mpmath
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import inv
+from scipy.special import betainc, erf
 import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
 from latqcdtools.math.math import logDet
@@ -323,21 +325,58 @@ def error_prop_func(x, func, means, errors, grad=None, args=()):
 
 
 def gaudif(x1,e1,x2,e2):
-    """ Likelihood that observed difference between two estimates is due to chance, assuming that both estimates are
-    normally distributed with the same mean.
+    """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
+    both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
+    appropriate when one estimated x1 and x2 using ~30 or more measurements.
 
-     INPUT:
-      xm1,2--Estimates of some mean.
-      eb1,2--Associated error bars.
+    Args:
+        x1 (float): mean 1 
+        e1 (float): error 1
+        x2 (float): mean 2
+        e2 (float): error 2
 
-     OUTPUT:
-          q--q value. """
+    Returns:
+        float: p-value 
+    """
     if e1<0 or e2<0:
         logger.TBError('Error bars should be non-negative. Got',e1,e2)
-    sigma=np.sqrt(e1**2 + e2**2)
-    x=abs(x1-x2)/(sigma * np.sqrt(2.))
-    q= 1.0 - mpmath.erf(x)
-    return q
+    sigma = np.sqrt(e1**2 + e2**2)
+    z     = abs(x1-x2)/(sigma * np.sqrt(2.))
+    return 1.0 - erf(z)
+
+
+def studif(x1,e1,ndat1,x2,e2,ndat2):
+    """Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
+    both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
+    appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
+
+    Args:
+        x1  (float): mean 1 
+        e1  (float): error 1
+        ndat1 (int): number of measurements used to compute x1
+        x2  (float): mean 2
+        e2  (float): error 2
+        ndat2 (int): number of measurements used to compute x2
+
+    Returns:
+        float: p-value 
+    """
+    if e1<0 or e2<0:
+        logger.TBError('Error bars should be non-negative. Got',e1,e2)
+    if ndat1<1 or ndat2 <1:
+        logger.TBError('Need at least 2 data. Got',ndat1,ndat2)
+    dof   = ndat1 + ndat2 - 2
+    var12 = ndat1*e1**2
+    var22 = ndat2*e2**2
+    sigma = np.sqrt( (1/ndat1+1/ndat2)*( (ndat1-1)*var12 + (ndat2-1)*var22 )/dof )
+    t     = abs(x1-x2)/sigma
+    x     = dof/(dof+t**2)
+    if t==0:
+        return 1
+    elif t>0:
+        return betainc(dof/2,1/2,x)
+    else:
+        return 2-betainc(dof/2,1/2,x)
 
 
 def jackknifeFrom(x):

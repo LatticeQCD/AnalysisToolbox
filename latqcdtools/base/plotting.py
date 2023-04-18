@@ -74,7 +74,8 @@ default_params = {
     #   6     10    7
     #   3     8     4
     'legendpos': 'best',
-    'bbox_to_anchor': None,      # Manual position of the legend.
+    'bbox_to_anchor': None,      # Manual position of the legend. The very bottom-left is (0,0), and the very 
+                                 #   top-right is (1,1). If you set this, legendpos appears to get ignored.
     'legend_ncol': 1,            # Number of columns in the legend.
     'legend_col_spacing': None,  # Spacing between columns in the legend.
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
@@ -342,7 +343,7 @@ def set_params(**params):
                         fontsize=params['font_size'], fontweight=params['font_weight'], ha='right', va='bottom',
                         bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=ZOD)
         else:
-            ax.xlabel(params['xlabel'])
+            ax.set_xlabel(params['xlabel'])
             ax.xaxis.get_label().set_fontsize(params['font_size'])
 
     if params['ylabel'] is not None:
@@ -353,7 +354,7 @@ def set_params(**params):
                         fontsize=params['font_size'], ha='left', va='top', fontweight=params['font_weight'],
                         bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=ZOD)
         else:
-            ax.ylabel(params['ylabel'])
+            ax.set_ylabel(params['ylabel'])
             ax.yaxis.get_label().set_fontsize(params['font_size'])
 
     if params['title'] is not None:

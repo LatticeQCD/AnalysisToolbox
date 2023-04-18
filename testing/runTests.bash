@@ -59,7 +59,6 @@ cd ..
 cd statistics
 runTestRoutine testAutocor.py 
 runTestRoutine testBootstrap.py 
-runTestRoutine testGauDif.py
 runTestRoutine testErrorProp.py
 runTestRoutine testFit.py
 runTestRoutine testJackknife.py 

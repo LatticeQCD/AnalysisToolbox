@@ -21,7 +21,7 @@ def powerSeries(x,coeffs):
 
 
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,
-                         prior_err=None,error_strat='propagation',algorithms=None,xtype="a",**kwargs):
+                         prior_err=None,error_strat='propagation',algorithms=None,xtype="a",plotName="contExtrap.pdf",**kwargs):
     """ Do a continuum limit extrapolation at some order in a^2. Allows the option for priors in case you want
         to fit to a higher order series, and you have some idea what the coefficients should be like. """
     if order<1:
@@ -66,6 +66,7 @@ def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=F
         latexify()
         fit.plot_fit(**kwargs)
         plot_dots([0],result[0],result_err[0],color='red')
+        plt.savefig(plotName)
         plt.show()
 
     return result, result_err, chidof
