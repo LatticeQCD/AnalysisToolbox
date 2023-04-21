@@ -11,6 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkEqualLengths
+from latqcdtools.base.utilities import convertToNumpy
 from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -171,6 +173,7 @@ def initializePlt(size,xmin,xmax,ymin,ymax):
         set_yrange(ymin,ymax)
 
 
+# TODO: Can this be replaced by clipRange?
 def remove_points(data, *args, minval = None, maxval = None):
     if minval is None:
         minval = -np.inf
@@ -200,26 +203,18 @@ def get_legend_handles():
     return legend_handles, legend_labels
 
 
-def set_markers(marker_set=None):
-    if marker_set is None:
-        marker_set = markers_1
-    global markers
-    markers = itertools.cycle(marker_set)
-
-
-def check_numpy(*data):
-    data=list(data)
-    for i in range(len(data)):
-        if isinstance(data[i], (list, tuple)):
-            data[i] = np.array(data[i])
-    return tuple(data)
-
-
 def getAxObject(params):
     if params['ax']==plt:
         return plt.gca()
     else:
         return params['ax']
+
+
+def set_markers(marker_set=None):
+    if marker_set is None:
+        marker_set = markers_1
+    global markers
+    markers = itertools.cycle(marker_set)
 
 
 def set_xmin(x_min=None):
@@ -317,12 +312,10 @@ def add_optional(params):
 
 
 def set_params(**params):
-    """Set additional parameters to the plot. For example set a title or label.
-        Parameters
-        ----------
+    """ Set additional parameters to the plot. For example set a title or label.
 
-        **params :
-            Additional parameters that can be set.
+        Args:
+            **params: Additional parameters that can be set.
     """
 
     fill_param_dict(params)
@@ -412,6 +405,19 @@ def set_params(**params):
 
 
 def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), **params):
+    """ Plot data in file. You can set the style with the style argument. Columns indexed from 1.
+
+    Args:
+        filename (str): _description_
+        xcol (int, optional): Which column is xdata. Defaults to 1.
+        ycol (int, optional): Which column is ydata. Defaults to 2.
+        yecol (int, optional): Which column has y error. Defaults to None.
+        xecol (int, optional): Which column has x error. Defaults to None.
+        func (function, optional): Apply this function to the data. Defaults to None.
+        func_args (tuple, optional): Arguments to func. Defaults to ().
+        **params: Additional parameters that can be set.
+
+    """
     fill_param_dict(params)
     data = readTable(filename)
     if xcol is not None:
@@ -429,6 +435,8 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
             logger.TBError("Need error column for filled plotting")
     if xecol is not None:
         xedata = np.array(data[xecol - 1], dtype = float)
+
+    checkEqualLengths(xdata,ydata,xedata,yedata)
 
     if func is not None:
         if yedata is not None:
@@ -452,7 +460,17 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
 
 
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
-    xdata, ydata, yedata, xedata = check_numpy(xdata, ydata, yedata, xedata)
+    """ Plot ydata vs xdata as dots. 
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        yedata (array-like, optional): y error. Defaults to None.
+        xedata (array-like, optional): x error. Defaults to None.
+
+    """
+    xdata, ydata, yedata, xedata = convertToNumpy(xdata, ydata, yedata, xedata)
+    checkEqualLengths(xdata,ydata,xedata,yedata)
     fill_param_dict(params)
     optional = add_optional(params)
 
@@ -498,8 +516,20 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
 
 def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#666677',linewidth=0.2, **params):
+    """ Plot ydata vs xdata as bars.
 
-    xdata, ydata = check_numpy(xdata, ydata)
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        width (_type_, optional): _description_. Defaults to None.
+        align (str, optional): _description_. Defaults to 'edge'.
+        alpha (float, optional): _description_. Defaults to 1.0.
+        edgecolor (str, optional): _description_. Defaults to '#666677'.
+        linewidth (float, optional): _description_. Defaults to 0.2.
+
+    """
+    xdata, ydata = convertToNumpy(xdata, ydata)
+    checkEqualLengths(xdata,ydata)
     fill_param_dict(params)
     optional = add_optional(params)
     ax  = getAxObject(params)
@@ -550,7 +580,17 @@ def plot_hist(data, logx = False, bins = None, **kwargs):
 
 
 def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
-    xdata, ydata, yedata, xedata = check_numpy(xdata, ydata, yedata, xedata)
+    """ Plot ydata vs xdata using lines.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        yedata (array-like, optional): y error. Defaults to None.
+        xedata (array-like, optional): x error. Defaults to None.
+
+    """
+    xdata, ydata, yedata, xedata = convertToNumpy(xdata, ydata, yedata, xedata)
+    checkEqualLengths(xdata,ydata,yedata,xedata)
     fill_param_dict(params)
     optional = add_optional(params)
     xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
@@ -601,7 +641,16 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 
 
 def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
+    """ Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        yedata (array-like): y error 
+        xedata (array-like, optional): x error. Defaults to None.
+        pattern (_type_, optional): _description_. Defaults to None.
+
+    """
     if (yedata is None) and (xedata is None):
         logger.TBError("Please pass some error bars.")
     if (yedata is not None) and (xedata is not None):
@@ -611,10 +660,10 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     optional = add_optional(params)
 
     if xedata is None:
-        xdata, ydata, yedata = check_numpy(xdata, ydata, yedata)
+        xdata, ydata, yedata = convertToNumpy(xdata, ydata, yedata)
         xdata, ydata, yedata = remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
     else:
-        xdata, ydata, xedata = check_numpy(xdata, ydata, xedata)
+        xdata, ydata, xedata = convertToNumpy(xdata, ydata, xedata)
         ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval = params['ymin'], maxval = params['ymax'])
 
     xscale = params['xscale']
@@ -655,6 +704,15 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 # TODO: make this guy work vertically
 #
 def plot_band(xdata, low_lim, up_lim, center = None, **params):
+    """ Plot a horizontal band.
+
+    Args:
+        xdata (array-like): _description_
+        low_lim (float): _description_
+        up_lim (float): _description_
+        center (_type_, optional): _description_. Defaults to None.
+
+    """
     fill_param_dict(params)
     optional = add_optional(params)
     if center is not None:

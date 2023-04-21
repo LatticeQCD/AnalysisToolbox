@@ -59,6 +59,14 @@ def checkType(instance, expectedType):
         logger.TBError('Expected type',expectedType,'but received',type(instance),frame=3)
 
 
+def checkEqualLengths(*args):
+    length = len(envector(args[0]))
+    for array in args:
+        if array is not None:
+            if len(envector(array)) != length:
+                logger.TBError('Array length mismatch detected.',frame=3)
+
+
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
     """ Check whether two values are equal. Use especially when comparing to 0. """
     try:

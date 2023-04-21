@@ -38,7 +38,17 @@ def envector(*args):
     return unvector(result)
 
 
+def convertToNumpy(*args):
+    """ Change lists or tuples to numpy arrays.
 
+    Returns:
+        tuple: tuple of args, each arg converted to a numpy array. 
+    """
+    args=list(args)
+    for i in range(len(args)):
+        if isinstance(args[i], (list, tuple)):
+            args[i] = np.array(args[i])
+    return tuple(args)
 
 
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER

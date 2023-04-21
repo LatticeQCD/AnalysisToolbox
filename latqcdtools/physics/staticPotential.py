@@ -41,7 +41,7 @@ def fitV_Teq0_twoloop(r,a,b,c,d,e):
     return a + ( b + d*np.log(r) + e*np.log(np.log(r)) )/r + c*r
 
 
-def impdist(Ns,r2max):
+def impdist(Ns,r2max,improvedAction=True):
     """Calculation of tree-level improved distances. Follows eq. (3) of 10.1103/PhysRevD.90.074038,
 
     INPUT:
@@ -54,8 +54,13 @@ def impdist(Ns,r2max):
     # This part must be placed outside the jit, since numba doesn't know what do with sys.exit.
     if not Ns > 0:
         logger.TBError("Need Ns>0")
-    if r2max > (Ns / 2) ** 2:
+    if r2max > (Ns/2)**2:
         logger.TBError("r2max is too large.")
+
+    if improvedAction:
+        cw = 1/3
+    else:
+        cw = 0
 
     @jit(nopython=True)
     def compiledImpDist():
@@ -81,9 +86,9 @@ def impdist(Ns,r2max):
                             for k3 in range(Ns):
                                 if not (k1+k2+k3)==0:
                                     r1  =cosf[k1*x+k2*y+k3*z]
-                                    r2  =sinf[k1]**2+1./3.*sinf[k1]**4
-                                    r2 +=sinf[k2]**2+1./3.*sinf[k2]**4
-                                    r2 +=sinf[k3]**2+1./3.*sinf[k3]**4
+                                    r2  =sinf[k1]**2+cw*sinf[k1]**4
+                                    r2 +=sinf[k2]**2+cw*sinf[k2]**4
+                                    r2 +=sinf[k3]**2+cw*sinf[k3]**4
                                     pot+=r1/(4.*r2)
                     pot*=1./Ns**3
                     pots[sq]+=pot
@@ -98,9 +103,9 @@ def impdist(Ns,r2max):
                     for k3 in range(Ns):
                         if not (k1+k2+k3)==0:
                             r1  =cosf[k1*x]
-                            r2  =sinf[k1]**2+1./3.*sinf[k1]**4
-                            r2 +=sinf[k2]**2+1./3.*sinf[k2]**4
-                            r2 +=sinf[k3]**2+1./3.*sinf[k3]**4
+                            r2  =sinf[k1]**2+cw*sinf[k1]**4
+                            r2 +=sinf[k2]**2+cw*sinf[k2]**4
+                            r2 +=sinf[k3]**2+cw*sinf[k3]**4
                             pot+=r1/(4.*r2)
             pot*=1./Ns**3
             pots[sq]+=pot

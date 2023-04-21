@@ -83,19 +83,19 @@ class latticeParams:
             self.m    = None
             self.pre  = None
         elif Nf == '211':
-            self.cml = mass1
-            self.cms = mass2
-            self.cmc = mass3
-            self.ml = massStringToFloat(mass1)
-            self.ms = massStringToFloat(mass2)
-            self.mc = massStringToFloat(mass3)
-            self.cm = None
+            self.cml  = mass1
+            self.cms  = mass2
+            self.cmc  = mass3
+            self.ml   = massStringToFloat(mass1)
+            self.ms   = massStringToFloat(mass2)
+            self.mc   = massStringToFloat(mass3)
+            self.cm   = None
             self.cpre = None
-            self.m = None
-            self.pre = None
-        elif Nf=='3':
+            self.m    = None
+            self.pre  = None
+        elif Nf=='3' or Nf=='5':
             if mass3 is not None:
-                logger.TBError('Nf=3 expects only 2 mass parameters.')
+                logger.TBError('Degenerate Nf expects only 2 mass parameters.')
             self.cml  = None
             self.cms  = None
             self.ml   = None
