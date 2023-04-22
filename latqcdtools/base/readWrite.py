@@ -32,8 +32,11 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
     Returns:
         np.array: Data table. 
     """
-    checkType(filename,str) 
-    data = np.loadtxt(filename,unpack=unpack,**kwargs)
+    checkType(filename,str)
+    try: 
+        data = np.loadtxt(filename,unpack=unpack,**kwargs)
+    except Exception as e:
+        logger.TBError('Encountered exception:',e)
     if col is not None:
         data = clipRange(data,col=col,minVal=minVal,maxVal=maxVal)
     return data

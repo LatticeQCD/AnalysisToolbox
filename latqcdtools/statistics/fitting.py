@@ -418,7 +418,7 @@ class Fitter:
             else:
                 funcExpand(self._func,self._fit_xdata[0],self._saved_params,self._args,self._expand)
         except Exception as e:
-            logger.info("Function cannot handle start_parameters. Generate new defaults")
+            logger.warn("Function cannot handle start_parameters",self._saved_params)
             if logger.isLevel("DEBUG"):
                 traceback.print_exc()
             self._get_numb_params()

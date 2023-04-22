@@ -60,7 +60,7 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=200):
                     raise RuntimeWarning('RuntimeWarning: Bad progress on root solve.')
             except Exception as e:
                 raise e
-    return solution
+    return unvector(solution)
 
 
 def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):

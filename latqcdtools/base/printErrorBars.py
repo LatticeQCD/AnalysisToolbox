@@ -51,6 +51,8 @@ def get_err_str(param, param_err, numb_err_dig=2):
     """ Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). """
 
     checkType(numb_err_dig,int)
+    param     = float(param)
+    param_err = float(param_err)
 
     if numb_err_dig < 1:
         logger.TBError("Number of error digits has to be larger than 0!")

@@ -11,6 +11,15 @@ from latqcdtools.math.polynomials import Polynomial,Rational
 from latqcdtools.physics.betaFunction import beta_func
 
 
+CHECKBETARANGE = True
+
+
+def ignoreBetaRange():
+    global CHECKBETARANGE
+    CHECKBETARANGE = False
+    logger.warn('Squelching beta range warnings.')
+
+
 # -------------------------------------------------------------------------------------------------------- FITTING FORMS
 
 
@@ -34,8 +43,10 @@ def allton_type_ansatz(beta, c0, c2, d2):
 
 
 def print_out_of_beta_range_warning(beta, beta_range):
-    if beta < beta_range[0] or beta > beta_range[1]:
-        logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
+    global CHECKBETARANGE
+    if CHECKBETARANGE:
+        if beta < beta_range[0] or beta > beta_range[1]:
+            logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
 
 
 def a_times_fk(beta: float, year, suppress_warnings=False):
