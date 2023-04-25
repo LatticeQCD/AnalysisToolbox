@@ -14,7 +14,7 @@ echo
 echo "Running plotting tests:"
 echo
 
-cd plotting 
+cd base 
 runTestRoutine plotRandom.py
 runTestRoutine testPlotFormats.py
 runTestRoutine testPlot.py
