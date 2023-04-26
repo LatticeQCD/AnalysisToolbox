@@ -14,6 +14,51 @@ import latqcdtools.base.logger as logger
 # ---------------------------------------------------------------------------------- MAKE INTERNAL FUNCTIONS MORE SMOOTH
 
 
+def convertToNumpy(*args):
+    """ Change lists or tuples to numpy arrays.
+
+    Returns:
+        tuple: tuple of args, each arg converted to a numpy array. 
+    """
+    args=list(args)
+    for i in range(len(args)):
+        if isinstance(args[i], (list, tuple)):
+            args[i] = np.array(args[i])
+    return tuple(args)
+
+
+def isArrayLike(obj):
+    """ Figure out whether obj is indexable.
+
+    Args:
+        obj (python object)
+
+    Returns:
+        bool: True if there is at least one index, false otherwise. 
+    """
+    try:
+        obj[0]
+        return True
+    except (TypeError,IndexError):
+        return False
+
+
+def isHigherDimensional(obj):
+    """ Figure out whether obj has at least two indices.
+
+    Args:
+        data (array-like)
+
+    Returns:
+        bool: True if there are at least two indices, false otherwise. 
+    """
+    try:
+        obj[0][0]
+        return True
+    except (TypeError, IndexError):
+        return False
+
+
 def unvector(obj):
     """ Change obj to a scalar if it's an array-like object of length 1. Otherwise don't do anything. """
     try:
@@ -30,25 +75,10 @@ def envector(*args):
     """ Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., using np.vectorize. """
     result = ()
     for obj in args:
-        try:
-            obj[0]
-        except (TypeError,IndexError):
+        if not isArrayLike(obj):
             obj = np.array([obj])
         result += (obj,)
     return unvector(result)
-
-
-def convertToNumpy(*args):
-    """ Change lists or tuples to numpy arrays.
-
-    Returns:
-        tuple: tuple of args, each arg converted to a numpy array. 
-    """
-    args=list(args)
-    for i in range(len(args)):
-        if isinstance(args[i], (list, tuple)):
-            args[i] = np.array(args[i])
-    return tuple(args)
 
 
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
@@ -104,7 +134,7 @@ def printClean(*args,label=None):
 def shell(*args):
     """ Carry out the passed arguments args in the shell. Can be passed as a single
         string or as a list. Captures and returns output of shell command. E.g.
-          shell('ls -lah')
+            shell('ls -lah')
     """
     args = [str(s) for s in args]
     process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)

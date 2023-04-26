@@ -12,15 +12,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as cl
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths
-from latqcdtools.base.utilities import convertToNumpy
+from latqcdtools.base.utilities import convertToNumpy, unvector, isHigherDimensional
 from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
-
-
-# TODO: put in some docstrings for stuff that doesn't have it yet.
-#       finally check all the gcas, they may not be needed anymore. also you need to like make sure that all the
-#       external methods here have some sort of test; you changed a lot of things and it's important to verify that
-#       the changes you made are stable. also expand a bit in the documentation
 
 
 ZOD        = 1
@@ -326,7 +320,7 @@ def set_params(**params):
     ZOD = params['ZOD']
 
     if ZOD is None:
-         ZOD = globals()['ZOD']
+        ZOD = globals()['ZOD']
 
     if params['xlabel'] is not None:
         if params['labelsintoplot'] or params['xlabelpos'] is not None:
@@ -416,7 +410,6 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
         func (function, optional): Apply this function to the data. Defaults to None.
         func_args (tuple, optional): Arguments to func. Defaults to ().
         **params: Additional parameters that can be set.
-
     """
     fill_param_dict(params)
     data = readTable(filename)
@@ -467,7 +460,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         ydata (array-like)
         yedata (array-like, optional): y error. Defaults to None.
         xedata (array-like, optional): x error. Defaults to None.
-
+        **params: Additional parameters that can be set.
     """
     xdata, ydata, yedata, xedata = convertToNumpy(xdata, ydata, yedata, xedata)
     checkEqualLengths(xdata,ydata,xedata,yedata)
@@ -487,7 +480,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
     ZOD = params['ZOD']
     if ZOD is None:
-         ZOD = globals()['ZOD']
+        ZOD = globals()['ZOD']
 
     marker = params['marker']
     if marker == "iter":
@@ -523,10 +516,10 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
         ydata (array-like)
         width (_type_, optional): _description_. Defaults to None.
         align (str, optional): _description_. Defaults to 'edge'.
-        alpha (float, optional): _description_. Defaults to 1.0.
-        edgecolor (str, optional): _description_. Defaults to '#666677'.
-        linewidth (float, optional): _description_. Defaults to 0.2.
-
+        alpha (float, optional): Transparency. Defaults to 1.0.
+        edgecolor (str, optional): Color of bar edges. Defaults to '#666677'.
+        linewidth (float, optional): Defaults to 0.2.
+        **params: Additional parameters that can be set.
     """
     xdata, ydata = convertToNumpy(xdata, ydata)
     checkEqualLengths(xdata,ydata)
@@ -542,7 +535,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
 
     ZOD = params['ZOD']
     if ZOD is None:
-         ZOD = globals()['ZOD']
+        ZOD = globals()['ZOD']
 
     if params['color'] is not None:
         bar = ax.bar(xdata, ydata, color=params['color'], zorder=ZOD, width=width, align=align, edgecolor=edgecolor,
@@ -561,22 +554,29 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
     return bar
 
 
-def plot_hist(data, logx = False, bins = None, **kwargs):
-    if logx:
-        xmin = np.min(data)
-        xmax = np.max(data)
+def plot_hist(data, bins = None, density=False, label=None, **params):
+    """ Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
+    simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
 
-        if bins is None:
-            bins = 50
-        else:
-            bins = bins
-        bins = np.logspace(np.log10(xmin),np.log10(xmax), bins)
-        plt.hist(data, bins = bins, **kwargs)
-        plt.xscale('log')
+    Args:
+        data (array-like)
+        bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
+        **params: Additional parameters that can be set.
+    """
+    data = unvector(convertToNumpy(data))
+    fill_param_dict(params)
+    ax = getAxObject(params)
+    if bins is None:
+        bins = 'auto'
+    if isHigherDimensional(data):
+        ax.hist(data, bins=bins, density=density,label=label)
     else:
-        if bins is None:
-            bins = 'auto'
-        plt.hist(data, bins = bins, **kwargs)
+        ax.hist(data, bins=bins, density=density,label=label,color=params['color'])
+    if density:
+        ax.set_yticklabels([])
+    if label is not None:
+        ax.legend()
+    set_params(**params)
 
 
 def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
@@ -587,7 +587,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
         ydata (array-like)
         yedata (array-like, optional): y error. Defaults to None.
         xedata (array-like, optional): x error. Defaults to None.
-
+        **params: Additional parameters that can be set.
     """
     xdata, ydata, yedata, xedata = convertToNumpy(xdata, ydata, yedata, xedata)
     checkEqualLengths(xdata,ydata,yedata,xedata)
@@ -649,7 +649,7 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
         yedata (array-like): y error 
         xedata (array-like, optional): x error. Defaults to None.
         pattern (_type_, optional): _description_. Defaults to None.
-
+        **params: Additional parameters that can be set.
     """
     if (yedata is None) and (xedata is None):
         logger.TBError("Please pass some error bars.")
@@ -668,10 +668,10 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 
     xscale = params['xscale']
     yscale = params['yscale']
-    ax  = getAxObject(params)
+    ax     = getAxObject(params)
     ZOD    = params['ZOD']
     if ZOD is None:
-         ZOD = globals()['ZOD']
+        ZOD = globals()['ZOD']
 
     if params['color'] is not None:
         ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
@@ -700,18 +700,15 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     return ebar,pl
 
 
-#
-# TODO: make this guy work vertically
-#
 def plot_band(xdata, low_lim, up_lim, center = None, **params):
     """ Plot a horizontal band.
 
     Args:
-        xdata (array-like): _description_
+        xdata (array-like)
         low_lim (float): _description_
         up_lim (float): _description_
         center (_type_, optional): _description_. Defaults to None.
-
+        **params: Additional parameters that can be set.
     """
     fill_param_dict(params)
     optional = add_optional(params)
@@ -726,7 +723,7 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
 
     ZOD = params['ZOD']
     if ZOD is None:
-         ZOD = globals()['ZOD']
+        ZOD = globals()['ZOD']
 
     globals()['ZOD'] += 1
 

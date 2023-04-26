@@ -8,7 +8,7 @@
 
 import numpy as np
 from numpy.random import normal
-from latqcdtools.statistics.statistics import weighted_mean, weighted_mean_variance, unbiased_mean_variance, unbiased_sample_variance
+from latqcdtools.statistics.statistics import gaudif, std_mean, std_err, weighted_mean, weighted_mean_variance, unbiased_mean_variance, unbiased_sample_variance
 from latqcdtools.base.check import print_results
 import latqcdtools.base.logger as logger
 
@@ -39,6 +39,38 @@ def testWeightedMean():
     print_results(TRUExe_unbias,xe_unbias,text='unbiased weighted average error',prec=PREC)
     print_results(TRUEse_unbias,se_unbias,text='unbiased sample average error',prec=PREC)
 
+    # Now see what happens we we combine two samples with different variances and statistics
+    data1 = normal(0,1,600)
+    data2 = normal(0,3,150)
+    x1    = std_mean(data1)
+    e1    = std_err(data1)
+    x2    = std_mean(data2)
+    e2    = std_err(data2)
+    data  = np.concatenate((data1,data2))
+    x     = std_mean(data)
+    e     = std_err(data)
+    x12   = weighted_mean([x1,x2],[1/e1**2,1/e2**2])
+    e12   = np.sqrt(weighted_mean_variance([e1,e2]))
+
+    q = gaudif(x,e,x12,e12)
+
+    if q<0.05 or e12>e:
+        logger.TBFail('Combination test 1')
+    else:
+        logger.TBPass('Combination test 1') 
+
+    N1  = len(data1)
+    N2  = len(data2)
+    w1  = 1/e1**2 / (1/e1**2 + 1/e2**2)
+    w2  = 1/e2**2 / (1/e1**2 + 1/e2**2)
+    w1 *= (N1+N2)/N1
+    w2 *= (N1+N2)/N2
+
+    data  = np.concatenate((data1*w1,data2*w2))
+    x     = std_mean(data)
+    e     = std_err(data)
+
+    print_results(x,x12,e,e12,prec=1e-4,text='Combination test 2')
 
 if __name__ == '__main__':
     testWeightedMean()

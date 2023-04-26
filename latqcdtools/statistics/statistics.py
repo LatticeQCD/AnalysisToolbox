@@ -17,7 +17,7 @@ import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
 from latqcdtools.math.math import logDet
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
-from latqcdtools.base.utilities import envector
+from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.base.printErrorBars import get_err_str
 
 
@@ -86,13 +86,6 @@ def jack_mean_and_err(data):
     mean   = np.mean(data)
     err    = np.sqrt( (n-1)*np.mean((data-mean)**2) )
     return mean, err
-
-
-def weighted_mean(data, weights):
-    """ Compute the weighted mean. """
-    data    = np.asarray(data)
-    weights = np.asarray(weights)
-    return np.sum(data.dot(weights))/np.sum(weights)
 
 
 def funcExpand(func, x, params=(), args=(), expand=True):
@@ -196,10 +189,22 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
 #https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
 
 
+def weighted_mean(data, weights):
+    """ Compute the weighted mean. """
+    data    = np.asarray(data)
+    weights = np.asarray(weights)
+    return np.sum(data.dot(weights))/np.sum(weights)
+
+
 def weighted_mean_variance(errors, weights = None):
     """ Compute the variance of the weighted mean based on error propagation. This is only valid if the error bars of
     the data are of reasonable size, meaning that most of the error bars include the mean value. If you expect that
     there are unknown systematic errors, you should use unbiased_mean_variance instead.
+    
+    This tends to yield an error bar that is tighter than if you were to simply combine two data sets directly, then
+    calculate the mean and error on that. For instance in the case where you have two estimates, one noisy and one
+    clean, the noisy data will make the clean data also noisy. Taking the weighted mean instead gives preference
+    to the clean estimate.
 
     Parameters
     ----------
@@ -208,7 +213,8 @@ def weighted_mean_variance(errors, weights = None):
         The errors of the data points.
     weights: array_like, optional, default = None
         If you do not use weights = 1/errors**2, you can pass additional weights.
-        If None, weights = computed as 1/errors**2. """
+        If None, weights = computed as 1/errors**2. 
+    """
     errors = np.asarray(errors)
     if weights is None:
         weights = 1 / errors**2
@@ -289,11 +295,11 @@ def error_prop(func, means, errors, grad=None, args=()):
     errors = np.asarray(errors)
     means  = np.asarray(means)
     mean   = func(means, *args)
-    try:
-        # Test if we got a covariance matrix
-        errors[0][0]
-    except:
+
+    # Test if we got a covariance matrix
+    if not isHigherDimensional(errors):
         errors = np.diag(errors**2)
+
     if type(mean) is tuple:
         raise TypeError("Tuples are not supported for error propagation")
 

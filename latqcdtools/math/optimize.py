@@ -14,7 +14,7 @@ warnings.filterwarnings("error", category=RuntimeWarning)
 from scipy.optimize.nonlin import NoConvergence
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import DivideByZeroError, InvalidValueError
-from latqcdtools.base.utilities import unvector
+from latqcdtools.base.utilities import unvector, envector 
 
 
 # This is the base list of exceptions. If encountered, we treat the solve as unreliable.
@@ -67,8 +67,7 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
 
     args = (func, start_params)
 
-    kwargs = {'method': algorithm,
-                 'tol': tol}
+    kwargs = {'method': algorithm, 'tol': tol}
 
     if algorithm == "BFGS":
         kwargs['jac'] = jack
@@ -101,13 +100,6 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
         logger.details(algorithm, res.message)
         raise ValueError(algorithm + ": Minimization did not converge!")
 
-    try:
-        params[0]
-    except:
-        if isinstance(params, (np.ndarray, np.generic)):
-            # Somehow numpy 0D arrays have to be converted to scalar explicitly.
-            params = [np.asscalar(params)]
-        else:
-            params = [params]
+    params = envector(params)
 
     return params, nfev

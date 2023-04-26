@@ -18,10 +18,10 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.check import IllegalArgumentError
+from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, funcExpand
-from latqcdtools.base.utilities import envector
 from inspect import signature
 import matplotlib as mpl
 import traceback
@@ -242,12 +242,10 @@ class Fitter:
         # Check if we have the covariance matrix available and compute weights etc.
         if edata is not None:
             edata = np.asarray(edata, dtype = float)
-            try:
-                edata[0][0]
+            if isHigherDimensional(edata): 
                 self._cov_avail = True
                 self._cov = edata
-
-            except (IndexError, TypeError):
+            else: 
                 self._cov_avail = False
                 self._cov = np.diag(np.array(edata)**2) # Covariance matrix is diagonal
         else:
@@ -280,13 +278,6 @@ class Fitter:
         self._xmin = xmin
         self._xmax = xmax
 
-        # Check if xdata is higher dimensional
-        try:
-            self._xdata[0][0]
-            xdata_high_dim = True
-        except (ValueError, IndexError):
-            xdata_high_dim = False
-
         # Reset caching data in case we get he same parameters but fit on a different data set
         self._cache_p_array = self._numb_params*[None]
         self._cache_p_jac   = self._numb_params*[None]
@@ -298,7 +289,7 @@ class Fitter:
             ind = (self._xdata>=xmin) & (self._xdata<=xmax) & ind
 
         # For multi-dimensional xdata we convert the index array to one dimension to match to the dimensions of ydata
-        if xdata_high_dim:
+        if isHigherDimensional(self._xdata):
             ind = np.array([any(i) for i in ind], dtype = bool)
 
         # Subsets of the data, that match to the fit range. These subsets are used for the actual fit.
