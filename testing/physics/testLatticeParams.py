@@ -39,7 +39,7 @@ def testLatticeParams():
 
     import params_zeroTemp
 
-    lp = latticeParams(params_zeroTemp.Ns, params_zeroTemp.Nt, params_zeroTemp.cbeta, scaleType='r0')
+    lp = latticeParams(params_zeroTemp.Ns, params_zeroTemp.Nt, params_zeroTemp.cbeta, scaleType='r0', paramYear=2017)
     lp.paramSummary()
     a = lp.geta()
     T = lp.getT()

@@ -8,7 +8,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014
+from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014, CY_A_TIMES_FK, CY_FK_PHYS
 
 
 def massStringToFloat(string):
@@ -26,8 +26,8 @@ class latticeParams:
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
-    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=2021,
-                 Nf='21', scaleYear=2019, mu=0):
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=CY_A_TIMES_FK,
+                 Nf='21', scaleYear=CY_FK_PHYS, mu=0):
         """ Based on some input, determine all parameters relevant to the ensemble.
 
         Parameters
@@ -119,7 +119,7 @@ class latticeParams:
         elif self.scale=='r1':
             return a_div_r1(self.beta,self.year)*self.r1
         elif self.scale=='r0':
-            return self.r0/r0_div_a(self.beta)
+            return self.r0/r0_div_a(self.beta,self.year)
 
 
     # T in [MeV]
