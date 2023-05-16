@@ -1,3 +1,5 @@
+#!/bin/python3
+
 # calculate susceptibilities of arbitrary order also on PC line, uses main_HRG as input, since the krylov solver
 # part is the slow part we solve only once
 

@@ -1,3 +1,5 @@
+#!/bin/python3
+
 # 
 # main_HRG_LCP.py                                                               
 # 

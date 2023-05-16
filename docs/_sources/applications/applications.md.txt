@@ -48,10 +48,20 @@ This script creates tables of $\mu_B/T$, $\mu_Q/T$, and $\mu_S/T$ ($\mu_C=0$) th
 mentioned above.
 A straightforward usage of this script is, for instance,
 ```shell
-./python3 main_HRG_LCP.py --r 0.4 --models QM --T 150
+./main_HRG_LCP.py --r 0.4 --models QM --T 150
 ```
 Once you have generated some LCP files, you can also use `main_HRG_measure.py` from above to carry out measurements
 on them. In such a case, you must pass the LCP file as argument. For instance,
 ```shell
 ./main_HRG_measure.py --obs chi --bqsc 1100 --LCP_file HRG_LCP_T150.0_r0.5QM
 ```
+
+## main_plotRatApprox.py
+The RHMC of [SIMULATeQCD](https://github.com/LatticeQCD/SIMULATeQCD) relies on a rational approximation to the fermion
+determinant. It is useful to see how well this approximation compares with the exact function. This can be checked
+visually with, for example
+```shell
+./main_plotRatApprox.py in.rational 0.001 0.01
+```
+where `in.rational` is the rational approximation file, and we use a light quark mass of 0.001 in lattice units
+and a strange quark mass of 0.01.

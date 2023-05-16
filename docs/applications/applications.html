@@ -127,7 +127,7 @@ of constant physics (LCPs). The HotQCD collaboration has focused on strangeness-
 This script creates tables of <span class="math notranslate nohighlight">\(\mu_B/T\)</span>, <span class="math notranslate nohighlight">\(\mu_Q/T\)</span>, and <span class="math notranslate nohighlight">\(\mu_S/T\)</span> (<span class="math notranslate nohighlight">\(\mu_C=0\)</span>) that lie on <span class="math notranslate nohighlight">\(n_S=0\)</span> LCPs like the ones
 mentioned above.
 A straightforward usage of this script is, for instance,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./python3<span class="w"> </span>main_HRG_LCP.py<span class="w"> </span>--r<span class="w"> </span><span class="m">0</span>.4<span class="w"> </span>--models<span class="w"> </span>QM<span class="w"> </span>--T<span class="w"> </span><span class="m">150</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_LCP.py<span class="w"> </span>--r<span class="w"> </span><span class="m">0</span>.4<span class="w"> </span>--models<span class="w"> </span>QM<span class="w"> </span>--T<span class="w"> </span><span class="m">150</span>
 </pre></div>
 </div>
 <p>Once you have generated some LCP files, you can also use <code class="docutils literal notranslate"><span class="pre">main_HRG_measure.py</span></code> from above to carry out measurements
@@ -135,6 +135,17 @@ on them. In such a case, you must pass the LCP file as argument. For instance,</
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_measure.py<span class="w"> </span>--obs<span class="w"> </span>chi<span class="w"> </span>--bqsc<span class="w"> </span><span class="m">1100</span><span class="w"> </span>--LCP_file<span class="w"> </span>HRG_LCP_T150.0_r0.5QM
 </pre></div>
 </div>
+</section>
+<section id="main-plotratapprox-py">
+<h2>main_plotRatApprox.py<a class="headerlink" href="#main-plotratapprox-py" title="Permalink to this headline"></a></h2>
+<p>The RHMC of <a class="reference external" href="https://github.com/LatticeQCD/SIMULATeQCD">SIMULATeQCD</a> relies on a rational approximation to the fermion
+determinant. It is useful to see how well this approximation compares with the exact function. This can be checked
+visually with, for example</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_plotRatApprox.py<span class="w"> </span><span class="k">in</span>.rational<span class="w"> </span><span class="m">0</span>.001<span class="w"> </span><span class="m">0</span>.01
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">in.rational</span></code> is the rational approximation file, and we use a light quark mass of 0.001 in lattice units
+and a strange quark mass of 0.01.</p>
 </section>
 </section>
 

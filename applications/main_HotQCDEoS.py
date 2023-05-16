@@ -1,3 +1,5 @@
+#!/bin/python3
+
 #
 # Usage help : python  main_HotQCDEoS.py -h
 #
