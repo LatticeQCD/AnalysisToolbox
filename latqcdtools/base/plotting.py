@@ -371,6 +371,7 @@ def set_params(**params):
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
         leg.set_zorder(ZOD)
+        plt.tight_layout()
 
     if params['xtick_freq'] is not None:
         start, end = ax.get_xlim()
