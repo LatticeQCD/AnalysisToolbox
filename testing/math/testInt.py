@@ -18,6 +18,8 @@ logger.set_log_level('INFO')
 def f(s):
     return s
 
+def g(s,a,b):
+    return a*s+b
 
 def testInt():
 
@@ -59,6 +61,10 @@ def testInt():
     print_results(integrateFunction(f,0,1,method='trapezoid'), 0.5, text="trapezoid scalar function")
     print_results(integrateFunction(f,[0,0],[1,2],method='vec_quad'), [0.5,2], text="quadrature vector function")
     print_results(integrateFunction(f,0,1,method='vec_quad'), 0.5, text="quadrature scalar function")
+
+    # try passing some arguments. Ax+B --> Ax^2/2 + Bx
+    print_results(integrateFunction(g,0,1,method='quad',args=(2,3)),4,text='quadrature with arg') 
+    print_results(integrateFunction(g,0,1,method='trapezoid',args=(2,3)),4,text='trapezoid with arg') 
 
 
 if __name__ == '__main__':

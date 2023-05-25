@@ -5,14 +5,13 @@
 # 
 # Methods for logging and output.
 # 
-import sys, inspect
+
+import sys, inspect, datetime
 from colorama import Fore
 
 
 class bcolors:
-
     """ Colors for logging messages. """
-
     def __init__(self):
         pass
     PASS    = Fore.GREEN
@@ -71,6 +70,11 @@ def getCallerName(frame):
     return callerName
 
 
+def getTimeStamp():
+    """ Get HH:MM:SS """
+    return ' ['+datetime.datetime.now().strftime("%H:%M:%S")+']'
+
+
 # ----------------------------------------------------------------------------------------------- DEPENDENT ON LOG LEVEL
 
 
@@ -83,45 +87,44 @@ def set_log_level(level):
     current_level = log_levels[level]
 
 
-
 def debug(*args,frame=2):
     if current_level <= 1:
-        args = [str(s) for s in args]
+        args       = [str(s) for s in args]
         callerName = getCallerName(frame)
-        output = '  DEBUG: '+callerName+'--'+(' '.join(args))
+        output     = getTimeStamp()+' DEBUG: '+callerName+'--'+(' '.join(args))
         print(output)
         log(output+'\n')
 
 
 def details(*args):
     if current_level <= 2:
-        args = [str(s) for s in args]
-        output = '  DETAILS: '+(' '.join(args))
+        args   = [str(s) for s in args]
+        output = getTimeStamp()+' DETAILS: '+(' '.join(args))
         print(output)
         log(output+'\n')
 
 
 def progress(*args):
     if current_level <= 3:
-        args = [str(s) for s in args]
-        output = '  PROGRESS: '+(' '.join(args))
+        args   = [str(s) for s in args]
+        output = getTimeStamp()+' PROGRESS: '+(' '.join(args))
         print(output)
         log(output+'\n')
 
 
 def info(*args):
     if current_level <= 4:
-        args = [str(s) for s in args]
-        output = '  INFO: '+(' '.join(args))
+        args   = [str(s) for s in args]
+        output = getTimeStamp()+' INFO: '+(' '.join(args))
         print(output)
         log(output+'\n')
 
 
 def warn(*args,frame=2):
     if current_level <= 5:
-        args = [str(s) for s in args]
+        args       = [str(s) for s in args]
         callerName = getCallerName(frame)
-        output = bcolors.WARNING+'  WARNING: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
+        output     = getTimeStamp()+bcolors.WARNING+' WARNING: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
         print(output)
         log(output+'\n')
 
@@ -130,8 +133,8 @@ def warn(*args,frame=2):
 
 
 def TBFail(*args):
-    args = [str(s) for s in args]
-    output = bcolors.FAIL+'  FAIL: '+(' '.join(args))+bcolors.ENDC
+    args   = [str(s) for s in args]
+    output = getTimeStamp()+bcolors.FAIL+' FAIL: '+(' '.join(args))+bcolors.ENDC
     print(output)
     log(output + '\n')
 
@@ -139,7 +142,7 @@ def TBFail(*args):
 def TBError(*args,frame=2):
     args = [str(s) for s in args]
     callerName = getCallerName(frame)
-    output = bcolors.FAIL+'  ERROR: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
+    output = getTimeStamp()+bcolors.FAIL+' ERROR: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
     print(output)
     log(output + '\n')
     sys.exit(-1)
@@ -147,7 +150,7 @@ def TBError(*args,frame=2):
 
 def TBPass(*args):
     args = [str(s) for s in args]
-    output = bcolors.PASS+'  SUCCESS: '+(' '.join(args))+bcolors.ENDC
+    output = getTimeStamp()+bcolors.PASS+' SUCCESS: '+(' '.join(args))+bcolors.ENDC
     print(output)
     log(output + '\n')
 
