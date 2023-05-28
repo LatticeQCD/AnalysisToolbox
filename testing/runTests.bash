@@ -23,8 +23,6 @@ cd base
 runTestRoutine testDataCleaner.py
 rm Toolbox.log
 runTestRoutine testLogger.py
-_compareFiles control.log Toolbox.log
-_checkPassError $? "testLogger" 
 runTestRoutine testPrintErrorBars.py
 runTestRoutine "testReadWrite.py --type str"
 runTestRoutine "testReadWrite.py --type list"

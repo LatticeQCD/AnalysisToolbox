@@ -11,6 +11,7 @@
 import argparse
 from latqcdtools.physics.lattice_params import latticeParams
 from latqcdtools.base.utilities import getArgs
+from latqcdtools.physics.referenceScales import CY_A_DIV_R0, CY_FK_PHYS, CY_A_TIMES_FK
 import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')
@@ -21,15 +22,33 @@ parser.add_argument('--Nt', dest='Nt', type=int, default=8, help='euclidean time
 parser.add_argument('--Ns', dest='Ns', type=int, default=None, help='spatial extension')
 parser.add_argument('--beta', dest='beta', type=float, required=True, help='bare coupling const')
 parser.add_argument('--scale', dest='scale', required=True, help='reference scale (r0, r1, or fk)')
-parser.add_argument('--year', default=2021, help='select the fit parameters by specifying the year of the paper')
+parser.add_argument('--paramYear', dest='paramYear', default=None, help='year for a(beta) parameterization')
+parser.add_argument('--scaleYear', dest='scaleYear', default=None, help='year for scale in physical units')
 
 args = getArgs(parser)
+
+scale      = args.scale
+Nt         = args.Nt
+beta       = args.beta
+scaleYear  = args.scaleYear
+paramYear  = args.paramYear
 
 if args.Ns is None:
     Ns = 3*args.Nt
 else:
     Ns = args.Ns
 
-lp = latticeParams(Ns, args.Nt, args.beta, mass1=None, mass2=None, scaleType=args.scale, paramYear=args.year)
+if scale == 'r0':
+    if paramYear is None:
+        paramYear = CY_A_DIV_R0
+elif scale == 'fk':
+    if scaleYear is None:
+        scaleYear = CY_FK_PHYS
+    if paramYear is None:
+        paramYear = CY_A_TIMES_FK 
+else:
+    logger.TBError('Beta extraction not yet implemented for scale',scale)
+
+lp = latticeParams(Ns, Nt, beta, mass1=None, mass2=None, scaleType=scale, paramYear=paramYear, scaleYear=scaleYear)
 
 lp.paramSummary()

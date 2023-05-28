@@ -58,4 +58,4 @@ logger.info('        Nt =',Nt)
 
 beta_solution = persistentSolve(LHS,beta_guess)
 
-logger.info('beta_sol =',round(float(beta_solution),3))
+logger.info('  beta_sol =',round(float(beta_solution),3))

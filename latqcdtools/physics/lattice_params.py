@@ -21,9 +21,6 @@ def massStringToFloat(string):
 class latticeParams:
     """A class to handle and check the input parameters of a lattice run."""
 
-    r1=r1_MILC_2010("fm")
-    r0=r0_hQCD_2014("fm")
-
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
     def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=CY_A_TIMES_FK,
@@ -53,7 +50,15 @@ class latticeParams:
             mu : float
                 Baryon chemical potential.
         """
-        self.fK = fk_phys(scaleYear,"MeV")
+        self.scale = scaleType
+        if self.scale == 'fk':
+            self.fK = fk_phys(scaleYear,"MeV")
+        elif self.scale == 'r1':
+            self.r1=r1_MILC_2010("fm")
+        elif self.scale == 'r0':
+            self.r0=r0_hQCD_2014("fm")
+        else:
+            logger.TBError('scaleType',self.scale,'not yet supported.')
         if isinstance(coupling, str):
             self.beta  = int(coupling)/10**(len(coupling)-1)
             self.cbeta = coupling
@@ -68,7 +73,6 @@ class latticeParams:
         self.year  = paramYear
         self.Ns    = Nsigma
         self.Nt    = Ntau
-        self.scale = scaleType
         self.Nf    = Nf
         self.vol4  = self.Ns**3 * self.Nt
         if Nf=='21':
