@@ -17,6 +17,10 @@ id_3 = np.array([ [complex(1.), complex(0.), complex(0.)],
                   [complex(0.), complex(0.), complex(1.)] ])
 
 
+ze_3 = np.array([ [complex(0.), complex(0.), complex(0.)],
+                  [complex(0.), complex(0.), complex(0.)],
+                  [complex(0.), complex(0.), complex(0.)] ])
+
 
 class SU3(np.matrix):
 
@@ -32,8 +36,11 @@ class SU3(np.matrix):
     """
 
 
-    def __new__(cls,  **kwargs):
-        obj = super().__new__(cls, id_3, **kwargs)
+    def __new__(cls, mat=None, **kwargs):
+        if mat is None:
+            obj = super().__new__(cls, ze_3, **kwargs)
+        else:
+            obj = super().__new__(cls, mat, **kwargs)
         if np.shape(obj) != (3,3):
             logger.TBError("SU(3) matrices must have shape (3,3).")
         return obj

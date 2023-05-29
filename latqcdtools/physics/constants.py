@@ -19,12 +19,16 @@ def fm_to_MeVinv(x):
     return x/hcMeVfm
 def fm_to_GeVinv(x):
     return x/hcGeVfm
+
+def MeV_to_fminv(x):
+    return x/hcMeVfm
+def GeV_to_fminv(x):
+    return x/hcGeVfm
+
 def MeVinv_to_fm(x):
     return hcMeVfm*x
 def GeVinv_to_fm(x):
     return hcGeVfm*x
-def MeV_to_fminv(x):
-    return x/hcMeVfm
 
 
 def gethc(units="MeVfm"):
@@ -43,6 +47,17 @@ def MeVtoUnits(value,name,units):
         return value/1000.
     elif units == "fminv":
         return MeV_to_fminv(value)
+    else:
+        logger.TBError("Invalid unit specification for " + name + ".")
+
+
+def GeVtoUnits(value,name,units):
+    if units == "GeV":
+        return value
+    elif units == "MeV":
+        return value*1000.
+    elif units == "fminv":
+        return GeV_to_fminv(value)
     else:
         logger.TBError("Invalid unit specification for " + name + ".")
 
@@ -144,6 +159,19 @@ def fk_phys(year=2019,units="MeV"):
         logger.TBError("Invalid year specification.")
     return MeVtoUnits( fkMeV/np.sqrt(2.), "fK", units )
 
+
+def frho_phys(year=2017,units="GeV",returnErr=False):
+    """ Physical value of the rho decay constant. """
+    if year==2017:
+        # HPQCD 2017. DOI: https://doi.org/10.1103/PhysRevD.93.014503. Figure 6.
+        frhoGeV, frhoGeV_err = 0.21, 0.01
+    else:
+        logger.TBError("Invalid year specification.")
+    if returnErr:
+        return GeVtoUnits( frhoGeV, "frho", units ), GeVtoUnits( frhoGeV_err, "frhoerr", units )
+    else:
+        return GeVtoUnits( frhoGeV, "frho", units )
+    
 
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
 

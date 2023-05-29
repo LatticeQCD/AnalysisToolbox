@@ -15,8 +15,8 @@ logger.set_log_level('INFO')
 
 def testSU3():
 
-    g = SU3()
-    h = SU3()
+    g = SU3(id_3)
+    h = SU3(id_3)
 
     ltest = True
 
@@ -31,7 +31,7 @@ def testSU3():
     # Trace
     if g.trace() != complex(4):
         ltest = False
-        logger.TBFail('Trace.')
+        logger.TBFail('Trace:',g.trace())
 
     # Making a random matrix
     g.setToRandom()
