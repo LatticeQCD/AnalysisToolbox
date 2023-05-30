@@ -8,6 +8,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import latqcdtools.base.logger as logger
 from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.readWrite import readTable
@@ -223,7 +224,7 @@ muSList = [1,3,10,30,100]
 for muBh in muBList:
     for muSh in muBList:
 
-        print("\nTESTS AT muB/T, muS/T = ",muBh,muSh,"\n")
+        logger.info("\nTESTS AT muB/T, muS/T = ",muBh,muSh,"\n")
 
         left  = QMhrg.P_div_T4(T,muB_div_T=muBh,muS_div_T=muSh)
         right = QMhrg.gen_chi(T,B_order=0,Q_order=0,S_order=0,muB_div_T=muBh,muS_div_T=muSh)

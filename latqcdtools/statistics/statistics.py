@@ -652,7 +652,7 @@ def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, t
             test = False
             resstr     = get_err_str(res[i]     ,res_err[i])
             restruestr = get_err_str(res_true[i],res_err_true[i])
-            print("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
+            logger.info("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
 
     if testMode:
         if test:

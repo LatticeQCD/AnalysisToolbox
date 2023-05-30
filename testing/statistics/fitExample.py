@@ -12,7 +12,7 @@ import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')
 
-print("\n Example of a simple 3-parameter quadratic fit.\n")
+logger.info("\n Example of a simple 3-parameter quadratic fit.\n")
 
 # Here we define our fit function. we pass it its independent variable followed by the fit parameters we are
 # trying to determine.
@@ -37,10 +37,10 @@ def fitExample():
     # detailedInfo = True, we will get back the covariance matrix as well.
     res, res_err, chi_dof, _, pcov = fitter.try_fit(start_params = [1, 2, 3], algorithms = ['curve_fit'], detailedInfo = True)
 
-    print(" a , b,  c : ",res)
-    print(" ae, be, ce: ",res_err)
-    print("chi2/d.o.f.: ",chi_dof)
-    print("       pcov: \n",pcov,"\n")
+    logger.info(" a , b,  c : ",res)
+    logger.info(" ae, be, ce: ",res_err)
+    logger.info("chi2/d.o.f.: ",chi_dof)
+    logger.info("       pcov: \n",pcov,"\n")
 
     fitter.plot_fit()
     plt.show()

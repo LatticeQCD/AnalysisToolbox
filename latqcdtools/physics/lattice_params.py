@@ -144,28 +144,28 @@ class latticeParams:
 
     # A nicely formatted summary of the lattice parameters.
     def paramSummary(self):
-        print("\nLattice parameter summary: ")
+        logger.info("Lattice parameter summary: ")
         if self.scale == 'fk':
-            print("    fK = ",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
+            logger.info("    fK = ",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
         elif self.scale == 'r1':
-            print("    r1 = ",self.r1,"[fm] ")
+            logger.info("    r1 = ",self.r1,"[fm] ")
         elif self.scale == 'r0':
-            print("    r0 = ",round(self.r0,4),"[fm] ")
+            logger.info("    r0 = ",round(self.r0,4),"[fm] ")
         if self.Ns is not None:
-            print("    Ns = ",self.Ns)
-        print("    Nt = ",self.Nt)
+            logger.info("    Ns = ",self.Ns)
+        logger.info("    Nt = ",self.Nt)
         if self.ml is not None:
-            print("    ml = ",self.ml)
+            logger.info("    ml = ",self.ml)
         if self.ms is not None:
-            print("    ms = ",self.ms)
+            logger.info("    ms = ",self.ms)
         if self.m is not None:
-            print("     m = ",self.m)
+            logger.info("     m = ",self.m)
         if self.pre is not None:
-            print("   pre = ",self.pre)
+            logger.info("   pre = ",self.pre)
         if (self.ml is not None) and (self.ms is not None): 
-            print(" ms/ml = ",self.msml)
-        print("    T  = ",round(self.getT(),2), "[MeV]")
-        print("    a  = ",round(self.geta(),4), "[fm]")
+            logger.info(" ms/ml = ",self.msml)
+        logger.info("    T  = ",round(self.getT(),2), "[MeV]")
+        logger.info("    a  = ",round(self.geta(),4), "[fm]")
         if self.Ns is not None:
-            print("    Ls = ",round(self.getLs(),4), "1/[MeV]")
-        print("  beta = ",self.beta,"\n")
+            logger.info("    Ls = ",round(self.getLs(),4), "1/[MeV]")
+        logger.info("  beta = ",self.beta,"\n")

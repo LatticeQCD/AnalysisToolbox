@@ -25,14 +25,14 @@ def print_results_iter(res,  res_true, text):
     while not it.finished:
         if not rel_check(res[it.multi_index], res_true[it.multi_index], 1e-4, 1e-6):
             test = False
-            print("res[" + str(it.multi_index) + "] = " + str(res[it.multi_index])
+            logger.info("res[" + str(it.multi_index) + "] = " + str(res[it.multi_index])
                     + " != res_true[" + str(it.multi_index) + "] = " + str(res_true[it.multi_index]))
         it.iternext()
     if test:
         logger.TBPass(text)
     else:
         logger.TBFail(text)
-    print()
+    logger.info()
 
 
 def f(x, b):

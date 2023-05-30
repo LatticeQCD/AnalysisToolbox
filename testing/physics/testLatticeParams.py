@@ -30,11 +30,11 @@ def testLatticeParams():
 
     lp = HotQCDParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms, Nf='3')
     lp.paramSummary()
-    print('HotQCD:',lp.getcparams())
+    logger.info('HotQCD:',lp.getcparams())
     del lp
 
     lp = MILCParams(params.Ns, params.Nt, 6.500, params.cml, params.cms, '411', Nf='211')
-    print('MILC:',lp.getcparams())
+    logger.info('MILC:',lp.getcparams())
     del lp
 
     import params_zeroTemp

@@ -51,16 +51,16 @@ def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=F
                                                             algorithms=algorithms, detailedInfo=True)
 
     if show_results:
-        print()
+        logger.info()
         for i in range(len(coeffs)):
             if paramLabels is None:
-                print('        c_'+str(i)+' = '+get_err_str(result[i],result_err[i]))
+                logger.info('        c_'+str(i)+' = '+get_err_str(result[i],result_err[i]))
             else:
-                print(paramLabels[i] + ' = ' + get_err_str(result[i], result_err[i]))
-        print('chi2/d.o.f. =',round(chidof,3))
+                logger.info(paramLabels[i] + ' = ' + get_err_str(result[i], result_err[i]))
+        logger.info('chi2/d.o.f. =',round(chidof,3))
         if prior is not None:
-            print('     logGBF =', round(logGBF, 3))
-        print()
+            logger.info('     logGBF =', round(logGBF, 3))
+        logger.info()
 
     if plot_results:
         latexify()

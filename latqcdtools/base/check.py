@@ -102,11 +102,11 @@ def print_results(res, res_true, res_err = None, res_err_true = None, text = "",
     for i in range(len(res)):
         if not rel_check(res[i], res_true[i], prec, abs_prec):
             test = False
-            print("res[" + str(i) + "] = " + str(res[i]) + " != res_true[" + str(i) + "] = " + str(res_true[i]))
+            logger.info("res[" + str(i) + "] = " + str(res[i]) + " != res_true[" + str(i) + "] = " + str(res_true[i]))
         if res_err is not None and res_err_true is not None:
             if not rel_check(res_err[i], res_err_true[i], prec, abs_prec):
                 test = False
-                print("res_err[" + str(i) + "] = " + str(res_err[i]) + " != res_err_true[" + str(i) + "] = " + str(res_err_true[i]))
+                logger.info("res_err[" + str(i) + "] = " + str(res_err[i]) + " != res_err_true[" + str(i) + "] = " + str(res_err_true[i]))
 
     if test:
         if compareZero:
