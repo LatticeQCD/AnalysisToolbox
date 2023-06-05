@@ -1,14 +1,14 @@
 #
 # utilities.py
 #
-# D. Clarke, L. Altenkort
+# D. Clarke
 #
 # Some utilities that you might use in any program.
 #
 
 from subprocess import run, PIPE
 import numpy as np
-import concurrent.futures, time, re
+import time, re
 import latqcdtools.base.logger as logger
 
 
@@ -96,7 +96,7 @@ def getArgs(parser):
 def printArg(message,param):
     """ Some arguments are None by default, and you only want to print them if they are set. """
     if param is not None:
-        print(message,param)
+        logger.info(message,param)
 
 
 def printDict(dic):
@@ -104,7 +104,7 @@ def printDict(dic):
     if not isinstance(dic,dict):
         logger.TBError('Expected type', dict, 'but received', type(dic))
     for key in dic:
-        print(key,dic[key])
+        logger.info(key,dic[key])
 
 
 def printClean(*args,label=None):
@@ -127,7 +127,7 @@ def printClean(*args,label=None):
             data += (col,)
             form += '%.8e  '
     try:
-        print(form % data)
+        logger.info(form % data)
     except TypeError:
         logger.TBError('args',args,'is not list-type of floats.')
 
@@ -147,6 +147,11 @@ def shellVerbose(*args):
     args = [str(s) for s in args]
     process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
     print(process.stdout)
+
+
+def getMaxThreads():
+    """ Figure out how many threads are on this system. """
+    return int( shell("lscpu | awk '/CPU\\(s\\)/ {print $2; exit}'") )
 
 
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
@@ -189,41 +194,3 @@ class timer:
     def resetTimer(self):
         self._tstart = time.time()
         self._tend   = self._tstart
-
-
-class ComputationClass:
-
-    """ A class to parallelize functions. To be used with parallel_function_eval for convenience. """
-
-    def __init__(self, function, input_array, nproc, *add_param):
-        self._nproc = nproc  # number of processes
-        self._input_array = input_array
-        self._function = function
-
-        # additional arguments for actual_computation
-        self._add_param = add_param
-
-        # compute the result when class is initialized
-        self._result = self.parallelization_wrapper()
-
-    def parallelization_wrapper(self):
-        results = []
-        with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
-            for result in executor.map(self.pass_argument_wrapper, self._input_array):
-                results.append(list(envector(result)))
-        results = list(map(list, zip(*results)))  # "transpose" the list to allow for multiple return values like a normal function.
-        return results
-
-    def pass_argument_wrapper(self, single_input):
-        return self._function(single_input, *self._add_param)
-
-    def getResult(self):
-        return self._result
-
-
-def parallel_function_eval(function, input_array, nproc, *add_param):
-    """ Paralellize the callable function over the array input_array with nproc processors. add_param gives additional
-        arguments to the function. """
-    computer = ComputationClass(function, input_array, nproc, *add_param)
-    return computer.getResult()
-

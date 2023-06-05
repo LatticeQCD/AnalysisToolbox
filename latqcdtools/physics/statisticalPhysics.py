@@ -31,7 +31,8 @@ class UniversalityClass:
         return str(self.d)+"d, "+str(self.symm)
 
     def exponentSummary(self):
-        logger.info("\n Summary of "+self.name()+" critical exponents:\n")
+        logger.info()
+        logger.info("Summary of "+self.name()+" critical exponents:")
         printExponent(" alpha =",self.alpha)
         printExponent("  beta =",self.beta)
         printExponent(" gamma =",self.gamma)

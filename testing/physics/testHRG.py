@@ -13,7 +13,8 @@ from latqcdtools.base.check import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
-from latqcdtools.base.utilities import timer,parallel_function_eval
+from latqcdtools.base.utilities import timer
+from latqcdtools.base.speedify import parallel_function_eval
 from latqcdtools.math.num_deriv import diff_deriv
 from latqcdtools.physics.HRG import HRG,EVHRG,HRGexact
 
@@ -224,7 +225,7 @@ muSList = [1,3,10,30,100]
 for muBh in muBList:
     for muSh in muBList:
 
-        logger.info("\nTESTS AT muB/T, muS/T = ",muBh,muSh,"\n")
+        logger.info("TESTS AT muB/T, muS/T = ",muBh,muSh)
 
         left  = QMhrg.P_div_T4(T,muB_div_T=muBh,muS_div_T=muSh)
         right = QMhrg.gen_chi(T,B_order=0,Q_order=0,S_order=0,muB_div_T=muBh,muS_div_T=muSh)

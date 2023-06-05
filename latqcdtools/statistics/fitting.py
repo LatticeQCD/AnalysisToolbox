@@ -1101,7 +1101,7 @@ class Fitter:
         except Exception as e:
             if logger.isLevel("DEBUG"):
                 traceback.print_exc()
-            logger.warn("Plotting of fit failed: ", e, "\n")
+            logger.warn("Plotting of fit failed: ", e)
 
 
     def plot_cor(self, filename = None, xmin = -np.inf, xmax = np.inf, notex = False, showPlot=False,

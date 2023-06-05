@@ -12,7 +12,6 @@ import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')
 
-logger.info("\n Example of a simple 3-parameter quadratic fit.\n")
 
 # Here we define our fit function. we pass it its independent variable followed by the fit parameters we are
 # trying to determine.

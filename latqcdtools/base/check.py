@@ -9,7 +9,7 @@
 import math, warnings
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import envector
+from latqcdtools.base.utilities import envector,isArrayLike
 warnings.filterwarnings("ignore", category=np.ComplexWarning)
 
 
@@ -53,10 +53,19 @@ def ignoreUnderflow():
     logger.warn("Underflow behavior set to pass.")
 
 
-def checkType(instance, expectedType):
-    """ Only useful if you expect one particular type. """
-    if not isinstance(instance,expectedType):
-        logger.TBError('Expected type',expectedType,'but received',type(instance),frame=3)
+def checkType(obj, expectedType):
+    """ Check the type of an object.
+
+    Args:
+        obj (obj)
+        expectedType (type): what type do you expect? Also accepts "array". 
+    """
+    if expectedType=="array":
+        if not isArrayLike(obj):
+            logger.TBError('Expected array-like object but received',type(obj),frame=3)
+    else:
+        if not isinstance(obj,expectedType):
+            logger.TBError('Expected type',expectedType,'but received',type(obj),frame=3)
 
 
 def checkEqualLengths(*args):

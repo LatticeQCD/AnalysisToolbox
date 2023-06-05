@@ -144,6 +144,7 @@ class latticeParams:
 
     # A nicely formatted summary of the lattice parameters.
     def paramSummary(self):
+        logger.info()
         logger.info("Lattice parameter summary: ")
         if self.scale == 'fk':
             logger.info("    fK = ",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
@@ -168,4 +169,5 @@ class latticeParams:
         logger.info("    a  = ",round(self.geta(),4), "[fm]")
         if self.Ns is not None:
             logger.info("    Ls = ",round(self.getLs(),4), "1/[MeV]")
-        logger.info("  beta = ",self.beta,"\n")
+        logger.info("  beta = ",self.beta)
+        logger.info()

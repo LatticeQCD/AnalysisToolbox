@@ -70,7 +70,7 @@ EPSILON=1e-4
 
 def testFit():
 
-    logger.info("Testing quadradic fit with expansion of parameters...\n")
+    logger.info("Testing quadradic fit with expansion of parameters...")
 
     xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,2,3), unpack=True)
     res_true     = [-1.930355e+00, 6.747380e+00, -6.979050e-02]
@@ -106,7 +106,7 @@ def testFit():
 
 
 
-    logger.info("Testing correlator fit...\n")
+    logger.info("Testing correlator fit...")
 
 
     xdata, ydata, edata = np.genfromtxt("corr.dat", usecols=(0,1,2), unpack=True)
@@ -153,9 +153,9 @@ def testFit():
                 logger.info("cov[" + str(i) + "," + str(j) + "] = " + str(cov[i, j])
                         + " != cov_true[" + str(i) + "," + str(j) + "] = " + str(cov_true[i, j]))
     if cov_test:
-        logger.TBPass("Covariance matrix test\n")
+        logger.TBPass("Covariance matrix test")
     else:
-        logger.TBFail("Covariance matrix test\n")
+        logger.TBFail("Covariance matrix test")
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
@@ -178,7 +178,7 @@ def testFit():
 
 
 
-    logger.info("Testing Bayesian fit...\n")
+    logger.info("Testing Bayesian fit...")
 
 
     prior        = [5e-05,3e-01]
@@ -191,7 +191,7 @@ def testFit():
 
 
 
-    logger.info("Testing 2D xdata...\n")
+    logger.info("Testing 2D xdata...")
 
 
     xdata = np.ones((10, 2))
@@ -213,7 +213,7 @@ def testFit():
 
 
 
-    logger.info("Testing fit plots...\n")
+    logger.info("Testing fit plots...")
 
 
     xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,2,3), unpack=True)
