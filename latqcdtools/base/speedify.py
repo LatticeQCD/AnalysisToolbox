@@ -13,7 +13,6 @@ from latqcdtools.base.utilities import envector, getMaxThreads
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from numba import njit
-from numba.typed import List
 
 
 COMPILENUMBA = False
@@ -42,22 +41,6 @@ def compile(func):
         return njit(func)
     else:
         return func
-
-
-def ennumba(input):
-    """ Convert a 1-d array-like input into a numba List object. Needed whenever you want to pass
-    a 1-d array-like object to numba. I recommend to put this outside your numba function, because
-    if you have to keep doing this conversion each time the function is called, you will pay for it.
-
-    Args:
-        input (array-like)
-
-    Returns:
-        numba.typed.List: List version of input array 
-    """    
-    output = List()
-    [output.append(x) for x in input]
-    return output    
 
 
 class ComputationClass:

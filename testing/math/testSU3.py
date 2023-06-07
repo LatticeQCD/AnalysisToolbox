@@ -6,9 +6,8 @@
 # Test some of the basic methods for SU3 matrices.
 # 
 
-from latqcdtools.base.speedify import numbaON, ennumba
-numbaON()
-from latqcdtools.math.SU3 import SU3, id_3, SU3mean
+import numpy as np
+from latqcdtools.math.SU3 import SU3, id_3
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import rel_check
 
@@ -34,7 +33,7 @@ def testSU3():
 
     # Test mean along with some SU3 operations
     x[0,0]=(2+2+2*2+0+4)/5
-    if not rel_check( SU3mean( ennumba( [g,h,2*g,g-h,h**2] ) ), x):
+    if not rel_check(  np.mean([g,h,2*g,g-h,h**2],axis=0) , x):
         ltest = False
         logger.TBFail('SU3 mean.')
 

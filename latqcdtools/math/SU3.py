@@ -67,22 +67,6 @@ def fastRandomize(self):
             self[i,j] = complex( 1 - 2*np.random.random(), 1 - 2*np.random.random() )
 
 
-@compile
-def SU3mean(SU3list):
-    """ Compute mean of list of SU3 matrices.
-
-    Args:
-        SU3list (array-like): list of SU3 matrices. 
-
-    Returns:
-        SU3: expected value of SU3list 
-    """
-    res = ze_3
-    for g in SU3list:
-        res = res + g
-    return res/len(SU3list)
-
-
 class SU3(np.matrix):
 
     """ A member of the Lie group SU(3). Implemented as a subclass of the np.matrix class. This gives us access already
