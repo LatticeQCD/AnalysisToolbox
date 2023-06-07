@@ -77,9 +77,9 @@ def SU3mean(SU3list):
     Returns:
         SU3: expected value of SU3list 
     """
-    res = 0
+    res = ze_3
     for g in SU3list:
-        res += g
+        res = res + g
     return res/len(SU3list)
 
 
