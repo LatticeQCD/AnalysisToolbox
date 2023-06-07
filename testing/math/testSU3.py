@@ -6,7 +6,7 @@
 # Test some of the basic methods for SU3 matrices.
 # 
 
-from latqcdtools.math.SU3 import SU3, id_3
+from latqcdtools.math.SU3 import SU3, id_3, SU3mean
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import rel_check
 
@@ -18,6 +18,7 @@ def testSU3():
 
     g = SU3(id_3)
     h = SU3(id_3)
+    x = SU3(id_3)
 
     ltest = True
 
@@ -28,6 +29,12 @@ def testSU3():
     if not rel_check(g,h): 
         ltest = False
         logger.TBFail('Assignment and comparison.')
+
+    # Test mean along with some SU3 operations
+    x[0,0]=(2+2+2*2+0+4)/5
+    if not rel_check(SU3mean([g,h,2*g,g-h,h**2]),x):
+        ltest = False
+        logger.TBFail('SU3 mean.')
 
     # Trace
     if g.trace() != complex(4):

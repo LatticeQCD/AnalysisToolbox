@@ -2,19 +2,20 @@
 
 The AnalysisToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
 particular toward lattice QCD. The Analysistoolbox is used especially by the HotQCD collaboration, so
-it also includes some methods complying with their conventions.
+it also includes some methods complying with their conventions. It was originally created by
+H. Sandmeyer during his PhD work, and has since been maintained by some of the HotQCD scientists.
 
 ## Getting Started
 
 In order to use these scripts, please ensure that you have the following:
 1. Python 3.6 or better
-2. numpy
-3. scipy
-4. mpmath
-5. matplotlib
-6. colorama 
-7. cycler
-8. numba
+2. colorama
+3. cycler
+4. matplotlib
+5. numba
+6. numpy
+7. scipy
+8. sympy
 9. LaTeX
 
 
@@ -28,17 +29,13 @@ instead
 ```shell
 pip3 install -r developerRequirements.txt
 ```
-
-Additionally you need to have python3 somewhere in your $PATH. To do this, you have to define the environment variable 
-PYTHONPATH containing the path to the root folder of this project; e.g. add the 
+Additionally you need to make sure your `PYTHONPATH` environment variable points
+to the correct place. For those of you using Bash, this can be accomplished by
 ```shell
-export PYTHONPATH="${PYTHONPATH}:/path/to/your/AnalysisToolbox/"
+bash scripts/installToolbox.bash
 ```
-to your `bashrc`. This updated `PYTHONPATH` can then be implemented with
-```shell
-source .bashrc
-```
-or you can just open a new terminal. Once this has all been settled
+You then need to close your terminal and open a new one.
+Once this has all been settled,
 try running the tests. You can do this by going to the `testing` folder
 and calling
 ```shell
@@ -58,16 +55,16 @@ Open an [issue](https://github.com/LatticeQCD/AnalysisToolbox/issues), if...
 - you have found a bug.
 - you have a feature request.
 
-If none of the above cases apply, you may also send an email to dclarke(at)physik(dot)uni-bielefeld(dot)de.
+If none of the above cases apply, you may also send an email to clarke(dot)davida(at)gmail(dot)com.
 
 
 ## Contributors
 
-[H. Sandmeyer](https://github.com/hsandmeyer),
 [D. Clarke](https://github.com/clarkedavida), 
 [L. Altenkort](https://github.com/luhuhis), 
 [J. Goswami](https://github.com/jishnuxx),
 [L. Mazur](https://github.com/lukas-mazur),
+[H. Sandmeyer](https://github.com/hsandmeyer),
 [M. Sarkar](https://github.com/mugdhasarkar),
 [C. Schmidt](https://github.com/schmidt74), 
 [H.-T. Shu](https://github.com/haitaoshu), 

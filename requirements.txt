@@ -2,9 +2,8 @@
 
 colorama
 cycler
+matplotlib
 numba
 numpy
-matplotlib
-mpmath
 scipy
 sympy

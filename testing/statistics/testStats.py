@@ -38,6 +38,8 @@ s12control=0.33726853
 
 def testStats():
 
+    ltest = True
+
     A = []
     B = []
     for i in range(3):
@@ -52,8 +54,6 @@ def testStats():
     for i in range(2):
         for j in range(2):
             C[i][j] = np.mean( ( AB[i] - np.mean(AB[i]) )*( AB[j] - np.mean(AB[j]) ) )
-
-    ltest = True
 
     # Test covariance
     compare = C==std_cov(AB)

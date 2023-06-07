@@ -16,6 +16,7 @@ from scipy.special import betainc, erf
 import latqcdtools.base.logger as logger
 import latqcdtools.math.num_deriv as numDeriv
 from latqcdtools.math.math import logDet
+from latqcdtools.math.SU3 import SU3mean, SU3
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
 from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.base.printErrorBars import get_err_str
@@ -45,7 +46,7 @@ def std_median(data, axis = 0):
 
 @reduce_tuple
 def std_mean(data, axis = 0):
-    """ Compute the mean. """ 
+    """ Compute the mean. """
     return np.mean(data, axis)
 
 

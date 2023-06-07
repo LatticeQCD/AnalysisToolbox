@@ -1,15 +1,13 @@
 # Run pip3 install -r requirements.txt to install these packages.
 
 # For the AnalysisToolbox 
-numpy
-scipy
-mpmath
-matplotlib
-sklearn
 colorama
-lmfit
-sympy
 cycler
+numba
+numpy
+matplotlib
+scipy
+sympy
 
 # For the Documentation
 alabaster==0.7.12
