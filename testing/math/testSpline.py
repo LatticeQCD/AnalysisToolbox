@@ -8,9 +8,9 @@
 
 import numpy as np
 from scipy.interpolate import LSQUnivariateSpline
-from latqcdtools.math.spline import even_knots,random_knots, getSpline
+from latqcdtools.math.spline import even_knots, random_knots, getSpline
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 

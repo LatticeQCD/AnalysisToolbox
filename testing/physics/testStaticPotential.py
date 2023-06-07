@@ -8,7 +8,7 @@
 
 
 from latqcdtools.physics.staticPotential import impdist
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 

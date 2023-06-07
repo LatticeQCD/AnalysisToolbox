@@ -9,7 +9,7 @@
 import numpy as np
 from numpy.random import normal
 from latqcdtools.statistics.statistics import gaudif, std_mean, std_err, weighted_mean, weighted_mean_variance, unbiased_mean_variance, unbiased_sample_variance
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')

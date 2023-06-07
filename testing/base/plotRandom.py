@@ -7,7 +7,7 @@
 #
 
 from numpy.random import normal
-from latqcdtools.base.plotting import *
+from latqcdtools.base.plotting import latexify, set_default_param, plot_dots, set_params, plt
 
 latexify()
 

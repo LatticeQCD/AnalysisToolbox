@@ -7,28 +7,34 @@
 # 
 
 import numpy as np
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import parallel_function_eval
+from latqcdtools.base.speedify import parallel_function_eval, parallel_reduce, compile, numbaON 
 
 logger.set_log_level('INFO')
 
+numbaON()
 
+@compile
 def square(x):
     return x**2
 
 testArray = range(10)
 
+
 def testSpeedify():
 
-    temp = parallel_function_eval(square,testArray,8)
+    temp = parallel_function_eval(square,testArray,4)
 
     sum1 = 0.
     for i in testArray:
         sum1 += square(i)
     sum2 = np.sum(temp)
 
-    print_results(sum1,sum2,text='parallel square test')
+    print_results(sum1,sum2,text='parallel square')
+
+    sum3 = parallel_reduce(square,testArray,4)
+    print_results(sum2,sum3,text='parallel square reduction')
 
     temp = parallel_function_eval(square,testArray,1)
 

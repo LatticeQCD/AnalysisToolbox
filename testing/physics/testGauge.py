@@ -7,7 +7,7 @@
 #
 
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import rel_check
+from latqcdtools.math.math import rel_check
 from latqcdtools.math.SU3 import SU3
 from latqcdtools.physics.gauge import gaugeField
 
@@ -28,19 +28,19 @@ def testGauge():
 
     # Boundary condidition tests
     h = gauge.getLink(8,0,0,0,0)
-    if not g.isEqualTo(h):
+    if not rel_check(g,h):
         ltest = False
         logger.TBFail('X direction BC.')
     h = gauge.getLink(0,8,0,0,0)
-    if not g.isEqualTo(h):
+    if not rel_check(g,h):
         ltest = False
         logger.TBFail('Y direction BC.')
     h = gauge.getLink(0,0,8,0,0)
-    if not g.isEqualTo(h):
+    if not rel_check(g,h):
         ltest = False
         logger.TBFail('Z direction BC.')
     h = gauge.getLink(0,0,0,4,0)
-    if not g.isEqualTo(h):
+    if not rel_check(g,h):
         ltest = False
         logger.TBFail('T direction BC.')
 

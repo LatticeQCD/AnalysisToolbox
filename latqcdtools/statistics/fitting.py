@@ -12,8 +12,6 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.linalg import inv
-import mpmath as mpm
-mpm.mp.dps = 100  # Set precision to 100 digits.
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
@@ -121,7 +119,7 @@ class Fitter:
 
     # All possible algorithms.
     _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG",
-                  "BFGS", "dogleg", "trust-ncg"]
+                  "dogleg", "trust-ncg"]
 
     # Standard algorithms for the minimization. All but COBYLA are rather fast.
     _std_algs = ["curve_fit", "TNC", "Powell" ,"Nelder-Mead", "COBYLA"]
@@ -194,7 +192,6 @@ class Fitter:
                     "COBYLA": 15000,
                     "SLSQP": 15000,
                     "CG": 15000,
-                    "BFGS": 15000,
                     "dogleg": 15000,
                     "trust-ncg": 15000
                     }
@@ -683,8 +680,8 @@ class Fitter:
         jej = jac.transpose().dot(inv_cov_mat.dot(jac))
 
         try:
-            inv_jej = mpm.matrix(jej)**-1
-            test    = np.array((inv_jej*mpm.matrix(jej)).tolist(), dtype = float)
+            inv_jej = np.linalg.inv(np.matrix(jej))
+            test    = np.array((inv_jej*np.matrix(jej)).tolist(), dtype = float)
             inv_jej = np.array(inv_jej.tolist(), dtype = float)
             pcov    = inv_jej
 
@@ -889,13 +886,9 @@ class Fitter:
                 logger.details(algorithm, "failed. Error was:", e)
                 if i < len(algorithms) - 1:
                     logger.details("Trying", algorithms[i+1], "...")
-                if logger.isLevel("DEBUG"):
-                    traceback.print_exc()
                 if len(all_chi2) == 0 and i >= len(algorithms) - 1:
                     if not self._suppress_warning:
-                      logger.warn("No algorithm converged.")
-                    if logger.isLevel("DEBUG"):
-                        traceback.print_exc()
+                        logger.warn("No algorithm converged.")
                     raise ValueError("Last error was: " + str(e), '\n')
 
         # Find the smallest chi^2

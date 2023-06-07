@@ -7,7 +7,7 @@
 # 
 
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import naturalSort, getNumThreads 
+from latqcdtools.base.utilities import naturalSort, getMaxThreads 
 
 logger.set_log_level('INFO')
 
@@ -30,8 +30,8 @@ def testUtilities():
     else:
         logger.TBFail('natural sort')
 
-    logger.info('Testing getNumThreads() functionality...')
-    logger.info('Number of threads on system:',getNumThreads())
+    logger.info('Testing getMaxThreads() functionality...')
+    logger.info('Number of threads on system:',getMaxThreads())
     logger.TBPass('All tests passed')
 
 

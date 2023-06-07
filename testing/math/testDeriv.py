@@ -9,7 +9,7 @@
 
 import numpy as np
 from latqcdtools.math.num_deriv import diff_fit_grad, diff_fit_hess, diff_deriv
-from latqcdtools.base.check import print_results, rel_check
+from latqcdtools.math.math import print_results, rel_check
 from latqcdtools.math.polynomials import Polynomial
 import latqcdtools.base.logger as logger
 

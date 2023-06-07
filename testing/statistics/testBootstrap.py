@@ -7,7 +7,7 @@
 # Do not adjust the SEED.
 # 
 from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import numpy as np
 
 EPSILON = 1e-16 # test precision

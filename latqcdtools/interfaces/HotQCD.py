@@ -6,7 +6,7 @@
 # Some parameter combinations and naming conventions special to projects of the HotQCD collaboration.
 #
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import rel_check
+from latqcdtools.math.math import rel_check
 from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params
 
 

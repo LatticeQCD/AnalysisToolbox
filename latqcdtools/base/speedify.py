@@ -1,16 +1,46 @@
 # 
 # speedify.py                                                               
 # 
-# L. Altenkort 
+# L. Altenkort, D. Clarke 
 # 
 # Some methods and classes to easily make python code faster. 
 #
 
 
+import numpy as np
 import concurrent.futures
 from latqcdtools.base.utilities import envector, getMaxThreads
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
+from numba import njit
+
+
+COMPILENUMBA = False
+
+
+def numbaON():
+    """ Use numba wherever possible. By default it is turned off, since compilation takes some time,
+    and hence you will only see a performance boost for particularly long-running functions. Must be
+    called at the beginning of your code. """
+    global COMPILENUMBA
+    COMPILENUMBA = True
+    logger.info('Using numba to speed things up.')
+
+
+def numbaOFF():
+    """ Turn off numba compilation for small functions. """ 
+    global COMPILENUMBA
+    COMPILENUMBA = False 
+    logger.info('No longer using numba.')
+
+
+def compile(func):
+    global COMPILENUMBA
+    if COMPILENUMBA:
+        logger.details('Compiling',func.__name__+'.')
+        return njit(func)
+    else:
+        return func
 
 
 class ComputationClass:
@@ -64,5 +94,21 @@ def parallel_function_eval(function, input_array, nproc, *add_param):
         array-like: func(input_array)
     """
     computer = ComputationClass(function, input_array, nproc, *add_param)
+    if nproc==1:
+        logger.info('Using for-loop instead of concurrent.futures.')
     return computer.getResult()
 
+
+def parallel_reduce(function, input_array, nproc, *add_param):
+    """ Parallelize a function over an input_array, then sum over the input_array elements. 
+
+    Args:
+        function (func): to-be-parallelized function 
+        input_array (array-like): array over which it should run 
+        nproc (int): number of processes 
+
+    Returns:
+        float-like
+    """
+    container=parallel_function_eval(function, input_array, nproc, *add_param)
+    return np.sum(container)

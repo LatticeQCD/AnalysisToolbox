@@ -8,7 +8,7 @@
 #
 
 from latqcdtools.statistics.statistics import getTauInt
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 
@@ -37,4 +37,4 @@ def testAutocor():
 
 
 if __name__ == '__main__':
-      testAutocor()
+    testAutocor()

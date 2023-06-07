@@ -8,6 +8,7 @@
 
 from latqcdtools.math.SU3 import SU3, id_3
 import latqcdtools.base.logger as logger
+from latqcdtools.math.math import rel_check
 
 
 logger.set_log_level('INFO')
@@ -24,9 +25,9 @@ def testSU3():
     g[0,0]=2
     h[0,0]=2
 
-    if not g.isEqualTo(h):
-       ltest = False
-       logger.TBFail('Assignment and comparison.')
+    if not rel_check(g,h): 
+        ltest = False
+        logger.TBFail('Assignment and comparison.')
 
     # Trace
     if g.trace() != complex(4):
@@ -39,8 +40,9 @@ def testSU3():
         ltest = False
         logger.TBFail('Set to random.')
 
+    # Set to identity
     g.setToIdentity()
-    if not g.isEqualTo(id_3):
+    if not rel_check(g,id_3):
         ltest = False
         logger.TBFail('Set to identity.')
 

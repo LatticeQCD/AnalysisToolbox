@@ -10,7 +10,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 from latqcdtools.statistics.statistics import error_prop, error_prop_func, plot_func
 from latqcdtools.physics.constants import M_mu_phys 
 import latqcdtools.base.logger as logger

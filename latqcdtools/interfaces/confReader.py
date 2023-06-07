@@ -10,7 +10,10 @@
 
 import struct
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import rel_check
+from latqcdtools.base.speedify import numbaON
+from latqcdtools.math.math import rel_check
+from latqcdtools.base.check import checkType
+numbaON()
 from latqcdtools.math.SU3 import SU3
 from latqcdtools.physics.gauge import gaugeField
 
@@ -19,19 +22,29 @@ class confReader:
 
     """ Base class for reading configurations. """
 
-    def __init__(self, Ns=None, Nt=None):
-        self.Ns = Ns           # Spatial extension
-        self.Nt = Nt           # Euclidean time extension
+    def __init__(self, Ns, Nt, nproc=1):
+        """ Initialize a confReader object.
+
+        Args:
+            Ns (int): Spatial extension of lattice. 
+            Nt (int): Euclidian time extension of lattice. 
+            nrows (int): Number of saved rows for compression. 
+            nproc (int, 1): Number of proccesors for parallelization. Defaults to 1.
+        """        
+        self.Ns = Ns
+        self.Nt = Nt
+        self.nproc = nproc
+        checkType(Ns,int)
+        checkType(Nt,int)
+        checkType(nproc,int)
         self.offset = None     # How many bytes is the header?
         self.endianness = '>'  # Big endian by default
         self.precision = 'f'   # Single precision by default
         self.file = None       # File handle
         self.linkTrace = None  # <tr U>
         self.plaquette = None  # <tr U^[]>
-        self.rows = 3          # Number of saved rows
-        if (Ns is None) or (Nt is None):
-           logger.TBError("gaugeField objects must be initialized with a size!")
-        logger.info("Initialized "+str(self.Ns)+"^3x"+str(self.Nt)+" gaugeField object.")
+        self.nrows = None      # number of rows
+        self.gauge = gaugeField(self.Ns,self.Nt,self.nproc)
 
 
     def unpack(self, data):
@@ -154,8 +167,7 @@ class NERSCReader(confReader):
 
         bytesPerLink = 3*self.rows*2*self.getByteSize()
 
-        gauge = gaugeField(self.Ns,self.Nt)
-
+        logger.details('Load conf into gaugeField')
         for t in range(self.Nt):
             for z in range(self.Ns):
                 for y in range(self.Ns):
@@ -166,20 +178,20 @@ class NERSCReader(confReader):
                             data = self.file.read(bytesPerLink)
                             link = self.unpack(data)
                             link.su3unitarize()
-                            gauge.setLink(link,x,y,z,t,mu)
+                            self.gauge.setLink(link,x,y,z,t,mu)
 
         # Check <tr U>
         if self.linkTrace is not None:
-            linkTrace = gauge.getLinkTrace()
+            linkTrace = self.gauge.getLinkTrace()
             if not rel_check(linkTrace, self.linkTrace):
                 logger.TBError('<tr U> is wrong. Compare:',linkTrace,'with',self.linkTrace)
             logger.details('Configuration',fileName,'has correct <tr U>.')
 
         # Check <tr U^[]>
         if self.plaquette is not None:
-            plaq = gauge.getPlaquette()
+            plaq = self.gauge.getPlaquette()
             if not rel_check( plaq, self.plaquette):
                 logger.TBError('<tr U^[]> is wrong. Compare:',plaq,'with',self.plaquette)
-            logger.details('Configuration', fileName, 'has correct <tr U>.')
+            logger.details('Configuration', fileName, 'has correct <tr U_plaq>.')
 
-        return gauge
+        return self.gauge

@@ -15,7 +15,7 @@ from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import readTable, writeTable
 from latqcdtools.math.optimize import persistentSolve
-from latqcdtools.base.check import rel_check
+from latqcdtools.math.math import rel_check
 
 
 logger.set_log_level('INFO')

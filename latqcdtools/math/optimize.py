@@ -5,12 +5,9 @@
 # 
 # Some methods related to minimization and Levenberg fits.
 #
-import warnings, multiprocessing
+
 import scipy.optimize as opt
 from scipy.optimize import newton_krylov, fsolve, root
-import numpy as np
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-warnings.filterwarnings("error", category=RuntimeWarning)
 from scipy.optimize.nonlin import NoConvergence
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import DivideByZeroError, InvalidValueError
@@ -19,28 +16,6 @@ from latqcdtools.base.utilities import unvector, envector
 
 # This is the base list of exceptions. If encountered, we treat the solve as unreliable.
 opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
-
-
-def timeout(func, args=(), kwargs={}, timeout_duration=300):
-    """ Exit if the fit is taking too long ."""
-    manager = multiprocessing.Manager()
-    return_dict = manager.dict()
-
-    def wrap_func(*wrap_args):
-        ret = func(*wrap_args[0], **wrap_args[1])
-        wrap_args[2]["ret"] = ret
-
-    p = multiprocessing.Process(target = wrap_func, args = (args, kwargs, return_dict))
-    p.start()
-
-    p.join(timeout_duration)
-
-    # If thread is still active
-    if p.is_alive():
-        p.terminate()
-        p.join()
-        raise TimeoutError("Time out for " + str(func))
-    return return_dict["ret"]
 
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=200):
@@ -65,19 +40,13 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=200):
 
 def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
 
-    args = (func, start_params)
-
     kwargs = {'method': algorithm, 'tol': tol}
 
-    if algorithm == "BFGS":
-        kwargs['jac'] = jack
-        kwargs['options'] = {'gtol': tol, 'maxiter': maxiter}
-        logger.details('I am using a gradient.')
+    logger.details('Trying',algorithm,'with maxiter=',maxiter)
 
-    elif algorithm in ["TNC","SLSQP","L-BFGS-B","CG"]:
+    if algorithm in ["TNC","SLSQP","L-BFGS-B","CG"]:
         kwargs['jac'] = jack
         kwargs['options'] = {'maxiter': maxiter}
-        logger.details('I am using a gradient.')
 
     elif algorithm in ["COBYLA","Nelder-Mead"]:
         kwargs['options'] = {'maxiter': maxiter}
@@ -89,10 +58,13 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
         kwargs['jac'] = jack
         kwargs['hess'] = hess
         kwargs['options'] = {'maxiter': maxiter}
-        logger.details('I am using a gradient and hessian.')
 
-    # At least COBYLA sometimes gets stuck in an endless loop.
-    res = timeout(opt.minimize, args=args, kwargs=kwargs, timeout_duration=100)
+    try:
+        res = opt.minimize(func, start_params, **kwargs)
+    except Exception as e:
+        raise e
+
+    logger.debug(res)
 
     params = res.x
     nfev = res.nfev

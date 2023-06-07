@@ -56,7 +56,7 @@ def writeTable(filename,*args,**kwargs):
     if 'header' in kwargs:
         head = kwargs['header']
         if isinstance(head,list):
-            form = '%15s'
+            form = '%12s'
             temp = (head[0],)
             if len(head[0]) > 12:
                 logger.warn("writeTable header[0] should be kept under 12 characters.")

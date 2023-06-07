@@ -7,10 +7,9 @@
 # as of 28 Feb 2021 was correct.
 #
 
-import numpy as np
 from latqcdtools.physics.polyakovTools import polyakovTools
 from latqcdtools.statistics.jackknife import jackknife
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 from latqcdtools.base.readWrite import readTable
 import latqcdtools.base.logger as logger
 
@@ -28,7 +27,7 @@ def testPolyakovTools():
 
     pt = polyakovTools(Ns, Nt)
 
-    stream, conf, ReParr, ImParr = readTable('polyakovTable.txt')
+    _, _, ReParr, ImParr = readTable('polyakovTable.txt')
 
     absPm    , absPe     = jackknife( pt.absPLoop        , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )
     absP2m   , absP2e    = jackknife( pt.absPLoop2       , [ReParr, ImParr], numb_blocks=NBLOCKS, conf_axis=1 )

@@ -7,7 +7,7 @@
 # 
 
 import numpy as np
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 from latqcdtools.physics.continuumExtrap import continuumExtrapolate 
 from latqcdtools.physics.constants import MeV_to_fminv
 import latqcdtools.base.logger as logger

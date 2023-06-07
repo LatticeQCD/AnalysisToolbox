@@ -9,7 +9,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
@@ -73,8 +73,8 @@ print_results(chi_ev , refEV , prec=EPSILON, text="chiB2 EV check")
 print_results(chi_ev1, refEV1, prec=EPSILON, text="chiB2 EV1 check")
 
 #
-# Test : Calculate chi^{101}_uds with b=1 and mu/T=0. Compare against trusted control result.
-
+# Test: Calculate chi^{101}_uds with b=1 and mu/T=0. Compare against trusted control result.
+#
 chiusPDG = pdghrg.genChiFlavor(T,  u_order = 1, d_order = 0, s_order = 1)
 chiusQM  = QMhrg.genChiFlavor(T,  u_order = 1, d_order = 0, s_order = 1)
 
@@ -83,8 +83,8 @@ _, refPDGBS, refQMBS = readTable("HRGcontrol/chiBQSC1010_muBh0.0.txt.control")
 _, refPDGQS, refQMQS = readTable("HRGcontrol/chiBQSC0110_muBh0.0.txt.control")
 
 
-print_results(chiusQM / (refQMBS + refQMQS) , np.ones(chiusQM.size)  , prec=EPSILON , text="chius QM check")
-print_results(chiusPDG / (refPDGBS + refPDGQS) , np.ones(chiusQM.size) , prec=EPSILON , text="chius PDG check")
+print_results(-chiusQM / (refQMBS + refQMQS) , np.ones(chiusQM.size)  , prec=EPSILON , text="chius QM check")
+print_results(-chiusPDG / (refPDGBS + refPDGQS) , np.ones(chiusQM.size) , prec=EPSILON , text="chius PDG check")
 
 
 #
@@ -222,7 +222,9 @@ T   = np.linspace(10,150,140)
 
 muBList = [1,3,10,30,100]
 muSList = [1,3,10,30,100]
-for muBh in muBList:
+    
+def compareAtmuB(muBh):
+
     for muSh in muBList:
 
         logger.info("TESTS AT muB/T, muS/T = ",muBh,muSh)
@@ -260,6 +262,9 @@ for muBh in muBList:
         exact     = QMhrg.d2dT2_gen_chi(T,B_order=1,Q_order=1,S_order=0,C_order=0, muB_div_T=muBh,muS_div_T=muSh)
         numerical = diff_deriv(T,ddT_chiBQ11)
         print_results(exact, numerical, prec=EPSILON, text="d^2(chi11BQ)/dT^2")
+
+
+parallel_function_eval(compareAtmuB,muBList,4)
 
 
 muh = np.linspace(0,1.5,len(T))

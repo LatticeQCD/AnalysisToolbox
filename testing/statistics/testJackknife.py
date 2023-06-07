@@ -7,7 +7,7 @@
 # 
 
 from latqcdtools.statistics.jackknife import jackknife
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 import numpy as np
 

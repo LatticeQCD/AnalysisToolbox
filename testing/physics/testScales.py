@@ -8,7 +8,7 @@
 #
 
 from latqcdtools.physics.referenceScales import a_times_fk, a_div_r1, r0_div_a, sqrtt0
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 

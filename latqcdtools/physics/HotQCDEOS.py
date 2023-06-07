@@ -1,3 +1,10 @@
+# 
+# HotQCDEOS.py                                                               
+# 
+# J. Goswami 
+# 
+# 
+
 import numpy as np
 import sympy as sy
 import warnings

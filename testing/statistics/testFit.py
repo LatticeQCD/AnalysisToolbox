@@ -8,7 +8,7 @@
 
 import numpy as np
 from latqcdtools.statistics.fitting import do_fit, try_fit, Fitter
-from latqcdtools.base.check import print_results, rel_check
+from latqcdtools.math.math import print_results, rel_check
 import latqcdtools.base.logger as logger
 import latqcdtools.statistics.statistics as stats
 from latqcdtools.base.readWrite import readTable, readCorrelatorTable
@@ -78,11 +78,6 @@ def testFit():
     res, tmp = curve_fit(fit_func, xdata, ydata, sigma = edata)
     res_err = np.sqrt(np.diag(tmp))
     print_results(res, res_true, res_err, res_err_true, "Curve_fit", prec=EPSILON)
-
-
-    res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="BFGS", grad = grad_fit_func,
-                                     func_sup_numpy=False, norm_err_chi2=True)
-    print_results(res, res_true, res_err, res_err_true, "Exact BFGS",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="TNC", grad = grad_fit_func,
@@ -186,7 +181,7 @@ def testFit():
     res_err_true = [1.148967933055725e-06, 0.0005445077355994696]
     res, res_err, _, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err, args=(64,),
                                     func_sup_numpy = True, norm_err_chi2=True, detailedInfo=True,
-                                    algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "BFGS", "dogleg", "trust-ncg"])
+                                    algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
     print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
 

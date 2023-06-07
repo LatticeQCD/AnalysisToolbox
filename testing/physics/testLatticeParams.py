@@ -9,7 +9,7 @@
 from latqcdtools.physics.lattice_params import latticeParams
 from latqcdtools.interfaces.HotQCD import HotQCDParams
 from latqcdtools.interfaces.MILC import MILCParams
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 

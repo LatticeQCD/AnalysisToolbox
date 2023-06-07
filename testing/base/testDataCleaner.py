@@ -9,7 +9,7 @@
 
 import numpy as np
 from latqcdtools.base.cleanData import clipRange,excludeAtCol,restrictAtCol
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 

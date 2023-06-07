@@ -146,7 +146,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             chi11ll = - vol4*(1/4)**2*( np.sum(nlVec.imag)**2 - np.sum(nlVec.imag**2) )/( numVec_l*(numVec_l-1) )
             chi11ls = - vol4*(1/4)**2*( np.sum(nlVec.imag)*np.sum(nsVec.imag) )/( numVec_l*numVec_s )
 
-            # Get n**2. Each n_f is pure imaginary, so we will get an i**2=-1 at the very end. Note that n_I**2=0.
+            # Get n**2. Each n_f is pure imaginary, so we will get an i**2=-1.
             nl2  = - ( -np.sum(nlVec.imag**2) + np.sum(nlVec.imag)**2 )*vol4/16
             ns2  = - ( -np.sum(nsVec.imag**2) + np.sum(nsVec.imag)**2 )*vol4/16
             nlns = - np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16

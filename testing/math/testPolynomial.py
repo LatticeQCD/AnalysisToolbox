@@ -6,7 +6,7 @@
 # Testing for the Polynomial and Rational classes.
 # 
 
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 from latqcdtools.math.polynomials import Polynomial, Rational
 import latqcdtools.base.logger as logger
 

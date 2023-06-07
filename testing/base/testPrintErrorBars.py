@@ -8,7 +8,7 @@
 
 
 from latqcdtools.base.printErrorBars import get_err_str, getValuesFromErrStr
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')

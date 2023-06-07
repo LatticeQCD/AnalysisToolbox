@@ -1,5 +1,12 @@
+# 
+# testHotQCDEos.py                                                               
+# 
+# J. Goswami 
+# 
+
+
 import numpy as np
-from latqcdtools.base.check import print_results
+from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.HotQCDEOS import EOS
 from latqcdtools.base.readWrite import readTable
