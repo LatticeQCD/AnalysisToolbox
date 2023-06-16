@@ -6,7 +6,7 @@
 # Warning and error control, along with methods to check internal code consistency. 
 #
 
-import math, warnings
+import warnings
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import envector,isArrayLike

@@ -159,8 +159,8 @@ class Fitter:
         self._derive_chisq = kwargs.get('derive_chisq', False)
         self._expand = kwargs.get('expand', True)
         self._func_sup_numpy = kwargs.get('func_sup_numpy', True)
-        self._tol = kwargs.get('tol', 1e-12)
-        self._test_tol = kwargs.get('test_tol', 1e-12)
+        self._tol = kwargs.get('tol', 1e-10)
+        self._test_tol = kwargs.get('test_tol', 1e-10)
         self._max_fev = kwargs.get('max_fev', None)
         self._norm_err_chi2 = kwargs.get('norm_err_chi2', False)
         self._try_all = kwargs.get('try_all', True)
@@ -326,8 +326,8 @@ class Fitter:
                     if i == ntries:
                         logger.debug("Last error was", e)
                         traceback.print_exc()
-            logger.TBError("Fit function does not work with up to " + str(ntries) + " parameters."
-                             + " Enable DEBUG level for more details.")
+            logger.TBError("Fit function does not work with up to", ntries,
+                           "parameters. Enable DEBUG level for more details.")
 
 
     def set_func(self, func, grad = None, hess = None, args = None, grad_args = None, hess_args = None):

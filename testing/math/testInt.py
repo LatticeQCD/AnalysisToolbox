@@ -59,8 +59,13 @@ def testInt():
     # try some vectorization
     print_results(integrateFunction(f,[0,0],[1,2],method='trapezoid'), [0.5,2], text="trapezoid vector function")
     print_results(integrateFunction(f,0,1,method='trapezoid'), 0.5, text="trapezoid scalar function")
-    print_results(integrateFunction(f,[0,0],[1,2],method='vec_quad'), [0.5,2], text="quadrature vector function")
-    print_results(integrateFunction(f,0,1,method='vec_quad'), 0.5, text="quadrature scalar function")
+    print_results(integrateFunction(f,[0,0],[1,2],method='quad'), [0.5,2], text="quadrature vector function")
+    print_results(integrateFunction(f,0,1,method='quad'), 0.5, text="quadrature scalar function")
+    print_results(integrateFunction(f,[0,0],[1,2],method='romberg'), [0.5,2], text="romberg vector function")
+    print_results(integrateFunction(f,0,1,method='romberg'), 0.5, text="romberg scalar function")
+
+    # Default functionality
+    print_results(integrateFunction(f,0,1), 0.5, text="default")
 
     # try passing some arguments. Ax+B --> Ax^2/2 + Bx
     print_results(integrateFunction(g,0,1,method='quad',args=(2,3)),4,text='quadrature with arg') 

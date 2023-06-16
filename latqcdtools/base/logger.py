@@ -4,9 +4,10 @@
 # H. Sandmeyer, D. Clarke 
 # 
 # Methods for logging and output.
+
 # 
 
-import sys, inspect, datetime
+import sys, inspect, datetime, subprocess
 from colorama import Fore
 
 
@@ -154,3 +155,29 @@ def TBPass(*args):
     print(output)
     log(output + '\n')
 
+
+def gitHash():
+    """ Obtain the current git hash.
+
+    Returns:
+        str: git hash 
+    """
+    process = subprocess.Popen(['git', 'rev-parse', 'HEAD'], stdout=subprocess.PIPE)
+    output, _ = process.communicate()
+    return output.decode('UTF-8').strip()
+
+
+def introduceYourself():
+    """ Print name along with git hash. """
+    info()
+    info("                       _           _  _______          _ _                ") 
+    info("     /\               | |         (_)|__   __|        | | |               ") 
+    info("    /  \   _ __   __ _| |_   _ ___ _ ___| | ___   ___ | | |__   _____  __ ") 
+    info("   / /\ \ | '_ \ / _` | | | | / __| / __| |/ _ \ / _ \| | '_ \ / _ \ \/ / ") 
+    info("  / ____ \| | | | (_| | | |_| \__ \ \__ \ | (_) | (_) | | |_) | (_) >  <  ") 
+    info(" /_/    \_\_| |_|\__,_|_|\__, |___/_|___/_|\___/ \___/|_|_.__/ \___/_/\_\ ") 
+    info("                          __/ |                                           ") 
+    info("                         |___/                                            ") 
+    info()
+    info("Current git commit =",gitHash())
+    info()

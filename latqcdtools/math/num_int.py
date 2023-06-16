@@ -13,9 +13,20 @@ from latqcdtools.base.utilities import envector
 from latqcdtools.math.spline import getSpline
 
 
-def integrateData(xdata,ydata,method='spline'):
-    """ Wrapper to integrate data. The default 'spline' will try fitting the data with a cubic spline, then integrate
-        the spline function using Gaussian quadrature. """
+def integrateData(xdata,ydata,method='trapezoid'):
+    """ Wrapper to integrate data. 
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        method (str, optional): Integration method. Defaults to 'trapezoid'. Possibilities include:
+                                > 'simpson' : Simpson rule.
+                                > 'trapezoid' : Trapezoidal rule.
+                                > 'spline' : Fit data with cubic spline, then apply quadrature.
+
+    Returns:
+        float: Area under ydata. 
+    """
     try:
         xdata=np.array(xdata)
         ydata=np.array(ydata)
@@ -31,42 +42,80 @@ def integrateData(xdata,ydata,method='spline'):
     elif method=='spline':
         nknots = int(len(xdata)/3)
         data_spline = getSpline(xdata, ydata, num_knots=nknots, rand=False)
-        return integrate.quad(data_spline, xdata[0], xdata[-1])[0]
+        return integrateFunction(data_spline, xdata[0], xdata[-1],method='quad')
 
     else:
         logger.TBError("Unknown integration method",method)
 
 
-def integrateFunction(func,a,b,method='persistent_quad_trap',args=(),stepsize=None,limit=1000,epsrel=1e-8):
-    """ Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad,
-        which otherwise does not like to handle numpy arrays. """
+persistentMethods = ['quad', 'trapezoid', 'romberg']
+
+
+def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,epsabs=1.49e-8):
+    """ Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, and
+        scipy.romberg, which otherwise do not like to handle numpy arrays.
+
+    Args:
+        func (func): Integrand. 
+        a (float): Lower integration limit.
+        b (float): Upper integration limit.
+        method (str,optional): Integration method. Defaults to 'persistent_quad_trap'. Possibilities are:
+                                > 'persistent' : Try various methods until something works. 
+                                > 'quad' : Gaussian quadrature.
+                                > 'romberg' : Romberg method. 
+                                > 'trapezoid' : Trapezoidal rule.
+        args (tuple, optional): Arguments to func. Defaults to ().
+        stepsize (float, optional): _description_. Defaults to None.
+        limit (int, optional): Upper bound on number of subintervals used in the adaptive algorithm. Defaults to 1000.
+        epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.
+        epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.
+
+    Returns:
+        float: Integral of func from a to b. 
+    """
     a = envector(a)
     b = envector(b)
     if not len(a) == len(b):
         logger.TBError('Integration bounds must have the same length.')
+    isVec = False
+    if len(a) > 1:
+        isVec=True
 
-    if method=='persistent_quad_trap':
-        try:
-            return integrateFunction(func,a,b,args=args,method='quad',stepsize=None)
-        except integrate.IntegrationWarning:
-            return integrateFunction(func,a,b,args=args,method='trapezoid',stepsize=None)
+    if method=='persistent':
+        for persistentMethod in persistentMethods:
+            try:
+                return integrateFunction(func,a,b,args=args,method=persistentMethod,stepsize=stepsize,epsrel=epsrel,epsabs=epsabs)
+            except integrate.IntegrationWarning:
+                continue
+        logger.TBError('No persistent method worked.')
 
     elif method=='vec_quad':
         def g(A,B):
-            # TODO: put a check to make sure the integration error is small compared to result
-            return integrate.quad(func, A, B, args=args, limit=limit, epsrel=epsrel)[0]
+            return integrate.quad(func, A, B, args=args, limit=limit, epsrel=epsrel, epsabs=epsabs)[0]
         h = np.vectorize(g)
-        if len(a)==1:
-            return np.asarray(h(a,b))[0]
-        else:
-            return np.asarray(h(a,b))
+        return np.asarray(h(a,b))
+
+    elif method=='vec_romberg':
+        def g(A,B):
+            return integrate.romberg(func, A, B, args=args, rtol=epsrel, tol=epsabs)
+        h = np.vectorize(g)
+        return np.asarray(h(a,b))
 
     elif method=='quad':
-        return integrate.quad(func, a, b, args=args, limit=limit, epsrel=epsrel)[0]
+        if isVec:
+            return integrateFunction(func,a,b,args=args,method='vec_quad',limit=limit,epsrel=epsrel,epsabs=epsabs)
+        else:
+            return integrate.quad(func, a, b, args=args, limit=limit, epsrel=epsrel, epsabs=epsabs)[0]
+
+    elif method=='romberg':
+        if isVec:
+            return integrateFunction(func,a,b,args=args,method='vec_romberg',limit=limit,epsrel=epsrel,epsabs=epsabs)
+        else:
+            return integrate.romberg(func, a, b, args=args, tol=epsabs, rtol=epsrel) 
 
     elif method=='trapezoid':
         for i in range(len(b)):
-            if b[i] == np.inf:
+            if b[i] == np.inf or a[i] == -np.inf:
                 logger.TBError('Trapezoid rule is meant for definite integrals.')
         if stepsize is None:
             x = np.array([ np.linspace(a[i], b[i], 101) for i in range(len(b)) ])
