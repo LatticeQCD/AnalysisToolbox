@@ -7,7 +7,7 @@
 # 
 
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import naturalSort, getMaxThreads, envector, unvector, isArrayLike 
+from latqcdtools.base.utilities import comesBefore, naturalSort, getMaxThreads, envector, unvector, isArrayLike 
 
 logger.set_log_level('INFO')
 
@@ -41,6 +41,12 @@ def testUtilities():
 
     if not isArrayLike(envector(x)):
         logger.TBFail('isArrayLike')
+        ltest=False
+    
+    date1 = "2017/12/14 14:50:30"
+    date2 = "2018/1/1 15:20:25"
+    if not comesBefore(date1,date2):
+        logger.TBFail('date comparison')
         ltest=False
 
     if ltest:

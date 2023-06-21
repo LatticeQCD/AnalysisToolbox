@@ -8,7 +8,7 @@
 
 from subprocess import run, PIPE
 import numpy as np
-import time, re
+import time, re, datetime
 import latqcdtools.base.logger as logger
 
 
@@ -154,7 +154,20 @@ def getMaxThreads():
     return int( shell("lscpu | awk '/CPU\\(s\\)/ {print $2; exit}'") )
 
 
-# ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
+def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
+    """ Check whether date1 comes before date2.
+
+    Args:
+        date1 (str)
+        date2 (str)
+        format (str): format for date strings. Defaults to "%Y/%m/%d %H:%M:%S"
+
+    Returns:
+        bool: date1 < date2 
+    """
+    date1_converted = datetime.datetime.strptime(date1, format)
+    date2_converted = datetime.datetime.strptime(date2, format)
+    return date1_converted < date2_converted
 
 
 def naturalSort(l):
