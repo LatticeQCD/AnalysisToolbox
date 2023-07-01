@@ -6,8 +6,8 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.constants import fm_to_GeVinv, GeVinv_to_fm, fmtoUnits, fk_phys
-from latqcdtools.math.polynomials import Polynomial,Rational
+from latqcdtools.physics.constants import convert, fm_to_GeVinv, GeVinv_to_fm, fk_phys
+from latqcdtools.math.polynomials import Polynomial, Rational
 from latqcdtools.physics.betaFunction import beta_func, b0, b1
 
 
@@ -166,13 +166,13 @@ def a_r1_fm(beta, year):
 def r1_MILC_2010(units):
     """ r1 taken from MILC 2010. arXiv:1012.0868. """
     r1fm = 0.3106
-    return fmtoUnits(r1fm,"r1",units)
+    return convert(r1fm,"fm",units)
 
 
 def r1err_MILC_2010(units):
     """ Error bar from MILC 2010. arXiv:101.0868. """
     r1errfm = np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    return fmtoUnits(r1errfm,"r1_err",units)
+    return convert(r1errfm,"fm",units)
 
 
 # ================================================= strange quark mass: line of constant physics
@@ -240,12 +240,12 @@ def r0_div_a(beta,year):
 # Use r1=0.3106 from MILC. arXiv:1012.0868.
 def r0_hQCD_2014(units):
     r0fm = 1.5092*r1_MILC_2010("fm") # about 0.469
-    return fmtoUnits(r0fm,"r0",units)
+    return convert(r0fm,"fm",units)
 
 
 def r0err_hQCD_2014(units):
     r0errfm = 1.5092*np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    return fmtoUnits(r0errfm,"r0err",units)
+    return convert(r0errfm,"fm",units)
 
 
 def a_r0_invGeV(beta):

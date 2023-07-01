@@ -44,13 +44,13 @@ def testGauge():
         ltest = False
         logger.TBFail('T direction BC.')
 
-    g.setToIdentity()
-    gauge.setLink(g,0,0,0,0,0)
+    gauge.makeCold()
 
     # Plaquette normalization test
-    if not rel_check( gauge.getPlaquette(), 1 ):
+    plaq = gauge.getPlaquette()
+    if not rel_check(plaq,1):
         ltest = False
-        logger.TBFail('Plaquette normalization.')
+        logger.TBFail('Plaquette normalization. plaq =',plaq)
 
     if ltest:
         logger.TBPass('gaugeField tests passed.')

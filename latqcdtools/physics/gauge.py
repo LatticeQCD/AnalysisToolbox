@@ -9,7 +9,7 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.math.SU3 import SU3
+from latqcdtools.math.SU3 import SU3, id_3
 from latqcdtools.base.speedify import compile, parallel_reduce
 from latqcdtools.base.check import checkType
 
@@ -84,12 +84,14 @@ class gaugeField:
 
     def getLink(self,x,y,z,t,mu):
         """ Link accessor. """
-        return self.field[t][z][y][x][mu]
+        X, Y, Z, T = respectBCs(x,y,z,t,self.Ns,self.Nt)
+        return self.field[T][Z][Y][X][mu]
 
 
     def setLink(self, other, x, y, z, t, mu):
         """ Link setter. """
-        self.field[t][z][y][x][mu] = other
+        X, Y, Z, T = respectBCs(x,y,z,t,self.Ns,self.Nt)
+        self.field[T][Z][Y][X][mu] = other
 
 
     def getLocalPlaquette(self,x,y,z,t,mu,nu):
@@ -135,3 +137,13 @@ class gaugeField:
                             linkTrace += self.getLink(x,y,z,t,mu).trace().real
         linkTrace /= (self.Ns**3*self.Nt*4*3)
         return linkTrace
+
+
+    def makeCold(self):
+        """ Cold start, i.e. every link is set to the identity. """
+        for t in range(self.Nt):
+            for z in range(self.Ns):
+                for y in range(self.Ns):
+                    for x in range(self.Ns):
+                        for mu in range(4):
+                            self.setLink(id_3,x,y,z,t,mu)

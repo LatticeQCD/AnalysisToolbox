@@ -3,16 +3,136 @@
 # 
 # D. Clarke 
 # 
-# Many constants that are relevant for physics
+# Many constants and unit conversions that are relevant for physics.
 #
 
 import numpy as np
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkType
 
 
-# Taken from PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
-hcMeVfm=197.3269788
-hcGeVfm=hcMeVfm/1000
+# Base constants for unit conversions
+hceVm         = 197.3269788e-9   # PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
+days_per_year = 365.2422         # From NIST
+
+
+# List of scientific prefixes
+prefix = { "Q"  : 1e30,
+           "R"  : 1e27,
+           "Y"  : 1e24,  
+           "Z"  : 1e21, 
+           "E"  : 1e18, 
+           "P"  : 1e15, 
+           "T"  : 1e12, 
+           "G"  : 1e9, 
+           "M"  : 1e6, 
+           "k"  : 1e3, 
+           "h"  : 1e2, 
+           "da" : 1e1, 
+           "1"  : 1,
+           1    : 1,
+           "d"  : 1e-1,
+           "c"  : 1e-2, 
+           "m"  : 1e-3, 
+           "u"  : 1e-6, 
+           "n"  : 1e-9, 
+           "p"  : 1e-12, 
+           "f"  : 1e-15, 
+           "a"  : 1e-18, 
+           "z"  : 1e-21, 
+           "y"  : 1e-24, 
+           "r"  : 1e-27, 
+           "q"  : 1e-30  }
+
+
+baseUnits = ["eV","m","min","s","h","y","W","Wh","Wh/y"]
+
+
+def separatePrefix(units):
+    checkType(units,str)
+    if units in baseUnits: 
+        prefix=1
+        baseUnit=units
+    else:
+        prefix=units[0]
+        baseUnit=units[1:]
+    return prefix, baseUnit
+
+
+def convert(x,unit1,unit2):
+    """ General method for doing unit conversions.
+
+    Args:
+        x (float): measurement in [unit1]. 
+        unit1 (str): Original units.
+        unit2 (str): Target units.
+
+    Returns:
+        float: measurement in [unit2]. 
+    """
+    p1, u1 = separatePrefix(unit1)
+    p2, u2 = separatePrefix(unit2)
+    if not p1 in prefix:
+        logger.TBError('Unknown prefix',p1)
+    if not p2 in prefix:
+        logger.TBError('Unknown prefix',p2)
+    u1u2 = (u1,u2)
+
+    if u1.endswith('inv'):
+        num=1/prefix[p1]
+    else:
+        num=prefix[p1]
+    if u2.endswith('inv'):
+        den=1/prefix[p2]
+    else:
+        den=prefix[p2]
+    fac = num/den
+
+    if u1==u2:
+        result = fac*x
+
+    # time 
+    elif u1u2==('s','min'):
+        result = fac*x/60
+    elif u1u2==('min','s'):
+        result = fac*x*60
+    elif u1u2==('s','h'):
+        result = fac*x/60**2
+    elif u1u2==('h','s'):
+        result = fac*x*60**2
+    elif u1u2==('s','y'):
+        result = fac*x/(days_per_year*24*60**2)
+    elif u1u2==('y','s'):
+        result = fac*x*(days_per_year*24*60**2)
+    elif u1u2==('h','y'):
+        result = fac*x/(days_per_year*24)
+    elif u1u2==('y','h'):
+        result = fac*x*(days_per_year*24)
+
+    # power <--> energy 
+    elif u1u2==('W','Wh/y'):
+        result = fac*x*convert(1,'h','y')
+    elif u1u2==('W','Wh'):
+        result = fac*x*convert(1,'s','h')
+
+    # natural units
+    elif u1u2==('m','eVinv'):
+        result = fac*x/hceVm
+    elif u1u2==('eVinv','m'):
+        result = fac*x*hceVm
+    elif u1u2==('eV','minv'):
+        result = fac*x/hceVm
+    elif u1u2==('minv','eV'):
+        result = fac*x*hceVm
+
+    else:
+        logger.TBError('No rule for conversion of ['+u1+'] to ['+u2+']') 
+
+    return result
+
+
+hcMeVfm = convert( convert(hceVm,"eV","MeV"), "m","fm" )
+hcGeVfm = convert(hcMeVfm,"MeV","GeV")
 
 
 def fm_to_MeVinv(x):
@@ -31,68 +151,24 @@ def GeVinv_to_fm(x):
     return hcGeVfm*x
 
 
-def gethc(units="MeVfm"):
-    if units=="MeVfm":
-        return hcMeVfm
-    elif units=="GeVfm":
-        return hcGeVfm
-    else:
-        logger.TBError("Invalid unit specification.")
-
-
-def MeVtoUnits(value,name,units):
-    if units == "MeV":
-        return value
-    elif units == "GeV":
-        return value/1000.
-    elif units == "fminv":
-        return MeV_to_fminv(value)
-    else:
-        logger.TBError("Invalid unit specification for " + name + ".")
-
-
-def GeVtoUnits(value,name,units):
-    if units == "GeV":
-        return value
-    elif units == "MeV":
-        return value*1000.
-    elif units == "fminv":
-        return GeV_to_fminv(value)
-    else:
-        logger.TBError("Invalid unit specification for " + name + ".")
-
-
-def fmtoUnits(value,name,units):
-    if units == "fm":
-        return value
-    elif units == "MeVinv":
-        return fm_to_MeVinv(value)
-    elif units == "GeVinv":
-        return fm_to_GeVinv(value)
-    else:
-        logger.TBError("Invalid unit specification for " + name + ".")
-
-
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
 
 
 def M_mu_phys(year=2020,units="MeV",returnErr=False):
     """ Physical value of the muon mass. """
-    name = "M_mu"
     if year==2020:
         # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
         m_mu_MeV, m_mu_MeV_err = 105.6583745, 0.0000024
     else:
         logger.TBError("Invalid year specification.")
     if returnErr:
-        return MeVtoUnits(m_mu_MeV,name,units), MeVtoUnits(m_mu_MeV_err,name,units)
+        return convert(m_mu_MeV,"MeV",units), convert(m_mu_MeV_err,"MeV",units)
     else:
-        return MeVtoUnits(m_mu_MeV,name,units)
+        return convert(m_mu_MeV,"MeV",units)
 
 
 def M_pi0_phys(year=2022,units="MeV",returnErr=False):
     """ Physical value of the pi0 mass. """
-    name = "M_pi^0"
     if year==2022:
         # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
         m_pi0_MeV, m_pi0_MeV_err = 134.9768, 0.0005
@@ -102,14 +178,13 @@ def M_pi0_phys(year=2022,units="MeV",returnErr=False):
     else:
         logger.TBError("Invalid year specification.")
     if returnErr:
-        return MeVtoUnits(m_pi0_MeV,name,units), MeVtoUnits(m_pi0_MeV_err,name,units)
+        return convert(m_pi0_MeV,"MeV",units), convert(m_pi0_MeV_err,"MeV",units)
     else:
-        return MeVtoUnits(m_pi0_MeV,name,units)
+        return convert(m_pi0_MeV,"MeV",units)
 
 
 def M_pipm_phys(year=2022,units="MeV",returnErr=False):
     """ Physical value of the pi+/- mass. """
-    name = "M_pi^+-"
     if year==2022:
         # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
         m_pipm_MeV, m_pipm_MeV_err = 139.57039, 0.00018
@@ -119,14 +194,13 @@ def M_pipm_phys(year=2022,units="MeV",returnErr=False):
     else:
         logger.TBError("Invalid year specification.")
     if returnErr:
-        return MeVtoUnits(m_pipm_MeV,name,units), MeVtoUnits(m_pipm_MeV_err,name,units)
+        return convert(m_pipm_MeV,"MeV",units), convert(m_pipm_MeV_err,"MeV",units)
     else:
-        return MeVtoUnits(m_pipm_MeV,name,units)
+        return convert(m_pipm_MeV,"MeV",units)
 
 
 def M_rho_phys(year=2022,units="MeV",returnErr=False):
     """ Physical value of the rho mass. """
-    name = "M_rho"
     if year==2022:
         # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
         m_rho_MeV, m_rho_MeV_err = 775.26, 0.23
@@ -136,9 +210,9 @@ def M_rho_phys(year=2022,units="MeV",returnErr=False):
     else:
         logger.TBError("Invalid year specification.")
     if returnErr:
-        return MeVtoUnits(m_rho_MeV,name,units), MeVtoUnits(m_rho_MeV_err,name,units)
+        return convert(m_rho_MeV,"MeV",units), convert(m_rho_MeV_err,"MeV",units)
     else:
-        return MeVtoUnits(m_rho_MeV,name,units)
+        return convert(m_rho_MeV,"MeV",units)
 
 
 # ------------------------------------------------------------------------------------------------------ DECAY CONSTANTS
@@ -157,7 +231,7 @@ def fk_phys(year=2019,units="MeV"):
         fkMeV = 156.1
     else:
         logger.TBError("Invalid year specification.")
-    return MeVtoUnits( fkMeV/np.sqrt(2.), "fK", units )
+    return convert( fkMeV/np.sqrt(2.), "MeV", units )
 
 
 def frho_phys(year=2017,units="GeV",returnErr=False):
@@ -168,9 +242,9 @@ def frho_phys(year=2017,units="GeV",returnErr=False):
     else:
         logger.TBError("Invalid year specification.")
     if returnErr:
-        return GeVtoUnits( frhoGeV, "frho", units ), GeVtoUnits( frhoGeV_err, "frhoerr", units )
+        return convert( frhoGeV, "GeV", units ), convert( frhoGeV_err, "GeV", units )
     else:
-        return GeVtoUnits( frhoGeV, "frho", units )
+        return convert( frhoGeV, "GeV", units )
     
 
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
@@ -197,6 +271,6 @@ def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
     else:
         logger.TBError("Invalid year specification.")
     if returnErr:
-        return MeVtoUnits(LMS,"lambda-MSbar",units), MeVtoUnits(LMSerr,"lambda-MSbarerr",units)
+        return convert(LMS,"MeV",units), convert(LMSerr,"MeV",units)
     else:
-        return MeVtoUnits(LMS,"lambda-MSbar",units)
+        return convert(LMS,"MeV",units)

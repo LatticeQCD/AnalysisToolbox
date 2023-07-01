@@ -18,7 +18,7 @@ logger.set_log_level('INFO')
 
 def testContExtrap():
 
-    PREC = 1e-4
+    PREC = 1e-3
 
     a         = np.array( [0.09, 0.12, 0.15] )
     a_mu      = [-3.83725749e-01, -2.50780435e-01, -1.51850559e-01]

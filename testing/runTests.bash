@@ -71,12 +71,15 @@ cd ..
 cd physics
 runTestRoutine testContExtrap.py
 runTestRoutine testDenseObs.py
+runTestRoutine testGauge.py
+runTestRoutine testHotQCDEos.py
+runTestRoutine testHRG.py
 runTestRoutine testLatticeParams.py
 runTestRoutine testPolyakovTools.py
 runTestRoutine testScales.py
 runTestRoutine testStaticPotential.py
 runTestRoutine testStatPhys.py
-runTestRoutine testHRG.py
+runTestRoutine testUnits.py
 cd ..
 
 
