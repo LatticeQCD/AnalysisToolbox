@@ -7,8 +7,8 @@
 #
 import math
 import numpy as np
-from latqcdtools.math.math import fallFactorial, underflowPower, underflowExp, underflowMultiply, print_results
 import latqcdtools.base.logger as logger
+from latqcdtools.math.math import fallFactorial, underflowPower, underflowExp, underflowMultiply, print_results
 
 
 logger.set_log_level('INFO')

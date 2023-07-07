@@ -36,7 +36,7 @@ def logDet(mat):
 
 
 # Some methods for dealing with underflow, which is when a number gets so small, it is smaller than the smallest number
-# that Python can represent. If you like, you can suppress underflow errors with these functions.
+# that Python can represent. This gives you some control over how underflow is treated. 
 
 
 def underflowExp(x):
@@ -68,7 +68,7 @@ def underflowMultiply(*args):
         exponent = 0
         for x in args:
             exponent += np.log(x)
-        return underflowExp(exponent)#
+        return underflowExp(exponent)
 
 
 # Some methods for doing comparisons between math objects.

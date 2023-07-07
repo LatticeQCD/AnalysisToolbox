@@ -7,7 +7,7 @@
 # 
 
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import comesBefore, naturalSort, getMaxThreads, envector, unvector, isArrayLike 
+from latqcdtools.base.utilities import comesBefore, naturalSort, envector, unvector, isArrayLike 
 
 logger.set_log_level('INFO')
 
@@ -30,9 +30,6 @@ def testUtilities():
     if naturalSort(testArray)!=sortArray:
         logger.TBFail('natural sort')
         ltest=False
-
-    logger.info('Testing getMaxThreads() functionality...')
-    logger.info('Number of threads on system:',getMaxThreads())
 
     x = 3
     if x != unvector(envector(x)):

@@ -9,7 +9,11 @@
 import warnings
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import envector,isArrayLike
+from latqcdtools.base.utilities import envector, isArrayLike
+
+
+# This warning is on by default, which worries that we may lose precision when using complex numbers. But
+# I think in the instances I use complex numbers, they cannot really be avoided.
 warnings.filterwarnings("ignore", category=np.ComplexWarning)
 
 
@@ -19,25 +23,43 @@ class InvalidValueError(Exception): pass
 class IllegalArgumentError(ValueError): pass
 
 
-CATCHUNDERFLOW = True 
+CATCHUNDERFLOW    = True 
+CATCHOVERFLOW     = True 
+CATCHDIVIDEBYZERO = True
+CATCHINVALIDVALUE = True
 
 
 def err_handler(err, flag):
     """ This method lets us control in detail how different types of errors are treated. """
     global CATCHUNDERFLOW
+    global CATCHOVERFLOW
+    global CATCHDIVIDEBYZERO
+    global CATCHINVALIDVALUE
     if flag == 1:
-        raise DivideByZeroError(err)
+        if CATCHDIVIDEBYZERO:
+            raise DivideByZeroError(err)
+        else:
+            pass
     elif flag == 2:
-        raise OverflowError
+        if CATCHOVERFLOW:
+            raise OverflowError
+        else:
+            pass
     elif flag == 4:
         if CATCHUNDERFLOW: 
             raise UnderflowError(err)
         else:
             pass
     elif flag == 8:
-        raise InvalidValueError(err)
+        if CATCHINVALIDVALUE:
+            raise InvalidValueError(err)
+        else:
+            pass
     elif flag == 9:
-        raise DivideByZeroError(err)
+        if CATCHDIVIDEBYZERO:
+            raise DivideByZeroError(err)
+        else:
+            pass
     else:
         logger.TBError('Encountered unknown exception',err,'with flag',flag)
 
@@ -51,6 +73,27 @@ def ignoreUnderflow():
     global CATCHUNDERFLOW
     CATCHUNDERFLOW = False
     logger.warn("Underflow behavior set to pass.")
+
+
+def ignoreOverflow():
+    """ Turn off overflow crashes. """
+    global CATCHOVERFLOW
+    CATCHOVERFLOW = False
+    logger.warn("Overflow behavior set to pass.")
+
+
+def ignoreDivideByZero():
+    """ Turn off zero division crashes. """
+    global CATCHDIVIDEBYZERO
+    CATCHDIVIDEBYZERO = False
+    logger.warn("Zero division behavior set to pass.")
+
+
+def ignoreInvalidValue():
+    """ Turn off invalid value crashes. """
+    global CATCHINVALIDVALUE
+    CATCHINVALIDVALUE = False
+    logger.warn("Invalid value behavior set to pass.")
 
 
 def checkType(obj, expectedType):
@@ -81,6 +124,7 @@ def checkDomain(obj, expectedDomain, variableName):
 
 
 def checkEqualLengths(*args):
+    """ Check that all array-like objects passed have the same length. """
     length = len(envector(args[0]))
     for array in args:
         if array is not None:

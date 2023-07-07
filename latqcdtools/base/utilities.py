@@ -149,10 +149,6 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-def getMaxThreads():
-    """ Figure out how many threads are on this system. """
-    return int( shell("lscpu | awk '/CPU\\(s\\)/ {print $2; exit}'") )
-
 
 def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
     """ Check whether date1 comes before date2.

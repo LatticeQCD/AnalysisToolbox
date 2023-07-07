@@ -14,9 +14,6 @@ logger.set_log_level('ALL')
 def testLogger():
 
     logger.createLogFile()
-
-    logger.introduceYourself()
-
     logger.debug('Never again to revisit my boyhood in Surrey!')
     logger.details('Romping with my school chums')
     logger.progress('among the fens and spinneys...')

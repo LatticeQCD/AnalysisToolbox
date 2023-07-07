@@ -17,8 +17,9 @@ from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
-ZOD        = 1
-INITIALIZE = True
+ZOD        = 1      # Orders different layers 
+INITIALIZE = True   # A global flag to ensure we only initialize once
+LEGEND     = False  # A global flag to apply legend attributes when we have one
 
 
 colors = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
@@ -104,7 +105,7 @@ default_params = {
 
 # Used for later checks that the user did not pass a wrong parameter by mistake.
 allowed_params = set(default_params.keys())
-allowed_params = allowed_params | {'linestyle','show_leg','ha','va'}
+allowed_params = allowed_params | {'linestyle','ha','va'}
 
 
 # ---------------------------------------------------------------------------------------------- SOME EXTERNAL FUNCTIONS
@@ -267,17 +268,16 @@ def fill_param_dict(params):
         -------
             Dictionary filled with all default parameters
     """
+    global LEGEND
     for key in params:
         if not key in allowed_params:
             logger.warn("Encountered unexpected plotting parameter",key)
 
-    if 'show_leg' not in params:
+    if not LEGEND:
         # When filling params for the first time, check if we show the legend. Triggered by one of the following keys
         for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 'alpha_legend'):
             if key in params:
-                params['show_leg'] = True
-    if 'show_leg' not in params:
-        params['show_leg'] = False
+                LEGEND = True
 
     for key, val in default_params.items():
         params.setdefault(key,val)
@@ -297,7 +297,6 @@ def add_optional(params):
     """
     reference = {}
     fill_param_dict(reference)
-    reference['show_leg'] = False
     ret = {}
     for key in params:
         if not key in reference:
@@ -311,6 +310,7 @@ def set_params(**params):
         Args:
             **params: Additional parameters that can be set.
     """
+    global LEGEND
 
     fill_param_dict(params)
 
@@ -365,7 +365,7 @@ def set_params(**params):
     if params['surroundWithTicks']:
         ax.tick_params(top=True,right=True)
 
-    if params['show_leg']:
+    if LEGEND:
         leg = ax.legend(legend_handles, legend_labels, numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])

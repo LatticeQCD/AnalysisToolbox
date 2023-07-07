@@ -9,7 +9,11 @@ import numpy as np
 import math
 from latqcdtools.statistics.statistics import std_mean, std_err
 import latqcdtools.base.logger as logger
+from latqcdtools.base.speedify import getMaxThreads
 import concurrent.futures
+
+
+NPROC = getMaxThreads()
 
 
 def pseudo(mean, mean_i, numb_blocks):
@@ -121,7 +125,7 @@ class nimbleJack:
             return self._mean, self._error
 
 
-def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), parallelize = True, nproc=32):
+def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), parallelize = True, nproc=NPROC):
     """Jackknife routine for arbitray functions. This routine creates the jackknife like blocked subsets of data and
     passes them to the function in the same format as in the input data. So the idea is to write a function that
     computes an observable from a given data set. This function can be put into this jackkife routine and will get the
