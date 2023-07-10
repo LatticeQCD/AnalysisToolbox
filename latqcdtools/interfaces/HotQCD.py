@@ -18,16 +18,39 @@ class HotQCDParams(HotQCD_MILC_Params):
 
 
 def massRatioToMasses(msml, Nt, cbeta, Nf='21'):
-    """Get mass parameters given the others."""
+    """ This is a way to get either the light+strange masses or quark+preconditioner masses
+        given the ratio ms/ml or mpre/mf. This uses HotQCD ensembles, listed in tables below.
 
+    Args:
+        msml (int)
+        Nt (int)
+        cbeta (str): Beta as a character. e.g. 6.345 is 6345 
+        Nf (str): Number of dynamical fermions. Defaults to '21'.
+
+    Returns:
+        str, str: either (ml, ms) or (mf, mpre) 
+    """
     if msml is None:
         cm1=None
         cm2=None
     else:
         massTable=quarkMassTableHISQ(Nf,Nt,msml)
-        cm1=massTable[cbeta][0]
-        cm2=massTable[cbeta][1]
+        try:    
+            cm1=massTable[cbeta][0]
+            cm2=massTable[cbeta][1]
+        except KeyError:
+            badbeta(cbeta,msml,Nt,Nf)
     return cm1, cm2
+
+
+def badbeta(beta,msml,Nt,Nf):
+    logger.TBError("No entries for beta =",beta,", Nf =",Nf,", Nt =",Nt,", msml =",msml)
+def badmsml(msml,Nt,Nf):
+    logger.TBError("No entries for Nf =",Nf,", Nt =",Nt,", msml =",msml)
+def badNt(Nt,Nf):
+    logger.TBError("No entries for Nf =",Nf,", Nt =",Nt)
+def badNf(Nf):
+    logger.TBError("No entries for Nf =",Nf)
 
 
 def quarkMassTableHISQ(Nf, Nt, msml):
@@ -43,7 +66,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6850': ['00157', '0424'],
                          '6910': ['00148', '0401']}
             else:
-                logger.TBError("Invalid ms/ml.")
+                badmsml(msml,Nt,Nf)
 
         elif Nt==8:
 
@@ -89,12 +112,45 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6423': ['00248', '0670'],
                          '6445': ['00241', '0652'],
                          '6474': ['00234', '0632'],
-                         '6500': ['00228', '0614']}
+                         '6500': ['00228', '0614'],
+                         '6640': ['00196', '0528']}
             else:
-                logger.TBError("Invalid ms/ml.")
+                badmsml(msml,Nt,Nf)
+
+        elif Nt==6:
+            if msml==27:
+                Table = {'6325': ['00277' ,'0748'],
+                         '6245': ['00307' ,'0830'],
+                         '5980': ['00435' ,'1173'],
+                         '6300': ['00285' ,'0770'],
+                         '6170': ['00336' ,'0908'],
+                         '6120': ['00357' ,'0963'], # a guess based on a spline interpolation
+                         '6038': ['00399' ,'1077'], # a guess based on a spline interpolation
+                         '6274': ['00295' ,'0798'], # a guess based on a spline interpolation
+                         '5850': ['005274','1424'],
+                }
+            else:
+                badmsml(msml,Nt,Nf)
+        
+        elif Nt==4:
+            if msml==27:
+                Table = {'5850': ['005274', '1424'], 
+                         '5900': ['004889', '1320'],
+                         '5925': ['004722', '1275'],
+                         '5950': ['004556', '1230'],
+                         '5960': ['004486', '1211'],
+                         '5970': ['004416', '1192'],
+                         '5973': ['004394', '1186'], # a guess based on a spline interpolation
+                         '5975': ['004377', '1183'],
+                         '5980': ['004346', '1173'],
+                         '5990': ['004279', '1155'],
+                         '6000': ['004215', '1138'],
+                         '6025': ['004074', '1100']} 
+            else:
+                badmsml(msml,Nt,Nf)
 
         else:
-            logger.TBError("Invalid Nt.")
+            badNt(Nt,Nf) 
 
     elif Nf=='3':
 
@@ -112,7 +168,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6285': ['00293', '07911'],
                          '6315': ['00281', '07587']}
             else:
-                logger.TBError("Invalid ms/ml.")
+                badmsml(msml,Nt,Nf)
 
         elif Nt==16:
 
@@ -120,10 +176,10 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                 Table = {'6050': ['00394', '1064'],
                          '6315': ['00281', '07587']}
             else:
-                logger.TBError("Invalid ms/ml.")
+                badmsml(msml,Nt,Nf)
 
         else:
-            logger.TBError("Invalid Nt.")
+            badNt(Nt,Nf) 
 
     elif Nf=='5':
 
@@ -150,13 +206,13 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '4690': ['002', '05'],
                          '4700': ['002', '05']} 
             else:
-                logger.TBError("Invalid ms/ml.")
+                badmsml(msml,Nt,Nf)
 
         else:
-            logger.TBError("Invalid Nt.")
+            badNt(Nt,Nf) 
 
     else:
-        logger.TBError("Invalid Nf.")
+        badNf(Nf) 
 
     return Table
 

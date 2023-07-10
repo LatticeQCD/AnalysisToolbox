@@ -9,6 +9,8 @@
 import yaml
 import numpy as np
 from latqcdtools.physics.lattice_params import latticeParams
+from latqcdtools.base.check import checkType
+from latqcdtools.base.utilities import substringBetween
 import latqcdtools.base.logger as logger
 
 
@@ -24,6 +26,24 @@ class HotQCD_MILC_Params(latticeParams):
             return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2+'m'+self.cm3
         else:
             return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2
+
+
+def paramFrom_HotQCD_MILC(ensemble):
+    checkType(ensemble,str)
+    NsNt = substringBetween(ensemble,'l','f') 
+    if len(NsNt)==3:
+        Ns=NsNt[:2]
+        Nt=NsNt[-1]
+    elif len(NsNt)==4:
+        Ns=NsNt[:2]
+        Nt=NsNt[2:]
+    else:
+        logger.TBError('I do not know how to handle an ensemble name of this form.')
+    Nf    = substringBetween(ensemble,'f','b') 
+    cbeta = substringBetween(ensemble,'b','m') 
+    cm1   = ensemble.split('m')[1].strip()
+    cm2   = ensemble.split('m')[2].strip()
+    return int(Ns), int(Nt), Nf, cbeta, cm1, cm2 
 
 
 def loadGPL(filename,discardTag=True):

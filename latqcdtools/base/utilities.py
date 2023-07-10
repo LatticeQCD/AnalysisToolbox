@@ -180,6 +180,12 @@ def find_nearest_idx(array, value):
     return idx
 
 
+def substringBetween(string,a,b):
+    start_index = string.index(a)+1
+    end_index   = string.index(b)
+    return string[start_index:end_index]
+
+
 class timer:
 
     """ A class to facilitate doing rudimentary timings in the Toolbox. """

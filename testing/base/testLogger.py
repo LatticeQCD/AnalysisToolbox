@@ -7,13 +7,13 @@
 # 
 
 import latqcdtools.base.logger as logger
-
+from latqcdtools.base.speedify import parallel_function_eval
 
 logger.set_log_level('ALL')
 
-def testLogger():
+def testLogger(logFile='Toolbox.log'):
 
-    logger.createLogFile()
+    logger.createLogFile(filename=logFile)
     logger.debug('Never again to revisit my boyhood in Surrey!')
     logger.details('Romping with my school chums')
     logger.progress('among the fens and spinneys...')
@@ -24,3 +24,5 @@ def testLogger():
 
 if __name__ == '__main__':
     testLogger()
+    myFiles = ['Toolbox_parallel.log','Toolbox_parallel.log']
+    parallel_function_eval(testLogger,myFiles,2)

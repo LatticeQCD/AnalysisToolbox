@@ -148,7 +148,7 @@ def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False
     
         conf_axis : integer, optional, default = 0 for dim(data) = 1 and default = 1 for dim(data) >= 2
             Axis that should be resampled
-   
+
         return_sample : boolean, optional, default = False                                           
             Along with the mean and the error also return the results from the individual samples
 

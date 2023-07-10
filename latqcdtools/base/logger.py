@@ -155,4 +155,3 @@ def TBPass(*args):
     output = getTimeStamp()+bcolors.PASS+' SUCCESS: '+(' '.join(args))+bcolors.ENDC
     print(output)
     log(output + '\n')
-
