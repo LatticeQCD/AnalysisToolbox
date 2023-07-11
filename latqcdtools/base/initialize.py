@@ -10,7 +10,8 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import shell
 
 
-INITIALIZED = False
+INITIALIZED = False     # Global flag to check if initialization has already occurred.
+DEFAULTSEED = 7271978   # Default seed for reproducibility (needed in testing). Do not Google this date.
 
 
 def gitHash():

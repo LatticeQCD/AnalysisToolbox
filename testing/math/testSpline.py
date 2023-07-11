@@ -12,6 +12,7 @@ from latqcdtools.math.spline import even_knots, random_knots, getSpline
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
+from latqcdtools.base.initialize import DEFAULTSEED
 
 
 logger.set_log_level('INFO')
@@ -36,7 +37,7 @@ def testSpline():
         plot_lines(x,spline(x),marker=None)
         plt.show()
 
-    knots=random_knots(x, 3, SEED=7271978)
+    knots=random_knots(x, 3, SEED=DEFAULTSEED)
 
     print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
 

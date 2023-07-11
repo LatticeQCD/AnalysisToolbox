@@ -13,6 +13,7 @@ from latqcdtools.base.utilities import envector, shell
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from numba import njit
+from numba.typed import List
 
 
 def getMaxThreads():
@@ -47,6 +48,13 @@ def compile(func):
         return njit(func)
     else:
         return func
+
+
+def numbaList(wList):
+    """ Turn a list into List that numba can parse. """ 
+    nList = List()
+    [nList.append(x) for x in wList]
+    return nList 
 
 
 class ComputationClass:

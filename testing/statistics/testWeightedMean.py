@@ -10,13 +10,13 @@ import numpy as np
 from numpy.random import normal
 from latqcdtools.statistics.statistics import gaudif, std_mean, std_err, weighted_mean, weighted_mean_variance, unbiased_mean_variance, unbiased_sample_variance
 from latqcdtools.math.math import print_results
+from latqcdtools.base.initialize import DEFAULTSEED
 import latqcdtools.base.logger as logger
 
+
 logger.set_log_level('INFO')
-
 PREC=1e-15
-
-np.random.seed(7271978)
+np.random.seed(DEFAULTSEED)
 
 
 def testWeightedMean():
