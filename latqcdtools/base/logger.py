@@ -6,23 +6,19 @@
 # Methods for logging and output.
 # 
 
-import sys, inspect, datetime
+import sys, inspect, datetime, logging
 from colorama import Fore
 
 
-class bcolors:
-    """ Colors for logging messages. """
-    def __init__(self):
-        pass
-    PASS    = Fore.GREEN
-    WARNING = Fore.YELLOW 
-    FAIL    = Fore.RED 
-    ENDC    = '\033[0m'
+PASS          = Fore.GREEN
+WARNING       = Fore.YELLOW 
+FAIL          = Fore.RED 
+ENDC          = '\033[0m'
+RECORDLOG     = False
+CURRENT_LEVEL = 4
 
 
-# Set the log level here.
-current_level = 4
-log_levels = {
+log_levels    = {
         'ALL' : 0,
         'DEBUG' : 1,
         'DETAILS' : 2,
@@ -33,33 +29,19 @@ log_levels = {
         }
 
 
-recordLog = False
-logFile   = None
 def createLogFile(filename="Toolbox.log"):
-    """ Have output sent also to a log file. """
-    global recordLog
-    global logFile
+    """ Have output sent also to a log file filename. If this file already exists, it will get deleted. We use the
+    logging module because it knows how to handle multiple processes writing to the same file. """
+    global RECORDLOG
+    RECORDLOG = True
+    logging.basicConfig(filename=filename, encoding='utf-8', level=logging.DEBUG, format='%(message)s', filemode='w')
     info('Created log file',filename)
-    logFile = open(filename,'w')
-    recordLog = True
-
-
-def closeLogFile():
-    """ Close the log file. """
-    global recordLog
-    global logFile
-    if not recordLog:
-        warn('Attempted to close log file with recordLog=False.')
-    logFile.close()
-    recordLog = False
-    info('Closed log file.')
 
 
 def log(outString):
-    global recordLog
-    global logFile
-    if recordLog:
-        logFile.write(outString)
+    global RECORDLOG
+    if RECORDLOG:
+        logging.info(outString[:-1])
 
 
 def getCallerName(frame):
@@ -81,16 +63,16 @@ def getTimeStamp():
 
 
 def isLevel(level):
-    return log_levels[level] >= current_level
+    return log_levels[level] >= CURRENT_LEVEL
 
 
 def set_log_level(level):
-    global current_level
-    current_level = log_levels[level]
+    global CURRENT_LEVEL
+    CURRENT_LEVEL = log_levels[level]
 
 
 def debug(*args,frame=2):
-    if current_level <= 1:
+    if CURRENT_LEVEL <= 1:
         args       = [str(s) for s in args]
         callerName = getCallerName(frame)
         output     = getTimeStamp()+' DEBUG: '+callerName+'--'+(' '.join(args))
@@ -99,7 +81,7 @@ def debug(*args,frame=2):
 
 
 def details(*args):
-    if current_level <= 2:
+    if CURRENT_LEVEL <= 2:
         args   = [str(s) for s in args]
         output = getTimeStamp()+' DETAILS: '+(' '.join(args))
         print(output)
@@ -107,7 +89,7 @@ def details(*args):
 
 
 def progress(*args):
-    if current_level <= 3:
+    if CURRENT_LEVEL <= 3:
         args   = [str(s) for s in args]
         output = getTimeStamp()+' PROGRESS: '+(' '.join(args))
         print(output)
@@ -115,7 +97,7 @@ def progress(*args):
 
 
 def info(*args):
-    if current_level <= 4:
+    if CURRENT_LEVEL <= 4:
         args   = [str(s) for s in args]
         output = getTimeStamp()+' INFO: '+(' '.join(args))
         print(output)
@@ -123,10 +105,10 @@ def info(*args):
 
 
 def warn(*args,frame=2):
-    if current_level <= 5:
+    if CURRENT_LEVEL <= 5:
         args       = [str(s) for s in args]
         callerName = getCallerName(frame)
-        output     = getTimeStamp()+bcolors.WARNING+' WARNING: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
+        output     = getTimeStamp()+WARNING+' WARNING: '+callerName+'--'+(' '.join(args))+ENDC
         print(output)
         log(output+'\n')
 
@@ -136,7 +118,7 @@ def warn(*args,frame=2):
 
 def TBFail(*args):
     args   = [str(s) for s in args]
-    output = getTimeStamp()+bcolors.FAIL+' FAIL: '+(' '.join(args))+bcolors.ENDC
+    output = getTimeStamp()+FAIL+' FAIL: '+(' '.join(args))+ENDC
     print(output)
     log(output + '\n')
 
@@ -144,7 +126,7 @@ def TBFail(*args):
 def TBError(*args,frame=2):
     args = [str(s) for s in args]
     callerName = getCallerName(frame)
-    output = getTimeStamp()+bcolors.FAIL+' ERROR: '+callerName+'--'+(' '.join(args))+bcolors.ENDC
+    output = getTimeStamp()+FAIL+' ERROR: '+callerName+'--'+(' '.join(args))+ENDC
     print(output)
     log(output + '\n')
     sys.exit(-1)
@@ -152,6 +134,6 @@ def TBError(*args,frame=2):
 
 def TBPass(*args):
     args = [str(s) for s in args]
-    output = getTimeStamp()+bcolors.PASS+' SUCCESS: '+(' '.join(args))+bcolors.ENDC
+    output = getTimeStamp()+PASS+' SUCCESS: '+(' '.join(args))+ENDC
     print(output)
     log(output + '\n')

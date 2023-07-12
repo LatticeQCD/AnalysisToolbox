@@ -1,7 +1,7 @@
-# AnalysisToolbox
+# LatticeToolbox
 
-The AnalysisToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
-particular toward lattice QCD. The Analysistoolbox is used especially by the HotQCD collaboration, so
+The LatticeToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
+particular toward lattice QCD. The LatticeToolbox is used especially by the HotQCD collaboration, so
 it also includes some methods complying with their conventions. It was originally created by
 H. Sandmeyer during his PhD work, and has since been maintained by some of the HotQCD scientists.
 
@@ -16,23 +16,23 @@ In order to use these scripts, please ensure that you have the following:
 6. numpy
 7. scipy
 8. sympy
-9. LaTeX
+9. LaTeX (Probably best if you install TeXLive-Full)
 
 
-For your convenience, these packages can be installed via
+For your convenience, packages (2-8) can be installed via
 ```shell
 pip3 install -r requirements.txt
 ```
-There are some further packages required if you would like to make contributions to the AnalysisToolBox; in particular
+There are some further packages required if you would like to make contributions to the LatticeToolbox; in particular
 there are many packages needed to compile the documentation. If you are interested in helping develop, you should
 instead
 ```shell
 pip3 install -r developerRequirements.txt
 ```
 Additionally you need to make sure your `PYTHONPATH` environment variable points
-to the correct place. For those of you using Bash, this can be accomplished by
+to the correct place. This can be accomplished by
 ```shell
-bash scripts/installToolbox.bash
+python3 installToolbox.py
 ```
 You then need to close your terminal and open a new one.
 Once this has all been settled,
@@ -44,12 +44,12 @@ bash runTests.bash
 
 ## Documentation
 
-Please check out [the documentation](https://latticeqcd.github.io/AnalysisToolbox) to learn how to use the 
-AnalysisToolbox.
+Please check out [the documentation](https://latticeqcd.github.io/LatticeToolbox) to learn how to use the 
+LatticeToolbox.
 
 
 ## Getting help and bug report
-Open an [issue](https://github.com/LatticeQCD/AnalysisToolbox/issues), if...
+Open an [issue](https://github.com/LatticeQCD/LatticeToolbox/issues), if...
 - you have troubles running the code.
 - you have questions on how to implement your own routine.
 - you have found a bug.

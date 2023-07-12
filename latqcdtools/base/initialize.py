@@ -22,8 +22,8 @@ def gitHash():
     """
     PYTHONPATH = shell('echo $PYTHONPATH')
     for entry in PYTHONPATH.split(':'):
-        if 'AnalysisToolbox' in entry:
-            toolboxLocation = entry
+        if 'LatticeToolbox' in entry:
+            toolboxLocation = entry.strip()
     hash=shell('git --git-dir="'+toolboxLocation+'/.git" rev-parse HEAD').strip()
     return hash 
 
@@ -60,5 +60,5 @@ def finalize():
     else:
         logger.info()
         logger.info('All done.')
-        logger.closeLogFile()
+#        logger.closeLogFile()
         logger.info()
