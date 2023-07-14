@@ -2,7 +2,7 @@
 
 ## Making Plots
 
-The `analysistoolbox` also has some wrappers for Matplotlib, which allow you to make Matplotlib 
+The `LatticeToolbox` also has some wrappers for Matplotlib, which allow you to make Matplotlib 
 plots easily using python. All of them can be found in 
 ```Python
 import latqcdtools.base.plotting

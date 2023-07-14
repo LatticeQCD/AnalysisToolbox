@@ -1,7 +1,7 @@
-AnalysisToolbox
+LatticeToolbox
 ===========
 
-The AnalysisToolbox is a collection of Python tools written for statistical data analysis, with an aim specifically 
+The LatticeToolbox is a collection of Python tools written for statistical data analysis, with an aim specifically 
 toward lattice field theory. It contains a variety of useful methods for these purposes, for example general jackknife 
 and bootstrap routines that can calculate error bars of arbitrary functions of data. It also includes modules tailored 
 for lattice field theory, such as methods for scale setting and universal quantities from commonly examined 
@@ -12,7 +12,7 @@ The source code is inside the `latqcdtools` folder. It is organized into several
    Discussed in more detail in the [applications](applications/applications.md) section.
 - `base`: Fundamental classes and methods that are common to many other methods. 
    Discussed in more detail in the [base](base/base.md) section.
-- `experimental`: Modules that were used in an older version of the AnalysisToolbox that are not yet part of this new
+- `experimental`: Modules that were used in an older version of the LatticeToolbox that are not yet part of this new
    version. These may be incorporated eventually.
 - `interfaces`: Allows interfacing with other entities present in lattice QCD. This includes things like
    collaboration-specific naming conventions for configurations, as well as output into niche data file formats.
@@ -23,10 +23,10 @@ The source code is inside the `latqcdtools` folder. It is organized into several
    Discussed in more detail in the [dataAnalysis](dataAnalysis/dataAnalysis.md) section.
 - `statistics`: Modules and classes for doing general statistics without any physics context.
    Discussed in more detail in the [physicsAnalysis](physicsAnalysis/physicsAnalysis.md) section.
-- `scripts`: Bash scripts that help write comments for AnalysisToolbox code, or to help repair it.
-- `testing`: Python scripts that test the AnalysisToolbox methods.
+- `scripts`: Bash scripts that help write comments for LatticeToolbox code, or to help repair it.
+- `testing`: Python scripts that test the LatticeToolbox methods.
 
-We would love it if you are interested in helping develop the AnalysisToolbox! Please have a look to the
+We would love it if you are interested in helping develop the LatticeToolbox! Please have a look to the
 [contributions](contributions/contributions.md) section to learn how to do this in a nice way.
 
 ```{toctree}

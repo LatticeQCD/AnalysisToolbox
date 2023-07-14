@@ -1,6 +1,6 @@
 # Computing Observables
 
-The AnalysisToolbox has built in methods for several commonly computed observables in the context of lattice
+The LatticeToolbox has built in methods for several commonly computed observables in the context of lattice
 calculations trying to understand the QCD phase diagram.
 
 ## Polyakov loop observables

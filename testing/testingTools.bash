@@ -5,7 +5,7 @@
 # 
 # D. Clarke 
 # 
-# Some useful tools and definitions for carrying out AnalysisToolBox tests. 
+# Some useful tools and definitions for carrying out LatticeToolbox tests. 
 #
 
 cgrn="\e[92m" 

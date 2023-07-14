@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'AnalysisToolbox'
+project = 'LatticeToolbox'
 copyright = '2022, LatticeQCD'
 author = 'LatticeQCD'
 

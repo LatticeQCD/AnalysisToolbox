@@ -3,7 +3,7 @@
 
 There are many ways to fit a curve. There are strategies that minimize $\chi^2/{\rm d.o.f.}$ 
 for when you know the functional form ahead of time, splines for when you don't, and other methods. 
-The AnalysisToolbox includes some routines that are helpful for this purpose.
+The LatticeToolbox includes some routines that are helpful for this purpose.
 
 ## $\chi^2$ minimization
 
