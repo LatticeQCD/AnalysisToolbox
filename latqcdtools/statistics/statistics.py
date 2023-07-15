@@ -36,6 +36,13 @@ def reduce_tuple(func):
     return func_wrapper
 
 
+def meanArgWrapper(func,used_data,args):
+    if isinstance(args, dict):
+        return func(used_data, **args)
+    else:
+        return func(used_data, *args)
+
+
 @reduce_tuple
 def std_median(data, axis = 0):
     """ Compute the median. The default behavior of numpy is to flatten the data, flagged by axis=None. This can be

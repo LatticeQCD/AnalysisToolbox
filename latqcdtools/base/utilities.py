@@ -61,15 +61,17 @@ def isHigherDimensional(obj):
 
 
 def unvector(obj):
-    """ Change obj to a scalar if it's an array-like object of length 1. Otherwise don't do anything. """
-    try:
-        N = len(obj)
-    except TypeError:
+    """ Remove outermost brackets of array-like object, if possible. """ 
+    if not isArrayLike(obj):
         return obj
+    N = len(obj)
     if N > 1:
         return obj
     else:
-        return obj[0]
+        if isArrayLike(obj[0]):
+            return np.array(obj[0])
+        else:
+            return obj[0]
 
 
 def envector(*args):

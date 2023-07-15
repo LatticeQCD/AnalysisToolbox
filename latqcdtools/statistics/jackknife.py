@@ -5,12 +5,13 @@
 # 
 # A parallelized jackknife routine that can handle arbitrary return values of functions.
 #
+
 import numpy as np
 import math
 from latqcdtools.statistics.statistics import std_mean, std_err
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import getMaxThreads
-import concurrent.futures
+from latqcdtools.base.speedify import getMaxThreads, parallel_function_eval, setNproc
+from latqcdtools.statistics.statistics import meanArgWrapper 
 
 
 NPROC = getMaxThreads()
@@ -43,6 +44,8 @@ class nimbleJack:
         self._confAxis=confAxis
         self._return_sample=return_sample
         self._args=args
+        
+        self._nproc = setNproc(parallelize,nproc) 
 
         # If the measurements are accessed by the second index in data, we construct the jackknife  manually to allow
         # different size of sets of measurements. conf_axis==1 is the only case that allows different lengths of data
@@ -72,24 +75,12 @@ class nimbleJack:
             rolled_data = np.rollaxis(self._data, self._confAxis)
             used_data = np.rollaxis(rolled_data[:self._blocksize*self._nblocks], 0, self._confAxis+1)
 
-        if isinstance(args, dict):
-            self._mean = func(used_data, **args)
-        else:
-            self._mean = func(used_data, *args)
+        # Get initial estimator of the mean
+        self._mean = meanArgWrapper(func,used_data,args)
 
-        if parallelize:
-            blockList=range(self._nblocks)
-            with concurrent.futures.ProcessPoolExecutor(max_workers=nproc) as executor:
-                blockval=executor.map(self.getJackknifeEstimator, blockList)
-            self._blockval=list(blockval)
-        else:
-            blockval=[]
-            for i in range(self._nblocks):
-                blockval.append(self.getJackknifeEstimator(i))
-            self._blockval=blockval
-
-        self._mean = std_mean(self._blockval)
-        self._error = std_err(self._blockval)
+        self._blockval = parallel_function_eval(self.getJackknifeEstimator,range(self._nblocks),self._nproc)
+        self._mean     = std_mean(self._blockval)
+        self._error    = std_err(self._blockval)
 
 
     def getJackknifeEstimator(self,i):
@@ -110,12 +101,8 @@ class nimbleJack:
                 block_data.append(rolled_data[j])
             block_data = np.rollaxis(np.array(block_data), 0, self._confAxis + 1)
         block_data = np.array(block_data)
-        if isinstance(self._args, dict):
-            mean_i = self._func(block_data, **self._args)
-        else:
-            mean_i = self._func(block_data, *self._args)
-        mean_i = pseudo_val(self._mean, mean_i, self._nblocks)
-        return mean_i
+        mean_i = meanArgWrapper(self._func,block_data,self._args)
+        return pseudo_val(self._mean, mean_i, self._nblocks)
 
 
     def getResults(self):

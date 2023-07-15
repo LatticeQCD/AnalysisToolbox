@@ -9,7 +9,7 @@
 
 import numpy as np
 import concurrent.futures
-from latqcdtools.base.utilities import envector, shell 
+from latqcdtools.base.utilities import envector, unvector, shell 
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from numba import njit
@@ -57,6 +57,14 @@ def numbaList(wList):
     return nList 
 
 
+def setNproc(parallelize,nproc):
+    """ If nproc = 1, then parallel_function_eval will do a for-loop behind the scenes. """
+    if parallelize:
+        return nproc
+    else:
+        return 1
+
+
 class ComputationClass:
 
     """ A class to parallelize functions. To be used with parallel_function_eval for convenience. """
@@ -77,15 +85,14 @@ class ComputationClass:
         self._result = self.parallelization_wrapper()
 
     def parallelization_wrapper(self):
-        results = []
         if self._nproc==1:
+            results = []
             for i in self._input_array:
                 results.append(self.pass_argument_wrapper(i)) 
         else:
             with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
-                for result in executor.map(self.pass_argument_wrapper, self._input_array):
-                    results.append(list(envector(result)))
-            results = list(map(list, zip(*results)))  # "transpose" the list to allow for multiple return values like a normal function.
+                results=executor.map(self.pass_argument_wrapper, self._input_array)
+            results = list(results)
         return results
 
     def pass_argument_wrapper(self, single_input):

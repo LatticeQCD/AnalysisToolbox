@@ -7,9 +7,9 @@
 #
 import numpy as np
 from numpy.random import randint, normal, multivariate_normal
-from latqcdtools.statistics.statistics import std_mean, std_dev, std_median, dev_by_dist
-from latqcdtools.base.speedify import getMaxThreads
-import concurrent.futures
+from latqcdtools.statistics.statistics import meanArgWrapper, std_mean, std_dev, std_median, dev_by_dist
+from latqcdtools.base.speedify import getMaxThreads, parallel_function_eval, setNproc
+from latqcdtools.base.initialize import DEFAULTSEED
 
 
 NPROC = getMaxThreads()
@@ -41,6 +41,14 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
             recurs_append(data[j], sample_data[j], axis + 1, conf_axis, sample_size, same_rand_for_obs, i, my_seed)
 
 
+def setSeed(seed):
+    """ Generate a time-dependent my_seed if seed is None. """
+    if seed is not None:
+        return seed
+    else:
+        return randint(0, DEFAULTSEED)
+
+
 class nimbleBoot:
 
     def __init__(self, func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed,
@@ -56,24 +64,14 @@ class nimbleBoot:
         self._seed=seed
         self._err_by_dist=err_by_dist
         self._args=args
+        
+        self._nproc = setNproc(parallelize,nproc) 
+        my_seed     = setSeed(self._seed)
 
         if  self._data.ndim == 1:
             self._conf_axis = 0
 
-        if self._seed is not None:
-            my_seed = self._seed
-        else:
-            my_seed = randint(0, 7271978) #generate a time dependent seed
-        if parallelize:
-            sampleList=range(self._numb_samples)
-            with concurrent.futures.ProcessPoolExecutor(max_workers=nproc) as executor:
-                sampleval_i=executor.map(self.getBootstrapEstimator, sampleList,[my_seed]*self._numb_samples)
-            self._sampleval=list(sampleval_i)
-        else:
-            sampleval=[]
-            for i in range(self._numb_samples):
-                sampleval.append(self.getBootstrapEstimator(i,my_seed))
-            self._sampleval=sampleval
+        self._sampleval = parallel_function_eval(self.getBootstrapEstimator,range(self._numb_samples),self._nproc,my_seed)
 
         if not self._err_by_dist:
             self._mean = std_mean(self._sampleval)
@@ -99,11 +97,7 @@ class nimbleBoot:
 
         sample_data = np.array(sample_data)
 
-        if isinstance(self._args, dict):
-            mean_i = self._func(sample_data, **self._args)
-        else:
-            mean_i = self._func(sample_data, *self._args)
-        return mean_i
+        return meanArgWrapper(self._func, sample_data, self._args)
 
     def getResults(self):
         if self._return_sample:
@@ -190,21 +184,10 @@ class nimbleGaussianBoot:
 
         self._numb_observe = len(data)
 
-        if self._seed is not None:
-            my_seed = self._seed
-        else:
-            my_seed = randint(0, 7271978) # generate a time dependent seed
+        self._nproc = setNproc(parallelize,nproc) 
+        my_seed     = setSeed(self._seed)
 
-        if parallelize:
-            sampleList=range(self._numb_samples)
-            with concurrent.futures.ProcessPoolExecutor(max_workers=nproc) as executor:
-                sampleval_i=executor.map(self.getGaussianBootstrapEstimator, sampleList,[my_seed]*self._numb_samples)
-            self._sampleval=list(sampleval_i)
-        else:
-            sampleval=[]
-            for i in range(self._numb_samples):
-                sampleval.append(self.getGaussianBootstrapEstimator(i,my_seed))
-            self._sampleval=sampleval
+        self._sampleval=parallel_function_eval(self.getGaussianBootstrapEstimator,range(self._numb_samples),self._nproc,my_seed)
 
         if not self._err_by_dist:
             self._mean = std_mean(self._sampleval)
@@ -256,12 +239,7 @@ class nimbleGaussianBoot:
 
         sample_data = np.array(sample_data)
 
-        if isinstance(self._args, dict):
-            mean_i = self._func(sample_data, **self._args)
-        else:
-            mean_i = self._func(sample_data, *self._args)
-
-        return mean_i
+        return meanArgWrapper(self._func,sample_data,self._args) 
 
     def getResults(self):
         if self._return_sample:
