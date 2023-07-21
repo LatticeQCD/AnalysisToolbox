@@ -44,17 +44,21 @@ def numbaOFF():
 def compile(func):
     global COMPILENUMBA
     if COMPILENUMBA:
-        logger.details('Compiling',func.__name__+'.')
+        logger.info('Compiling',func.__name__+'.')
         return njit(func)
     else:
         return func
 
 
-def numbaList(wList):
+def numbaList(inList):
     """ Turn a list into List that numba can parse. """ 
-    nList = List()
-    [nList.append(x) for x in wList]
-    return nList 
+    global COMPILENUMBA
+    if COMPILENUMBA:
+        nList = List()
+        [nList.append(x) for x in inList]
+        return nList 
+    else:
+        return inList
 
 
 def setNproc(parallelize,nproc):

@@ -13,9 +13,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.linalg import inv
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import latexify, plot_dots, fill_param_dict, plot_bar, plt
+from latqcdtools.base.plotting import plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.check import IllegalArgumentError
 from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
@@ -75,16 +74,10 @@ class Fitter:
         Maximum number of iterations / function evaluations.
     use_diff : bool, optional, default: True
         In case of numerical derivative use the difference quotient for approximation.
-    no_cache : bool, optional, default: False
-        Disable caching. Might be necessary when using custom numerical derivatives.
     norm_err_chi2 : bool, optional, default: True
         Multiply errors with chi**2/d.o.f. This is the usual case for fitting algorithms.
     derive_chisq : bool, optional, default: False
         In case of numerical derivative, apply the derivative to the whole chisquare instead of the function.
-    xmin : float, optional, default: -inf
-        Minimum xvalue for xdata that should be included into the fit.
-    xmax : float, optional, default: inf
-        Maximum xvalue for xdata that should be included into the fit.
     eig_threshold : bool, optional, default: 1e-18
         If we encounter an eigenvalue of the correlation matrix smaller than threshold, replace it with threshold.
     try_all : bool, optional, default: False
@@ -114,12 +107,11 @@ class Fitter:
 
     # Allowed keys for the constructor
     _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
-                     'no_cache', 'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev',
+                     'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev',
                      'try_all', 'func_sup_numpy', 'always_return', 'suppress_warning' ]
 
     # All possible algorithms.
-    _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG",
-                  "dogleg", "trust-ncg"]
+    _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
 
     # Standard algorithms for the minimization. All but COBYLA are rather fast.
     _std_algs = ["curve_fit", "TNC", "Powell" ,"Nelder-Mead", "COBYLA"]
@@ -129,12 +121,9 @@ class Fitter:
 
         diff = set(set(kwargs.keys()) - set(self._allowed_keys))
         if len(diff) != 0:
-            raise IllegalArgumentError("Illegal argument(s) to fitter", *diff)
+            logger.TBError("Illegal argument(s) to fitter", *diff)
 
         # Some attributes that are set in functions other than __init__.
-        self._xmin        = None
-        self._xmax        = None
-        self._fit_cov     = None
         self._fit_cor     = None
         self._fit_inv_cor = None
         self._numb_params = 0
@@ -149,12 +138,8 @@ class Fitter:
         self._xdata = np.array(xdata, dtype = float)
         self._ydata = np.array(ydata, dtype = float)
 
-        # Initialize fitting data
-        self._fit_xdata = self._xdata
-        self._fit_ydata = self._ydata
-
-        # Parameters defined by the use. See above documentation
-        self._no_cache = kwargs.get('no_cache', True)
+        # These attributes are described in the above doccumentation. If they aren't specified in the keyword
+        # arguments when the Fitter is initialized, they take the default value shown here. 
         self._use_diff = kwargs.get('use_diff', True)
         self._derive_chisq = kwargs.get('derive_chisq', False)
         self._expand = kwargs.get('expand', True)
@@ -211,94 +196,31 @@ class Fitter:
 
         self.set_func(func, kwargs.get('grad', None), kwargs.get('hess', None))
 
-        # If the derivatives are computed by the minimization algorithm itself, meaning that the derivatives are
-        # applied to the chi_square and not to the fit function, we have to switch off caching. Otherwise the numerical
-        # derivatives will fail as they work on the cache.
-        if self._derive_chisq:
-            self._no_cache = True
-
-        # Caching variables. In order to boost performance across repeated fits, we cache some quantities.
-        self._cache_array = None
-        self._cache_jac   = None
-        self._cache_hess  = None
-
-        # Variables that hold the parameters that belong to the above caching variables
-        self._cache_p_array = self._numb_params*[None]
-        self._cache_p_jac   = self._numb_params*[None]
-        self._cache_p_hess  = self._numb_params*[None]
-
         # For Bayesian fits. If these are used, they are set in general_fit, and then utilized elsewhere.
         self._priorval   = np.ones(self._numb_params)
         self._priorsigma = np.ones(self._numb_params)
         self._checkprior = False
-
-        # It might be necessary to prevent generation of new fit data when doing a fit. If this variable is set, the
-        # fit is performed on the current fit data
-        self._no_new_data = False
 
         # Check if we have the covariance matrix available and compute weights etc.
         if edata is not None:
             edata = np.asarray(edata, dtype = float)
             if isHigherDimensional(edata): 
                 self._cov_avail = True
-                self._cov = edata
+                self._cov       = edata
             else: 
                 self._cov_avail = False
-                self._cov = np.diag(np.array(edata)**2) # Covariance matrix is diagonal
+                self._cov       = np.diag(np.array(edata)**2)
         else:
-            # Initialize everything to one in case of non-available error information
-            self._cov = np.diag(np.ones(len(self._ydata)))
+            # Initialize everything to one if we don't get error information. 
             self._cov_avail = False
-
-        self._cor = norm_cov(self._cov)
+            self._cov       = np.diag(np.ones(len(self._ydata)))
 
         # Correlation matrix
         self._cor = norm_cov(self._cov)
 
-
-    def gen_fit_data(self, xmin, xmax, ind = None):
-        """ Generate the data that are used for the fit. The data for the fit are stored in variables called self._fit*
-        A filter is applied to the data to make sure they lie between xmin and xmax. If self._cut_eig is set, the
-        eigenvalues of the covariance matrix are cut. This function is called before each fit and creates copies of the
-        actual fitting data in case of non-trivial xmin and xmax.
-
-        Parameters
-        ----------
-        xmin : bool
-            Minimum x-value that data points should have to be considered for the fit
-        xmax : bool
-            Maximum x-value that data points should have to be considered for the fit
-        ind : array-like, default: None
-            Index array.
-        """
-
-        self._xmin = xmin
-        self._xmax = xmax
-
-        # Reset caching data in case we get he same parameters but fit on a different data set
-        self._cache_p_array = self._numb_params*[None]
-        self._cache_p_jac   = self._numb_params*[None]
-        self._cache_p_hess  = self._numb_params*[None]
-
-        if ind is None:
-            ind = (self._xdata>=xmin) & (self._xdata<=xmax)
-        else:
-            ind = (self._xdata>=xmin) & (self._xdata<=xmax) & ind
-
-        # For multi-dimensional xdata we convert the index array to one dimension to match to the dimensions of ydata
-        if isHigherDimensional(self._xdata):
-            ind = np.array([any(i) for i in ind], dtype = bool)
-
-        # Subsets of the data, that match to the fit range. These subsets are used for the actual fit.
-        self._fit_xdata = self._xdata[ind]
-        self._fit_ydata = self._ydata[ind]
-
-        self._fit_cov = self._cov[np.ix_(ind, ind)]
-        self._fit_cor = cut_eig(self._cor[np.ix_(ind,ind)], self._eig_threshold)
-
+        self._fit_cor = cut_eig(self._cor, self._eig_threshold)
         self._fit_inv_cor = inv(self._fit_cor)
-
-        self._numb_data = len(self._fit_ydata)
+        self._numb_data = len(self._ydata)
 
 
     def _get_numb_params(self):
@@ -307,6 +229,8 @@ class Fitter:
         self._numb_params. """
         ntries = 1000
         if self._expand:
+            # signature().parameters gives the total number of parameters passed to a function. We subtract 1 (self)
+            # along with the number of arguments
             self._numb_params = len(signature(self._func).parameters) - 1 - len(self._args)
             return
         else:
@@ -326,8 +250,7 @@ class Fitter:
                     if i == ntries:
                         logger.debug("Last error was", e)
                         traceback.print_exc()
-            logger.TBError("Fit function does not work with up to", ntries,
-                           "parameters. Enable DEBUG level for more details.")
+            logger.TBError("Fit function does not work with up to", ntries,"parameters. Enable DEBUG level for more details.")
 
 
     def set_func(self, func, grad = None, hess = None, args = None, grad_args = None, hess_args = None):
@@ -402,9 +325,9 @@ class Fitter:
         These are stored in self._saved_params. """
         try:
             if self._func_sup_numpy:
-                funcExpand(self._func,self._fit_xdata,self._saved_params,self._args,self._expand)
+                funcExpand(self._func,self._xdata,self._saved_params,self._args,self._expand)
             else:
-                funcExpand(self._func,self._fit_xdata[0],self._saved_params,self._args,self._expand)
+                funcExpand(self._func,self._xdata[0],self._saved_params,self._args,self._expand)
         except Exception as e:
             logger.warn("Function cannot handle start_parameters",self._saved_params)
             if logger.isLevel("DEBUG"):
@@ -434,59 +357,50 @@ class Fitter:
 
 
     def fit_ansatz_array(self, params):
-        """ Return the array of the fit ansatz values at each position in self._fit_xdata. """
+        """ Return the array of the fit ansatz values at each position in self._xdata. """
         params = np.asarray(params)
-        # Check if we have computed the same array before. If yes, return the cached values
-        if any(self._cache_p_array != params) or self._no_cache:
-            # If the function supports numpy objects as input, we can call it directly. Otherwise we have to loop over
-            # all values in self._fit_xdata
-            if self._func_sup_numpy:
-                ret = self.wrap_func(self._fit_xdata, params)
-            else:
-                ret = np.array( [self.wrap_func(value, params) for value in self._fit_xdata] )
-            self._cache_array = np.copy(ret)
-            self._cache_p_array = params
-            return ret
+
+        # If the function supports numpy objects as input, we can call it directly. Otherwise we have to loop over
+        # all values in self._xdata
+        if self._func_sup_numpy:
+            ret = self.wrap_func(self._xdata, params)
         else:
-            return np.copy(self._cache_array)
+            ret = np.array( [self.wrap_func(value, params) for value in self._xdata] )
+        self._cache_array = np.copy(ret)
+        self._cache_p_array = params
+        return ret
 
 
     def jacobian_fit_ansatz_array(self, params):
         """ If f is the fit function, return the array df / dp_i evaluated at each _fit_xdata. """
         params = np.asarray(params)
-        # Check if we have computed the same array before. If yes, return the cached values
-        if any(self._cache_p_jac != params) or self._no_cache:
-            # If the gradient supports numpy objects as input, we can call it directly. Otherwise we have to loop over
-            # all values in self._fit_xdata
-            if self._func_sup_numpy:
-                # Notes that the function is passed in secret here.
-                ret = self.grad(self._fit_xdata, params).transpose()
-            else:
-                ret = np.array([self.grad(value, params) for value in self._fit_xdata])
-            self._cache_jac = np.copy(ret)
-            self._cache_p_jac = params
-            return ret
+
+        # If the gradient supports numpy objects as input, we can call it directly. Otherwise we have to loop over
+        # all values in self._xdata
+        if self._func_sup_numpy:
+            # Notes that the function is passed in secret here.
+            ret = self.grad(self._xdata, params).transpose()
         else:
-            return np.copy(self._cache_jac)
+            ret = np.array([self.grad(value, params) for value in self._xdata])
+        self._cache_jac = np.copy(ret)
+        self._cache_p_jac = params
+        return ret
 
 
     def hess_fit_ansatz_array(self, params):
         """ If f is the fit function, return the array d^2f / dp_i dp_j evaluated at each _fit_xdata. """
         params = np.asarray(params)
-        # Check if we have computed the same array before. If yes, return the cached values
-        if any(self._cache_p_hess != params) or self._no_cache:
-            # If the Hessian supports numpy objects as input, we can call it directly. Otherwise we have to loop over
-            # all values in self._fit_xdata
-            if self._func_sup_numpy:
-                # hess is just a wrapper. hess_args are considered in this wrapper
-                ret = self.hess(self._fit_xdata, params).transpose()
-            else:
-                ret = np.array([self.hess(value, params) for value in self._fit_xdata])
-            self._cache_hess = np.copy(ret)
-            self._cache_p_hess = params
-            return ret
+
+        # If the Hessian supports numpy objects as input, we can call it directly. Otherwise we have to loop over
+        # all values in self._xdata
+        if self._func_sup_numpy:
+            # hess is just a wrapper. hess_args are considered in this wrapper
+            ret = self.hess(self._xdata, params).transpose()
         else:
-            return np.copy(self._cache_hess)
+            ret = np.array([self.hess(value, params) for value in self._xdata])
+        self._cache_hess = np.copy(ret)
+        self._cache_p_hess = params
+        return ret
 
 
     def calc_chisquare(self, params):
@@ -495,16 +409,16 @@ class Fitter:
             prior, prior_err = self._priorval, self._priorsigma
         else:
             prior, prior_err = None, None
-        return chisquare(self._fit_xdata, self._fit_ydata, self._fit_cov, self._func, self._args, params, prior=prior,
+        return chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, params, prior=prior,
                          prior_err=prior_err, expand=self._expand, supNumpy=self._func_sup_numpy)
 
 
     def grad_chisquare(self, params):
         """ Compute the gradient of the chisquare. Used by some solvers in the minimization routine. """
         jac  = self.jacobian_fit_ansatz_array(params).transpose()    # df/dp
-        diff = self.fit_ansatz_array(params) - self._fit_ydata       # Dy
+        diff = self.fit_ansatz_array(params) - self._ydata       # Dy
 
-        sigma = np.sqrt(np.diag(self._fit_cov))
+        sigma = np.sqrt(np.diag(self._cov))
         jac  /= sigma
         diff /= sigma
 
@@ -519,9 +433,9 @@ class Fitter:
         """ Compute the hessian of the chisquare. Used by some solvers in the minimization routine. """
         hess = self.hess_fit_ansatz_array(params).transpose()
         jac  = self.jacobian_fit_ansatz_array(params).transpose()
-        diff = self.fit_ansatz_array(params) - self._fit_ydata
+        diff = self.fit_ansatz_array(params) - self._ydata
 
-        sigma = np.sqrt(np.diag(self._fit_cov))
+        sigma = np.sqrt(np.diag(self._cov))
         hess /= sigma
         jac  /= sigma
         diff /= sigma
@@ -577,7 +491,7 @@ class Fitter:
             else:
                 func = lambda xarray, *p: [self.wrap_func(x, p) for x in xarray]
 
-            cov = self._fit_cov
+            cov = self._cov
             # If no gradient has been provided by the user, it is probably better to use the numerical derivative from
             # curve_fit instead of our own.
             if self._grad is not None:
@@ -588,7 +502,7 @@ class Fitter:
             else:
                 grad = None
 
-            params, pcov = curve_fit(func, self._fit_xdata, self._fit_ydata, sigma = cov, p0 = start_params, jac = grad,
+            params, pcov = curve_fit(func, self._xdata, self._ydata, sigma = cov, p0 = start_params, jac = grad,
                                      ftol = self._tol, maxfev = self._max_fev["curve_fit"])
             nfev = 0
 
@@ -607,9 +521,9 @@ class Fitter:
         # You can think of priors as extra data points. Hence if you use a prior for every fit parameter, it follows
         # that the number of degrees of freedom always equals the number of data.
         if self._checkprior:
-            dof = len(self._fit_ydata)
+            dof = len(self._ydata)
         else:
-            dof = len(self._fit_ydata) - len(params)
+            dof = len(self._ydata) - len(params)
         logger.debug('Computed d.o.f. =',dof)
         return dof
 
@@ -666,15 +580,12 @@ class Fitter:
         """ Compute the parameter's covariance matrix through error propagation, i.e. pcov = (J^t * C^-1 * J)^-1, where
         J is the Jacobian of the fit function and C is the covariance matrix of the data points. """
         if self.grad is None:
-            tmp_no_cache = self._no_cache
-            self._no_cache = True
             jac = self._num_func_jacobian(params)
-            self._no_cache = tmp_no_cache
         else:
             jac = self.jacobian_fit_ansatz_array(params)
 
         inv_cov_mat = self._fit_inv_cor
-        jac = jac.transpose() / np.sqrt(np.diag(self._fit_cov))
+        jac = jac.transpose() / np.sqrt(np.diag(self._cov))
         jac = jac.transpose()
 
         jej = jac.transpose().dot(inv_cov_mat.dot(jac))
@@ -787,12 +698,6 @@ class Fitter:
             if len(self._priorval) != self._numb_params:
                 logger.TBError("Number priorval != number of fit parameters")
 
-        # Initialize caching variables as numpy objects. This is necessary, as the scipy.optimize routines which are
-        # used in minimize_chi2 return simple lists.
-        self._cache_p_array = self._numb_params*[None]
-        self._cache_p_jac   = self._numb_params*[None]
-        self._cache_p_hess  = self._numb_params*[None]
-
         dof = self.getDOF(self._saved_params)
         if dof < 0:
             logger.TBError("Fewer data points than fit parameters")
@@ -806,8 +711,7 @@ class Fitter:
         return params, fit_errors, chi2, dof, pcov, nfev
 
 
-    def try_fit(self, algorithms = None, start_params = None, priorval = None, priorsigma = None, xmin = -np.inf,
-                xmax=np.inf, ind = None, detailedInfo = False):
+    def try_fit(self, algorithms = None, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
         """ Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
         smallest chi^2. By default this method does a standard statistical fit. One can also include priors to obtain
         posteriors using Bayesian statistics. A well known summary of the latter strategy in the context of lattice QCD
@@ -817,7 +721,7 @@ class Fitter:
         ----------
         algorithms: string or None, optional, default = None
             List of strings with the algorithms that can be used. Possible values are:
-                 "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG", "BFGS", "dogleg", "trust-ncg".
+                "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG", "BFGS", "dogleg", "trust-ncg".
             The latter 4 usually don't work. When provided None, the first 7 algorithms are used.
         start_params: array_like, optional, default = None
             The start parameters for the fit.
@@ -825,13 +729,6 @@ class Fitter:
             For constrained fits. Prior mean values for the fit.
         priorsigma: array_like, optional, default = None
             For constrained fits. Prior error bars for the fit.
-        xmin: float, optional, default = -inf
-            The minimum x-value that data points must have to be considered in the fit.
-        xmax: float, optional, default = inf
-            The maximum x-value that data points must have to be considered in the fit.
-        ind: array of bools, optional, default = None
-            array of bools that corresponds to the fitting points that should be used. This is useful if you want to
-            apply more complex filters than default.
         detailedInfo : bool, optional. default = False
             If True, return also the covariance matrix of the fit parameters and logGBF
 
@@ -865,8 +762,6 @@ class Fitter:
         dof = None
         for i, algorithm in enumerate(algorithms):
             try:
-                if not self._no_new_data:
-                    self.gen_fit_data(xmin, xmax, ind)
                 params, fit_errors, chi2, dof, pcov, nfev = self._general_fit(start_params, algorithm, priorval, priorsigma)
                 if self._try_all:
                     all_params.append(params)
@@ -926,7 +821,7 @@ class Fitter:
 
 
     def logGBF(self,params):
-        return logGBF(self._fit_xdata, self._fit_ydata, self._fit_cov, self._func, self._args, params,
+        return logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, params,
                       prior=self._priorval,prior_err=self._priorsigma, expand=self._expand, supNumpy=self._func_sup_numpy)
 
 
@@ -940,9 +835,9 @@ class Fitter:
         if params_err is None:
             params_err = []
         if xmin is None:
-            xmin = np.min(self._fit_xdata)
+            xmin = np.min(self._xdata)
         if xmax is None:
-            xmax = np.max(self._fit_xdata)
+            xmax = np.max(self._xdata)
 
         # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters here.
         if self._expand:
@@ -974,9 +869,9 @@ class Fitter:
             params_err = []
 
         if xmin is None:
-            xmin = np.min(self._fit_xdata)
+            xmin = np.min(self._xdata)
         if xmax is None:
-            xmax = np.max(self._fit_xdata)
+            xmax = np.max(self._xdata)
 
         # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters.
         if self._expand:
@@ -996,26 +891,20 @@ class Fitter:
                       func_sup_numpy = self._func_sup_numpy, expand = True, **kwargs)
 
         
-    def plot_data(self, xmin = -np.inf, xmax = np.inf, ylog = False, **kwargs):
+    def plot_data(self, ylog = False, **kwargs):
         """ Plot the fit data. """
 
         if ylog:
             plt.yscale('log')
 
-        # We don't use self.gen_fit_data, because this might give a singluar covariance matrix for this xmin and xmax.
-        # As the covariance matrix is inverted in gen_fit_data we do it by hand here
-        ind = (self._xdata >= xmin) & (self._xdata <= xmax)
-        self._fit_xdata = self._xdata[ind]
-        self._fit_ydata = self._ydata[ind]
-
         if self._cov is not None:
-            sigma = np.sqrt( np.diag(self._fit_cov[ind]) )
-            plot_dots(self._fit_xdata, self._fit_ydata, sigma, **kwargs)
+            sigma = np.sqrt( np.diag(self._cov) )
+            plot_dots(self._xdata, self._ydata, sigma, **kwargs)
         else:
-            plot_dots(self._fit_xdata, self._fit_ydata, **kwargs)
+            plot_dots(self._xdata, self._ydata, **kwargs)
 
 
-    def plot_fit(self, params = None, params_err = None, notex = False, ranges = None, ylog = False,
+    def plot_fit(self, params = None, params_err = None, ranges = None, ylog = False, 
                  no_error = False, args_data = None, args_func = None, xmin = None, xmax = None, **kwargs):
         """ Plot the fit and the fit data.
 
@@ -1040,8 +929,6 @@ class Fitter:
             Use an logarithmic y-scale.
         no_error : bool, optional
             Don't plot error bars.
-        showPlot: bool, optional
-            Show the plot.
         **kwargs
             Additional arguments that can be passed to the plotting functions. See plotting.py.
         """
@@ -1061,8 +948,8 @@ class Fitter:
         try:
             # Save xmin and xmax, as they will be overwritten in plot_data
             try:
-                xmin = np.min(self._fit_xdata)
-                xmax = np.max(self._fit_xdata)
+                xmin = np.min(self._xdata)
+                xmax = np.max(self._xdata)
             except ValueError:
                 xmin = None
                 xmax = None
@@ -1097,14 +984,8 @@ class Fitter:
             logger.warn("Plotting of fit failed: ", e)
 
 
-    def plot_cor(self, filename = None, xmin = -np.inf, xmax = np.inf, notex = False, showPlot=False,
-                 title = 'Data correlation matrix', xlabel='$x_j$', ylabel='$x_i$'):
+    def plot_cor(self, title = 'Data correlation matrix', xlabel='$x_j$', ylabel='$x_i$'):
         """ Plot the correlation matrix of the input data. """
-
-        if not notex:
-            latexify()
-
-        self.gen_fit_data(xmin, xmax)
 
         ncov = self._fit_cor
 
@@ -1122,20 +1003,8 @@ class Fitter:
         cb = plt.colorbar()
         cb.ax.tick_params(labelsize=12)
 
-        if filename is not None:
-            plt.savefig(filename)
 
-        if showPlot:
-            plt.show()
-
-
-    def plot_eig(self, filename = None, xmin = -np.inf, xmax = np.inf, notex = False, xlabel="$i$", ylabel="$\\lambda_i$",
-                 title = 'Eigenvalues of data correlation matrix', showPlot=False):
-
-        if not notex:
-            latexify()
-
-        self.gen_fit_data(xmin, xmax)
+    def plot_eig(self, xlabel="$i$", ylabel="$\\lambda_i$", title = 'Eigenvalues of data correlation matrix'):
 
         vals, _ = np.linalg.eig(self._fit_cor)
 
@@ -1145,12 +1014,6 @@ class Fitter:
         plot_bar(range(len(eig_real)), eig_real, color='#d32d11', label="real", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
         if np.min(eig_imag) != 0:
             plot_bar(range(len(eig_imag)), eig_imag, color='#0081bf', label="imag", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
-
-        if filename is not None:
-            plt.savefig(filename)
-
-        if showPlot:
-            plt.show()
 
 
     def get_func(self, x, params = None, params_err = None):
@@ -1268,17 +1131,14 @@ def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = Non
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,
-                      xmin = xmin, xmax = xmax, detailedInfo=detailedInfo)
+                      detailedInfo=detailedInfo)
 
 
 def try_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-            algorithms = None, detailedInfo=False, xmin = -np.inf, xmax = np.inf, **kwargs):
+            algorithms = None, detailedInfo=False, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
     algorithms has no default values here. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.try_fit(algorithms, start_params, priorval, priorsigma, xmin = xmin, xmax = xmax, detailedInfo=detailedInfo)
+    return fit.try_fit(algorithms, start_params, priorval, priorsigma, detailedInfo=detailedInfo)
 
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

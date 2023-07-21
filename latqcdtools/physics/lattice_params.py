@@ -8,7 +8,8 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014, CY_A_TIMES_FK, CY_FK_PHYS
+from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014, \
+    CY_A_TIMES_FK, CY_FK_PHYS, CY_A_DIV_R0, CY_A_DIV_R1
 
 
 def massStringToFloat(string):
@@ -23,8 +24,8 @@ class latticeParams:
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
-    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=CY_A_TIMES_FK,
-                 Nf='21', scaleYear=CY_FK_PHYS, mu=0):
+    def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None,
+                 Nf='21', scaleYear=None, mu=0):
         """ Based on some input, determine all parameters relevant to the ensemble.
 
         Parameters
@@ -52,10 +53,25 @@ class latticeParams:
         """
         self.scale = scaleType
         if self.scale == 'fk':
-            self.fK = fk_phys(scaleYear,"MeV")
+            if scaleYear is None:
+                self.fK = fk_phys(CY_FK_PHYS,"MeV")
+            else:
+                self.fK = fk_phys(scaleYear,"MeV")
+            if paramYear is None:
+                self.year = CY_A_TIMES_FK
+            else:
+                self.year = paramYear
         elif self.scale == 'r1':
+            if paramYear is None:
+                self.year = CY_A_DIV_R1
+            else:
+                self.year = paramYear
             self.r1=r1_MILC_2010("fm")
         elif self.scale == 'r0':
+            if paramYear is None:
+                self.year = CY_A_DIV_R0
+            else:
+                self.year = paramYear
             self.r0=r0_hQCD_2014("fm")
         else:
             logger.TBError('scaleType',self.scale,'not yet supported.')
@@ -65,16 +81,15 @@ class latticeParams:
         else:
             self.beta  = coupling
             self.cbeta = str(coupling).replace('.','')
-        self.Nc    = 3
-        self.mu    = mu
-        self.cm1   = mass1
-        self.cm2   = mass2
-        self.cm3   = mass3
-        self.year  = paramYear
-        self.Ns    = Nsigma
-        self.Nt    = Ntau
-        self.Nf    = Nf
-        self.vol4  = self.Ns**3 * self.Nt
+        self.Nc   = 3
+        self.mu   = mu
+        self.cm1  = mass1
+        self.cm2  = mass2
+        self.cm3  = mass3
+        self.Ns   = Nsigma
+        self.Nt   = Ntau
+        self.Nf   = Nf
+        self.vol4 = self.Ns**3 * self.Nt
         if Nf=='21':
             if mass3 is not None:
                 logger.TBError('Nf=2+1 expects only 2 mass parameters.')

@@ -10,12 +10,15 @@ import numpy as np
 from latqcdtools.statistics.fitting import do_fit, try_fit, Fitter
 from latqcdtools.math.math import print_results, rel_check
 import latqcdtools.base.logger as logger
-import latqcdtools.statistics.statistics as stats
+from latqcdtools.base.utilities import timer
+from latqcdtools.statistics.statistics import std_mean
 from latqcdtools.base.readWrite import readTable, readCorrelatorTable
 from scipy.optimize import curve_fit
+from latqcdtools.base.plotting import clearPlot, latexify, plt
 
 
 logger.set_log_level('INFO')
+TESTPLOTS = False
 
 
 def simple(x, a):
@@ -69,6 +72,8 @@ EPSILON=1e-4
 
 
 def testFit():
+
+    timey = timer()
 
     logger.info("Testing quadradic fit with expansion of parameters...")
 
@@ -138,7 +143,7 @@ def testFit():
     xdata, data, nconfs = readCorrelatorTable("corr_pure.dat",1,2)
 
     cov   = calc_cov_OLD(data)
-    ydata = stats.std_mean(data, axis = 1)
+    ydata = std_mean(data, axis = 1)
     cov_true = readTable("cov.txt")
     cov_test = True
     for i in range(len(cov)):
@@ -207,21 +212,29 @@ def testFit():
     print_results(res, res_true, res_err, res_err_true, "2D xdata fit with hessian error",prec=EPSILON)
 
 
+    timey.printTiming()
 
-    logger.info("Testing fit plots...")
 
+    if TESTPLOTS:
 
-    xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,2,3), unpack=True)
+        logger.info("Testing fit plots...")
+        latexify()
 
-    fitter = Fitter(fit_func,xdata,ydata,edata,func_sup_numpy=False, norm_err_chi2=True)
-    fitter.do_fit(start_params=None)
+        xdata, ydata, edata = np.genfromtxt("wurf.dat", usecols=(0,2,3), unpack=True)
 
-    fitter.plot_fit()
-    fitter.plot_cor()
-    fitter.plot_eig()
+        fitter = Fitter(fit_func,xdata,ydata,edata,func_sup_numpy=False, norm_err_chi2=True)
+        fitter.do_fit(start_params=None)
+
+        fitter.plot_fit()
+        plt.show()
+        clearPlot()
+        fitter.plot_cor()
+        plt.show()
+        clearPlot()
+        fitter.plot_eig()
+        plt.show()
 
     logger.TBPass("No problems encountered.")
-
 
 if __name__ == '__main__':
     testFit()

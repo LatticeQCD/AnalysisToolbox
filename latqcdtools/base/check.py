@@ -20,7 +20,6 @@ warnings.filterwarnings("ignore", category=np.ComplexWarning)
 class DivideByZeroError(Exception): pass
 class UnderflowError(Exception): pass
 class InvalidValueError(Exception): pass
-class IllegalArgumentError(ValueError): pass
 
 
 CATCHUNDERFLOW    = True 

@@ -114,7 +114,7 @@ allowed_params = allowed_params | {'linestyle','ha','va'}
 def latexify(bold=False):
     """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
         convenient functions like ev. """
-    logger.debug("Using latexify can be slow. If you need to speed up your plotting, suppress it.")
+    logger.info("Using LaTeX to make pretty plots.")
     if bold:
         plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
     else:
