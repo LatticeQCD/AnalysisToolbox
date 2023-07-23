@@ -21,4 +21,4 @@ def testLogger(i):
     logger.warn('like a lambent flame.')
 
 if __name__ == '__main__':
-    parallel_function_eval(testLogger,range(2),2)
+    parallel_function_eval(testLogger,range(2),nproc=2)

@@ -10,11 +10,8 @@ import numpy as np
 import math
 from latqcdtools.statistics.statistics import std_mean, std_err
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import getMaxThreads, parallel_function_eval, setNproc
+from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.statistics.statistics import meanArgWrapper 
-
-
-NPROC = getMaxThreads()
 
 
 def pseudo(mean, mean_i, numb_blocks):
@@ -36,7 +33,7 @@ class nimbleJack:
 
     """ Class allowing for parallelization of the jackknife function. """
 
-    def __init__(self, func, data, nblocks, confAxis, return_sample, args, parallelize, nproc):
+    def __init__(self, func, data, nblocks, confAxis, return_sample, args, nproc):
 
         self._func=func
         self._data=np.array(data)
@@ -45,7 +42,7 @@ class nimbleJack:
         self._return_sample=return_sample
         self._args=args
         
-        self._nproc = setNproc(parallelize,nproc) 
+        self._nproc = nproc
 
         # If the measurements are accessed by the second index in data, we construct the jackknife  manually to allow
         # different size of sets of measurements. conf_axis==1 is the only case that allows different lengths of data
@@ -78,7 +75,7 @@ class nimbleJack:
         # Get initial estimator of the mean
         self._mean = meanArgWrapper(func,used_data,args)
 
-        self._blockval = parallel_function_eval(self.getJackknifeEstimator,range(self._nblocks),self._nproc)
+        self._blockval = parallel_function_eval(self.getJackknifeEstimator,range(self._nblocks),nproc=self._nproc)
         self._mean     = std_mean(self._blockval)
         self._error    = std_err(self._blockval)
 
@@ -112,7 +109,7 @@ class nimbleJack:
             return self._mean, self._error
 
 
-def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), parallelize = True, nproc=NPROC):
+def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), nproc=DEFAULTTHREADS):
     """Jackknife routine for arbitray functions. This routine creates the jackknife like blocked subsets of data and
     passes them to the function in the same format as in the input data. So the idea is to write a function that
     computes an observable from a given data set. This function can be put into this jackkife routine and will get the
@@ -140,13 +137,10 @@ def jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False
             Along with the mean and the error also return the results from the individual samples
 
         args : array_like or dict, default = ()
-            optional arguements to be passed to func. If a dictionary the are passed as **args.
+            optional arguments to be passed to func. If a dictionary they are passed as **args.
 
-        parallelize : boolean, optional, default = True
-            Should you make it parallel? You may need to turn it off for some reason.
-
-        nproc : integer, optional, default = 32
-            Number of threads to use if you choose to parallelize.
+        nproc : integer
+            Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
     """
-    jk = nimbleJack(func, data, numb_blocks, conf_axis, return_sample, args, parallelize, nproc)
+    jk = nimbleJack(func, data, numb_blocks, conf_axis, return_sample, args, nproc)
     return jk.getResults()

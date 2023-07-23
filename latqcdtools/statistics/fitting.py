@@ -13,7 +13,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.linalg import inv
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import getMaxThreads, parallel_function_eval
+from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, unvector, isHigherDimensional, printDict
@@ -23,9 +23,6 @@ from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_c
     cut_eig, chisquare, logGBF, funcExpand
 from inspect import signature
 import matplotlib as mpl
-
-
-NPROC = getMaxThreads() - 2
 
 
 class Fitter:
@@ -84,9 +81,6 @@ class Fitter:
         In case of numerical derivative, apply the derivative to the whole chisquare instead of the function.
     eig_threshold : bool, optional, default: 1e-18
         If we encounter an eigenvalue of the correlation matrix smaller than threshold, replace it with threshold.
-    try_all : bool, optional, default: False
-        In try fit: Try all algorithms and choose the best fit. The default is to return the results of the first fit
-        that did not fail.
 
     Returns
     -------
@@ -103,7 +97,7 @@ class Fitter:
 
     # Allowed keys for the constructor
     _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
-                     'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'try_all']
+                     'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'nproc']
 
     # All possible algorithms.
     _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
@@ -119,10 +113,7 @@ class Fitter:
             logger.TBError("Illegal argument(s) to fitter", *diff)
 
         # Some attributes that are set in functions other than __init__.
-        self._fit_cor     = None
-        self._fit_inv_cor = None
         self._numb_params = 0
-        self._numb_data   = None
         self._grad        = None
         self._hess        = None
         self.hess         = None
@@ -130,8 +121,9 @@ class Fitter:
         self._pcov        = None
 
         # Store data
-        self._xdata = np.array(xdata, dtype = float)
-        self._ydata = np.array(ydata, dtype = float)
+        self._xdata     = np.array(xdata, dtype = float)
+        self._ydata     = np.array(ydata, dtype = float)
+        self._numb_data = len(self._ydata)
 
         # These attributes are described in the above doccumentation. If they aren't specified in the keyword
         # arguments when the Fitter is initialized, they take the default value shown here. 
@@ -146,6 +138,7 @@ class Fitter:
         self._grad_args = kwargs.get('grad_args', None)
         self._errorAlg = kwargs.get('error_strat', 'propagation')
         self._eig_threshold = kwargs.get('eig_threshold', 1e-18)
+        self._nproc = kwargs.get('nproc', DEFAULTTHREADS)
 
         if self._grad_args is None:
             self._grad_args = self._args
@@ -208,10 +201,22 @@ class Fitter:
 
         # Correlation matrix
         self._cor = norm_cov(self._cov)
-
         self._fit_cor = cut_eig(self._cor, self._eig_threshold)
         self._fit_inv_cor = inv(self._fit_cor)
-        self._numb_data = len(self._ydata)
+
+        logger.details('Fitter initialized.')
+        logger.details('  use_diff:',self._use_diff) 
+        logger.details('  derive_chisq:',self._derive_chisq)
+        logger.details('  expand:',self._expand)
+        logger.details('  tol:',self._tol)
+        logger.details('  test_tol:',self._test_tol)
+        logger.details('  max_fev:',self._max_fev)
+        logger.details('  norm_err_chi2:',self._norm_err_chi2)
+        logger.details('  args:',self._args)
+        logger.details('  grad_args:',self._grad_args)
+        logger.details('  errorAlg:',self._errorAlg)
+        logger.details('  eig_threshold:',self._eig_threshold)
+        logger.details('  nproc:',self._nproc) 
 
 
     def _get_numb_params(self):
@@ -485,6 +490,8 @@ class Fitter:
             dof = len(self._ydata)
         else:
             dof = len(self._ydata) - len(params)
+        if dof < 0:
+            logger.TBError('Fewer data than fit parameters!')
         logger.debug('Computed d.o.f. =',dof)
         return dof
 
@@ -508,8 +515,6 @@ class Fitter:
             Correlation matrix of the fit parameters.
         fit_errors:
             Diagonal of pcov.
-        dof:
-            Number degrees of freedom.
         """
 
         dof = self.getDOF(params)
@@ -535,7 +540,7 @@ class Fitter:
 
         self._pcov = pcov
 
-        return pcov, fit_errors, dof
+        return pcov, fit_errors
 
 
     def pcov_error_prop(self, params, algorithm):
@@ -581,89 +586,14 @@ class Fitter:
 
 
     def _general_fit(self, start_params=None, algorithm="curve_fit", priorval=None, priorsigma=None):
-        """ Perform fit. No new fit data are generated. This shouldn't be called from outside.
-
-        Parameters
-        ----------
-        start_params: array_like
-            Start parameters for the fit.
-        algorithm: string
-            The algorithm for the fit.
-        priorval:
-            For constrained fits. Prior values for the fit.
-        priorsigma:
-            For constrained fits. Prior uncertainties for the fit.
-
-        Returns
-        -------
-        params:
-            The fit parameters.
-        fit_errors:
-            The fit errors.
-        chi2:
-            The chisquare at the parameters.
-        pcov:
-            Covariance of the parameters.
-        """
-
-        logger.debug('priorval =',priorval)
-        logger.debug('priorsigma =',priorsigma)
-
-        # Prior values are a good point for starting the fit.
-        if priorval is not None and start_params is None:
-            start_params = priorval
-
-        # For a fit with only one parameter, we also accept a scalar. Check if this is the case.
-        if start_params is not None:
-            self._saved_params = envector(start_params)
-
-        # Make sure we have a numpy object.
-        self._saved_params = np.array(self._saved_params, dtype = float)
-
-        # Check for consistency.
-        self.check_start_params()
-
-        # If the fit function has parameters that have default values that should also be fitted, the automatically
-        # computed numb_params is wrong. Therefore we make sure that self._numb_params corresponds to self._saved_params
-        # at this point.
-        self._numb_params = len(self._saved_params)
-
-        # Initialize prior values.
-        if priorsigma is not None:
-            self._priorsigma = np.array(priorsigma)
-            if priorval is None:
-                logger.TBError("priorsigma passed but priorval is None")
-            self._priorval = np.array(priorval)
-            self._checkprior = True
-        else:
-            if priorval is not None:
-                logger.TBError("priorval passed but priorsigma is None")
-            self._priorval   = np.zeros(self._numb_params)
-            self._priorsigma = np.ones(self._numb_params)
-            self._checkprior = False
-
-        # Check for consistency.
-        if self._checkprior:
-            if len(self._priorsigma) != self._numb_params:
-                logger.TBError("Number priorsigma != number of fit parameters")
-
-            if len(self._priorval) != self._numb_params:
-                logger.TBError("Number priorval != number of fit parameters")
-
-        dof = self.getDOF(self._saved_params)
-        if dof < 0:
-            logger.TBError("Fewer data points than fit parameters")
-
-        # Do the minimization.
+        """ Perform fit. No new fit data are generated. """
         params, chi2 = self.minimize_chi2(self._saved_params, algorithm)
-
-        # Compute errors.
-        pcov, fit_errors, dof = self.compute_err(params, chi2, algorithm)
-
+        pcov, fit_errors = self.compute_err(params, chi2, algorithm)
         return params, fit_errors, chi2, pcov
 
 
-    def tryAlgorithm(self,algorithm,start_params,priorval,priorsigma):
+    def _tryAlgorithm(self,algorithm,start_params,priorval,priorsigma):
+        """ Wrapper that collects general fit results. Allows for parallelization. """
         logger.details("Trying", algorithm, "...")
         try:
             params, fit_errors, chi2, pcov = self._general_fit(start_params, algorithm, priorval, priorsigma)
@@ -714,17 +644,59 @@ class Fitter:
         elif algorithms == 'all':
             algorithms = self._all_algs
 
-#        resultSummary  = parallel_function_eval( self.tryAlgorithm, algorithms, min(len(algorithms),NPROC), start_params, priorval, priorsigma )
-        resultSummary  = parallel_function_eval( self.tryAlgorithm, algorithms, 1, start_params, priorval, priorsigma )
+        logger.debug('Using algorithms',algorithms)
+        logger.debug('priorval =',priorval)
+        logger.debug('priorsigma =',priorsigma)
+
+        # Prior values are a good point for starting the fit, if you don't have another guess.
+        if priorval is not None and start_params is None:
+            start_params = priorval
+
+        # For a fit with only one parameter, we also accept a scalar. Check if this is the case.
+        if start_params is not None:
+            self._saved_params = envector(start_params)
+
+        # Check for consistency.
+        self.check_start_params()
+
+        # If the fit function has parameters that have default values that should also be fitted, the automatically
+        # computed numb_params is wrong. Therefore we make sure that self._numb_params corresponds to self._saved_params
+        # at this point.
+        self._numb_params = len(self._saved_params)
+
+        # Initialize prior values.
+        if priorsigma is not None:
+            if priorval is None:
+                logger.TBError("priorsigma passed but priorval is None")
+            self._priorsigma = np.array(priorsigma)
+            self._priorval = np.array(priorval)
+            self._checkprior = True
+        else:
+            if priorval is not None:
+                logger.TBError("priorval passed but priorsigma is None")
+            self._priorval   = np.zeros(self._numb_params)
+            self._priorsigma = np.ones(self._numb_params)
+            self._checkprior = False
+
+        # Check for consistency.
+        if self._checkprior:
+            if len(self._priorsigma) != self._numb_params:
+                logger.TBError("Number priorsigma != number of fit parameters")
+
+            if len(self._priorval) != self._numb_params:
+                logger.TBError("Number priorval != number of fit parameters")
+
+        resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, args=(start_params, priorval, priorsigma), nproc=self._nproc )
         all_params     = [row[0] for row in resultSummary]
         all_fit_errors = [row[1] for row in resultSummary]
         all_chi2       = [row[2] for row in resultSummary]
         all_pcov       = [row[3] for row in resultSummary]
         all_except     = [row[4] for row in resultSummary]
 
-        if np.all(all_fit_errors == None): 
+        # Check to see if all the fits failed
+        if np.all(np.array(all_chi2) == np.inf): 
             for i, algorithm in enumerate(algorithms):
-                logger.TBFail(algorithm+"--"+all_except[i])
+                logger.TBFail(algorithm+"--",all_except[i])
             logger.TBError("No algorithm converged.See above list of exceptions.")
 
         # Find the smallest chi^2
@@ -736,6 +708,9 @@ class Fitter:
         self._saved_params = all_params[min_ind]
         self._saved_pcov = all_pcov[min_ind]
 
+        for i in range(len(algorithms)):
+            logger.debug(algorithms[i]+':',all_params[i],all_fit_errors[i],all_chi2[i],all_pcov[i],all_except[i])
+            
         dof = self.getDOF(self._saved_params)
 
         if dof <= 0:

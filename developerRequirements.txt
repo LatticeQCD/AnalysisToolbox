@@ -3,9 +3,10 @@
 # For the LatticeToolbox 
 colorama
 cycler
+matplotlib
 numba
 numpy
-matplotlib
+pathos
 scipy
 sympy
 

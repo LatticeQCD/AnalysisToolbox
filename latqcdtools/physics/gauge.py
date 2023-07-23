@@ -111,7 +111,7 @@ class gaugeField:
 
     def getPlaquette(self):
         """ Calculate <Re tr U_{mu,nu}^[]>. """
-        plaq = parallel_reduce(self.plaq_contrib,range(self.Nt),self.nproc)
+        plaq = parallel_reduce(self.plaq_contrib,range(self.Nt),nproc=self.nproc)
         return plaq/(self.Ns**3*self.Nt*18)
 
 

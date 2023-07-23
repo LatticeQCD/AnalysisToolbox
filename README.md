@@ -14,12 +14,13 @@ In order to use these scripts, please ensure that you have the following:
 4. matplotlib
 5. numba
 6. numpy
-7. scipy
-8. sympy
-9. LaTeX (Probably best if you install TeXLive-Full)
+7. pathos
+8. scipy
+9. sympy
+10. LaTeX (Probably best if you install TeXLive-Full)
 
 
-For your convenience, packages (2-8) can be installed via
+For your convenience, packages (2-9) can be installed via
 ```shell
 pip3 install -r requirements.txt
 ```

@@ -47,17 +47,15 @@ def div(a):
 A, B = ( np.array(range(1000)),
          np.array(range(1000,2000)) )
 
-"""
-Usefulness of if __name__ == '__main__'
-"""
+
 def Test_Bootstrap():
+
     SEED = 196
 
-    # Bootstrap tests
 
     REFm = 498.69909
     REFe = 9.085239972364768
-    TESTm, TESTe = bootstr(np.mean, A, numb_samples=100, seed=SEED, parallelize=False)
+    TESTm, TESTe = bootstr(np.mean, A, numb_samples=100, seed=SEED, nproc=1)
     print_results(TESTm, REFm, TESTe, REFe, "single proc simple mean test", EPSILON)
     TESTm, TESTe = bootstr(np.mean, A, 100, seed=SEED)
     print_results(TESTm, REFm, TESTe, REFe, "simple mean test", EPSILON)
@@ -98,12 +96,12 @@ def Test_Bootstrap():
 
     # Gaussian bootstrap tests
 
-    TESTm, TESTe = bootstr_from_gauss(np.mean, [10], [0.5], 1000, seed=SEED)
+    TESTm, TESTe = bootstr_from_gauss(np.mean, data=[10], data_std_dev=[0.5], numb_samples=1000, seed=SEED)
     REFm = 9.992029809808589
     REFe = 0.4925667778426321
     print_results(TESTm, REFm, TESTe, REFe, "simple gauss", EPSILON)
 
-    TESTm, TESTe = bootstr_from_gauss(div, [10,2], [0.5,0.1], 1000, seed=SEED)
+    TESTm, TESTe = bootstr_from_gauss(div, data=[10,2], data_std_dev=[0.5,0.1], numb_samples=1000, seed=SEED)
     REFm = 5.005130586993748
     REFe = 0.3555674022912204
     print_results(TESTm, REFm, TESTe, REFe, "div gauss", EPSILON)

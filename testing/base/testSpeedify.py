@@ -21,11 +21,9 @@ def square(x):
 
 testArray = range(10)
 
-NPROC = getMaxThreads()-2
-
 def testSpeedify():
 
-    temp = parallel_function_eval(square,testArray,NPROC)
+    temp = parallel_function_eval(square,testArray)
 
     sum1 = 0.
     for i in testArray:
@@ -34,10 +32,10 @@ def testSpeedify():
 
     print_results(sum1,sum2,text='parallel square')
 
-    sum3 = parallel_reduce(square,testArray,NPROC)
+    sum3 = parallel_reduce(square,testArray)
     print_results(sum2,sum3,text='parallel square reduction')
 
-    temp = parallel_function_eval(square,testArray,1)
+    temp = parallel_function_eval(square,testArray,nproc=1)
 
 
 if __name__ == '__main__':

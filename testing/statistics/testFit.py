@@ -17,7 +17,7 @@ from latqcdtools.base.plotting import clearPlot, latexify, plt
 from latqcdtools.base.readWrite import readTable
 
 
-logger.set_log_level('DEBUG')
+logger.set_log_level('INFO')
 TESTPLOTS = False
 
 

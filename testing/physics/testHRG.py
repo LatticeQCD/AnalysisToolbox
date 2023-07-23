@@ -14,21 +14,18 @@ from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
 from latqcdtools.base.utilities import timer
-from latqcdtools.base.speedify import parallel_function_eval, getMaxThreads
+from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS 
 from latqcdtools.math.num_deriv import diff_deriv
 from latqcdtools.physics.HRG import HRG,EVHRG,HRGexact
 
 
 times = timer()
 
-
-NPROC = getMaxThreads()-2
 EPSILON = 1e-6
 SHOW_PLOTS = False # In case you want a visual to see how comparisons with older results look.
 
 if SHOW_PLOTS:
     latexify()
-
 
 T = np.linspace(130, 179.5, 100)
 
@@ -164,7 +161,7 @@ def exactHRGTest(case): # TODO: The integration doesn't seem to be reliable yet.
     else:
         pass
 
-#parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],NPROC)
+#parallel_function_eval(exactHRGTest,[1,2,3,4,5,6],DEFAULTTHREADS)
 
 #
 # Test: Compare charm results against Physics Letters B 737 (2014) 210–215. I compare with their QMHRG. The tolerance
@@ -265,7 +262,7 @@ def compareAtmuB(muBh):
         print_results(exact, numerical, prec=EPSILON, text="d^2(chi11BQ)/dT^2")
 
 
-parallel_function_eval(compareAtmuB,muBList,NPROC)
+parallel_function_eval(compareAtmuB,muBList,nproc=DEFAULTTHREADS)
 
 
 muh = np.linspace(0,1.5,len(T))

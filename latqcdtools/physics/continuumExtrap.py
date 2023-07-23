@@ -11,6 +11,7 @@ from latqcdtools.base.printErrorBars import get_err_str
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import plt, plot_dots, latexify
 from latqcdtools.statistics.fitting import Fitter
+from latqcdtools.base.speedify import DEFAULTTHREADS
 
 
 def powerSeries(x,coeffs):
@@ -20,13 +21,13 @@ def powerSeries(x,coeffs):
     return result
 
 
-def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,start_coeffs=None,
-                         prior_err=None,error_strat='propagation',algorithms=None,xtype="a",plotName="contExtrap.pdf",**kwargs):
+def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,paramLabels=None,prior=None,
+                         start_coeffs=None,prior_err=None,error_strat='propagation',algorithms=None,xtype="a",
+                         nproc=DEFAULTTHREADS,plotName="contExtrap.pdf",**kwargs):
     """ Do a continuum limit extrapolation at some order in a^2. Allows the option for priors in case you want
         to fit to a higher order series and you have some idea what the coefficients should be like. """
     if order<1:
         logger.TBError('Please input order > 1.')
-
     if algorithms is None:
         algorithms = ["L-BFGS-B", "TNC", "Powell", "Nelder-Mead", "COBYLA", "CG", "BFGS", "dogleg", "trust-ncg"]
 
@@ -44,8 +45,7 @@ def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=F
     else:
         logger.TBError('Unknown xtype',xtype)
 
-    fit = Fitter(powerSeries, x, obs, obs_err, norm_err_chi2=False, func_sup_numpy=False, expand=False,
-                 error_strat = error_strat)
+    fit = Fitter(powerSeries, x, obs, obs_err, norm_err_chi2=False, expand=False, error_strat=error_strat, nproc=nproc)
 
     if prior is None:
         result, result_err, chidof = fit.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err, algorithms=algorithms)
