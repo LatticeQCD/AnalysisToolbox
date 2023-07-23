@@ -68,10 +68,7 @@ def unvector(obj):
     if N > 1:
         return obj
     else:
-        if isArrayLike(obj[0]):
-            return np.array(obj[0])
-        else:
-            return obj[0]
+        return obj[0]
 
 
 def envector(*args):

@@ -144,25 +144,22 @@ def DOF(ndat,nparam,prior):
     return dof
 
 
-def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,expand=True,supNumpy=True):
+def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,expand=True):
     checkPrior(prior,prior_err)
-    if supNumpy:
-        y = funcExpand(func,xdata,params,args,expand)
-    else:
-        y = np.array( [funcExpand(func,value,params,args,expand) for value in xdata] )
-    cor = norm_cov(cov)
+    y    = funcExpand(func,xdata,params,args,expand)
+    cor  = norm_cov(cov)
     diff = ( ydata - y )/np.sqrt( np.diag(cov) )
-    res = diff.dot( inv(cor).dot(diff) )
+    res  = diff.dot( inv(cor).dot(diff) )
     if prior is not None:
         res += np.sum((np.array(params) - prior)**2 / prior_err**2)
     return res
 
 
-def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True, supNumpy=True):
+def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
     """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed. """
-    chi2    = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand, supNumpy)
+    chi2    = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
     nparams = countParams(func,params)
     dof     = DOF(len(ydata),nparams,prior)
     if prior is None:
@@ -171,23 +168,23 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=No
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(prior_err**2)) )
 
 
-def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True, supNumpy=True):
+def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
     """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
     overfitting. The preferred model minimizes the AIC. """
     nparams    = countParams(func,params)
-    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err, expand, supNumpy)
+    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
     return 2*nparams - 2*likelihood
 
 
-def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True, supNumpy=True):
+def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
     """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
     infinity, one recovers the AIC. """
     nparams = countParams(func,params)
     ndat    = len(ydata)
-    aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err, expand, supNumpy)
+    aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
 
 

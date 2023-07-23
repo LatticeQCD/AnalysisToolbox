@@ -13,15 +13,19 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.linalg import inv
 import latqcdtools.base.logger as logger
+from latqcdtools.base.speedify import getMaxThreads, parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.utilities import envector, isHigherDimensional
+from latqcdtools.base.utilities import envector, unvector, isHigherDimensional, printDict
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
-from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, funcExpand
+from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, \
+    cut_eig, chisquare, logGBF, funcExpand
 from inspect import signature
 import matplotlib as mpl
-import traceback
+
+
+NPROC = getMaxThreads() - 2
 
 
 class Fitter:
@@ -83,14 +87,6 @@ class Fitter:
     try_all : bool, optional, default: False
         In try fit: Try all algorithms and choose the best fit. The default is to return the results of the first fit
         that did not fail.
-    func_sup_numpy : bool, optional, default: True
-        Set to true, if the function supports numpy arrays as input for xdata. This gives a large performance boost.
-        If you pass a gradient, or a hessian, it is expected that the first index refers to the parameter index and
-        the second one to each data point. This means len(grad[0]) >= len(grad).
-    always_return : bool, optional, default: False
-        Always return, even if error computation failed.
-    suppress_warning : bool, optional, default: False
-        Suppress warning given if a fit doesn't converge.
 
     Returns
     -------
@@ -107,8 +103,7 @@ class Fitter:
 
     # Allowed keys for the constructor
     _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
-                     'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev',
-                     'try_all', 'func_sup_numpy', 'always_return', 'suppress_warning' ]
+                     'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'try_all']
 
     # All possible algorithms.
     _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
@@ -143,14 +138,10 @@ class Fitter:
         self._use_diff = kwargs.get('use_diff', True)
         self._derive_chisq = kwargs.get('derive_chisq', False)
         self._expand = kwargs.get('expand', True)
-        self._func_sup_numpy = kwargs.get('func_sup_numpy', True)
         self._tol = kwargs.get('tol', 1e-10)
         self._test_tol = kwargs.get('test_tol', 1e-10)
         self._max_fev = kwargs.get('max_fev', None)
         self._norm_err_chi2 = kwargs.get('norm_err_chi2', False)
-        self._try_all = kwargs.get('try_all', True)
-        self._always_return = kwargs.get('always_return', False)
-        self._suppress_warning = kwargs.get('suppress_warning', False)
         self._args = kwargs.get('args', ())
         self._grad_args = kwargs.get('grad_args', None)
         self._errorAlg = kwargs.get('error_strat', 'propagation')
@@ -239,17 +230,13 @@ class Fitter:
                 params.append(1)
                 try:
                     i += 1
-                    if self._func_sup_numpy:
-                        self._func(self._xdata, params, *self._args)
-                    else:
-                        self._func(self._xdata[0], params, *self._args)
+                    self._func(self._xdata, params, *self._args)
                     self._numb_params = i
                     logger.details("number params = ", self._numb_params)
                     return
                 except Exception as e:
                     if i == ntries:
                         logger.debug("Last error was", e)
-                        traceback.print_exc()
             logger.TBError("Fit function does not work with up to", ntries,"parameters. Enable DEBUG level for more details.")
 
 
@@ -324,14 +311,9 @@ class Fitter:
         """ Check if the start parameters work with the fitting function. If not: Generate new default start_parameters.
         These are stored in self._saved_params. """
         try:
-            if self._func_sup_numpy:
-                funcExpand(self._func,self._xdata,self._saved_params,self._args,self._expand)
-            else:
-                funcExpand(self._func,self._xdata[0],self._saved_params,self._args,self._expand)
+            funcExpand(self._func,self._xdata,self._saved_params,self._args,self._expand)
         except Exception as e:
             logger.warn("Function cannot handle start_parameters",self._saved_params)
-            if logger.isLevel("DEBUG"):
-                traceback.print_exc()
             self._get_numb_params()
             self._saved_params = np.ones(self._numb_params)
             raise e
@@ -362,10 +344,7 @@ class Fitter:
 
         # If the function supports numpy objects as input, we can call it directly. Otherwise we have to loop over
         # all values in self._xdata
-        if self._func_sup_numpy:
-            ret = self.wrap_func(self._xdata, params)
-        else:
-            ret = np.array( [self.wrap_func(value, params) for value in self._xdata] )
+        ret = self.wrap_func(self._xdata, params)
         self._cache_array = np.copy(ret)
         self._cache_p_array = params
         return ret
@@ -374,14 +353,8 @@ class Fitter:
     def jacobian_fit_ansatz_array(self, params):
         """ If f is the fit function, return the array df / dp_i evaluated at each _fit_xdata. """
         params = np.asarray(params)
-
-        # If the gradient supports numpy objects as input, we can call it directly. Otherwise we have to loop over
-        # all values in self._xdata
-        if self._func_sup_numpy:
-            # Notes that the function is passed in secret here.
-            ret = self.grad(self._xdata, params).transpose()
-        else:
-            ret = np.array([self.grad(value, params) for value in self._xdata])
+        # Notes that the function is passed in secret here.
+        ret = self.grad(self._xdata, params).transpose()
         self._cache_jac = np.copy(ret)
         self._cache_p_jac = params
         return ret
@@ -390,14 +363,8 @@ class Fitter:
     def hess_fit_ansatz_array(self, params):
         """ If f is the fit function, return the array d^2f / dp_i dp_j evaluated at each _fit_xdata. """
         params = np.asarray(params)
-
-        # If the Hessian supports numpy objects as input, we can call it directly. Otherwise we have to loop over
-        # all values in self._xdata
-        if self._func_sup_numpy:
-            # hess is just a wrapper. hess_args are considered in this wrapper
-            ret = self.hess(self._xdata, params).transpose()
-        else:
-            ret = np.array([self.hess(value, params) for value in self._xdata])
+        # hess is just a wrapper. hess_args are considered in this wrapper
+        ret = self.hess(self._xdata, params).transpose()
         self._cache_hess = np.copy(ret)
         self._cache_p_hess = params
         return ret
@@ -410,7 +377,7 @@ class Fitter:
         else:
             prior, prior_err = None, None
         return chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, params, prior=prior,
-                         prior_err=prior_err, expand=self._expand, supNumpy=self._func_sup_numpy)
+                         prior_err=prior_err, expand=self._expand)
 
 
     def grad_chisquare(self, params):
@@ -467,8 +434,6 @@ class Fitter:
         -------
         params:
             Array of the parameters that minimize the chisquare.
-        nfev:
-            Number of iterations/function evaluation that was needed to find the minimum.
         chi2:
             The minimum value of the chisquare.
         """
@@ -484,36 +449,32 @@ class Fitter:
             hess_func=None
 
         if algorithm == "curve_fit":
+
             if self._checkprior:
                 logger.TBError('The curve_fit algorithm is not yet able to handle priors.')
-            if self._func_sup_numpy:
-                func = lambda x, *p: self.wrap_func(x, p)
-            else:
-                func = lambda xarray, *p: [self.wrap_func(x, p) for x in xarray]
+            func = lambda x, *p: self.wrap_func(x, p)
 
             cov = self._cov
             # If no gradient has been provided by the user, it is probably better to use the numerical derivative from
             # curve_fit instead of our own.
             if self._grad is not None:
-                if self._func_sup_numpy:
-                    grad = lambda x, *p: np.array(self.grad(x, p)).transpose()
-                else:
-                    grad = lambda xarray, *p: [np.array(self.grad(x, p)).transpose() for x in xarray]
+                grad = lambda x, *p: np.array(self.grad(x, p)).transpose()
             else:
                 grad = None
 
-            params, pcov = curve_fit(func, self._xdata, self._ydata, sigma = cov, p0 = start_params, jac = grad,
-                                     ftol = self._tol, maxfev = self._max_fev["curve_fit"])
-            nfev = 0
+            params, _ = curve_fit(func, self._xdata, self._ydata, sigma = cov, p0 = start_params, jac = grad,
+                                  ftol = self._tol, maxfev = self._max_fev["curve_fit"])
 
         else:
-            params, nfev = minimize(self.calc_chisquare, jac_func, hess_func, start_params, self._tol,
-                                    self._max_fev[algorithm], algorithm = algorithm)
+            params = minimize(self.calc_chisquare, jac_func, hess_func, start_params, self._tol,
+                              self._max_fev[algorithm], algorithm = algorithm)
 
         if any(np.isnan(params)) or any(np.isinf(params)):
             raise ValueError(algorithm + ": Fit result is inf or nan!")
+
         chi2 = self.calc_chisquare(params)
-        return params, nfev, chi2
+
+        return params, chi2
 
 
     def getDOF(self,params):
@@ -553,6 +514,7 @@ class Fitter:
 
         dof = self.getDOF(params)
 
+        logger.debug('using error alg',self._errorAlg)
         if dof <= 0:
             pcov = np.full((len(params),len(params)), np.nan)
         else:
@@ -565,7 +527,7 @@ class Fitter:
 
         # Sometimes people like to rescale the parameter covariance matrix by the chi^2/dof. This tries to
         # take the fit quality in account into the error directly, and to my understanding it is what
-        # gnuplot does. In a physics context, this procedure seems to be somewhat less justified, and it
+        # gnuplot does. In a physics context, this procedure seems to be unjustified, and it
         # doesn't come naturally out of the mathematics, so this is not done by default.
         if self._norm_err_chi2:
             pcov *= chi2/dof
@@ -597,20 +559,15 @@ class Fitter:
             pcov    = inv_jej
 
             if abs(np.sum(test) - np.sum(np.diag(test))) > self._test_tol:
-                if not self._always_return:
-                    logger.warn("Off diagonals in test matrix are larger than",self._test_tol,"Test - matrix:")
-                    logger.warn(test)
-                    raise ValueError(algorithm + ": Precision lost when computing errors!")
+                logger.warn("Off diagonals in test matrix are larger than",self._test_tol,"Test - matrix:")
+                logger.warn('\n',test)
+                raise ValueError(algorithm + ": Precision lost when computing errors!")
 
             if np.min(np.diag(pcov)) < 0:
-                if not self._always_return:
-                    raise ValueError(algorithm + ": Negative entries for the variance!")
+                raise ValueError(algorithm + ": Negative entries for the variance!")
 
-        except ZeroDivisionError as e:
-            if self._always_return:
-                pcov = np.full((len(params), len(params)), np.nan)
-            else:
-                raise e
+        except Exception as e:
+            raise ValueError(algorithm + "hit exception " + e ) 
 
         return pcov
 
@@ -619,8 +576,7 @@ class Fitter:
         """ Obtain the parameter's covariance matrix by inverting the hessian of the chi^2. """
         pcov = inv(self.hess_chisquare(params))
         if np.min(np.diag(pcov)) < 0:
-            if not self._always_return:
-                raise ValueError(algorithm + ": Negative entries for the variance!")
+            raise ValueError(algorithm + ": Negative entries for the variance!")
         return pcov
 
 
@@ -646,12 +602,8 @@ class Fitter:
             The fit errors.
         chi2:
             The chisquare at the parameters.
-        dof:
-            Number of degrees of freedom.
         pcov:
             Covariance of the parameters.
-        nfev:
-            Number of iterations/function evaluations.
         """
 
         logger.debug('priorval =',priorval)
@@ -703,12 +655,23 @@ class Fitter:
             logger.TBError("Fewer data points than fit parameters")
 
         # Do the minimization.
-        params, nfev, chi2 = self.minimize_chi2(self._saved_params, algorithm)
+        params, chi2 = self.minimize_chi2(self._saved_params, algorithm)
 
         # Compute errors.
         pcov, fit_errors, dof = self.compute_err(params, chi2, algorithm)
 
-        return params, fit_errors, chi2, dof, pcov, nfev
+        return params, fit_errors, chi2, pcov
+
+
+    def tryAlgorithm(self,algorithm,start_params,priorval,priorsigma):
+        logger.details("Trying", algorithm, "...")
+        try:
+            params, fit_errors, chi2, pcov = self._general_fit(start_params, algorithm, priorval, priorsigma)
+            logger.details(algorithm, "successful. Chi^2 = ", chi2)
+            return params, fit_errors, chi2, pcov, None
+        except Exception as e:
+            logger.details(algorithm, "failed with exception", e)
+            return None, None, np.inf, None, e
 
 
     def try_fit(self, algorithms = None, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
@@ -751,50 +714,29 @@ class Fitter:
         elif algorithms == 'all':
             algorithms = self._all_algs
 
-        # Arrays to store the results of the fits
-        all_params = []
-        all_fit_errors = []
-        all_chi2 = []
-        all_pcov = []
-        all_nfev = []
-        succ_algs = []
+#        resultSummary  = parallel_function_eval( self.tryAlgorithm, algorithms, min(len(algorithms),NPROC), start_params, priorval, priorsigma )
+        resultSummary  = parallel_function_eval( self.tryAlgorithm, algorithms, 1, start_params, priorval, priorsigma )
+        all_params     = [row[0] for row in resultSummary]
+        all_fit_errors = [row[1] for row in resultSummary]
+        all_chi2       = [row[2] for row in resultSummary]
+        all_pcov       = [row[3] for row in resultSummary]
+        all_except     = [row[4] for row in resultSummary]
 
-        dof = None
-        for i, algorithm in enumerate(algorithms):
-            try:
-                params, fit_errors, chi2, dof, pcov, nfev = self._general_fit(start_params, algorithm, priorval, priorsigma)
-                if self._try_all:
-                    all_params.append(params)
-                    all_fit_errors.append(fit_errors)
-                    all_chi2.append(chi2)
-                    all_pcov.append(pcov)
-                    all_nfev.append(nfev)
-                    succ_algs.append(algorithm)
-
-                    if len(algorithms) > 1:
-                        logger.details(algorithm, "successful. Chi^2 = ", chi2)
-                    if i < len(algorithms) - 1:
-                        logger.details("Trying", algorithms[i+1], "...")
-                else:
-                    return params, fit_errors, chi2
-            except Exception as e:
-                logger.details(algorithm, "failed. Error was:", e)
-                if i < len(algorithms) - 1:
-                    logger.details("Trying", algorithms[i+1], "...")
-                if len(all_chi2) == 0 and i >= len(algorithms) - 1:
-                    if not self._suppress_warning:
-                        logger.warn("No algorithm converged.")
-                    raise ValueError("Last error was: " + str(e), '\n')
+        if np.all(all_fit_errors == None): 
+            for i, algorithm in enumerate(algorithms):
+                logger.TBFail(algorithm+"--"+all_except[i])
+            logger.TBError("No algorithm converged.See above list of exceptions.")
 
         # Find the smallest chi^2
         min_ind = np.argmin(all_chi2)
         if len(algorithms) > 1:
-            logger.details("Choosing", succ_algs[min_ind], "with chi^2 =", all_chi2[min_ind])
-            logger.details()
+            logger.details("Choosing", algorithms[min_ind], "with chi^2 =", all_chi2[min_ind])
 
         # Store results internally
         self._saved_params = all_params[min_ind]
         self._saved_pcov = all_pcov[min_ind]
+
+        dof = self.getDOF(self._saved_params)
 
         if dof <= 0:
             chidof = np.inf
@@ -822,7 +764,7 @@ class Fitter:
 
     def logGBF(self,params):
         return logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, params,
-                      prior=self._priorval,prior_err=self._priorsigma, expand=self._expand, supNumpy=self._func_sup_numpy)
+                      prior=self._priorval,prior_err=self._priorsigma, expand=self._expand)
 
 
     def plot_func(self, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
@@ -849,10 +791,9 @@ class Fitter:
             grad = lambda x, *params: np.asarray(self.grad(x, params))
 
             plot_func(func, xmin = xmin, xmax = xmax, args = params, args_err = params_err, grad = grad, color = color,
-                      alpha = alpha, func_sup_numpy = self._func_sup_numpy, expand = True, **kwargs)
+                      alpha = alpha, expand = True, **kwargs)
         else:
-            plot_func(func, xmin = xmin, xmax = xmax, args = params, color = color,
-                      func_sup_numpy = self._func_sup_numpy, expand = True, **kwargs)
+            plot_func(func, xmin = xmin, xmax = xmax, args = params, color = color, expand = True, **kwargs)
 
 
     def save_func(self, filename, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
@@ -884,11 +825,10 @@ class Fitter:
             grad = lambda x, *params: np.asarray(self.grad(x, params))
 
             save_func(func, filename, xmin = xmin, xmax = xmax, args = params, args_err = params_err, grad = grad,
-                      color = color, alpha = alpha, func_sup_numpy = self._func_sup_numpy, expand = True,
-                      header = header, **kwargs)
+                      color = color, alpha = alpha, expand = True, header = header, **kwargs)
         else:
             save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color, header = header,
-                      func_sup_numpy = self._func_sup_numpy, expand = True, **kwargs)
+                      expand = True, **kwargs)
 
         
     def plot_data(self, ylog = False, **kwargs):
@@ -979,8 +919,6 @@ class Fitter:
 
 
         except Exception as e:
-            if logger.isLevel("DEBUG"):
-                traceback.print_exc()
             logger.warn("Plotting of fit failed: ", e)
 
 
@@ -1051,8 +989,7 @@ class Fitter:
 
 
 
-def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False,
-              header=None, **params):
+def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, header=None, **params):
     fill_param_dict(params)
     xmin = params['xmin']
     xmax = params['xmax']
@@ -1087,17 +1024,10 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
         xmax = 10
 
     xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
-
-    if func_sup_numpy:
-        ydata = wrap_func(xdata, *args)
-    else:
-        ydata = np.array([wrap_func(x, *args) for x in xdata])
+    ydata = wrap_func(xdata, *args)
 
     if func_err is not None:
-        if func_sup_numpy:
-            ydata_err = wrap_func_err(xdata, *args_err)
-        else:
-            ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
+        ydata_err = wrap_func_err(xdata, *args_err)
 
         with open(filename, "w") as fout:
             for i in range(len(xdata)):
@@ -1114,11 +1044,7 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
         # Optional arguments that are constant and, therefore, not part of the error propagation
         tmp_opt = tuple(args)[len(args_err):]
 
-        if func_sup_numpy:
-            ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
-        else:
-            ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
-                                                  args = tmp_opt) for x in xdata])
+        ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
 
         writeTable(filename,xdata,ydata,ydata_err,header=header)
 
@@ -1127,7 +1053,7 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
 
 
 def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-           algorithm = "curve_fit", detailedInfo=False, xmin = -np.inf, xmax = np.inf, **kwargs):
+           algorithm = "curve_fit", detailedInfo=False, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,

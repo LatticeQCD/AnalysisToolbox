@@ -9,7 +9,8 @@
 
 import numpy as np
 import concurrent.futures
-from latqcdtools.base.utilities import envector, unvector, shell 
+import pathos.pools
+from latqcdtools.base.utilities import shell 
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from numba import njit
@@ -71,20 +72,18 @@ def setNproc(parallelize,nproc):
 
 class ComputationClass:
 
-    """ A class to parallelize functions. To be used with parallel_function_eval for convenience. """
-
-    def __init__(self, function, input_array, nproc, *add_param):
+    def __init__(self, function, input_array, nproc, parallelizer='concurrent.futures', *add_param):
         checkType(nproc,int)
         checkType(input_array,"array")
-        self._nproc = nproc  # number of processes
-        self._input_array = input_array
-        self._function = function
+        checkType(parallelizer,str)
+        self._input_array  = input_array
+        self._function     = function
+        self._nproc        = nproc
+        self._parallelizer = parallelizer
         if nproc > MAXTHREADS:
             logger.warn('We recommend using fewer processes than',MAXTHREADS) 
 
-        # additional arguments for actual_computation
         self._add_param = add_param
-
         # compute the result when class is initialized
         self._result = self.parallelization_wrapper()
 
@@ -94,8 +93,11 @@ class ComputationClass:
             for i in self._input_array:
                 results.append(self.pass_argument_wrapper(i)) 
         else:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
-                results=executor.map(self.pass_argument_wrapper, self._input_array)
+#            with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
+#                results=executor.map(self.pass_argument_wrapper, self._input_array)
+#            results = list(results)
+            with ProcessPool(processes=self._nproc) as pool:
+                results = pool.map(self.pass_argument_wrapper, self._input_array)
             results = list(results)
         return results
 
@@ -120,7 +122,7 @@ def parallel_function_eval(function, input_array, nproc, *add_param):
     """
     computer = ComputationClass(function, input_array, nproc, *add_param)
     if nproc==1:
-        logger.info('Using for-loop instead of concurrent.futures.')
+        logger.details('Using for-loop instead of concurrent.futures.')
     return computer.getResult()
 
 

@@ -67,11 +67,10 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
     logger.debug(res)
 
     params = res.x
-    nfev = res.nfev
     if not res.success:
         logger.details(algorithm, res.message)
         raise ValueError(algorithm + ": Minimization did not converge!")
 
     params = envector(params)
 
-    return params, nfev
+    return params

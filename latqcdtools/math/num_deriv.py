@@ -8,7 +8,6 @@
 #
 
 import numpy as np
-import numdifftools as nd
 from latqcdtools.base.check import ignoreUnderflow
 
 
@@ -41,13 +40,11 @@ def best_h(x):
 
 def diff_deriv(x, func, args = (), h = None):
     """ Numerical derivative using central difference. """
-    d_func = nd.Derivative(func,step=h)
-    return d_func(x,*args)
-#    if h is None:
-#        h = best_h(x)
-#    up = x + h
-#    down = x - h
-#    return (func(up, *args) - func(down, *args)) / (2*h)
+    if h is None:
+        h = best_h(x)
+    up   = x + h
+    down = x - h
+    return (func(up, *args) - func(down, *args)) / (2*h)
 
 
 def diff_grad(params, func, args = (), h = None, expand = False):
@@ -130,12 +127,6 @@ def diff_hess(params, func, args = (), h = None, expand = False):
 def diff_fit_grad(x, params, func, args = (), h = None, expand = False):
     """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
     change the order using this wrapper. """
-#    d_func = nd.Gradient(func,step=h)
-#    p = params
-#    if expand:
-#        return d_func(x,*(tuple(p) + tuple(args)))
-#    else:
-#        return d_func(x,p,*args)
     if expand:
         f = lambda p: func(x, *(tuple(p) + tuple(args)))
     else:
@@ -143,15 +134,10 @@ def diff_fit_grad(x, params, func, args = (), h = None, expand = False):
     return diff_grad(params, f, h = h, expand = False)
 
 
+
 def diff_fit_hess(x, params, func, args = (), h = None, expand = False):
     """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
     change the order using this wrapper. """
-#    d_func = nd.Hessian(func,step=h)
-#    p = params
-#    if expand:
-#        return d_func(x,*(tuple(p) + tuple(args)))
-#    else:
-#        return d_func(x,p,*args)
     if expand:
         f = lambda p: func(x, *(tuple(p) + tuple(args)))
     else:
@@ -159,6 +145,5 @@ def diff_fit_hess(x, params, func, args = (), h = None, expand = False):
     return diff_hess(params, f, h = h, expand = False)
 
 
-# Gradient is already Jacobian
 def diff_jac(params, func, args = (), h = None, expand = False):
     return diff_grad(params, func, args, h, expand).transpose()
