@@ -54,6 +54,9 @@ def get_err_str(param, param_err, numb_err_dig=2):
     param     = float(param)
     param_err = float(param_err)
 
+    if param_err<=0:
+        logger.TBError('Encountered non-positive error',param_err)
+
     if numb_err_dig < 1:
         logger.TBError("Number of error digits has to be larger than 0!")
     if param < 0:
@@ -62,8 +65,8 @@ def get_err_str(param, param_err, numb_err_dig=2):
     else:
         sign = 1
 
-    # exponent of the error
     relnum = get_exp(param_err)
+
 
     # index for rounding the error and the parameter
     roundidx = -relnum + numb_err_dig - 1

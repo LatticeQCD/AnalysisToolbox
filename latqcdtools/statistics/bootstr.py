@@ -199,15 +199,15 @@ class nimbleGaussianBoot:
                 np.random.seed(my_seed+i+(k+1)*self._numb_samples)
                 if not self._useCovariance:
                     if self._sample_size == 1:
-                        sample_data.append(normal(self._data[k], self._data_std_dev[k])) # k is the Nt data
+                        sample_data.append(normal(self._data[k], self._data_std_dev[k]))
                     else:
                         sample_data.append(normal(self._data[k], self._data_std_dev[k], self._sample_size))
                 else:
                     if self._sample_size == 1:
                         if self._Covariance is None:
-                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2))) # k is the Nt data
+                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2)))
                         else:
-                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k])) # k is the Nt data
+                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k]))
                     else:
                         if self._Covariance is None:
                             sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2), self._sample_size))
@@ -218,15 +218,15 @@ class nimbleGaussianBoot:
             for k in range(self._numb_observe):
                 if not self._useCovariance:
                     if self._sample_size == 1:
-                        sample_data.append(normal(self._data[k], self._data_std_dev[k])) # k is the Nt data
+                        sample_data.append(normal(self._data[k], self._data_std_dev[k]))
                     else:
                         sample_data.append(normal(self._data[k], self._data_std_dev[k], self._sample_size))
                 else:
                     if self._sample_size == 1:
                         if self._Covariance is None:
-                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2))) # k is the Nt data
+                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2)))
                         else:
-                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k])) # k is the Nt data
+                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k]))
                     else:
                         if self._Covariance is None:
                             sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2), self._sample_size))
@@ -254,6 +254,8 @@ def bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, 
     data = np.asarray(data)
     data_std_dev = np.asarray(data_std_dev)
 
-    bts_gauss = nimbleGaussianBoot(func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs,
-                                   return_sample, seed, err_by_dist, useCovariance, Covariance, args, nproc, asym_err)
+    bts_gauss = nimbleGaussianBoot(func=func, data=data, data_std_dev=data_std_dev, numb_samples=numb_samples, 
+                                   sample_size=sample_size, same_rand_for_obs=same_rand_for_obs,return_sample=return_sample, 
+                                   seed=seed, err_by_dist=err_by_dist, useCovariance=useCovariance, Covariance=Covariance, 
+                                   args=args, nproc=nproc, asym_err=asym_err)
     return bts_gauss.getResults()

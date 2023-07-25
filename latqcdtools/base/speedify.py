@@ -99,8 +99,11 @@ class ComputationClass:
                 with concurrent.futures.ProcessPoolExecutor(max_workers=self._nproc) as executor:
                     results=executor.map(self.pass_argument_wrapper, self._input_array)
             elif self._parallelizer=='pathos.pools':
-                with pathos.pools.ProcessPool(processes=self._nproc) as pool:
-                    results = pool.map(self.pass_argument_wrapper, self._input_array)
+                pool = pathos.pools.ProcessPool(processes=self._nproc)
+                results = pool.map(self.pass_argument_wrapper, self._input_array)
+                pool.close()
+                pool.join() 
+                pool.clear()
             else:
                 logger.TBError('Unknown parallelizer',self._parallelizer)
             results = list(results)

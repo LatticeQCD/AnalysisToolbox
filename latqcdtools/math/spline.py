@@ -1,7 +1,7 @@
 # 
 # spline.py                                                               
 # 
-# D. Clarke, H. Sandmeyer
+# D. Clarke
 # 
 # Generally speaking, one should use scipy's methods for splines, like interp1d, UnivariateSpline, etc. However
 # it is a bit inconvenient to use when one wants control over the knots and endpoints. That is what this module is for.
@@ -16,10 +16,9 @@ from latqcdtools.base.check import checkType
 
 def even_knots(xdata, nknots):
     """ Return a list of nknots evenly spaced knots. """
-    try:
-        flat_xdata = np.sort(np.concatenate(xdata))
-    except ValueError:
-        flat_xdata = np.sort(np.asarray(xdata))
+    if len(xdata)<nknots:
+        logger.TBError('number of data < number of knots')
+    flat_xdata = np.sort(np.asarray(xdata))
     # to ensure no knot sits at a data position
     flat_xdata = np.unique(flat_xdata)
     jump_step = (len(flat_xdata) - 1) / (nknots + 1)
@@ -34,20 +33,16 @@ def even_knots(xdata, nknots):
 def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     """ Return a list of nknots randomly spaced knots. """
     np.random.seed(SEED)
-    try:
-        flat_xdata = np.sort(np.concatenate(xdata))
-    except ValueError:
-        flat_xdata = np.asarray(xdata)
+    flat_xdata = np.sort(np.asarray(xdata))
     sample_xdata = np.random.choice(flat_xdata,int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots)),
                                     replace=False)
     # Retry if too many data points are removed by np.unique
     if len(np.unique(sample_xdata)) < nknots + 1:
         return random_knots(xdata, nknots, randomization_factor)
-    ret = even_knots(sample_xdata, nknots)
-    return ret
+    return even_knots(sample_xdata, nknots)
 
 
-def getSpline(xdata, ydata, num_knots, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False):
+def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False):
     """ This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
     by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
     since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can't specify
@@ -75,40 +70,43 @@ def getSpline(xdata, ydata, num_knots, edata=None, order=3, rand=False, fixedKno
         spl: Spline object, spl(x). 
         AICc (optionally)
     """
-    checkType(num_knots,int)
 
-    # Generate knots
-    nknots = num_knots
-    if fixedKnots is not None:
-        if type(fixedKnots) is not list:
-            logger.TBError("knots must be specified as a list.")
-        nknots -= len(fixedKnots)
-        if nknots < 0:
-            logger.TBError("len(fixedKnots) cannot exceed num_knots.")
-    if nknots>0:
-        if rand:
-            knots = random_knots(xdata,nknots)
-        else:
-            knots = even_knots(xdata,nknots)
-    else:
-        knots=[]
-    if fixedKnots is not None:
-        for knot in fixedKnots:
-            knots.append(knot)
-    knots = sorted(knots)
-    if knots[0]<xdata[0]:
-        logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
-    logger.debug("Knots are:",knots)
+    if len(xdata) != len(ydata):
+        logger.TBError('len(xdata), len(ydata) =',len(xdata),len(ydata))
 
-    # Generate spline. 
-    # Add some kind of spline fit that gives a shit about error bars. Ask chatGPT: is there a way to add a spline
-    # fit that can force a derivative to be zero somewhere? (Yes, use CubicSpline) 
     if natural:
+        if num_knots is not None:
+            logger.TBError('Scipy natural spline chooses knots automatically.')
         if order != 3:
-            logger.TBError("Natural fit only implemented for cubic splines.")
+            logger.TBError("Scipy natural spline only implemented for cubic splines.")
         spline = CubicSpline(x=xdata,y=ydata,bc_type='natural')
+
     else:
+        checkType(num_knots,int)
+        nknots = num_knots
+        if fixedKnots is not None:
+            if type(fixedKnots) is not list:
+                logger.TBError("knots must be specified as a list.")
+            nknots -= len(fixedKnots)
+            if nknots < 0:
+                logger.TBError("len(fixedKnots) cannot exceed num_knots.")
+        if nknots>0:
+            if rand:
+                knots = random_knots(xdata,nknots)
+            else:
+                knots = even_knots(xdata,nknots)
+        else:
+            knots=[]
+        if fixedKnots is not None:
+            for knot in fixedKnots:
+                knots.append(knot)
+        knots = sorted(knots)
+        if knots[0]<xdata[0]:
+            logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
+        if knots[-1]>xdata[-1]:
+            logger.TBError("You can't put a knot to the right of the x-data. knots, xdata[-1] = ",knots,xdata[-1])
         spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
+
     if getAICc:
         cov = np.diag(edata**2)
         return spline, AICc(xdata, ydata, cov, spline)

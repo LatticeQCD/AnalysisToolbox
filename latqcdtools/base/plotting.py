@@ -153,7 +153,6 @@ def initializePlt(size,xmin,xmax,ymin,ymax):
         logger.debug("Plot initializer called!")
         logger.debug("Many of the plotting functions call set_params, which can reset what you pass as argument.")
         logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
-        logger.debug()
         INITIALIZE = False
         plt.rcParams['figure.autolayout'] = True
         plt.rcParams['axes.titlesize'] = size
