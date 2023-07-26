@@ -34,7 +34,10 @@ def createLogFile(filename="Toolbox.log"):
     logging module because it knows how to handle multiple processes writing to the same file. """
     global RECORDLOG
     RECORDLOG = True
-    logging.basicConfig(filename=filename, encoding='utf-8', level=logging.DEBUG, format='%(message)s', filemode='w')
+    # I recommend against changing the log level here. Other modules, such as Numba, also use this logger, and
+    # hence you can get spammed if you set it to DEBUG. Similarly, keep the format the same, which otherwise will
+    # print additional, unwanted strings at the beginning of each line.
+    logging.basicConfig(filename=filename, encoding='utf-8', level=logging.INFO, format='%(message)s', filemode='w')
     info('Created log file',filename)
 
 
@@ -50,8 +53,7 @@ def getCallerName(frame):
     callframe = inspect.getouterframes(currframe, 2)
     # The way the frame works: Each nested function is labelled by the first index. 0 is the current function, i.e.
     # getCallerName. 1 is the function that called this function, and so on. Second index = 3 retrieves the name.
-    callerName = str(callframe[frame][3])
-    return callerName
+    return str(callframe[frame][3])
 
 
 def getTimeStamp():

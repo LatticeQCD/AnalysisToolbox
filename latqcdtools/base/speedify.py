@@ -85,6 +85,9 @@ class ComputationClass:
         self._parallelizer = parallelizer
         self._args         = args
         self._nproc        = nproc
+        logger.debug('Initializing')
+        logger.debug('input_array =',self._input_array)
+        logger.debug('args =',self._args)
         if nproc > MAXTHREADS:
             logger.warn('We recommend using fewer processes than',MAXTHREADS) 
         self._result = self.parallelization_wrapper() # compute the result when class is initialized
