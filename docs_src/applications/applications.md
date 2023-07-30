@@ -65,3 +65,9 @@ visually with, for example
 ```
 where `in.rational` is the rational approximation file, and we use a light quark mass of 0.001 in lattice units
 and a strange quark mass of 0.01.
+
+## main_HotQCDEoS.py 
+The paramterization for HotQCD equation of state at  $\mu_B/T = 0$, $\mu_Q/T = 0$, and $\mu_S/T = 0$ are given in "Equation of state in ( 2+1 )-flavor QCD, Phys.Rev.D 90 (2014) 094503, (HotQCD Collaboration) A. Bazavov et al.". The pressure ($P$), energy density ($\epsillon$) and entropy density ($s$) can be obtained from the thermodynamic relations.
+```shell
+./main_HotQCDEoS.py --EosType "fixedmuB" --muBdivT 0.0
+```
