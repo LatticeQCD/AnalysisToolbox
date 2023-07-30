@@ -20,9 +20,23 @@ from latqcdtools.base.utilities import envector, unvector, isHigherDimensional, 
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, \
-    cut_eig, chisquare, logGBF, funcExpand
+    cut_eig, chisquare, logGBF, DOF, funcExpand
 from inspect import signature
 import matplotlib as mpl
+
+
+# Allowed keys for the constructor
+allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
+                'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'nproc']
+
+# All possible algorithms.
+all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell", "Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
+
+# Standard algorithms for the minimization. All but COBYLA are rather fast.
+std_algs = ["curve_fit", "TNC", "Powell", "Nelder-Mead", "COBYLA"]
+
+# Fast algorithms that work with priors. 
+bayes_algs = ["TNC", "Powell", "Nelder-Mead"]
 
 
 class Fitter:
@@ -85,30 +99,12 @@ class Fitter:
     Returns
     -------
     :class:`Fitter` object
-
-    Examples
-    --------
-    For usage, create an instance of class fitter an then call do_fit or try_fit.
-    >>> func = lambda x,a:a*x**2
-    >>> fitter = Fitter(func, [1,2,3,4], [1,3,2,1], [0.4, 0.5, 0.3, 0.2])
-    >>> fitter.do_fit(start_params = [1])
-    (array([0.08876904]), array([0.04924371]), 17.872433846281407)
     """
-
-    # Allowed keys for the constructor
-    _allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
-                     'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'nproc']
-
-    # All possible algorithms.
-    _all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
-
-    # Standard algorithms for the minimization. All but COBYLA are rather fast.
-    _std_algs = ["curve_fit", "TNC", "Powell" ,"Nelder-Mead", "COBYLA"]
 
 
     def __init__(self, func, xdata, ydata, edata = None, **kwargs):
 
-        diff = set(set(kwargs.keys()) - set(self._allowed_keys))
+        diff = set(set(kwargs.keys()) - set(allowed_keys))
         if len(diff) != 0:
             logger.TBError("Illegal argument(s) to fitter", *diff)
 
@@ -181,9 +177,8 @@ class Fitter:
         self.set_func(func, kwargs.get('grad', None), kwargs.get('hess', None))
 
         # For Bayesian fits. If these are used, they are set in general_fit, and then utilized elsewhere.
-        self._priorval   = np.ones(self._numb_params)
-        self._priorsigma = np.ones(self._numb_params)
-        self._checkprior = False
+        self._priorval   = None 
+        self._priorsigma = None 
 
         # Check if we have the covariance matrix available and compute weights etc.
         if edata is not None:
@@ -377,7 +372,7 @@ class Fitter:
 
     def calc_chisquare(self, params):
         """ Compute the chisquare, i.e. the chi^2. This is the function that will be minimized. """
-        if self._checkprior:
+        if self._priorsigma is not None:
             prior, prior_err = self._priorval, self._priorsigma
         else:
             prior, prior_err = None, None
@@ -396,7 +391,7 @@ class Fitter:
 
         res = 2*jac.dot(self._fit_inv_cor.dot(diff))
 
-        if self._checkprior:
+        if self._priorsigma is not None:
             res += np.sum( 2*( np.array(params) - self._priorval ) / self._priorsigma**2 )
         return res
 
@@ -413,7 +408,7 @@ class Fitter:
         diff /= sigma
 
         res = 2*( hess.dot( self._fit_inv_cor.dot( diff.transpose() ) ) + jac.dot( self._fit_inv_cor.dot( jac.transpose() ) ) )
-        if self._checkprior:
+        if self._priorsigma is not None:
             res += np.sum( 2/self._priorsigma**2 )
 
         return res
@@ -455,7 +450,7 @@ class Fitter:
 
         if algorithm == "curve_fit":
 
-            if self._checkprior:
+            if self._priorsigma is not None:
                 logger.TBError('The curve_fit algorithm is not yet able to handle priors.')
             func = lambda x, *p: self.wrap_func(x, p)
 
@@ -482,20 +477,6 @@ class Fitter:
         return params, chi2
 
 
-    def getDOF(self,params):
-        """ Compute the number of degrees of freedom. Depends on whether you use priors. """
-        # You can think of priors as extra data points. Hence if you use a prior for every fit parameter, it follows
-        # that the number of degrees of freedom always equals the number of data.
-        if self._checkprior:
-            dof = len(self._ydata)
-        else:
-            dof = len(self._ydata) - len(params)
-        if dof < 0:
-            logger.TBError('Fewer data than fit parameters!')
-        logger.debug('Computed d.o.f. =',dof)
-        return dof
-
-
     def compute_err(self, params, chi2, algorithm):
         """ Compute the covariance matrix of the fit parameters. If no errors have been provided, they are assumed to
         be one. We get the fit variances from the diagonal elements of the covariance matrix.
@@ -517,7 +498,7 @@ class Fitter:
             Diagonal of pcov.
         """
 
-        dof = self.getDOF(params)
+        dof = DOF(len(self._ydata),len(params),self._priorsigma)    
 
         logger.debug('using error alg',self._errorAlg)
         if dof <= 0:
@@ -604,11 +585,11 @@ class Fitter:
             return None, None, np.inf, None, e
 
 
-    def try_fit(self, algorithms = None, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
+    def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
         """ Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
         smallest chi^2. By default this method does a standard statistical fit. One can also include priors to obtain
         posteriors using Bayesian statistics. A well known summary of the latter strategy in the context of lattice QCD
-        is given https://arxiv.org/abs/hep-lat/0110175. If there are priors, calculate logGBF and return that too.
+        is given here: https://arxiv.org/abs/hep-lat/0110175. If there are priors, calculate logGBF and return that too.
 
         Parameters
         ----------
@@ -639,11 +620,6 @@ class Fitter:
             log of Gaussian Bayes factor.
         """
 
-        if algorithms is None:
-            algorithms = self._std_algs
-        elif algorithms == 'all':
-            algorithms = self._all_algs
-
         logger.debug('Using algorithms',algorithms)
         logger.debug('priorval =',priorval)
         logger.debug('priorsigma =',priorsigma)
@@ -670,19 +646,14 @@ class Fitter:
                 logger.TBError("priorsigma passed but priorval is None")
             self._priorsigma = np.array(priorsigma)
             self._priorval = np.array(priorval)
-            self._checkprior = True
         else:
             if priorval is not None:
                 logger.TBError("priorval passed but priorsigma is None")
-            self._priorval   = np.zeros(self._numb_params)
-            self._priorsigma = np.ones(self._numb_params)
-            self._checkprior = False
 
         # Check for consistency.
-        if self._checkprior:
+        if self._priorsigma is not None:
             if len(self._priorsigma) != self._numb_params:
                 logger.TBError("Number priorsigma != number of fit parameters")
-
             if len(self._priorval) != self._numb_params:
                 logger.TBError("Number priorval != number of fit parameters")
 
@@ -711,7 +682,7 @@ class Fitter:
         for i in range(len(algorithms)):
             logger.debug(algorithms[i]+':',all_params[i],all_fit_errors[i],all_chi2[i],all_pcov[i],all_except[i])
             
-        dof = self.getDOF(self._saved_params)
+        dof = DOF(len(self._ydata),len(self._saved_params),self._priorsigma)    
 
         if dof <= 0:
             chidof = np.inf
@@ -722,7 +693,8 @@ class Fitter:
             return ( np.copy(self._saved_params),
                      all_fit_errors[min_ind],
                      chidof,
-                     self.logGBF(self._saved_params),
+                     logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                            prior=self._priorval,prior_err=self._priorsigma, expand=self._expand),
                      np.copy(self._saved_pcov)
                    )
         else:
@@ -735,40 +707,6 @@ class Fitter:
     def do_fit(self, algorithm="curve_fit", **kwargs):
         """ Same as try_fit but with only one algorithm. """
         return self.try_fit([algorithm], **kwargs)
-
-
-    def logGBF(self,params):
-        return logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, params,
-                      prior=self._priorval,prior_err=self._priorsigma, expand=self._expand)
-
-
-    def plot_func(self, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
-                  no_error = False, **kwargs):
-        """ Plot the fit function. """
-        if params_err is None and params is None:
-            params_err = self._saved_pcov
-        if params is None:
-            params = self._saved_params
-        if params_err is None:
-            params_err = []
-        if xmin is None:
-            xmin = np.min(self._xdata)
-        if xmax is None:
-            xmax = np.max(self._xdata)
-
-        # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters here.
-        if self._expand:
-            func = lambda x, *params: self._func(x, *(tuple(params) + tuple(self._args)))
-        else:
-            func = lambda x, *params: self._func(x, params, *self._args)
-        if not no_error:
-            # Call the grad wrapper instead of directly self._grad
-            grad = lambda x, *params: np.asarray(self.grad(x, params))
-
-            plot_func(func, xmin = xmin, xmax = xmax, args = params, args_err = params_err, grad = grad, color = color,
-                      alpha = alpha, expand = True, **kwargs)
-        else:
-            plot_func(func, xmin = xmin, xmax = xmax, args = params, color = color, expand = True, **kwargs)
 
 
     def save_func(self, filename, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
@@ -805,96 +743,29 @@ class Fitter:
             save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color, header = header,
                       expand = True, **kwargs)
 
-        
-    def plot_data(self, ylog = False, **kwargs):
+
+    def plot_fit(self, no_error = False, **kwargs):
+        """ Plot the fit function. """
+        # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters here.
+        if self._expand:
+            func = lambda x, *params: self._func(x, *(tuple(params) + tuple(self._args)))
+        else:
+            func = lambda x, *params: self._func(x, params, *self._args)
+        if not no_error:
+            # Call the grad wrapper instead of directly self._grad
+            grad = lambda x, *params: np.asarray(self.grad(x, params))
+            plot_func(func, args = self._saved_params, args_err = self._saved_pcov, grad = grad, expand = True, **kwargs)
+        else:
+            plot_func(func, args = self._saved_params, expand = True, **kwargs)
+
+
+    def plot_data(self, **kwargs):
         """ Plot the fit data. """
-
-        if ylog:
-            plt.yscale('log')
-
         if self._cov is not None:
             sigma = np.sqrt( np.diag(self._cov) )
             plot_dots(self._xdata, self._ydata, sigma, **kwargs)
         else:
             plot_dots(self._xdata, self._ydata, **kwargs)
-
-
-    def plot_fit(self, params = None, params_err = None, ranges = None, ylog = False, 
-                 no_error = False, args_data = None, args_func = None, xmin = None, xmax = None, **kwargs):
-        """ Plot the fit and the fit data.
-
-        Parameters
-        ----------
-        params : array_like, optional
-            Parameters for the fit function.
-        params_err : array_like, optional
-            Errors of the above parameters.
-        notex : bool, optional
-            Do not use tex for plotting.
-        xmin : float, optional
-            xmin for the data plot.
-        xmax : float, optional
-            xmax for the data plot.
-        ranges : array_like, optional
-            2D array of ints. If you want to plot multiple fit results, this array should contain the boundaries for
-            each fit. It should look like
-                [[xmin_1, xmax_1], [xmin_2, xmax_2]...]
-            In that case params and params_err also need to be arrays of parameters.
-        ylog : bool, optional
-            Use an logarithmic y-scale.
-        no_error : bool, optional
-            Don't plot error bars.
-        **kwargs
-            Additional arguments that can be passed to the plotting functions. See plotting.py.
-        """
-
-        if args_func is None:
-            args_func = {}
-        if args_data is None:
-            args_data = {}
-
-        args_data.update(kwargs)
-
-        if xmin is not None:
-            args_data['xmin'] = xmin
-        if xmax is not None:
-            args_data['xmax'] = xmax
-
-        try:
-            # Save xmin and xmax, as they will be overwritten in plot_data
-            try:
-                xmin = np.min(self._xdata)
-                xmax = np.max(self._xdata)
-            except ValueError:
-                xmin = None
-                xmax = None
-
-            if 'color' not in args_data:
-                args_data['color'] = 'black'
-
-            self.plot_data(ylog = ylog, **args_data)
-
-            if ranges is None:
-                if 'xmin' not in args_func:
-                    args_func['xmin'] = xmin
-
-                if 'xmax' not in args_func:
-                    args_func['xmax'] = xmax
-
-                self.plot_func(params, params_err, no_error = no_error, **args_func)
-            else:
-                cmap = mpl.cm.jet
-                for i, val in enumerate(ranges):
-                    col = cmap(0.9 * i / max((float(len(ranges)) - 1), 1))
-                    if params_err is None:
-                        self.plot_func(params[i], xmin = val[0], xmax = val[1], color = col, no_error = no_error, **args_func)
-                    else:
-                        self.plot_func(params[i], params_err[i], xmin = val[0], xmax = val[1], color = col,
-                                       no_error = no_error, **args_func)
-
-
-        except Exception as e:
-            logger.warn("Plotting of fit failed: ", e)
 
 
     def plot_cor(self, title = 'Data correlation matrix', xlabel='$x_j$', ylabel='$x_i$'):
@@ -1036,7 +907,7 @@ def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = Non
 
 
 def try_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-            algorithms = None, detailedInfo=False, **kwargs):
+            algorithms = std_algs, detailedInfo=False, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
     algorithms has no default values here. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)

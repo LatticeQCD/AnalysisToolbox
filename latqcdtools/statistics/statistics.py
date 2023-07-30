@@ -18,6 +18,7 @@ import latqcdtools.math.num_deriv as numDeriv
 from latqcdtools.math.math import logDet
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
 from latqcdtools.base.utilities import envector, isHigherDimensional
+from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.printErrorBars import get_err_str
 
 
@@ -133,14 +134,18 @@ def countParams(func,params):
     return nparams
 
 
-def DOF(ndat,nparam,prior):
-    """ Compute the number of degrees of freedom. Depends on whether you use priors. You can think of priors as
-    extra data points. Hence if you use a prior for every fit parameter, it follows that the number of degrees of
-    freedom always equals the number of data. """
-    if prior is not None:
-        dof = ndat
+def DOF(ndat,nparam,priorsigma):
+    """ Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
+    initial guesses for the fit algorithm. If you would like parameter in the prior array to be treated as a 
+    starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
+    are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors. """
+    if priorsigma is not None:
+        dof = ndat - np.count_nonzero(priorsigma == np.inf)
     else:
-        dof = ndat - nparam
+        dof = ndat - nparam 
+    if dof < 0:
+        logger.TBError('Fewer data than fit parameters!')
+    logger.debug('Computed d.o.f. =',dof)
     return dof
 
 
@@ -159,13 +164,16 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=No
     """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed. """
-    chi2    = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
-    nparams = countParams(func,params)
-    dof     = DOF(len(ydata),nparams,prior)
+    chi2       = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
+    nparams    = countParams(func,params)
+    dof        = DOF(len(ydata),nparams,prior_err)
+    logger.debug('chi^2 =',chi2)
+    logger.debug('nparams =',nparams)
+    logger.debug('dof =',dof)
     if prior is None:
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) )
     else:
-        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(prior_err**2)) )
+        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(prior_err)**2)) )
 
 
 def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
@@ -552,17 +560,17 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
 
 
 
-def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, swapXY=False, **params):
+def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, swapXY=False, **kwargs):
     """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
         To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
         bars in the x-direction instead of the y-direction. """
 
-    fill_param_dict(params)
-    params['marker'] = None
-    xmin = params['xmin']
-    xmax = params['xmax']
+    fill_param_dict(kwargs)
+    kwargs['marker'] = None
+    xmin = kwargs['xmin']
+    xmax = kwargs['xmax']
 
-    if params['expand']:
+    if kwargs['expand']:
         wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
         wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
         wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
@@ -591,7 +599,7 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
     if xmax is None:
         xmax = 10
 
-    xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / kwargs['npoints'])
 
     if func_sup_numpy:
         ydata = wrap_func(xdata, *args)
@@ -605,9 +613,9 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
             ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
 
         if swapXY:
-            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **params)
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
         else:
-            return plot_fill(xdata, ydata, ydata_err, **params)
+            return plot_fill(xdata, ydata, ydata_err, **kwargs)
 
     elif len(args_err) > 0:
         if grad is None:
@@ -626,15 +634,15 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
                                                   args = tmp_opt) for x in xdata])
 
         if swapXY:
-            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **params)
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
         else:
-            return plot_fill(xdata, ydata, ydata_err, **params)
+            return plot_fill(xdata, ydata, ydata_err, **kwargs)
 
     else:
         if swapXY:
-            return plot_lines(ydata, xdata, yedata=None, xedata=None, **params)
+            return plot_lines(ydata, xdata, yedata=None, xedata=None, **kwargs)
         else:
-            return plot_lines(xdata, ydata, yedata=None, xedata=None, **params)
+            return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
 
 
 def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, testMode=True):

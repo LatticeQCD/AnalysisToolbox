@@ -29,25 +29,9 @@ def testSpline():
 
     print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
 
-    spline = LSQUnivariateSpline(x, y, knots, k=3)
-
-    if SHOWPLOT:
-        set_params(xlabel='x',ylabel='y')
-        plot_dots(x, y)
-        plot_lines(x,spline(x),marker=None)
-        plt.show()
-
     knots=random_knots(x, 3, SEED=DEFAULTSEED)
 
     print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
-
-    spline = LSQUnivariateSpline(x, y, knots, k=3)
-
-    if SHOWPLOT:
-        set_params(xlabel='x',ylabel='y')
-        plot_dots(x, y)
-        plot_lines(x,spline(x),marker=None)
-        plt.show()
 
     aicc_arr = []
     for knots in [10,30,60]:

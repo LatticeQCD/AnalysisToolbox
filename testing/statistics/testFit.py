@@ -161,6 +161,10 @@ def testFit():
                                     algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
     print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
+
+
+
+
     timey.printTiming()
 
 

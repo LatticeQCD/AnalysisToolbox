@@ -21,13 +21,14 @@ def deleteCol(array, col):
 
 
 def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf):
-    """ Throw out any elements of array that lie outside the interval [minVal,maxVal].  """
+    """ Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this
+    renders arrays finite. """
     checkType(array, np.ndarray)
     if col is None:
-        mask = np.logical_and( array[:]>=minVal, array[:]<=maxVal )
+        mask = np.logical_and( array[:]>minVal, array[:]<maxVal )
         return array[mask]
     else:
-        mask = np.logical_and( array[col,:]>=minVal, array[col,:]<=maxVal )
+        mask = np.logical_and( array[col,:]>minVal, array[col,:]<maxVal )
         return array[:,mask]
 
 

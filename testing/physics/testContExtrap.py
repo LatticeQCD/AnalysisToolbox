@@ -8,7 +8,7 @@
 
 import numpy as np
 from latqcdtools.math.math import print_results
-from latqcdtools.physics.continuumExtrap import continuumExtrapolate 
+from latqcdtools.physics.continuumExtrap import continuumExtrapolate
 from latqcdtools.physics.constants import MeV_to_fminv
 import latqcdtools.base.logger as logger
 
@@ -26,7 +26,7 @@ def testContExtrap():
     prior     = [-0.51180259,2,0.0]
     prior_err = [0.02250462,1,1]
 
-    result, result_err, chidof = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,plot_results=False)
+    result, result_err, chidof = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True)
 
     REFresult     = [-0.51180259, 16.18682616]
     REFresult_err = [0.01217944250306863, 0.8188262377288199]
@@ -42,14 +42,16 @@ def testContExtrap():
     lam = MeV_to_fminv(500)
     a *= lam
 
-    result, result_err, chidof  = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,plot_results=False,order=2,
-                                                       prior=prior,prior_err=prior_err,error_strat='hessian')
+    result, result_err, chidof, logGBF = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,order=2,
+                                                         prior=prior,prior_err=prior_err,error_strat='hessian')
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]
     REFresult_err = [0.00930215, 0.1100613,  0.10344893]
     REFchidof     = 1.2219934235330452
+    REFlogGBF     = 5.36146864464183
 
     print_results(result,REFresult,result_err,REFresult_err,text='O(a^4) with prior',prec=PREC)
     print_results(chidof,REFchidof,text='O(a^4) chi^2/d.o.f.',prec=PREC)
+    print_results(logGBF,REFlogGBF,text='O(a^4) logGBF',prec=PREC)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@
 
 from subprocess import run, PIPE
 import numpy as np
-import time, re, datetime
+import time, re, datetime, os
 import latqcdtools.base.logger as logger
 
 
@@ -106,17 +106,30 @@ def printDict(dic):
         logger.info(key,dic[key])
 
 
-def printClean(*args,label=None):
+def cleanOutput(*args,label=None):
+    """ This method takes a bunch of args and formats them automatically for output. The idea is
+    that you can use this method to ensure that columns are well lined up.
+
+    Args:
+        *args: The numbers you want to output, separated by commas. 
+        label (str, optional): Put label to the left of your output. Defaults to None.
+
+    Returns:
+        str: formatted output string 
+    """
     data = ()
     form = ''
     if label is not None:
         if not isinstance(label,str):
             logger.TBError('label must be a string')
-        form += '%'+str(len(label))+'s: '
+        form += '%'+str(len(label))+'s'
         data += (label,)
     for col in args:
         if col is None:
             data += ('',)
+            form += '%16s'
+        elif isinstance(col,str):
+            data += (col,)
             form += '%16s'
         elif isinstance(col,complex):
             data += (col.real,)
@@ -125,10 +138,11 @@ def printClean(*args,label=None):
         else:
             data += (col,)
             form += '%.8e  '
-    try:
-        logger.info(form % data)
-    except TypeError:
-        logger.TBError('args',args,'is not list-type of floats.')
+    return form % data
+
+
+def printClean(*args,label=None):
+    logger.info(cleanOutput(*args,label))
 
 
 def shell(*args):
@@ -183,6 +197,20 @@ def substringBetween(string,a,b):
     start_index = string.index(a)+1
     end_index   = string.index(b)
     return string[start_index:end_index]
+
+
+def deleteFile(target):
+    """ Delete the file at target, if it exists. """
+    if os.path.isfile(target):
+        try:
+            os.remove(target)
+            logger.info("Deleted file",target)
+            return
+        except OSError as e:
+            pass
+    else:
+        pass
+    logger.warn('Unable to remove file',target)
 
 
 class timer:
