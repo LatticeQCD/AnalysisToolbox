@@ -88,7 +88,7 @@
 <h1>Bootstrapping routines<a class="headerlink" href="#bootstrapping-routines" title="Permalink to this headline"></a></h1>
 <p>Given a set of <span class="math notranslate nohighlight">\(N\)</span> measurements <span class="math notranslate nohighlight">\(\{x_1,...,x_N\}\)</span>, the statistical bootstrap allows one to estimate the error in
 some function of the measurements <span class="math notranslate nohighlight">\(f\)</span>. Sometimes this is advantageous to error propagation, since analytically
-calculating the error in the original function is too complicated to do analytically. In the context of lattice
+calculating the error in the original function is too complicated. In the context of lattice
 field theory, this happens e.g. when fitting correlators and trying to get the error from a fit parameter.
 In the Analysistoolbox, these methods can be found in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.bootstr</span>
@@ -101,11 +101,12 @@ with replacement. One repeats this process <span class="math notranslate nohighl
 of interest. Averaging the <span class="math notranslate nohighlight">\(K\)</span> means from each bootstrap sample gives a bootstrap mean.
 The method</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">same_rand_for_obs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">parallelize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">):</span>
 </pre></div>
 </div>
-<p>accomplishes this for an arbitrary <span class="math notranslate nohighlight">\(f\)</span> <code class="docutils literal notranslate"><span class="pre">func</span></code>. By default the bootstrap samples are created with 32 threads in parallel,
-controlled with the <code class="docutils literal notranslate"><span class="pre">parallelize</span></code> and <code class="docutils literal notranslate"><span class="pre">nproc</span></code> options.</p>
+<p>accomplishes this for an arbitrary <span class="math notranslate nohighlight">\(f\)</span> <code class="docutils literal notranslate"><span class="pre">func</span></code>.</p>
+<p>By default, the bootstrap sample size is equal to the original number of measurements. We resample with replacement.
+The size can be adjusted with the <code class="docutils literal notranslate"><span class="pre">sample_size</span></code> argument.</p>
 </section>
 <section id="gaussian-bootstrap">
 <h2>Gaussian bootstrap<a class="headerlink" href="#gaussian-bootstrap" title="Permalink to this headline"></a></h2>

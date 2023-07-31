@@ -96,6 +96,25 @@ example <code class="docutils literal notranslate"><span class="pre">warn</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">TBPass</span><span class="p">(</span><span class="s2">&quot;Your test passed! Use this for shiny green text.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Most of our methods use this logger. Some advantages of using it are</p>
+<ul class="simple">
+<li><p>Automatic timestamps</p></li>
+<li><p>Optional output to log file, which works with multiple processors</p></li>
+<li><p>Recording the git commit</p></li>
+</ul>
+<p>If you would like to save your output to a log file, we recommend using the module</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">initialize</span>
+</pre></div>
+</div>
+<p>You can start a log file for your run using</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;myRun.log&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>at the beginning of your code.
+In this case, all the output will get print to screen as well as to <code class="docutils literal notranslate"><span class="pre">myRun.log</span></code>.
+This includes the git hash by default, which is useful for debugging and reproducability.
+You can also call <code class="docutils literal notranslate"><span class="pre">finalize()</span></code> at the end of your code, but for now no real cleanup is required,
+so this just prints an “I’m finished!” message.</p>
 </section>
 
 

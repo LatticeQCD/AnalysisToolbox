@@ -58,5 +58,5 @@ def finalize():
         logger.warn('Called without having initialized first!')
     else:
         logger.info()
-        logger.info('All done.')
+        logger.info("I'm finished!")
         logger.info()

@@ -2,7 +2,7 @@
 
 Given a set of $N$ measurements $\{x_1,...,x_N\}$, the statistical bootstrap allows one to estimate the error in
 some function of the measurements $f$. Sometimes this is advantageous to error propagation, since analytically
-calculating the error in the original function is too complicated to do analytically. In the context of lattice
+calculating the error in the original function is too complicated. In the context of lattice
 field theory, this happens e.g. when fitting correlators and trying to get the error from a fit parameter.
 In the Analysistoolbox, these methods can be found in
 ```Python
@@ -17,10 +17,12 @@ of interest. Averaging the $K$ means from each bootstrap sample gives a bootstra
 The method
 ```Python
 bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
-            seed = None, err_by_dist = False, args=(), parallelize=True, nproc=32)
+        seed = None, err_by_dist = False, args=(), nproc=DEFAULTTHREADS):
 ```
-accomplishes this for an arbitrary $f$ `func`. By default the bootstrap samples are created with 32 threads in parallel, 
-controlled with the `parallelize` and `nproc` options.
+accomplishes this for an arbitrary $f$ `func`.
+
+By default, the bootstrap sample size is equal to the original number of measurements. We resample with replacement.
+The size can be adjusted with the `sample_size` argument.
 
 ## Gaussian bootstrap
 

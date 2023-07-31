@@ -10,7 +10,7 @@ from the `testing` folder to make sure nothing is broken.
 
 There are a couple modules that assist with testing. The module
 ```Python
-import latqcdtools.base.check
+import latqcdtools.math.check
 ```
 contains a method 
 ```Python
@@ -28,11 +28,12 @@ which is a convenient method for comparing two array-like objects `res` and `res
 It is also sometimes important during testing to time your code. This can be important for example to verify that
 parallelizing indeed speeds up your code. (Maybe something could go wrong here for an unexpected reason.) the module
 ```Python
-import latqcdtools.base.timer
+import latqcdtools.base.utilities
 ```
 includes the `timer` class. A call to
 ```Python
 timer t
 t.printTiming()
 ```
-prints the time in seconds that elapsed since the last time `printTiming()` was called.
+prints the time in seconds that elapsed since either the timer was instantiated or
+since the last time `printTiming()` was called.

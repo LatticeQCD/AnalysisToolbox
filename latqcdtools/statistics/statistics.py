@@ -150,6 +150,22 @@ def DOF(ndat,nparam,priorsigma):
 
 
 def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,expand=True):
+    """ Calculate chi^2.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): fit parameters. Defaults to ().
+        prior (array-like, optional): Bayesian priors. Defaults to None.
+        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        expand (bool, optional): see funcExpand above. Defaults to True.
+
+    Returns:
+        float: chi^2 
+    """
     checkPrior(prior,prior_err)
     y    = funcExpand(func,xdata,params,args,expand)
     cor  = norm_cov(cov)
@@ -163,7 +179,22 @@ def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,e
 def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
     """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
-    Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed. """
+    Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): fit parameters. Defaults to ().
+        prior (array-like, optional): Bayesian priors. Defaults to None.
+        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        expand (bool, optional): see funcExpand above. Defaults to True.
+
+    Returns:
+        float: log( Gaussian Bayes factor ) 
+    """
     chi2       = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
     nparams    = countParams(func,params)
     dof        = DOF(len(ydata),nparams,prior_err)
@@ -180,7 +211,22 @@ def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None,
     """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
-    overfitting. The preferred model minimizes the AIC. """
+    overfitting. The preferred model minimizes the AIC.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): fit parameters. Defaults to ().
+        prior (array-like, optional): Bayesian priors. Defaults to None.
+        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        expand (bool, optional): see funcExpand above. Defaults to True.
+
+    Returns:
+        float: AIC
+    """
     nparams    = countParams(func,params)
     likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
     return 2*nparams - 2*likelihood
@@ -189,7 +235,22 @@ def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None,
 def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
     """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
-    infinity, one recovers the AIC. """
+    infinity, one recovers the AIC.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): fit parameters. Defaults to ().
+        prior (array-like, optional): Bayesian priors. Defaults to None.
+        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        expand (bool, optional): see funcExpand above. Defaults to True.
+
+    Returns:
+        float: corrected AIC 
+    """
     nparams = countParams(func,params)
     ndat    = len(ydata)
     aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err, expand)

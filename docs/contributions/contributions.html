@@ -87,11 +87,14 @@
 <ul>
 <li><p>Please write documentation (like this one) for any new module that you make.</p></li>
 <li><p>Please write a test for each new feature you implement. We keep our tests in <code class="docutils literal notranslate"><span class="pre">LatticeToolbox/testing</span></code>.</p></li>
+<li><p>Make sure you run all the tests when you’re done to check that nothing was broken. You can find more information
+about the tests <a class="reference internal" href="testing.html"><span class="doc std std-doc">here</span></a>.</p></li>
 <li><p>For all screen output and for terminating your program because of errors: Please try to use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/logger.py</span></code>. This has the advantage that all scripts are terminated in the same way. Also you can have your program make little log files in addition to the terminal output, in case you want that!</p></li>
 <li><p>For all plotting: Please try to use <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/plotting.py</span></code>.</p></li>
 <li><p>For reading or writing any data table: Please try to use <code class="docutils literal notranslate"><span class="pre">readTable</span></code> and <code class="docutils literal notranslate"><span class="pre">writeTable</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/readWrite.py</span></code>.</p></li>
 <li><p>If you would like to make your python script an executable (e.g. by using <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span></code>) you should add the line <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/env</span> <span class="pre">python3</span></code> at the beginning of your script.</p></li>
-<li><p>If you are writing a method, and you want to put a comment explaining what the method generally does and how to use it, you should include it as a docstring. (You can find an explanation of docstrings <a class="reference external" href="https://www.programiz.com/python-programming/docstrings">here</a>.) An advantage to using these is that people can easily learn about your function by calling <code class="docutils literal notranslate"><span class="pre">help(functionName)</span></code>.</p></li>
+<li><p>If you are writing a method, and you want to put a comment explaining what the method generally does and how to use it, you should include it as a docstring. (You can find an explanation of docstrings <a class="reference external" href="https://www.programiz.com/python-programming/docstrings">here</a>.) An advantage to using these is that people can easily learn about your function by calling <code class="docutils literal notranslate"><span class="pre">help(functionName)</span></code>. Certain IDEs, such as VSCode, include tools to generate your
+docstrings largely automatically.</p></li>
 <li><p>We do not allow the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">X</span> <span class="pre">import</span> <span class="pre">*</span></code> construction anywhere within the LatticeToolbox, as it makes it difficult to tell where function methods are truly coming from. The problem with modules is just that other people may want to use them and add to them, and for that they need to understand where all the methods are defined.</p></li>
 <li><p>Please wrap all your <code class="docutils literal notranslate"><span class="pre">main_*</span></code> applications and <code class="docutils literal notranslate"><span class="pre">test*</span></code> tests like so:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">myMainOrTest</span><span class="p">():</span>
@@ -101,7 +104,8 @@
     <span class="n">myMainOrTest</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>This has a few advantages: (1) you can put functions outside this definition, then import your main program and borrow those functions without running anything; (2) the logger will give more meaningful output when called in your main function; and (3) weirdly this seems to help things run on some Macs.</p>
+<p>This has a few advantages: (1) you can put functions outside this definition, then import your main program and borrow those functions without running anything; (2) the logger will give more meaningful output when called in your main function; and (3) weirdly this seems to help
+some of our parallelizers run on some Macs.</p>
 </li>
 </ul>
 <p>Here are some more detailed articles:</p>

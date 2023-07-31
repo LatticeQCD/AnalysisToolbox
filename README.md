@@ -3,7 +3,7 @@
 The LatticeToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
 particular toward lattice QCD. The LatticeToolbox is used especially by the HotQCD collaboration, so
 it also includes some methods complying with their conventions. It was originally created by
-H. Sandmeyer during his PhD work, and has since been maintained by some of the HotQCD scientists.
+H. Sandmeyer during his PhD work, and has since been maintained by some of the HotQCD and MILC scientists. 
 
 ## Getting Started
 
