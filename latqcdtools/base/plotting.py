@@ -46,7 +46,7 @@ default_params = {
     'label': None,               # What are the data called? (Will appear in legend.)
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
     'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
-    'markersize': 3.5,           # Size of the symbols.
+    'markersize': 8,             # Size of the symbols.
     'font_size': 14,             # Default font size for text.
     'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
@@ -61,7 +61,7 @@ default_params = {
     'alpha_label': 0,            # Transperancy for labels
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
-    'elinewidth': 0.5,           # Linewidth of the error bars of caps af error bars
+    'elinewidth': 1.0,           # Linewidth of the error bars of caps af error bars
     'point_fill_color': "None",  # Fill color of points. Set to None (not as string) to have filled symbols
     'ZOD': None,                 # Controls where in foreground/background data/lines/bands appear.
 

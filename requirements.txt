@@ -6,5 +6,6 @@ matplotlib
 numba
 numpy
 pathos
+pyyaml
 scipy
 sympy

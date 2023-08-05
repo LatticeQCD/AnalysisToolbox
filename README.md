@@ -69,7 +69,7 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 [M. Sarkar](https://github.com/mugdhasarkar),
 [C. Schmidt](https://github.com/schmidt74), 
 [H.-T. Shu](https://github.com/haitaoshu), 
-T. Ueding
+[T. Ueding](https://github.com/SiggiUphues)
 
 ## Acknowledgment
 

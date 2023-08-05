@@ -129,9 +129,9 @@ def read_in_pure_no_numpy(filename, col1=1, col2=2, symmetrize = False):
     Nt = len(data)
     if symmetrize:
         if max(xdata) != Nt - 1:
-            raise ValueError("The number of x values does not correspond to the largest of its values")
+            logger.TBError("The number of x values does not correspond to the largest of its values")
         if Nt % 2 != 0:
-            raise ValueError("Nt must be even!")
+            logger.TBError("Nt must be even!")
 
         for i in range(len(data[0])):
             for nt in range(1, int(len(data)/2)):

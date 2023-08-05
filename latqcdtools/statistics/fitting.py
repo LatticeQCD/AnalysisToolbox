@@ -470,7 +470,8 @@ class Fitter:
                               self._max_fev[algorithm], algorithm = algorithm)
 
         if any(np.isnan(params)) or any(np.isinf(params)):
-            raise ValueError(algorithm + ": Fit result is inf or nan!")
+            logger.TBFail(algorithm,": Fit result is inf or nan!")
+            raise ValueError
 
         chi2 = self.calc_chisquare(params)
 
@@ -545,15 +546,15 @@ class Fitter:
             pcov    = inv_jej
 
             if abs(np.sum(test) - np.sum(np.diag(test))) > self._test_tol:
-                logger.warn("Off diagonals in test matrix are larger than",self._test_tol,"Test - matrix:")
+                logger.warn(algorithm,"Off diagonals in test matrix are larger than",self._test_tol,"Test - matrix:")
                 logger.warn('\n',test)
-                raise ValueError(algorithm + ": Precision lost when computing errors!")
 
             if np.min(np.diag(pcov)) < 0:
-                raise ValueError(algorithm + ": Negative entries for the variance!")
+                raise ValueError("Negative entries for the variance!")
 
         except Exception as e:
-            raise ValueError(algorithm + "hit exception " + e ) 
+            logger.TBFail("Hit exception",e)
+            raise e 
 
         return pcov
 
@@ -562,7 +563,8 @@ class Fitter:
         """ Obtain the parameter's covariance matrix by inverting the hessian of the chi^2. """
         pcov = inv(self.hess_chisquare(params))
         if np.min(np.diag(pcov)) < 0:
-            raise ValueError(algorithm + ": Negative entries for the variance!")
+            logger.TBFail(algorithm + ": Negative entries for the variance!")
+            raise ValueError
         return pcov
 
 
@@ -819,7 +821,8 @@ class Fitter:
             params = self._saved_params
 
         if params_err is None:
-            raise ValueError("Please pass params along with params_err")
+            logger.TBFail("Please pass params along with params_err")
+            raise ValueError
 
         value = self.wrap_func(x, params)
 
