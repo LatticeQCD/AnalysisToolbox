@@ -12,7 +12,7 @@ from latqcdtools.math.math import print_results, rel_check
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import timer
 from latqcdtools.statistics.statistics import std_mean
-from latqcdtools.base.readWrite import readTable, readCorrelatorTable
+from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.plotting import clearPlot, latexify, plt
 from latqcdtools.base.readWrite import readTable
 
@@ -51,6 +51,52 @@ def calc_cov_OLD(data):
         res += np.array([(data[:, l] - mean)]).transpose().dot(
             np.array([(data[:, l] - mean)]))
     return 1 / (len(data[0]) - 1) * res
+
+
+def readCorrelatorTable(filename, col1=1, col2=2, symmetrize = False):
+    """ Read a table organized like so:
+    t=0    meas    meas_err conf
+    t=1    meas    meas_err conf
+    ...
+    t=Nt/2 meas    meas_err conf
+    t=0    meas    meas_err conf+1
+    ...
+    """
+    try:
+        # To support input file streams
+        ins = open(filename, "r")
+        close = True
+    except TypeError:
+        ins = filename
+        close = False
+    data_dict = {}
+    for line in ins:
+        if line.startswith('#') or len(line) < 2:
+            continue
+        lineelems = line.strip().split()
+        try:
+            Nt = int(lineelems[col1 - 1])
+        except ValueError:
+            Nt = float(lineelems[col1 - 1])
+        corr = float(lineelems[col2 - 1])
+        if Nt not in data_dict:
+            data_dict[Nt] = []
+        data_dict[Nt].append(corr)
+    xdata = list(sorted(data_dict))
+    data = [ data_dict[key] for key in sorted(data_dict.keys()) ]
+    Nt = len(data)
+    if symmetrize:
+        if max(xdata) != Nt - 1:
+            logger.TBError("The number of x values does not correspond to the largest of its values")
+        if Nt % 2 != 0:
+            logger.TBError("Nt must be even!")
+
+        for i in range(len(data[0])):
+            for nt in range(1, int(len(data)/2)):
+                data[nt][i] = data[Nt - nt][i] = (data[nt][i] + data[Nt - nt][i]) / 2
+    if close:
+        ins.close()
+    return np.array(xdata), np.array(data), len(data[0])
 
 
 EPSILON=1e-4
@@ -138,15 +184,14 @@ def testFit():
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
-                                     hess=hess_one_state, args=(64,), norm_err_chi2=True,
-                                     algorithm="curve_fit")
+                             hess=hess_one_state, args=(64,), norm_err_chi2=True,algorithm="curve_fit")
     res_true = [4.988713e-05, 2.950030e-01]
     res_err_true = [1.176005e-06, 5.573209e-04]
     print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, cov / nconfs, res_true, args=(64,),
-                                     algorithm = "curve_fit", norm_err_chi2=True)
+                             algorithm = "curve_fit", norm_err_chi2=True)
     print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit for correlated data",prec=EPSILON)
 
 

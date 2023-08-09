@@ -6,24 +6,18 @@
 # Some methods and classes to easily make python code faster. 
 #
 
-
+import os
 import numpy as np
 import concurrent.futures
 import pathos.pools
-from latqcdtools.base.utilities import shell 
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from numba import njit
 from numba.typed import List
 
 
-def getMaxThreads():
-    """ Figure out how many threads are on this system. """
-    return int( shell("lscpu | awk '/CPU\\(s\\)/ {print $2; exit}'") )
-
-
 COMPILENUMBA        = False
-MAXTHREADS          = getMaxThreads()
+MAXTHREADS          = os.cpu_count() 
 DEFAULTTHREADS      = MAXTHREADS - 2
 DEFAULTPARALLELIZER = 'pathos.pools'
 
@@ -148,5 +142,5 @@ def parallel_reduce(function, input_array, args=(), nproc=DEFAULTTHREADS, parall
     Returns:
         float-like
     """
-    container=parallel_function_eval(function, input_array, nproc=DEFAULTTHREADS, args=args)
+    container = parallel_function_eval(function, input_array, nproc=DEFAULTTHREADS, args=args)
     return np.sum(container)

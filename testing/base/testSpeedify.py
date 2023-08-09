@@ -9,7 +9,7 @@
 import numpy as np
 from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import parallel_function_eval, parallel_reduce, compile, numbaON, getMaxThreads
+from latqcdtools.base.speedify import parallel_function_eval, parallel_reduce, compile, numbaON
 
 logger.set_log_level('INFO')
 

@@ -36,6 +36,7 @@ def intersectAtCol(table1, table2, col):
     """ Return only those rows of table1 and table2 that have identical elements in column col. """
     checkType(table1, np.ndarray)
     checkType(table2, np.ndarray)
+    checkType(col, int)
     table1      = np.array(table1)
     table2      = np.array(table2)
     mask1using2 = np.isin( table1[col,:], table2[col,:] )
@@ -49,6 +50,7 @@ def spliceAtCol(table1, table2, col, atVal):
         has corresponding entries greater than atVal. """
     checkType(table1, np.ndarray)
     checkType(table2, np.ndarray)
+    checkType(col, int)
     table1 = np.array(table1)
     table2 = np.array(table2)
     mask1  = table1[col]<=atVal
@@ -60,6 +62,7 @@ def spliceAtCol(table1, table2, col, atVal):
 def restrictAtCol(table, col, atVal):
     """ Return only those rows of table where col has exactly the value atVal. """
     checkType(table, np.ndarray)
+    checkType(col, int)
     table = np.array(table)
     mask  = np.equal(table[col,:],atVal)
     return table[:,mask]
@@ -68,6 +71,7 @@ def restrictAtCol(table, col, atVal):
 def excludeAtCol(table, col, atVal):
     """ Return everything except those rows of table where col has exactly the value atVal. """
     checkType(table, np.ndarray)
+    checkType(col, int)
     table = np.array(table)
     mask  = np.not_equal(table[col,:],atVal)
     return table[:,mask]

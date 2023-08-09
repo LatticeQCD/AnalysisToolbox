@@ -24,8 +24,7 @@ runTestRoutine testDataCleaner.py
 runTestRoutine testInitialize.py
 runTestRoutine testLogger.py
 runTestRoutine testPrintErrorBars.py
-runTestRoutine "testReadWrite.py --type str"
-runTestRoutine "testReadWrite.py --type list"
+runTestRoutine testReadWrite.py
 runTestRoutine testUtilities.py
 runTestRoutine testSpeedify.py
 cd ..

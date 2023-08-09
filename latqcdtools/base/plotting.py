@@ -167,8 +167,19 @@ def initializePlt(size,xmin,xmax,ymin,ymax):
         set_yrange(ymin,ymax)
 
 
-# TODO: Can this be replaced by clipRange?
-def remove_points(data, *args, minval = None, maxval = None):
+def remove_points(data, *args, minval=None, maxval=None):
+    """ Assuming *args are a tuple of arrays of the same length as data, cut data and
+    args so that data fall between minval and maxval, and keep only the corresponding
+    elements of args. 
+
+    Args:
+        data (array-like)
+        minval (float, optional): minimum allowed data. Defaults to -np.inf.
+        maxval (float, optional): maximum allowed data. Defaults to np.inf.
+
+    Returns:
+        tuple: data, *args trimmed according to minval and maxval
+    """
     if minval is None:
         minval = -np.inf
     if maxval is None:
@@ -639,7 +650,6 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     return ebar
 
 
-
 def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     """ Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 
@@ -661,10 +671,12 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 
     if xedata is None:
         xdata, ydata, yedata = convertToNumpy(xdata, ydata, yedata)
+        checkEqualLengths(xdata,ydata,yedata)
         xdata, ydata, yedata = remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
     else:
         xdata, ydata, xedata = convertToNumpy(xdata, ydata, xedata)
-        ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval = params['ymin'], maxval = params['ymax'])
+        checkEqualLengths(xdata,ydata,xedata)
+        ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
 
     xscale = params['xscale']
     yscale = params['yscale']
@@ -713,9 +725,9 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     fill_param_dict(params)
     optional = add_optional(params)
     if center is not None:
-        xdata, low_lim, up_lim, center = remove_points(xdata, low_lim, up_lim, center, minval = params['xmin'], maxval = params['xmax'])
+        xdata, low_lim, up_lim, center = remove_points(xdata, low_lim, up_lim, center, minval=params['xmin'], maxval=params['xmax'])
     else:
-        xdata, low_lim, up_lim = remove_points(xdata, low_lim, up_lim, minval = params['xmin'], maxval = params['xmax'])
+        xdata, low_lim, up_lim = remove_points(xdata, low_lim, up_lim, minval=params['xmin'], maxval=params['xmax'])
 
     xscale=params['xscale']
     yscale=params['yscale']

@@ -124,20 +124,22 @@ def cleanOutput(*args,label=None):
             logger.TBError('label must be a string')
         form += '%'+str(len(label))+'s'
         data += (label,)
+    spacing = ''
     for col in args:
         if col is None:
             data += ('',)
-            form += '%16s'
+            form += spacing+'%15s'
         elif isinstance(col,str):
             data += (col,)
-            form += '%16s'
+            form += spacing+'%15s'
         elif isinstance(col,complex):
             data += (col.real,)
             data += (col.imag,)
-            form += '(%.8e  %.8e)  '
+            form += spacing+'%15.8e  %15.8e'
         else:
             data += (col,)
-            form += '%.8e  '
+            form += spacing+'%15.8e'
+        spacing = '  '
     return form % data
 
 

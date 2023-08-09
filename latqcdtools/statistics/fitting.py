@@ -877,10 +877,7 @@ def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, 
 
     if func_err is not None:
         ydata_err = wrap_func_err(xdata, *args_err)
-
-        with open(filename, "w") as fout:
-            for i in range(len(xdata)):
-                print(xdata[i], ydata[i], ydata_err[i], file = fout)
+        writeTable(filename,xdata,ydata,ydata_err,header=header)
 
     elif len(args_err) > 0:
         if grad is None:

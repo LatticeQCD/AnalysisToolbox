@@ -1,9 +1,9 @@
 # 
 # readWrite.py
 #
-# H. Sandmeyer, D. Clarke
+# D. Clarke
 #
-# Methods for convenient reading and writing, some tailored to specific contexts like correlator measurements.
+# Methods for convenient reading and writing. 
 #
 
 
@@ -43,20 +43,20 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
 
 
 def writeTable(filename,*args,**kwargs):
-    """ Wrapper for np.savetxt, which is in the author's opinion the single worst piece of trash in the entire numpy
-    package. Looking at how much effort it took me to tame it, I'm not sure if it was ever worth using to being with.
+    """ Wrapper for np.savetxt. The idea is that you can use it like this:
+    
+    writeTable('file.txt',col1,col2,header=['header1','header2])
+    
+    This works for an arbitrary number of columns col. It seems much more intuitive to me 
+    that you pass columns as arguments than whatever np.savetxt is doing.
 
-    Parameters
-    ----------
-    filename : str
-        Name of output file.
-    args :
-        Put in all the 1-d numpy arrays you would like to write out.
+    Args:
+        filename (str): output file name
     """
     if 'header' in kwargs:
         head = kwargs['header']
         if isinstance(head,list):
-            form = '%12s'
+            form = '%15s'
             temp = (head[0],)
             if len(head[0]) > 12:
                 logger.warn("writeTable header[0] should be kept under 12 characters.")
@@ -100,48 +100,3 @@ def writeTable(filename,*args,**kwargs):
 def lab(num):
     """ Create a short string label for each column of a data table. Needed for writeTable. """
     return 'var' + str(num)
-
-
-def read_in_pure_no_numpy(filename, col1=1, col2=2, symmetrize = False):
-    try:
-        # To support input file streams
-        ins = open(filename, "r")
-        close = True
-    except TypeError:
-        ins = filename
-        close = False
-    data_dict = {}
-    for line in ins:
-        if line.startswith('#') or len(line) < 2:
-            continue
-        lineelems = line.strip().split()
-        try:
-            Nt = int(lineelems[col1 - 1])
-        except ValueError:
-            Nt = float(lineelems[col1 - 1])
-        corr = float(lineelems[col2 - 1])
-        if Nt not in data_dict:
-            data_dict[Nt] = []
-        data_dict[Nt].append(corr)
-
-    xdata = list(sorted(data_dict))
-    data = [ data_dict[key] for key in sorted(data_dict.keys()) ]
-    Nt = len(data)
-    if symmetrize:
-        if max(xdata) != Nt - 1:
-            logger.TBError("The number of x values does not correspond to the largest of its values")
-        if Nt % 2 != 0:
-            logger.TBError("Nt must be even!")
-
-        for i in range(len(data[0])):
-            for nt in range(1, int(len(data)/2)):
-                data[nt][i] = data[Nt - nt][i] = (data[nt][i] + data[Nt - nt][i]) / 2
-
-    if close:
-        ins.close()
-    return xdata, data, len(data[0])
-
-
-def readCorrelatorTable(filename, col1=1, col2=2, symmetrize = False):
-    xdata, data, nconfs = read_in_pure_no_numpy(filename, col1, col2, symmetrize)
-    return np.array(xdata), np.array(data), nconfs

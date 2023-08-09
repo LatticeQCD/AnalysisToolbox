@@ -83,8 +83,8 @@ class Extrapolator(Fitter):
         """ Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. """
         if not self._triedExtrapolation:
             logger.TBError("Can't plot an extrapolation without having extrapolated first...")
-        plot_dots([0],self._result[0],self._result_err[0],color=kwargs['color'])
-        self.plot_data(color=kwargs['color'])
+        plot_dots([0],self._result[0],self._result_err[0],**kwargs)
+        self.plot_data(**kwargs)
         self.plot_fit(**kwargs)
 
     def showResults(self):
