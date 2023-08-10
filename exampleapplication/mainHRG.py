@@ -41,8 +41,6 @@ def main():
         args_for_tasks = product(temps, [2])
         with Pool(NTASKS) as pool:
             pool.starmap(task, args_for_tasks)
-        # subprocess.run(["python3", "HRGMeasure.py", "--hadron_file", filepath,
-        #               "--LCP_file", "HRG_LCP_T120.0_r0.4QM", "--bqsc", "2000", "--obs", "chi"])
 
     elif args.runMode == 3:
         for obs in ["energy", "specificheat"]:
