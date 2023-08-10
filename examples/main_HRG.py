@@ -1,31 +1,56 @@
-import numpy as np
-import latqcdtools.base.logger as logger
-from latqcdtools.physics.HRG import HRG
-from latqcdtools.base.readWrite import readTable, writeTable
+import subprocess
+from multiprocessing import Pool
+import argparse
+from itertools import product
 from latqcdtools.base.initialize import initialize, finalize
 
-# Write terminal output to log file. Includes git commit hash.
 initialize('HRG.log')
 
-# Pick a temperature range in MeV
-T = np.arange(100, 166, 1)
+BQSC = "2000"
 
-# Read in hadron names, masses, charges, baryon number, strangeness,
-# charm, and degeneracy factor. This table is provided with LatticeToolbox.
-QMHRG_table = '../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt'
-hadrons, M, Q, B, S, C, g = readTable(QMHRG_table, usecols=(0,1,2,3,4,5,6),
-                                      dtype="U11,f8,i8,i8,i8,i8,i8")
-w = np.array([1 if ba==0 else -1 for ba in B])
 
-# Instantiate HRG object.
-QMhrg = HRG(M,g,w,B,S,Q,C)
+def task(temp, mode):
+    if mode == 1:
+        subprocess.run(["python3", "HRGLCP.py", "--r", str(r),
+                       "--hadron_file", filepath, "--models", "QM", "--T", str(temp)])
+    elif mode == 2:
+        subprocess.run(["python3", "HRGMeasure.py", "--hadron_file", filepath,
+                       "--LCP_file", "HRG_LCP_T%0.1f_r0.4QM"%temp, "--bqsc", BQSC, "--obs", "chi"])
 
-# This computation is vectorized since T is a numpy array.
-logger.info('Computing chi2B.')
-chi = QMhrg.gen_chi(T, B_order=2, Q_order=0, S_order=0, C_order=0,
-                    muB_div_T=0.3, muQ_div_T=0, muS_div_T=0, muC_div_T=0)
+parser = argparse.ArgumentParser(
+    description='Run different modes of the script.')
+parser.add_argument('runMode', type=int, choices=[
+                    0, 1, 2, 3], help='The run mode of the script.')
+args = parser.parse_args()
 
-# Output T and chi2B as columns in this table.
-writeTable("chi2B.txt", T, chi, header=['T [MeV]','chi2B (QMHRG)'])
+r = 0.4
+filepath = "../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
+NTASKS = 4
+temps = range(120, 165, 5)
 
+
+def main():
+    if args.runMode == 0:
+        subprocess.run(["python3", "HRGSimpleexample.py"])
+    elif args.runMode == 1:
+        # Creating pairs of temperature and mode
+        args_for_tasks = product(temps, [1])
+        with Pool(NTASKS) as pool:
+            pool.starmap(task, args_for_tasks)
+    elif args.runMode == 2:
+        args_for_tasks = product(temps, [2])
+        with Pool(NTASKS) as pool:
+            pool.starmap(task, args_for_tasks)
+
+    elif args.runMode == 3:
+        for obs in ["energy", "specificheat"]:
+            for mb in [0.0, 1.0, 1.5, 2.0, 2.5]:
+                subprocess.run(["python3", "mainStrangenessNeutral.py", "--hadron_file", filepath, "--fixedmuBNszerofile",
+                               f"HRG_fixedmuBT{mb}_r0.4QMHRG2020_BI", "--obs", obs, "--r", str(r), "--tag", "QMHRG2020_BI_Nszero"])
+    else:
+        print("Invalid runMode")
+
+
+if __name__ == '__main__':
+    main()
 finalize()

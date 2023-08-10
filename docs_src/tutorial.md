@@ -13,6 +13,8 @@ that highlights some of the features of the LatticeToolbox. For example
 along with the git commit hash, so you can track down which version of the
 LatticeToolbox you used.
 
+Here is `latqcdtools/examples/main_HRG_simple.py`
+
 ```Python
 import numpy as np
 import latqcdtools.base.logger as logger
@@ -70,6 +72,8 @@ thermodynamic limit, where $\langle |P|\rangle$ as function of temperature
 would jump discontinuously at $T_d$.
 At finite volume, this abrupt jump becomes smooth, and $T_d$ is estimated by the
 inflection point of the curve.
+
+Here is `latqcdtools/examples/main_continuumExtrapolate.py`
 
 ```Python
 import numpy as np

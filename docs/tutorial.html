@@ -91,6 +91,7 @@ that highlights some of the features of the LatticeToolbox. For example
 <code class="docutils literal notranslate"><span class="pre">initialize</span></code> simulataneously saves all screen output to the log file <code class="docutils literal notranslate"><span class="pre">HRG.log</span></code>
 along with the git commit hash, so you can track down which version of the
 LatticeToolbox you used.</p>
+<p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_HRG_simple.py</span></code></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
 <span class="kn">from</span> <span class="nn">latqcdtools.physics.HRG</span> <span class="kn">import</span> <span class="n">HRG</span>
@@ -146,6 +147,7 @@ thermodynamic limit, where <span class="math notranslate nohighlight">\(\langle 
 would jump discontinuously at <span class="math notranslate nohighlight">\(T_d\)</span>.
 At finite volume, this abrupt jump becomes smooth, and <span class="math notranslate nohighlight">\(T_d\)</span> is estimated by the
 inflection point of the curve.</p>
+<p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_continuumExtrapolate.py</span></code></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
 <span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span>
