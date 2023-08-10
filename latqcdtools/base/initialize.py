@@ -23,7 +23,7 @@ def gitHash():
     PYTHONPATH = shell('echo $PYTHONPATH')
     for entry in PYTHONPATH.split(':'):
         # The package used to be called AnalysisToolbox.
-        if 'LatticeToolbox' or 'AnalysisToolbox' in entry:
+        if ('LatticeToolbox' in entry) or ('AnalysisToolbox' in entry):
             toolboxLocation = entry.strip()
     hash=shell('git --git-dir="'+toolboxLocation+'/.git" rev-parse HEAD').strip()
     return hash 
