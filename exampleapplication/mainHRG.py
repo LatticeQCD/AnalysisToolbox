@@ -4,7 +4,7 @@ import argparse
 from itertools import product
 from latqcdtools.base.initialize import initialize, finalize
 
-initialize('testJackknife.log')
+initialize('HRG.log')
 
 BQSC = "2000"
 
