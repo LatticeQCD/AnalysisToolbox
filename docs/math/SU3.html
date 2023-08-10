@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data Analysis Modules" href="../dataAnalysis/dataAnalysis.html" />
-    <link rel="prev" title="Math" href="math.html" /> 
+    <link rel="next" title="Other mathematics" href="otherMath.html" />
+    <link rel="prev" title="Numerical calculus" href="calculus.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="math.html">Math</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="calculus.html">Numerical calculus</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">SU(3) matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="otherMath.html">Other mathematics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
@@ -83,14 +85,20 @@
 <h1>SU(3) matrices<a class="headerlink" href="#su-3-matrices" title="Permalink to this headline"></a></h1>
 <p>In <code class="docutils literal notranslate"><span class="pre">latqcdtools/math/SU3.py</span></code> one finds the <code class="docutils literal notranslate"><span class="pre">SU3</span></code> class, which inherits from the <code class="docutils literal notranslate"><span class="pre">numpy.matrix</span></code> class. This way you
 can get all the nice, fast features of <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, like already defined matrix multiplication, transposes, and so on.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">SU(3)</span></code> class also has some extra functionality, most importantly given the first two rows, the method
+<p>The <code class="docutils literal notranslate"><span class="pre">SU3</span></code> class also has some extra functionality, most importantly given the first two rows, the method
 <code class="docutils literal notranslate"><span class="pre">su3unitarize</span></code> will use unitarity to compute the last one. This allows reconstruction of compressed configurations
-in the <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class, described <a class="reference internal" href="../interfacing/confLoader.html"><span class="doc std std-doc">here</span></a>.</p>
+in the <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class, described <a class="reference internal" href="../interfacing/confLoader.html"><span class="doc std std-doc">here</span></a>. The unitarization can be compiled
+with <code class="docutils literal notranslate"><span class="pre">numbaON()</span></code>, as described <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">here</span></a>.</p>
 <p>You can instantiate an <code class="docutils literal notranslate"><span class="pre">SU(3)</span></code> matrix object as</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">U</span> <span class="o">=</span> <span class="n">SU3</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>This object is needed especially for <code class="docutils literal notranslate"><span class="pre">gaugeField</span></code> objects, described <a class="reference internal" href="../physicsAnalysis/gauge.html"><span class="doc std std-doc">here</span></a>.</p>
+<p>This object is needed especially for <code class="docutils literal notranslate"><span class="pre">gaugeField</span></code> objects, described <a class="reference internal" href="../physicsAnalysis/gauge.html"><span class="doc std std-doc">here</span></a>.
+Some other implemented methods special for <code class="docutils literal notranslate"><span class="pre">SU3</span></code> objects include</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">setToRandom</span></code>: Sets to a random group element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isSU3</span></code>: Checks that it has determinant 1 and is unitary.</p></li>
+</ul>
 </section>
 
 

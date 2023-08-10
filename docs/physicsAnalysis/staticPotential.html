@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Hadron resonance gas" href="HRG.html" />
-    <link rel="prev" title="Reference scales" href="referenceScales.html" /> 
+    <link rel="prev" title="Reference scales and physical constants" href="referenceScales.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,10 +52,11 @@
 <li class="toctree-l2"><a class="reference internal" href="gauge.html">Gaugefields</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observables.html">Polyakov loop observables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales and physical constants</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">The zero-temperature static potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuumExtrap.html">Continuum-limit extrapolation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
@@ -109,7 +110,7 @@ squared distance to improve <code class="docutils literal notranslate"><span cla
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">V_Teq0</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>takes a distance <span class="math notranslate nohighlight">\(r\)</span> in [fm] and returns <span class="math notranslate nohighlight">\(V\)</span> in [MeV]. The potential comes from a three-parameter Levenberg-Marquardt
+<p>takes a distance <span class="math notranslate nohighlight">\(r\)</span> in fm and returns <span class="math notranslate nohighlight">\(V\)</span> in MeV. The potential comes from a three-parameter Levenberg-Marquardt
 fit of the data in Fig. 14 <a class="reference external" href="https://journals.aps.org/prd/abstract/10.1103/PhysRevD.90.094503">here</a> to the
 form <span class="math notranslate nohighlight">\(V(r)=a/r+b*r+c\)</span>, which is the Cornell parameterization.</p>
 <p>There are also fit functions like <code class="docutils literal notranslate"><span class="pre">fitV_Teq0</span></code>, which can be used to extract fit parameters using a Cornell ansatz.

@@ -1,11 +1,7 @@
-# Computing Observables
+# Polyakov loop observables
 
-The LatticeToolbox has built in methods for several commonly computed observables in the context of lattice
-calculations trying to understand the QCD phase diagram.
 
-## Polyakov loop observables
-
-The Polyakov loop $P$ is the order parameter of the deconfinement transition in the quenched limit. The imaginary
+The Polyakov loop $P$ gives the order parameter of the deconfinement transition in the quenched limit. The imaginary
 part is the order parameter of the Roberge-Weiss transition. It is also occasionally of interest at finite quark
 mass and real $\mu$. You can find a bunch of Polyakov loop related observables in the `polyakovTools` module.
 

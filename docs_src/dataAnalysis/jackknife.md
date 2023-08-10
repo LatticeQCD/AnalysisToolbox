@@ -6,14 +6,15 @@ import latqcdtools.statistics.jackknife
 ```
 The central method of this file is the `jackknife` method. A call to
 ```Python
-jackknife(func, data, numb_blocks=20, conf_axis=1, args=(), cov=False)
+jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), nproc=DEFAULTTHREADS)
 ```
 returns a jackknife average, error, and (if desired) the covariance, in that order. Here `data` is 
 a time series of raw data you are interested in, and `func` is some function of that data. 
-`numb_blocks` is the number of jackknife blocks, `args` are the arguments to pass to `func`. Set 
-`cov=True` if you want to get the covariance. The `conf_axis` is needed when one wants to pass a 
+`numb_blocks` is the number of jackknife blocks, `args` are the arguments to pass to `func`.
+The `conf_axis` is needed when one wants to pass a 
 2D array as `data`, which can happen, for instance, if `func` depends on multiple observables. 
-An example will be given below.
+An example will be given below. By default the jackknife is [parallelized](../base/speedify.md) 
+with `DEFAULTTHREADS` processes. Set `nproc=1` if you want to turn off parallelization.
 
 This jackknife is quite general. Something easy one might do with the jackknife is calculate the 
 Polyakov loop susceptibility from Polyakov loops. A rule of thumb to use when using the jackknife 
@@ -43,7 +44,8 @@ AbsPmean, AbsPerr = jackknife(suscA, [ReP, ImP], 32, 1)
 Note that these Polyakov loop examples are meant to be instructional. A complete set of functions 
 measuring Polyakov loop observables is given in `polyakovTools.py`, described in part in the part
 of the documentation for [physics](../physicsAnalysis/physicsAnalysis.md) modules. 
+
 **WARNING:** Although the `jackknife` 
 method is very general, one thing that cannot be done is passing a lambda function. This is because 
-the `jackknife` is parallelized using `concurrent.futures`, which is not able to pickle 
+the `jackknife` can be parallelized using `concurrent.futures`, which is not able to pickle 
 lambda functions.

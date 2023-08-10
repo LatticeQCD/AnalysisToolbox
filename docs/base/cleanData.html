@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cleaning, splicing, and organizing arrays &mdash; LatticeToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Speedify" href="speedify.html" />
+    <link rel="prev" title="Utilities" href="utilities.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> LatticeToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="base.html">Basic Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Cleaning, splicing, and organizing arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="speedify.html">Speedify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LatticeToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="base.html">Basic Modules</a> &raquo;</li>
+      <li>Cleaning, splicing, and organizing arrays</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/base/cleanData.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="cleaning-splicing-and-organizing-arrays">
+<h1>Cleaning, splicing, and organizing arrays<a class="headerlink" href="#cleaning-splicing-and-organizing-arrays" title="Permalink to this headline"></a></h1>
+<p>You can often think of all the data in a project you are dealing with as a giant table.
+For instance the table will be indexed by things like configuration number, ensemble stream/series,
+quark mass, and so on. Sometimes it is important to find data that lies at the intersection
+of some sets, or to look only at data whose bare coupling <span class="math notranslate nohighlight">\(\beta\)</span> fall within some prescribed
+range, and so on. The methods in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">cleanData</span>
+</pre></div>
+</div>
+<p>try to help with this.</p>
+<p>These manipulations are already possible within numpy, but they can be difficult to read. (At least
+they are difficult for David to read.) Hence this module contains wrappers for such manipulations.
+They include</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">deleteRow</span></code>: Delete a row of a 2-d array.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deleteCol</span></code>: Delete a column of a 2-d array.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clipRange</span></code>: Pick a column <code class="docutils literal notranslate"><span class="pre">col</span></code> of a data table <code class="docutils literal notranslate"><span class="pre">data</span></code>. Throw out all data whose corresponding
+entries in <code class="docutils literal notranslate"><span class="pre">col</span></code> fall outside the range [<code class="docutils literal notranslate"><span class="pre">minVal</span></code>,<code class="docutils literal notranslate"><span class="pre">maxVal</span></code>].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">intersectAtCol</span></code>: Return only those rows of <code class="docutils literal notranslate"><span class="pre">table1</span></code> and <code class="docutils literal notranslate"><span class="pre">table2</span></code> that have
+identical elements in column <code class="docutils literal notranslate"><span class="pre">col</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spliceAtCol</span></code>:  Assuming two tables <code class="docutils literal notranslate"><span class="pre">table1</span></code> and <code class="docutils literal notranslate"><span class="pre">table2</span></code> have common values in column <code class="docutils literal notranslate"><span class="pre">col</span></code>,
+create a new table, where <code class="docutils literal notranslate"><span class="pre">table1</span></code> has corresponding entries less than <code class="docutils literal notranslate"><span class="pre">atVal</span></code> in <code class="docutils literal notranslate"><span class="pre">col</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">table2</span></code> has corresponding entries greater than `atVal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restrictAtCol</span></code>: Return only those rows of a table where <code class="docutils literal notranslate"><span class="pre">col</span></code> has exactly the value <code class="docutils literal notranslate"><span class="pre">atVal</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">excludeAtCol</span></code>: Return everything except those rows of a table where <code class="docutils literal notranslate"><span class="pre">col</span></code> has exactly the
+value <code class="docutils literal notranslate"><span class="pre">atVal</span></code>.</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

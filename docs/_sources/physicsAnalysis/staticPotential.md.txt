@@ -19,7 +19,7 @@ The method
 ```Python
 V_Teq0(r)
 ```
-takes a distance $r$ in [fm] and returns $V$ in [MeV]. The potential comes from a three-parameter Levenberg-Marquardt 
+takes a distance $r$ in fm and returns $V$ in MeV. The potential comes from a three-parameter Levenberg-Marquardt 
 fit of the data in Fig. 14 [here](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.90.094503) to the 
 form $V(r)=a/r+b*r+c$, which is the Cornell parameterization.
 

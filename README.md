@@ -8,7 +8,7 @@ H. Sandmeyer during his PhD work, and has since been maintained by some of the H
 ## Getting Started
 
 In order to use these scripts, please ensure that you have the following:
-1. Python 3.6 or better
+1. Python 3.9+
 2. colorama
 3. cycler
 4. matplotlib

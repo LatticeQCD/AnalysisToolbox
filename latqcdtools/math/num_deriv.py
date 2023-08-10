@@ -32,9 +32,9 @@ def best_h(x):
 
     We choose eps = 1.1e-16, which is roughly the difference between 1.0 and the next-smallest representable float less
     than 1.0 in 64-bit. The difference between 1.0 and the next-largest float is slightly bigger. """
-    eps = 1.1e-16
+    eps   = 1.1e-16
     small = pow(eps,1/3)
-    h = small*(abs(x) + small) # Want something meaningful also when x = 0.
+    h     = small*(abs(x) + small) # Want something meaningful also when x = 0.
     return h
 
 

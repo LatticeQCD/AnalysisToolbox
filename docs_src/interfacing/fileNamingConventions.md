@@ -1,4 +1,4 @@
-# Dealing with naming conventions from other collaborations 
+# Ensemble names and file formats 
 
 Not every collaboration names their files in the same way. On the other hand, there are a few prominent collaborations
 that have their own naming schemes. It can make it easier for you to read in their files, if you can generate
@@ -9,7 +9,14 @@ heterogeneous field is an important part of interoperability.
 To this end, the LatticeToolbox has some methods specifically for this purpose. At the moment we support
 - MILC code configuration naming schemes
 - HotQCD configuration naming schemes
-- Reading GPL files
-- Reading YAML files
+- Reading `gpl` files
+- Reading `yaml` files
 
-
+For the first two, we have `HotQCDParams` and `MILCParams` objects, which inherit from the `latticeParams`
+object described [here](../physicsAnalysis/latticeParameters.md). To quickly extract run parameters
+from a MILC or HotQCD-type string, one finds inside
+```Python
+latqcdtools.interfaces.interfaces
+```
+the method `paramFrom_HotQCD_MILC`. The `gpl` and `yaml` reading methods `loadGPL` and `loadYAML`
+are also inside this module.

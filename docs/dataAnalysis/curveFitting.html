@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Curve Fitting &mdash; LatticeToolbox 0.1 documentation</title>
+  <title>Curve fitting and splines &mdash; LatticeToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Curve Fitting</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Curve fitting and splines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jackknife.html">Jackknife</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bootstrap.html">Bootstrapping routines</a></li>
@@ -74,7 +74,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="dataAnalysis.html">Data Analysis Modules</a> &raquo;</li>
-      <li>Curve Fitting</li>
+      <li>Curve fitting and splines</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/dataAnalysis/curveFitting.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,11 +84,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="curve-fitting">
-<h1>Curve Fitting<a class="headerlink" href="#curve-fitting" title="Permalink to this headline"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="curve-fitting-and-splines">
+<h1>Curve fitting and splines<a class="headerlink" href="#curve-fitting-and-splines" title="Permalink to this headline"></a></h1>
 <p>There are many ways to fit a curve. There are strategies that minimize <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span>
 for when you know the functional form ahead of time, splines for when you don’t, and other methods.
-The LatticeToolbox includes some routines that are helpful for this purpose.</p>
+The LatticeToolbox includes some routines that are helpful for this purpose.
+By default the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> is <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">parallelized</span></a> with <code class="docutils literal notranslate"><span class="pre">DEFAULTTHREADS</span></code>
+processes. Set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> if you want to turn off parallelization.
+Splines are not parallelized in this way, but should be fast because they wrap SciPy methods.</p>
 <section id="chi-2-minimization">
 <h2><span class="math notranslate nohighlight">\(\chi^2\)</span> minimization<a class="headerlink" href="#chi-2-minimization" title="Permalink to this headline"></a></h2>
 <p>In the module</p>
@@ -173,7 +176,7 @@ These can be found in <code class="docutils literal notranslate"><span class="pr
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This is essentially a wrapper for <code class="docutils literal notranslate"><span class="pre">scipy.interpolate.LSQUnivariateSpline</span></code>.
+<p>This is by default a wrapper for <code class="docutils literal notranslate"><span class="pre">scipy.interpolate.LSQUnivariateSpline</span></code>.
 Here you specify how many knots <code class="docutils literal notranslate"><span class="pre">num_knots</span></code> you want and the order <code class="docutils literal notranslate"><span class="pre">order</span></code> of the spline.
 By default, the spline will create a list of <code class="docutils literal notranslate"><span class="pre">num_knots</span></code> evenly spaced knots, but you can specify
 <code class="docutils literal notranslate"><span class="pre">rand=True</span></code> to have it pick the knot locations randomly. If you need to specify some knot locations
@@ -182,7 +185,8 @@ yourself, this is accomplished by passing a list of specified knots to <code cla
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">fixedKnots</span><span class="p">)</span><span class="o">==</span><span class="n">num_knots</span>
 </pre></div>
 </div>
-<p>no knots will be generated randomly.</p>
+<p>no knots will be generated randomly.
+There also exists the option to use natural splines.</p>
 </section>
 </section>
 

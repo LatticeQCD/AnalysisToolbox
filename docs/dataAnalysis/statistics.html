@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Jackknife" href="jackknife.html" />
-    <link rel="prev" title="Curve Fitting" href="curveFitting.html" /> 
+    <link rel="prev" title="Curve fitting and splines" href="curveFitting.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve fitting and splines</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jackknife.html">Jackknife</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bootstrap.html">Bootstrapping routines</a></li>
@@ -107,8 +107,8 @@ the data are independent.</p>
 is a variable the function depends on that does not have error. If you like, you can specify the gradient <code class="docutils literal notranslate"><span class="pre">grad</span></code>
 of <code class="docutils literal notranslate"><span class="pre">func</span></code> yourself; otherwise this will be calculated numerically.</p>
 </section>
-<section id="gaussian-difference-test">
-<h2>Gaussian difference test<a class="headerlink" href="#gaussian-difference-test" title="Permalink to this headline"></a></h2>
+<section id="gaussian-difference-test-z-test">
+<h2>Gaussian difference test (Z-test)<a class="headerlink" href="#gaussian-difference-test-z-test" title="Permalink to this headline"></a></h2>
 <p>A Gaussian difference test can be used to check whether two
 measurements are statistically consistent with one another. Given are two measurements <code class="docutils literal notranslate"><span class="pre">x1</span></code>
 and <code class="docutils literal notranslate"><span class="pre">x2</span></code> drawn from Gaussian distributions with the same mean and respective error bars <code class="docutils literal notranslate"><span class="pre">e1</span></code>
@@ -118,6 +118,17 @@ and <code class="docutils literal notranslate"><span class="pre">e2</span></code
 </div>
 <p>returns the q-value, which is the likelihood that <code class="docutils literal notranslate"><span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">x2</span></code> are at least as far apart as
 was observed.</p>
+</section>
+<section id="student-different-test-t-test">
+<h2>Student different test (T-test)<a class="headerlink" href="#student-different-test-t-test" title="Permalink to this headline"></a></h2>
+<p>In the case you have a small number of data, a more correct measure of the tension between two means
+is given by the Student difference test. This can be called with</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">studif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">ndat1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">e2</span><span class="p">,</span><span class="n">ndat2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">ndat1</span></code> is the number of measurements leading to mean <code class="docutils literal notranslate"><span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">ndat2</span></code> is the number of
+measurements leading to mean <code class="docutils literal notranslate"><span class="pre">x2</span></code>. For large enough <code class="docutils literal notranslate"><span class="pre">ndat1</span></code> and <code class="docutils literal notranslate"><span class="pre">ndat2</span></code>, the results should
+be similar to the Gaussian difference test.</p>
 </section>
 <section id="integrated-autocorrelation-time">
 <h2>Integrated autocorrelation time<a class="headerlink" href="#integrated-autocorrelation-time" title="Permalink to this headline"></a></h2>

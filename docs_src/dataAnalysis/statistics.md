@@ -20,7 +20,7 @@ can be used to automatically propagate the `errors` of measurements `means` into
 is a variable the function depends on that does not have error. If you like, you can specify the gradient `grad`
 of `func` yourself; otherwise this will be calculated numerically.
 
-## Gaussian difference test 
+## Gaussian difference test (Z-test) 
 A Gaussian difference test can be used to check whether two 
 measurements are statistically consistent with one another. Given are two measurements `x1` 
 and `x2` drawn from Gaussian distributions with the same mean and respective error bars `e1` 
@@ -29,7 +29,17 @@ and `e2`. A call to
 gaudif(x1,e1,x2,e2)
 ```
 returns the q-value, which is the likelihood that `x1` and `x2` are at least as far apart as 
-was observed. 
+was observed.
+
+## Student different test (T-test)
+In the case you have a small number of data, a more correct measure of the tension between two means
+is given by the Student difference test. This can be called with
+```Python
+studif(x1,e1,ndat1,x2,e2,ndat2)
+```
+where `ndat1` is the number of measurements leading to mean `x1` and `ndat2` is the number of
+measurements leading to mean `x2`. For large enough `ndat1` and `ndat2`, the results should
+be similar to the Gaussian difference test.
 
 ## Integrated autocorrelation time
 The integrated autocorrelation time is the ratio between 

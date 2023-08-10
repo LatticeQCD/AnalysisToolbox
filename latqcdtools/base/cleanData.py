@@ -10,13 +10,18 @@
 
 import numpy as np
 from latqcdtools.base.check import checkType
+import latqcdtools.base.logger as logger
 
 
 def deleteRow(array, row):
+    if array.ndim != 2:
+        logger.TBError('Expected 2-d numpy array.')       
     return np.delete(array,row,0)
 
 
 def deleteCol(array, col):
+    if array.ndim != 2:
+        logger.TBError('Expected 2-d numpy array.')       
     return np.delete(array,col,1)
 
 

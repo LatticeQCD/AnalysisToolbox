@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="base.html">Basic Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cleanData.html">Cleaning, splicing, and organizing arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="speedify.html">Speedify</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Plotting</a></li>
 </ul>
@@ -234,7 +235,7 @@ this with</p>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">xcoordinate</span></code> and <code class="docutils literal notranslate"><span class="pre">ycoordinate</span></code> are measured according to the axes themselves; for example if
-my x-axis is temperature and I want to put the text at 150 [MeV], I just set <code class="docutils literal notranslate"><span class="pre">xcoordinate=150</span></code>.
+my x-axis is temperature and I want to put the text at 150 MeV, I just set <code class="docutils literal notranslate"><span class="pre">xcoordinate=150</span></code>.
 Further options for <code class="docutils literal notranslate"><span class="pre">text</span></code> can be found
 <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html">here</a>.</p>
 </section>
@@ -242,6 +243,24 @@ Further options for <code class="docutils literal notranslate"><span class="pre"
 <h3>Rescaling an axis<a class="headerlink" href="#rescaling-an-axis" title="Permalink to this headline"></a></h3>
 <p>We need to do this pretty often, for example when changing from lattice units to physical units. To
 rescale the x-axis by a factor 2, pass to your <code class="docutils literal notranslate"><span class="pre">plot_</span></code> command <code class="docutils literal notranslate"><span class="pre">xscale=2</span></code>. <code class="docutils literal notranslate"><span class="pre">yscale</span></code> rescales the y-axis.</p>
+</section>
+<section id="having-nice-colors">
+<h3>Having nice colors<a class="headerlink" href="#having-nice-colors" title="Permalink to this headline"></a></h3>
+<p>There is a set of eight base colors that the LatticeToolbox automatically cycles through. When plotting more
+eight things, for example a range of temperatures, it may be useful to generate a graded scale of colors.
+For this you can create your own list of <code class="docutils literal notranslate"><span class="pre">ncolors</span></code> colors <code class="docutils literal notranslate"><span class="pre">myColors</span></code> with</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">myColors</span> <span class="o">=</span> <span class="n">getColorGradient</span><span class="p">(</span><span class="n">ncolors</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="having-one-script-generate-multiple-plots">
+<h3>Having one script generate multiple plots<a class="headerlink" href="#having-one-script-generate-multiple-plots" title="Permalink to this headline"></a></h3>
+<p>By default, the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> module and its associated methods like <code class="docutils literal notranslate"><span class="pre">plot_dots</span></code> uses the axis object <code class="docutils literal notranslate"><span class="pre">plt</span></code>.
+Hence if you are having one script generate multiple plots, it may happen that labels or data from a previous
+plot carry over to the next one. You can clear all plot labels, options, and data by calling</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">clearPlot</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>

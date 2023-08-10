@@ -52,10 +52,11 @@
 <li class="toctree-l2"><a class="reference internal" href="gauge.html">Gaugefields</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Statistical Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observables.html">Computing Observables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observables.html">Polyakov loop observables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales and physical constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuumExtrap.html">Continuum-limit extrapolation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
@@ -92,20 +93,21 @@
 <p>This module collects some basic methods and classes related to statistical physics.</p>
 <section id="critical-exponents">
 <h2>Critical exponents<a class="headerlink" href="#critical-exponents" title="Permalink to this headline"></a></h2>
-<p>There is a base <code class="docutils literal notranslate"><span class="pre">UniversailtyClass</span></code> object from which all universality classes inherit. It holds critical exponents
+<p>There is a base <code class="docutils literal notranslate"><span class="pre">UniversalityClass</span></code> object from which all universality classes inherit. It holds critical exponents
 as attributes along with an <code class="docutils literal notranslate"><span class="pre">exponentSummary()</span></code> method that prints to screen all critical exponents. If you want to
-access 3<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span> critical exponents, you can simply use</p>
+access 3-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span> critical exponents, you can simply use, e.g.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">univ</span> <span class="o">=</span> <span class="n">Z2_3d</span>
 <span class="n">univ</span><span class="o">.</span><span class="n">alpha</span>
 </pre></div>
 </div>
 <p>At present one finds the universality classes</p>
 <ul class="simple">
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((2)\)</span></p></li>
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((3)\)</span></p></li>
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((4)\)</span></p></li>
-<li><p>3<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
-<li><p>2<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((2)\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((3)\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((4)\)</span></p></li>
+<li><p>4-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
+<li><p>2-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
 </ul>
 </section>
 </section>

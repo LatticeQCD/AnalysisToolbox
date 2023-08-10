@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Continuum-limit extrapolation &mdash; LatticeToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interfacing" href="../interfacing/interfacing.html" />
+    <link rel="prev" title="Hadron resonance gas" href="HRG.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> LatticeToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="physicsAnalysis.html">Physics Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gauge.html">Gaugefields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observables.html">Polyakov loop observables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales and physical constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Continuum-limit extrapolation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LatticeToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
+      <li>Continuum-limit extrapolation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/physicsAnalysis/continuumExtrap.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="continuum-limit-extrapolation">
+<h1>Continuum-limit extrapolation<a class="headerlink" href="#continuum-limit-extrapolation" title="Permalink to this headline"></a></h1>
+<p>Eventually we will have to take a continuum limit. The class for this is in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">continuumExtrap</span>
+</pre></div>
+</div>
+<p>It is the <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> class, which inherits from the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>,
+described <a class="reference internal" href="../dataAnalysis/curveFitting.html"><span class="doc std std-doc">here</span></a>. You instantiate an <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> with</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ext</span> <span class="o">=</span> <span class="n">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">x</span></code> either denotes lattice spacing data or <span class="math notranslate nohighlight">\(N_\tau\)</span> data, which you can specify with the <code class="docutils literal notranslate"><span class="pre">xtype</span></code>.
+We do power series extrapolations, with the <code class="docutils literal notranslate"><span class="pre">order</span></code> in <span class="math notranslate nohighlight">\(a^2\)</span> specified by the user.
+The <code class="docutils literal notranslate"><span class="pre">error_strat</span></code> is inherited from the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>; it decides whether you will compute errors
+with error propagation or using the Hessian. This is <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">parallelized</span></a> by
+default, but you can set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> to turn that off.</p>
+<p>To perform an extrapolation, you can</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ext</span><span class="o">.</span><span class="n">extrapolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior_err</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This gives you the option of passing priors, if you like. If you want to specify only some priors,
+but not others, then pass <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> as the corresponding <code class="docutils literal notranslate"><span class="pre">prior_err</span></code> for those you don’t want to fix.
+These will not be included in counting the degrees of freedom.</p>
+<p>You can look at a plot with <code class="docutils literal notranslate"><span class="pre">ext.plot()</span></code>; you can pass it the same keyword arguments that
+you can with the <a class="reference internal" href="../base/plotting.html"><span class="doc std std-doc">plotter</span></a>. The class method <code class="docutils literal notranslate"><span class="pre">ext.showResults()</span></code> will
+print the results to screen.</p>
+<p>For your convenience, this whole process is wrapped inside a method</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">continuumExtrapolate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">obs</span><span class="p">,</span><span class="n">obs_err</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">plot_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span><span class="n">xtype</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span>
+                     <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">):</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

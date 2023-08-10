@@ -152,7 +152,7 @@ this with
 plt.text(xcoordinate, ycoordinate, 'PRELIMINARY', color='gray')
 ```
 The `xcoordinate` and `ycoordinate` are measured according to the axes themselves; for example if 
-my x-axis is temperature and I want to put the text at 150 [MeV], I just set `xcoordinate=150`. 
+my x-axis is temperature and I want to put the text at 150 MeV, I just set `xcoordinate=150`. 
 Further options for `text` can be found 
 [here](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html).
 
@@ -160,3 +160,21 @@ Further options for `text` can be found
 
 We need to do this pretty often, for example when changing from lattice units to physical units. To 
 rescale the x-axis by a factor 2, pass to your `plot_` command `xscale=2`. `yscale` rescales the y-axis.
+
+### Having nice colors
+
+There is a set of eight base colors that the LatticeToolbox automatically cycles through. When plotting more
+eight things, for example a range of temperatures, it may be useful to generate a graded scale of colors.
+For this you can create your own list of `ncolors` colors `myColors` with
+```Python
+myColors = getColorGradient(ncolors)
+``` 
+
+### Having one script generate multiple plots
+
+By default, the `plotting` module and its associated methods like `plot_dots` uses the axis object `plt`. 
+Hence if you are having one script generate multiple plots, it may happen that labels or data from a previous
+plot carry over to the next one. You can clear all plot labels, options, and data by calling
+```Python
+clearPlot()
+``` 

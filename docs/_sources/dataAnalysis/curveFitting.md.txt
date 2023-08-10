@@ -1,9 +1,12 @@
-# Curve Fitting
+# Curve fitting and splines
 
 
 There are many ways to fit a curve. There are strategies that minimize $\chi^2/{\rm d.o.f.}$ 
 for when you know the functional form ahead of time, splines for when you don't, and other methods. 
 The LatticeToolbox includes some routines that are helpful for this purpose.
+By default the `Fitter` is [parallelized](../base/speedify.md) with `DEFAULTTHREADS`
+processes. Set `nproc=1` if you want to turn off parallelization.
+Splines are not parallelized in this way, but should be fast because they wrap SciPy methods.
 
 ## $\chi^2$ minimization
 
@@ -93,7 +96,7 @@ These can be found in `latcqdtools.math.spline.py`. The basic method is `getSpli
 ```Python
 getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None)
 ```
-This is essentially a wrapper for `scipy.interpolate.LSQUnivariateSpline`.
+This is by default a wrapper for `scipy.interpolate.LSQUnivariateSpline`.
 Here you specify how many knots `num_knots` you want and the order `order` of the spline.
 By default, the spline will create a list of `num_knots` evenly spaced knots, but you can specify
 `rand=True` to have it pick the knot locations randomly. If you need to specify some knot locations
@@ -103,3 +106,4 @@ yourself, this is accomplished by passing a list of specified knots to `fixedKno
 len(fixedKnots)==num_knots
 ```
 no knots will be generated randomly.
+There also exists the option to use natural splines.

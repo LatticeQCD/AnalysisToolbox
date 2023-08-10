@@ -10,5 +10,7 @@ subject of the following articles.
 ---
 maxdepth: 1
 ---
+calculus.md
 SU3.md
+otherMath.md
 ```

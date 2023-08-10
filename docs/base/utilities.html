@@ -22,7 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Speedify" href="speedify.html" />
+    <link rel="next" title="Cleaning, splicing, and organizing arrays" href="cleanData.html" />
     <link rel="prev" title="Basic Modules" href="base.html" /> 
 </head>
 
@@ -45,6 +45,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="base.html">Basic Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cleanData.html">Cleaning, splicing, and organizing arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="speedify.html">Speedify</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
 </ul>
@@ -83,16 +84,41 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="utilities">
 <h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h1>
-<p>In this module we collect a bunch of useful, general utilities. These include:</p>
+<p>In this module we collect a bunch of useful, general utilities.</p>
+<section id="arguments-and-formatted-output">
+<h2>Arguments and formatted output<a class="headerlink" href="#arguments-and-formatted-output" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">getArg</span></code>: Python’s argument parser is not very careful. This wrapper complains if any invalid arguments were passed.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">printArg</span></code>: Will print an argument to screen, only if it isn’t <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">printDict</span></code>: Prints a dictionary out with each key-value pair getting a line. This is more readable than the standard print.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cleanOutput</span></code>: Often one wants to print multiple different numbers on one line, for example a row of a table. It helps
+readability if all these use the same indentation and have the same width on the screen. You can create formatted strings
+that have the same convention by passing values separated by commas to <code class="docutils literal notranslate"><span class="pre">cleanOutput</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">printClean</span></code>: This is a wrapper for <code class="docutils literal notranslate"><span class="pre">cleanOutput</span></code> that puts the result to screen instead of giving you a string. (You may
+want the string if, e.g., you are writing a custom output to file.)</p></li>
+</ul>
+</section>
+<section id="interaction-with-shell">
+<h2>Interaction with shell<a class="headerlink" href="#interaction-with-shell" title="Permalink to this headline"></a></h2>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">shell</span></code>: Calls a Bash command from within Python and captures the output of the command.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shellVerbose</span></code>: Does the same thing, except prints the output to screen rather than capturing it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deleteFile</span></code>: Deletes a file, if it exists.</p></li>
+</ul>
+</section>
+<section id="playing-with-arrays">
+<h2>Playing with arrays<a class="headerlink" href="#playing-with-arrays" title="Permalink to this headline"></a></h2>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">find_nearest_idx</span></code>: Finds the index of an array whose element is closest to some specified number.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">convertToNumpy</span></code>: Converts all arguments to numpy arrays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isArrayLike</span></code>: Determine whether argument is array-like.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isHigherDimensional</span></code>: Determine whether argument is array-like with at least two indices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unvector</span></code>: Remove outermost brackets of an array-like object, if possile.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">envector</span></code>: Convert a scalar to a numpy array. <code class="docutils literal notranslate"><span class="pre">envector</span></code> should undo an <code class="docutils literal notranslate"><span class="pre">unvector</span></code> and vice-versa.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">naturalSort</span></code>: Sort list of strings so that, e.g. ‘10’ comes after ‘9’ rather than before it.</p></li>
 </ul>
 <p>In addition, this module contains the <code class="docutils literal notranslate"><span class="pre">timer</span></code> class.</p>
+</section>
 </section>
 
 

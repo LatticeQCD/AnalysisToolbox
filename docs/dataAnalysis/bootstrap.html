@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve fitting and splines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jackknife.html">Jackknife</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Bootstrapping routines</a></li>
@@ -94,6 +94,8 @@ In the Analysistoolbox, these methods can be found in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.bootstr</span>
 </pre></div>
 </div>
+<p>Just as with the <a class="reference internal" href="jackknife.html"><span class="doc std std-doc">jackknife</span></a>, we stress that an advantage of the bootstrapping routines is that
+you can pass them arbitrary functions.</p>
 <section id="ordinary-bootstrap">
 <h2>Ordinary bootstrap<a class="headerlink" href="#ordinary-bootstrap" title="Permalink to this headline"></a></h2>
 <p>Starting with our original measurements, one builds a bootstrap sample by drawing <span class="math notranslate nohighlight">\(N\)</span> data from the original sample
@@ -101,31 +103,30 @@ with replacement. One repeats this process <span class="math notranslate nohighl
 of interest. Averaging the <span class="math notranslate nohighlight">\(K\)</span> means from each bootstrap sample gives a bootstrap mean.
 The method</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">same_rand_for_obs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">):</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>accomplishes this for an arbitrary <span class="math notranslate nohighlight">\(f\)</span> <code class="docutils literal notranslate"><span class="pre">func</span></code>.</p>
 <p>By default, the bootstrap sample size is equal to the original number of measurements. We resample with replacement.
-The size can be adjusted with the <code class="docutils literal notranslate"><span class="pre">sample_size</span></code> argument.</p>
+The size can be adjusted with the <code class="docutils literal notranslate"><span class="pre">sample_size</span></code> argument.
+By default the bootstrap is <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">parallelized</span></a> with <code class="docutils literal notranslate"><span class="pre">DEFAULTTHREADS</span></code>
+processes. Set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> if you want to turn off parallelization.</p>
 </section>
 <section id="gaussian-bootstrap">
 <h2>Gaussian bootstrap<a class="headerlink" href="#gaussian-bootstrap" title="Permalink to this headline"></a></h2>
-<p>Quantities such as masses are extracted by fitting some function plotted
-against an independent variable, here called <span class="math notranslate nohighlight">\(r\)</span>. Sometimes it is not clear what a good fitting range
-for <span class="math notranslate nohighlight">\(r\)</span> is. For example Debye masses can be extracted by fitting to an exponential that is only valid
-for long distances, and there can be ambiguity in selecting an <span class="math notranslate nohighlight">\(r_{\text{min}}\)</span>. In such a case, one
-may obtain multiple estimates <span class="math notranslate nohighlight">\(m(r_{\text{min}})\)</span> for different <span class="math notranslate nohighlight">\(r_{\text{min}}\)</span> that are all similar
-to each other and highly correlated. The Gaussian bootstrap
-allows one to obtain an average and error bar under these circumstances. The method</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">avg</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">bootstr_add_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">nstat</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">plot_hist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<p>The Gaussian bootstrap method,</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">same_rand_for_obs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                   <span class="n">return_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">useCovariance</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                   <span class="n">Covariance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">nproc</span> <span class="o">=</span> <span class="n">DEFAULTTHREADS</span><span class="p">,</span> <span class="n">asym_err</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>works as follows: Given possibly correlated <code class="docutils literal notranslate"><span class="pre">data</span></code> and corresponding error bars <code class="docutils literal notranslate"><span class="pre">errors</span></code> that are
-assumed to be Gaussian, resample by drawing for data point <code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">nstat</span></code> new resampled measurements
-from a Gaussian distribution with mean <code class="docutils literal notranslate"><span class="pre">data[i]</span></code> and standard deviation <code class="docutils literal notranslate"><span class="pre">errors[i]</span></code>. Concatenate
-these <code class="docutils literal notranslate"><span class="pre">ndata*nstat</span></code> resampled measurements into a new distribution. The average <code class="docutils literal notranslate"><span class="pre">avg</span></code> is taken as
-the median of this new distribution, and the error <code class="docutils literal notranslate"><span class="pre">err</span></code> is the distance between the median and
-the 68% quantile.</p>
+<p>will resample as follows: For each element of <code class="docutils literal notranslate"><span class="pre">data</span></code>, random data will be drawn from normal distributions
+with means equal to the values in <code class="docutils literal notranslate"><span class="pre">data</span></code> and standard deviations from <code class="docutils literal notranslate"><span class="pre">data_std_dev</span></code>. This defines one
+Gaussian bootstrap sample, and the function <code class="docutils literal notranslate"><span class="pre">func</span></code> is applied to the sample. This process is repeated
+<code class="docutils literal notranslate"><span class="pre">numb_samples</span></code> times.</p>
+<p>By default, the Gaussian bootstrap returns the median and 68-percentiles from the sample. You can return
+the standard deviation instead by switching <code class="docutils literal notranslate"><span class="pre">err_by_dist</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>. You also have the option to get
+back asymmetric quantiles/errors using <code class="docutils literal notranslate"><span class="pre">asymm_err=True</span></code>.</p>
 </section>
 </section>
 

@@ -15,6 +15,7 @@ Here are some more detailed articles:
 maxdepth: 1
 ---
 utilities.md
+cleanData.md
 speedify.md
 plotting.md
 ```

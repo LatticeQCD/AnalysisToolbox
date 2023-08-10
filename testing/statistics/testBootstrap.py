@@ -96,12 +96,12 @@ def Test_Bootstrap():
 
     # Gaussian bootstrap tests
 
-    TESTm, TESTe = bootstr_from_gauss(np.mean, data=[10], data_std_dev=[0.5], numb_samples=1000, seed=SEED)
+    TESTm, TESTe = bootstr_from_gauss(np.mean, data=[10], data_std_dev=[0.5], numb_samples=1000, err_by_dist=False, seed=SEED)
     REFm = 9.992029809808589
     REFe = 0.4925667778426321
     print_results(TESTm, REFm, TESTe, REFe, "simple gauss", EPSILON)
 
-    TESTm, TESTe = bootstr_from_gauss(div, data=[10,2], data_std_dev=[0.5,0.1], numb_samples=1000, seed=SEED)
+    TESTm, TESTe = bootstr_from_gauss(div, data=[10,2], data_std_dev=[0.5,0.1], numb_samples=1000, err_by_dist=False, seed=SEED)
     REFm = 5.005130586993748
     REFe = 0.3555674022912204
     print_results(TESTm, REFm, TESTe, REFe, "div gauss", EPSILON)

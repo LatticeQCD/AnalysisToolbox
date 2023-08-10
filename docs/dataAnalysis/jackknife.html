@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="dataAnalysis.html">Data Analysis Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="curveFitting.html">Curve fitting and splines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Jackknife</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bootstrap.html">Bootstrapping routines</a></li>
@@ -91,15 +91,16 @@
 </pre></div>
 </div>
 <p>The central method of this file is the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> method. A call to</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">cov</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>returns a jackknife average, error, and (if desired) the covariance, in that order. Here <code class="docutils literal notranslate"><span class="pre">data</span></code> is
 a time series of raw data you are interested in, and <code class="docutils literal notranslate"><span class="pre">func</span></code> is some function of that data.
-<code class="docutils literal notranslate"><span class="pre">numb_blocks</span></code> is the number of jackknife blocks, <code class="docutils literal notranslate"><span class="pre">args</span></code> are the arguments to pass to <code class="docutils literal notranslate"><span class="pre">func</span></code>. Set
-<code class="docutils literal notranslate"><span class="pre">cov=True</span></code> if you want to get the covariance. The <code class="docutils literal notranslate"><span class="pre">conf_axis</span></code> is needed when one wants to pass a
+<code class="docutils literal notranslate"><span class="pre">numb_blocks</span></code> is the number of jackknife blocks, <code class="docutils literal notranslate"><span class="pre">args</span></code> are the arguments to pass to <code class="docutils literal notranslate"><span class="pre">func</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">conf_axis</span></code> is needed when one wants to pass a
 2D array as <code class="docutils literal notranslate"><span class="pre">data</span></code>, which can happen, for instance, if <code class="docutils literal notranslate"><span class="pre">func</span></code> depends on multiple observables.
-An example will be given below.</p>
+An example will be given below. By default the jackknife is <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">parallelized</span></a>
+with <code class="docutils literal notranslate"><span class="pre">DEFAULTTHREADS</span></code> processes. Set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> if you want to turn off parallelization.</p>
 <p>This jackknife is quite general. Something easy one might do with the jackknife is calculate the
 Polyakov loop susceptibility from Polyakov loops. A rule of thumb to use when using the jackknife
 code is to “write your function the way it appears using math symbols”. For example with the
@@ -127,10 +128,10 @@ accomplish this using 32 jackknife blocks with, for instance,</p>
 </div>
 <p>Note that these Polyakov loop examples are meant to be instructional. A complete set of functions
 measuring Polyakov loop observables is given in <code class="docutils literal notranslate"><span class="pre">polyakovTools.py</span></code>, described in part in the part
-of the documentation for <a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html"><span class="doc std std-doc">physics</span></a> modules.
-<strong>WARNING:</strong> Although the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code>
+of the documentation for <a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html"><span class="doc std std-doc">physics</span></a> modules.</p>
+<p><strong>WARNING:</strong> Although the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code>
 method is very general, one thing that cannot be done is passing a lambda function. This is because
-the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> is parallelized using <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code>, which is not able to pickle
+the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> can be parallelized using <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code>, which is not able to pickle
 lambda functions.</p>
 </section>
 

@@ -8,6 +8,8 @@ In the Analysistoolbox, these methods can be found in
 ```Python
 import latqcdtools.statistics.bootstr
 ```
+Just as with the [jackknife](jackknife.md), we stress that an advantage of the bootstrapping routines is that
+you can pass them arbitrary functions.
 
 ## Ordinary bootstrap
 
@@ -17,28 +19,28 @@ of interest. Averaging the $K$ means from each bootstrap sample gives a bootstra
 The method
 ```Python
 bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
-        seed = None, err_by_dist = False, args=(), nproc=DEFAULTTHREADS):
+        seed = None, err_by_dist = False, args=(), nproc=DEFAULTTHREADS)
 ```
 accomplishes this for an arbitrary $f$ `func`.
 
 By default, the bootstrap sample size is equal to the original number of measurements. We resample with replacement.
 The size can be adjusted with the `sample_size` argument.
+By default the bootstrap is [parallelized](../base/speedify.md) with `DEFAULTTHREADS`
+processes. Set `nproc=1` if you want to turn off parallelization.
 
 ## Gaussian bootstrap
 
-Quantities such as masses are extracted by fitting some function plotted 
-against an independent variable, here called $r$. Sometimes it is not clear what a good fitting range 
-for $r$ is. For example Debye masses can be extracted by fitting to an exponential that is only valid 
-for long distances, and there can be ambiguity in selecting an $r_{\text{min}}$. In such a case, one 
-may obtain multiple estimates $m(r_{\text{min}})$ for different $r_{\text{min}}$ that are all similar 
-to each other and highly correlated. The Gaussian bootstrap
-allows one to obtain an average and error bar under these circumstances. The method
+The Gaussian bootstrap method,
 ```Python
-avg, err = bootstr_add_dist(data, errors, nstat = 1000, plot_hist = False)
+bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, same_rand_for_obs = False,
+                   return_sample = False, seed = None, err_by_dist = True, useCovariance = False,
+                   Covariance = None, args = (), nproc = DEFAULTTHREADS, asym_err=False)
 ```
-works as follows: Given possibly correlated `data` and corresponding error bars `errors` that are 
-assumed to be Gaussian, resample by drawing for data point `i`, `nstat` new resampled measurements 
-from a Gaussian distribution with mean `data[i]` and standard deviation `errors[i]`. Concatenate 
-these `ndata*nstat` resampled measurements into a new distribution. The average `avg` is taken as 
-the median of this new distribution, and the error `err` is the distance between the median and 
-the 68% quantile.
+will resample as follows: For each element of `data`, random data will be drawn from normal distributions
+with means equal to the values in `data` and standard deviations from `data_std_dev`. This defines one
+Gaussian bootstrap sample, and the function `func` is applied to the sample. This process is repeated
+`numb_samples` times.
+
+By default, the Gaussian bootstrap returns the median and 68-percentiles from the sample. You can return
+the standard deviation instead by switching `err_by_dist` to `False`. You also have the option to get
+back asymmetric quantiles/errors using `asymm_err=True`.

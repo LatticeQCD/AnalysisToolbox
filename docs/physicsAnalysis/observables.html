@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Computing Observables &mdash; LatticeToolbox 0.1 documentation</title>
+  <title>Polyakov loop observables &mdash; LatticeToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reference scales" href="referenceScales.html" />
+    <link rel="next" title="Reference scales and physical constants" href="referenceScales.html" />
     <link rel="prev" title="Handling Lattice Parameters" href="latticeParameters.html" /> 
 </head>
 
@@ -52,10 +52,11 @@
 <li class="toctree-l2"><a class="reference internal" href="gauge.html">Gaugefields</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latticeParameters.html">Handling Lattice Parameters</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Computing Observables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Polyakov loop observables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales and physical constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuumExtrap.html">Continuum-limit extrapolation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
@@ -77,7 +78,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="physicsAnalysis.html">Physics Modules</a> &raquo;</li>
-      <li>Computing Observables</li>
+      <li>Polyakov loop observables</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/physicsAnalysis/observables.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -87,13 +88,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="computing-observables">
-<h1>Computing Observables<a class="headerlink" href="#computing-observables" title="Permalink to this headline"></a></h1>
-<p>The LatticeToolbox has built in methods for several commonly computed observables in the context of lattice
-calculations trying to understand the QCD phase diagram.</p>
-<section id="polyakov-loop-observables">
-<h2>Polyakov loop observables<a class="headerlink" href="#polyakov-loop-observables" title="Permalink to this headline"></a></h2>
-<p>The Polyakov loop <span class="math notranslate nohighlight">\(P\)</span> is the order parameter of the deconfinement transition in the quenched limit. The imaginary
+  <section class="tex2jax_ignore mathjax_ignore" id="polyakov-loop-observables">
+<h1>Polyakov loop observables<a class="headerlink" href="#polyakov-loop-observables" title="Permalink to this headline"></a></h1>
+<p>The Polyakov loop <span class="math notranslate nohighlight">\(P\)</span> gives the order parameter of the deconfinement transition in the quenched limit. The imaginary
 part is the order parameter of the Roberge-Weiss transition. It is also occasionally of interest at finite quark
 mass and real <span class="math notranslate nohighlight">\(\mu\)</span>. You can find a bunch of Polyakov loop related observables in the <code class="docutils literal notranslate"><span class="pre">polyakovTools</span></code> module.</p>
 <p>Initialize a <code class="docutils literal notranslate"><span class="pre">polyakovTools</span></code> object with</p>
@@ -105,7 +102,6 @@ mass and real <span class="math notranslate nohighlight">\(\mu\)</span>. You can
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">RePmeas</span></code> and <code class="docutils literal notranslate"><span class="pre">ImPmeas</span></code> are <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays of measurements of real and imaginary parts of <span class="math notranslate nohighlight">\(P\)</span>, respectively.</p>
-</section>
 </section>
 
 

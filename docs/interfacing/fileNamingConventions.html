@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dealing with naming conventions from other collaborations &mdash; LatticeToolbox 0.1 documentation</title>
+  <title>Ensemble names and file formats &mdash; LatticeToolbox 0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="interfacing.html">Interfacing</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Dealing with naming conventions from other collaborations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Ensemble names and file formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="confLoader.html">Loading configurations</a></li>
 </ul>
 </li>
@@ -70,7 +70,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="interfacing.html">Interfacing</a> &raquo;</li>
-      <li>Dealing with naming conventions from other collaborations</li>
+      <li>Ensemble names and file formats</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/interfacing/fileNamingConventions.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -80,8 +80,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="dealing-with-naming-conventions-from-other-collaborations">
-<h1>Dealing with naming conventions from other collaborations<a class="headerlink" href="#dealing-with-naming-conventions-from-other-collaborations" title="Permalink to this headline"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="ensemble-names-and-file-formats">
+<h1>Ensemble names and file formats<a class="headerlink" href="#ensemble-names-and-file-formats" title="Permalink to this headline"></a></h1>
 <p>Not every collaboration names their files in the same way. On the other hand, there are a few prominent collaborations
 that have their own naming schemes. It can make it easier for you to read in their files, if you can generate
 these names automatically. Moreover some collaborations like to use third-party tools that have specific file
@@ -91,9 +91,17 @@ heterogeneous field is an important part of interoperability.</p>
 <ul class="simple">
 <li><p>MILC code configuration naming schemes</p></li>
 <li><p>HotQCD configuration naming schemes</p></li>
-<li><p>Reading GPL files</p></li>
-<li><p>Reading YAML files</p></li>
+<li><p>Reading <code class="docutils literal notranslate"><span class="pre">gpl</span></code> files</p></li>
+<li><p>Reading <code class="docutils literal notranslate"><span class="pre">yaml</span></code> files</p></li>
 </ul>
+<p>For the first two, we have <code class="docutils literal notranslate"><span class="pre">HotQCDParams</span></code> and <code class="docutils literal notranslate"><span class="pre">MILCParams</span></code> objects, which inherit from the <code class="docutils literal notranslate"><span class="pre">latticeParams</span></code>
+object described <a class="reference internal" href="../physicsAnalysis/latticeParameters.html"><span class="doc std std-doc">here</span></a>. To quickly extract run parameters
+from a MILC or HotQCD-type string, one finds inside</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">interfaces</span>
+</pre></div>
+</div>
+<p>the method <code class="docutils literal notranslate"><span class="pre">paramFrom_HotQCD_MILC</span></code>. The <code class="docutils literal notranslate"><span class="pre">gpl</span></code> and <code class="docutils literal notranslate"><span class="pre">yaml</span></code> reading methods <code class="docutils literal notranslate"><span class="pre">loadGPL</span></code> and <code class="docutils literal notranslate"><span class="pre">loadYAML</span></code>
+are also inside this module.</p>
 </section>
 
 

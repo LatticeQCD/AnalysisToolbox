@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Numerical calculus &mdash; LatticeToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SU(3) matrices" href="SU3.html" />
+    <link rel="prev" title="Math" href="math.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> LatticeToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="math.html">Math</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Numerical calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SU3.html">SU(3) matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="otherMath.html">Other mathematics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LatticeToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="math.html">Math</a> &raquo;</li>
+      <li>Numerical calculus</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/math/calculus.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="numerical-calculus">
+<h1>Numerical calculus<a class="headerlink" href="#numerical-calculus" title="Permalink to this headline"></a></h1>
+<p>In the LatticeToolbox we have some methods for numerical differentiation and integration.</p>
+<section id="numerical-differentiation">
+<h2>Numerical differentiation<a class="headerlink" href="#numerical-differentiation" title="Permalink to this headline"></a></h2>
+<p>Differentiation is implemented in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">num_deriv</span>
+</pre></div>
+</div>
+<p>We use central differences to calculate the numerical derivative. The method <code class="docutils literal notranslate"><span class="pre">best_h</span></code>
+finds a finite difference that is small enough to suppress higher order differences,
+but not so small that you suffer from errors due to machine precision.</p>
+<p>To calculate <span class="math notranslate nohighlight">\(f'\)</span> of <span class="math notranslate nohighlight">\(f\)</span> you can call</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">diff_deriv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">h</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We also have methods to compute the gradient, <code class="docutils literal notranslate"><span class="pre">diff_grad</span></code>, and the Hessian, <code class="docutils literal notranslate"><span class="pre">diff_hess</span></code>.</p>
+</section>
+<section id="numerical-integration">
+<h2>Numerical integration<a class="headerlink" href="#numerical-integration" title="Permalink to this headline"></a></h2>
+<p>SciPy already has some pretty fast integrators, so we just wrap those. The wrappers can
+be found in</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">num_int</span>
+</pre></div>
+</div>
+<p>One of the central wrappers is</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateFunction</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;persistent&#39;</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(),</span><span class="n">stepsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-8</span><span class="p">,</span><span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which carries out the one-dimensional integral of <code class="docutils literal notranslate"><span class="pre">func</span></code> from <code class="docutils literal notranslate"><span class="pre">a</span></code> to <code class="docutils literal notranslate"><span class="pre">b</span></code>. There are a variety of integration
+methods to choose from that can be specified with <code class="docutils literal notranslate"><span class="pre">method</span></code>, including the trapezoid rule, the Romberg method,
+and Gaussian quadrature. The solving continues until subsequent guesses fall within relative or absolute
+differences <code class="docutils literal notranslate"><span class="pre">epsrel</span></code> and <code class="docutils literal notranslate"><span class="pre">epsabs</span></code>, or if it reaches <code class="docutils literal notranslate"><span class="pre">limit</span></code> evaluations. The default method <code class="docutils literal notranslate"><span class="pre">persistent</span></code>
+tries various methods until something works.</p>
+<p>Another wrapper is</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateData</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;trapezoid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which will find the area under <code class="docutils literal notranslate"><span class="pre">ydata</span></code> given the grid points <code class="docutils literal notranslate"><span class="pre">xdata</span></code>. This uses the trapezoid rule by default,
+but it can also use the Simpson rule or the homebrew <code class="docutils literal notranslate"><span class="pre">spline</span></code> method, which fits the data with a spline,
+then evaluates the area by quadrature.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
