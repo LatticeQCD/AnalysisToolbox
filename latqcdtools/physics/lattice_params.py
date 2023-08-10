@@ -7,9 +7,8 @@
 #
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv
-from latqcdtools.physics.referenceScales import fk_phys, r1_MILC_2010, a_div_r1, a_times_fk, r0_div_a, r0_hQCD_2014, \
-    CY_A_TIMES_FK, CY_FK_PHYS, CY_A_DIV_R0, CY_A_DIV_R1
+from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv, fk_phys, r0_phys, r1_phys
+from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, CY_param, CY_phys
 
 
 def massStringToFloat(string):
@@ -51,30 +50,23 @@ class latticeParams:
             mu : float
                 Baryon chemical potential.
         """
+        if not scaleType in CY_phys.keys():
+            logger.TBError('Scale type',scaleType,'not yet supported.')
         self.scale = scaleType
-        if self.scale == 'fk':
-            if scaleYear is None:
-                self.fK = fk_phys(CY_FK_PHYS,"MeV")
-            else:
-                self.fK = fk_phys(scaleYear,"MeV")
-            if paramYear is None:
-                self.year = CY_A_TIMES_FK
-            else:
-                self.year = paramYear
-        elif self.scale == 'r1':
-            if paramYear is None:
-                self.year = CY_A_DIV_R1
-            else:
-                self.year = paramYear
-            self.r1=r1_MILC_2010("fm")
-        elif self.scale == 'r0':
-            if paramYear is None:
-                self.year = CY_A_DIV_R0
-            else:
-                self.year = paramYear
-            self.r0=r0_hQCD_2014("fm")
+        self.fK    = fk_phys(CY_phys['fk'],"MeV")
+        self.r1    = r1_phys(CY_phys['r1'],"fm")
+        self.r0    = r0_phys(CY_phys['r0'],"fm")
+        if paramYear is None:
+            self.year = CY_param[self.scale] 
         else:
-            logger.TBError('scaleType',self.scale,'not yet supported.')
+            self.year = paramYear
+        if scaleYear is not None:
+            if self.scale == 'fk':
+                self.fK = fk_phys(scaleYear)
+            elif self.scale == 'r1':
+                self.r1 = r1_phys(scaleYear)
+            elif self.scale == 'r0':
+                self.r0 = r0_phys(scaleYear)
         if isinstance(coupling, str):
             self.beta  = int(coupling)/10**(len(coupling)-1)
             self.cbeta = coupling
@@ -143,12 +135,9 @@ class latticeParams:
 
     # T in [MeV]
     def getT(self):
-        if self.Ns is not None:
-            if self.Ns == self.Nt:
-                return 0.
         return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
-    
-    
+
+
     # L in spacelike direction in [1/MeV]
     def getLs(self):
         if self.Ns is not None:

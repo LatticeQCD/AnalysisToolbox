@@ -274,3 +274,45 @@ def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
         return convert(LMS,"MeV",units), convert(LMSerr,"MeV",units)
     else:
         return convert(LMS,"MeV",units)
+    
+
+def r1_phys(year=2010,units="fm",returnErr=False):
+    """ Physical value of Sommer scale r1. """    
+    if year==2010:
+        # r1 taken from MILC 2010. arXiv:1012.0868. 
+        r1fm, r1fm_err = 0.3106, np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
+    else:
+        logger.TBError("Invalid year specification.")
+    if returnErr:
+        return convert(r1fm,"fm",units), convert(r1fm_err,"fm",units)
+    else:
+        return convert(r1fm,"fm",units)
+
+
+def r0_phys(year=2014,units="fm",returnErr=False):
+    """ Physical value of Sommer scale r0. """    
+    if year==2014:
+        # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
+        r1, r1_err = r1_phys(year=2010,units=units,returnErr=True)
+        r0, r0_err = 1.5092*r1, 1.5092*r1_err
+    else:
+        logger.TBError("Invalid year specification.")
+    if returnErr:
+        return r0, r0_err 
+    else:
+        return r0 
+
+
+def sqrt_t0_phys(year=2015,units="fm",returnErr=False):
+    """ Gradient flow scale t0^(1/2). """
+    if year==2015:
+        # TODO: Where did this come from? Is the year correct? 
+        sqrtt0_div_r0 = 0.334
+        sqrtt0        = sqrtt0_div_r0 * r0_phys(year=2014,units=units,returnErr=False) 
+    else:
+        logger.TBError("Invalid year specification.")
+    if returnErr:
+        return sqrtt0, None 
+    else:
+        return sqrtt0
+

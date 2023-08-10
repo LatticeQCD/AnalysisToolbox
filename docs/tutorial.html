@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial &mdash; LatticeToolbox 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributions" href="contributions/contributions.html" />
+    <link rel="prev" title="LatticeToolbox" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="index.html" class="icon icon-home"> LatticeToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base/base.html">Basic Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="math/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfacing/interfacing.html">Interfacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications/applications.html">Applications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LatticeToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorial.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h1>
+<p>Here we walk through two example calculations found in the <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples</span></code>
+directory. The first shows a simple HRG calculation, while the second showcases
+a continuum limit extrapolation.</p>
+<section id="hadron-resonance-gas-calculation">
+<h2>Hadron resonance gas calculation<a class="headerlink" href="#hadron-resonance-gas-calculation" title="Permalink to this headline"></a></h2>
+<p>The hadron resonance gas (HRG) model, and its implementation in the LatticeToolbox,
+is described in some detail <a class="reference internal" href="physicsAnalysis/HRG.html"><span class="doc std std-doc">here</span></a>. Below is a small code
+that highlights some of the features of the LatticeToolbox. For example
+<code class="docutils literal notranslate"><span class="pre">initialize</span></code> simulataneously saves all screen output to the log file <code class="docutils literal notranslate"><span class="pre">HRG.log</span></code>
+along with the git commit hash, so you can track down which version of the
+LatticeToolbox you used.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.physics.HRG</span> <span class="kn">import</span> <span class="n">HRG</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span><span class="p">,</span> <span class="n">writeTable</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+
+<span class="c1"># Write terminal output to log file. Includes git commit hash.</span>
+<span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;HRG.log&#39;</span><span class="p">)</span>
+
+<span class="c1"># Pick a temperature range in MeV</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">166</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Read in hadron names, masses, charges, baryon number, strangeness,</span>
+<span class="c1"># charm, and degeneracy factor. This table is provided with LatticeToolbox.</span>
+<span class="n">QMHRG_table</span> <span class="o">=</span> <span class="s1">&#39;../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt&#39;</span>
+<span class="n">hadrons</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">readTable</span><span class="p">(</span><span class="n">QMHRG_table</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;U11,f8,i8,i8,i8,i8,i8&quot;</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">ba</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">ba</span> <span class="ow">in</span> <span class="n">B</span><span class="p">])</span>
+
+<span class="c1"># Instantiate HRG object.</span>
+<span class="n">QMhrg</span> <span class="o">=</span> <span class="n">HRG</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">S</span><span class="p">,</span><span class="n">Q</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>
+
+<span class="c1"># This computation is vectorized since T is a numpy array.</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Computing chi2B.&#39;</span><span class="p">)</span>
+<span class="n">chi</span> <span class="o">=</span> <span class="n">QMhrg</span><span class="o">.</span><span class="n">gen_chi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">B_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">Q_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">S_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">C_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">muB_div_T</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">muQ_div_T</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">muS_div_T</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">muC_div_T</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Output T and chi2B as columns in this table.</span>
+<span class="n">writeTable</span><span class="p">(</span><span class="s2">&quot;chi2B.txt&quot;</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">chi</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;T [MeV]&#39;</span><span class="p">,</span><span class="s1">&#39;chi2B (QMHRG)&#39;</span><span class="p">])</span>
+
+<span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In this case we work at fixed <span class="math notranslate nohighlight">\(\mu_B/T=0.3\)</span>
+and compute <span class="math notranslate nohighlight">\(\chi_2^B\)</span> as function of temperature. What is needed is as much
+relevant input knowledge about hadron bound states as is known; this is
+collected by <code class="docutils literal notranslate"><span class="pre">readTable</span></code>. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">numpy.loadtxt()</span></code>, hence you
+see you can pass it many of the same keyword arguments. The next line
+for each species whether the gas is bosonic or fermionic.</p>
+<p>Finally the <code class="docutils literal notranslate"><span class="pre">HRG</span></code> class is instantiated as <code class="docutils literal notranslate"><span class="pre">QMhrg</span></code>, which besides
+generic conserved charge cumlants like the one computed with <code class="docutils literal notranslate"><span class="pre">gen_chi</span></code>,
+contains many methods for various thermodynamic observables such as the
+pressure and entropy.
+The results are saved in a table <code class="docutils literal notranslate"><span class="pre">chi2B.txt</span></code>.</p>
+</section>
+<section id="continuum-limit-extrapolation">
+<h2>Continuum-limit extrapolation<a class="headerlink" href="#continuum-limit-extrapolation" title="Permalink to this headline"></a></h2>
+<p>Suppose we want to perform a continuum-limit extrapolation to
+determine the deconfinement transition temperature <span class="math notranslate nohighlight">\(T_d\)</span> in pure SU(3). The order
+parameter for this phase transition is given by the Polyakov loop, <span class="math notranslate nohighlight">\(P\)</span>.
+The transition is first-order in the
+thermodynamic limit, where <span class="math notranslate nohighlight">\(\langle |P|\rangle\)</span> as function of temperature
+would jump discontinuously at <span class="math notranslate nohighlight">\(T_d\)</span>.
+At finite volume, this abrupt jump becomes smooth, and <span class="math notranslate nohighlight">\(T_d\)</span> is estimated by the
+inflection point of the curve.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.printErrorBars</span> <span class="kn">import</span> <span class="n">get_err_str</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.math.num_deriv</span> <span class="kn">import</span> <span class="n">diff_deriv</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.math.spline</span> <span class="kn">import</span> <span class="n">getSpline</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.statistics.statistics</span> <span class="kn">import</span> <span class="n">gaudif</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.statistics.bootstr</span> <span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.physics.continuumExtrap</span> <span class="kn">import</span> <span class="n">continuumExtrapolate</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.physics.constants</span> <span class="kn">import</span> <span class="n">r0_phys</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.physics.lattice_params</span> <span class="kn">import</span> <span class="n">latticeParams</span>
+
+<span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;cont.log&#39;</span><span class="p">)</span>
+
+<span class="n">Nts</span>         <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+<span class="n">Tds</span><span class="p">,</span> <span class="n">Tderrs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">Nt</span> <span class="ow">in</span> <span class="n">Nts</span><span class="p">:</span>
+
+    <span class="n">T</span>  <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Ns</span> <span class="o">=</span> <span class="n">Nt</span><span class="o">*</span><span class="mi">3</span>
+
+    <span class="c1"># Read in Polyakov loop measurements, </span>
+    <span class="n">beta</span><span class="p">,</span> <span class="n">PM</span><span class="p">,</span> <span class="n">PE</span> <span class="o">=</span> <span class="n">readTable</span><span class="p">(</span><span class="s1">&#39;ploop/Nt&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Nt</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.txt&#39;</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># Create array of temperatures in physical units</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">beta</span><span class="p">:</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">latticeParams</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scaleType</span><span class="o">=</span><span class="s1">&#39;r0&#39;</span><span class="p">)</span> 
+        <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">lp</span><span class="o">.</span><span class="n">getT</span><span class="p">()</span> <span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">1001</span><span class="p">)</span>
+
+    <span class="c1"># Extract Td from inflection point of &lt;|P|&gt; vs T using natural spline</span>
+    <span class="k">def</span> <span class="nf">getTd</span><span class="p">(</span><span class="n">pm</span><span class="p">):</span>
+        <span class="n">spl</span>  <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">pm</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dPdT</span> <span class="o">=</span> <span class="n">diff_deriv</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">spl</span><span class="p">)</span>
+        <span class="n">maxIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dPdT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="n">maxIndex</span><span class="p">]</span>
+
+    <span class="c1"># Error in Td estimate comes from 1000 Gaussian bootstrap samples</span>
+    <span class="n">Td</span><span class="p">,</span> <span class="n">Tde</span> <span class="o">=</span> <span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">getTd</span><span class="p">,</span> <span class="n">PM</span><span class="p">,</span> <span class="n">PE</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">Tds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Td</span><span class="p">)</span>
+    <span class="n">Tderrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tde</span><span class="p">)</span>
+
+<span class="c1"># Perform O(a^4) continuum-limit extrapolation</span>
+<span class="n">result</span><span class="p">,</span> <span class="n">result_err</span><span class="p">,</span> <span class="n">chidof</span> <span class="o">=</span> <span class="n">continuumExtrapolate</span><span class="p">(</span> <span class="n">Nts</span><span class="p">,</span> <span class="n">Tds</span><span class="p">,</span> <span class="n">Tderrs</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s2">&quot;Nt&quot;</span><span class="p">,</span>
+                                                   <span class="n">show_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_results</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+
+<span class="c1"># Do a Z-test against literature result,  </span>
+<span class="n">r0</span> <span class="o">=</span> <span class="n">r0_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2014</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;MeVinv&quot;</span><span class="p">)</span>
+<span class="n">Tdr0</span><span class="p">,</span> <span class="n">Tdr0e</span> <span class="o">=</span> <span class="n">r0</span> <span class="o">*</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r0</span> <span class="o">*</span> <span class="n">result_err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Tdr0_lit</span><span class="p">,</span> <span class="n">Tdr0_lite</span> <span class="o">=</span> <span class="mf">0.7457</span><span class="p">,</span> <span class="mf">0.0045</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;q(ours vs. lit) =&#39;</span><span class="p">,</span><span class="n">gaudif</span><span class="p">(</span><span class="n">Tdr0</span><span class="p">,</span><span class="n">Tdr0e</span><span class="p">,</span><span class="n">Tdr0_lit</span><span class="p">,</span><span class="n">Tdr0_lite</span><span class="p">))</span>
+
+<span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Above we show how such an extrapolation is achieved with
+the LatticeToolbox, along with error estimation, plotting the results, and
+carrying out a statistical comparison with the known literature value.
+We assume you already have results for <span class="math notranslate nohighlight">\(\langle |P|\rangle\)</span> at various <span class="math notranslate nohighlight">\(N_\tau\)</span>, which we
+read in from tables of the form <code class="docutils literal notranslate"><span class="pre">Nt6.txt</span></code>.
+For each <span class="math notranslate nohighlight">\(N_\tau\)</span>, this code estimates the inflection point of <span class="math notranslate nohighlight">\(\langle |P|\rangle\)</span> as a function
+of <span class="math notranslate nohighlight">\(T\)</span> by taking a <a class="reference internal" href="math/calculus.html"><span class="doc std std-doc">derivative</span></a> using a
+<a class="reference internal" href="dataAnalysis/curveFitting.html"><span class="doc std std-doc">spline</span></a> to get <span class="math notranslate nohighlight">\(T_d(N_\tau)\)</span>.
+Temperatures are calculated in MeV with the help of our
+<a class="reference internal" href="physicsAnalysis/latticeParameters.html"><span class="doc std std-doc">class</span></a> that collects ensemble parameters. This
+procedure is wrapped in a user-defined function <code class="docutils literal notranslate"><span class="pre">getTc</span></code>,
+so that errors in the <span class="math notranslate nohighlight">\(\langle |P| \rangle\)</span> data can be
+conveniently propagated into the error in <span class="math notranslate nohighlight">\(T_d(N_\tau)\)</span>
+using a Gaussian <a class="reference internal" href="dataAnalysis/bootstrap.html"><span class="doc std std-doc">bootstrap</span></a>.</p>
+<p>Having the <code class="docutils literal notranslate"><span class="pre">Nts</span></code>, <code class="docutils literal notranslate"><span class="pre">Tds</span></code>, and <code class="docutils literal notranslate"><span class="pre">Tderrs</span></code>, we are ready to perform a
+continuum-limit extrapolation. This will perform an
+extrapolation to second order in <span class="math notranslate nohighlight">\(a^2\)</span>, i.e. <span class="math notranslate nohighlight">\(\mathcal{O}(a^4)\)</span>, print the fit
+results to screen, and create a plot of the extrapolation for you.
+The arrays <code class="docutils literal notranslate"><span class="pre">result</span></code> and <code class="docutils literal notranslate"><span class="pre">result_err</span></code> contain the best fit parameters
+along with their errors, with <code class="docutils literal notranslate"><span class="pre">result[0]</span></code> being the continuum value <span class="math notranslate nohighlight">\(T_d\)</span>.
+In the last block we compare our result with <span class="math notranslate nohighlight">\(T_d r_0\)</span> from the
+<a class="reference external" href="https://journals.aps.org/prd/abstract/10.1103/PhysRevD.91.096002">literature</a>.
+The temperatures calculated in this code implicitly had units of
+MeV, hence we need <span class="math notranslate nohighlight">\(r_0\)</span> in <a class="reference internal" href="physicsAnalysis/referenceScales.html"><span class="doc std std-doc">physical units</span></a>.
+Finally we call <code class="docutils literal notranslate"><span class="pre">gaudif</span></code> to carry out a Gaussian difference test or
+Z-test, which is implemented in our <a class="reference internal" href="dataAnalysis/statistics.html"><span class="doc std std-doc">statistics</span></a> module.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -17,11 +17,6 @@ exists parameterizations from 2021, 2014, and 2012.
 Please note that the parameterizations for $a$ have closed intervals $[\beta_{\rm min},~\beta_{\rm max}]$ in
 which they are valid.
 
-For each scale we have methods giving values in physical units along with the determination year. For example you
-can get the $r_1$ scale in fm using `r1_MILC_2010('fm')` along with its corresponding combined error bar
-`r1err_MILC_2010('fm')`. Scales that can be experimentally accessed like $f_K$ are kept in a separate
-module, described below.
-
 
 ## Physical constants
 

@@ -14,11 +14,22 @@ from latqcdtools.physics.betaFunction import beta_func, b0, b1
 CHECKBETARANGE = True
 
 
-# Current Year for various scales and parameterizations
-CY_A_TIMES_FK = 2021
-CY_FK_PHYS    = 2019
-CY_A_DIV_R1   = 2021
-CY_A_DIV_R0   = 2017
+# Most recent update of scales in physical units
+CY_phys  = { 
+            'fk' : 2019,
+            'r1' : 2010,
+            'r0' : 2014,
+            't0' : 2015 
+            }
+
+
+# Most recent update of scale parameterizations
+CY_param = { 
+            'fk' : 2021,
+            'r1' : 2021,
+            'r0' : 2017,
+            't0' : 2015 
+            }
 
 
 def ignoreBetaRange():
@@ -101,20 +112,6 @@ def a_times_fk(beta: float, year):
     return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
 
-def a_fk_invGeV(beta: float, year):
-    if str(year) == "2021":
-        fKexp = fk_phys(2019,"MeV")
-    elif str(year) == "2014" or str(year) == "2012":
-        fKexp = fk_phys(2012,"MeV")
-    else:
-        logger.TBError("No fit parameters for ", str(year))
-    return (a_times_fk(beta, year) * 1000) / fKexp
-
-
-def a_fk_fm(beta, year):
-    return GeVinv_to_fm(a_fk_invGeV(beta, year))
-
-
 # ====================================================== r1 scales
 
 
@@ -153,26 +150,6 @@ def a_div_r1(beta, year):
     else:
         logger.TBError("No fit parameters for year", str(year))
     return allton_type_ansatz(beta, c0, c2, d2)
-
-
-def a_r1_invGeV(beta, year):
-    return fm_to_GeVinv(r1_MILC_2010("fm") * a_div_r1(beta, year))
-
-
-def a_r1_fm(beta, year):
-    return r1_MILC_2010("fm") * a_div_r1(beta, year)
-
-
-def r1_MILC_2010(units):
-    """ r1 taken from MILC 2010. arXiv:1012.0868. """
-    r1fm = 0.3106
-    return convert(r1fm,"fm",units)
-
-
-def r1err_MILC_2010(units):
-    """ Error bar from MILC 2010. arXiv:101.0868. """
-    r1errfm = np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    return convert(r1errfm,"fm",units)
 
 
 # ================================================= strange quark mass: line of constant physics
@@ -219,41 +196,21 @@ def r0_div_a(beta,year):
     """
     # https://arxiv.org/abs/1709.07612
     if str(year) == "2017":
-        c1=-8.9664
-        c2=19.21
-        c3=-5.25217
-        c4=0.606828
+        c1 = -8.9664
+        c2 = 19.21
+        c3 = -5.25217
+        c4 = 0.606828
     # https://arxiv.org/abs/1503.05652
     elif str(year) == "2015":
         beta_range = [5.7, 6.92]
         print_out_of_beta_range_warning(beta, beta_range)
-        c1=-8.17273
-        c2=14.9600
-        c3=-3.95983
-        c4=-5.30334
+        c1 = -8.17273
+        c2 = 14.9600
+        c3 = -3.95983
+        c4 = -5.30334
     else:
         logger.TBError("No fit parameters for year", str(year))
     return wuppertal_type_ansatz(beta,c1,c2,c3,c4)
-
-
-# Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
-# Use r1=0.3106 from MILC. arXiv:1012.0868.
-def r0_hQCD_2014(units):
-    r0fm = 1.5092*r1_MILC_2010("fm") # about 0.469
-    return convert(r0fm,"fm",units)
-
-
-def r0err_hQCD_2014(units):
-    r0errfm = 1.5092*np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    return convert(r0errfm,"fm",units)
-
-
-def a_r0_invGeV(beta):
-    return r0_hQCD_2014("GeVinv")/r0_div_a(beta)
-
-
-def a_r0_fm(beta):
-    return GeVinv_to_fm(a_r0_invGeV(beta))
 
 
 # ===================================================== t0 scales
@@ -261,23 +218,12 @@ def a_r0_fm(beta):
 
 # Based on https://arxiv.org/pdf/1503.05652.pdf
 # Latest update at 2017/01/11 by Lukas Mazur
-def sqrtt0(beta):
+def sqrtt0_div_a(beta):
     nf = 0
-    c1=-9.945
-    c2=24.191
-    c3=-5.334
-    c4=1.452
+    c1 = -9.945
+    c2 = 24.191
+    c3 = -5.334
+    c4 = 1.452
     return np.exp( (beta/(12*b0(nf))+b1(nf)/(2.*b0(nf)**2)*np.log(6*b0(nf)/beta))
                    * (1+c1/beta+c2/beta**2)/(1+c3/beta+c4/beta**2) )
 
-
-sqrtt0r0_cont = 0.334
-sqrtt0_phys   = sqrtt0r0_cont*r0_hQCD_2014("GeVinv")
-
-
-def a_t0_invGeV(beta):
-    return sqrtt0_phys/sqrtt0(beta)
-
-
-def a_t0_fm(beta):
-    return GeVinv_to_fm(a_t0_invGeV(beta))

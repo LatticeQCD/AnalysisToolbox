@@ -6,8 +6,6 @@ Tpc156.5_pseudo-muS_muB_r0.4QMHRG2020_BI
 HRG_LCP*
 P_div*
 s_div*
-testing/experimental/*
-pycharmCheck/*
 testing/base/test.d
 
 # Byte-compiled / optimized / DLL files

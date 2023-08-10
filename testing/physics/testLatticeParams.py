@@ -37,14 +37,14 @@ def testLatticeParams():
     logger.info('MILC:',lp.getcparams())
     del lp
 
-    import params_zeroTemp
+    import params_r0
 
-    lp = latticeParams(params_zeroTemp.Ns, params_zeroTemp.Nt, params_zeroTemp.cbeta, scaleType='r0', paramYear=2017)
+    lp = latticeParams(params_r0.Ns, params_r0.Nt, params_r0.cbeta, scaleType='r0', paramYear=2017)
     lp.paramSummary()
     a = lp.geta()
     T = lp.getT()
     print_results(a,0.04195979097233082,text='r0 test, a')
-    print_results(T,0.0,text='r0 test, T')
+    print_results(T,146.96136335775122,text='r0 test, T')
     del lp
 
 

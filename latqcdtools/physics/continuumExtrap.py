@@ -103,11 +103,15 @@ class Extrapolator(Fitter):
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,prior_err=None,
                          error_strat='propagation',xtype="a",nproc=DEFAULTTHREADS):
     """ A convenience wrapper for the Extrapolator. """
-    ext = Extrapolator(x, obs, obs_err, order=order, error_strat=error_strat, nproc=nproc)
+    ext = Extrapolator(x, obs, obs_err, xtype=xtype, order=order, error_strat=error_strat, nproc=nproc)
     result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, prior_err=prior_err)
     if show_results:
         ext.showResults()
     if plot_results:
-        ext.plot()
+        if xtype=="a":
+            xlabel = "$a^2$"
+        else:
+            xlabel = "$1/N_\\tau^2$"
+        ext.plot(xlabel=xlabel)
         plt.show()
     return result
