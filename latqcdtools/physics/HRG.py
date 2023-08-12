@@ -1,9 +1,10 @@
 #
 # HRG.py
 #
-# J. Goswami, D. Clarke, S. Sharma
+# J. Goswami, D. Clarke, Sipaz Sharma
 #
-# Collection of methods pertaining to hadron resonance gas calculations.
+# Collection of methods pertaining to hadron resonance gas calculations. Based in part 
+# on code by F. Karsch.
 #
 
 import numpy as np
@@ -329,10 +330,10 @@ class HRG(HRGbase):
                     * kn(2, (n*self.Mass[k]/T))
         return chi
 # TODO: gen_chi can be implemented using multi-dimensional Leibniz rule
-# TODO: should probably just delete this eventually, it seems to be crap
 
 
 class HRGexact(HRGbase):
+# TODO: maybe just delete this eventually, it seems to be crap
 
     """ HRG implemented through numerical integration. """
 

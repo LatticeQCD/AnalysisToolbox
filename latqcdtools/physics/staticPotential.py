@@ -64,6 +64,7 @@ def impdist(Ns,r2max,improvedAction=True):
 
     @jit(nopython=True)
     def compiledImpDist():
+        """ Ported from code by O. Kaczmarek. """
         rimp  =[]
         kn    =2.*np.pi/Ns
         pots  =[0.]*3*Ns**2

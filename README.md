@@ -55,7 +55,8 @@ bash runTests.bash
 ## Getting started and documentation
 
 To acquaint yourself with the LatticeToolbox, you can start by
-having a look at the [tutorial](), which walks through some scripts in the `examples` directory.
+having a look at the [tutorial](https://latticeqcd.github.io/LatticeToolbox/tutorial.html),
+which walks through some scripts in the `examples` directory.
 You can also look at some of the scripts in the `applications` and `testing` directories.
 
 To learn about the code in more detail, especially learning how to contribute, please have
