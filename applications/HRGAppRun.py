@@ -43,10 +43,10 @@ def main():
             pool.starmap(task, args_for_tasks)
 
     elif args.runMode == 3:
-        for obs in ["energy", "specificheat"]:
+        for obs in ["pressure", "energy"]:
             for mb in [0.0, 1.0, 1.5, 2.0, 2.5]:
                 subprocess.run(["python3", "main_strangeness_neutral.py", "--hadron_file", filepath, "--fixedmuBNszerofile",
-                               f"HRG_fixedmuBT{mb}_r0.4QMHRG2020_BI", "--obs", obs, "--r", str(r), "--tag", "QMHRG2020_BI_Nszero"])
+                               f"fixedmuBTNsZerofiles/HRG_fixedmuBT{mb}_r0.4QMHRG2020_BI", "--obs", obs, "--r", str(r), "--tag", "QMHRG2020_BI_Nszero"])
     else:
         print("Invalid runMode")
 
