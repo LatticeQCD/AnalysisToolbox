@@ -1,15 +1,19 @@
+# 
+# J. Goswami 
+# 
+# This is an auxiliary code that shows how you can use the applications
+# main_HRG_LCP or main_HRG_measure to do production runs. 
+# 
+
 import subprocess
-from multiprocessing import Pool
 import argparse
-from itertools import product
 from latqcdtools.base.initialize import initialize, finalize
-
-initialize('HRG.log')
-
-BQSC = "2000"
+from latqcdtools.base.speedify import parallel_function_eval
 
 
 def task(temp, mode):
+    """ Speed things up with parallelization. """
+    BQSC = "2000"
     if mode == 1:
         subprocess.run(["python3", "main_HRG_LCP.py", "--r", str(r),
                        "--hadron_file", filepath, "--models", "QM", "--T", str(temp)])
@@ -17,30 +21,25 @@ def task(temp, mode):
         subprocess.run(["python3", "main_HRG_measure.py", "--hadron_file", filepath,
                        "--LCP_file", "HRG_LCP_T%0.1f_r0.4QM"%temp, "--bqsc", BQSC, "--obs", "chi"])
 
-parser = argparse.ArgumentParser(
-    description='Run different modes of the script.')
-parser.add_argument('runMode', type=int, choices=[
-                    0, 1, 2, 3], help='The run mode of the script.')
+
+parser = argparse.ArgumentParser(description='Run different modes of the script.')
+parser.add_argument('runMode', type=int, choices=[1, 2, 3], help='The run mode of the script.')
 args = parser.parse_args()
 
 r = 0.4
 filepath = "../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
-NTASKS = 4
 temps = range(120, 165, 5)
 
 
 def main():
-    if args.runMode == 0:
-        subprocess.run(["python3", "HRGSimpleexample.py"])
-    elif args.runMode == 1:
-        # Creating pairs of temperature and mode
-        args_for_tasks = product(temps, [1])
-        with Pool(NTASKS) as pool:
-            pool.starmap(task, args_for_tasks)
+
+    initialize('HRG.log')
+
+    if args.runMode == 1:
+        parallel_function_eval(task, temps, args=([1])) 
+
     elif args.runMode == 2:
-        args_for_tasks = product(temps, [2])
-        with Pool(NTASKS) as pool:
-            pool.starmap(task, args_for_tasks)
+        parallel_function_eval(task, temps, args=([2])) 
 
     elif args.runMode == 3:
         for obs in ["pressure", "energy"]:
@@ -50,7 +49,7 @@ def main():
     else:
         print("Invalid runMode")
 
+    finalize()
 
 if __name__ == '__main__':
     main()
-finalize()

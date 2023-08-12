@@ -7,6 +7,7 @@ HRG_LCP*
 P_div*
 s_div*
 testing/base/test.d
+examples/chi2B.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

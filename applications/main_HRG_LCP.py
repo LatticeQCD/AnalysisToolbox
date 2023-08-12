@@ -97,7 +97,7 @@ def strangeness_neutral_equations(muQSh,muh,T,hrg):
 
 for model in models:
 
-    print("  Solving for model",model)
+    logger.info("  Solving for model",model)
 
     muQhi, muShi = LCP_init_NS0(muBh[0])
     muQh      = [muQhi]

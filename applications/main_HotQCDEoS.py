@@ -1,12 +1,17 @@
 #!/bin/python3
 
 #
-# Usage help : python  main_HotQCDEoS.py -h
-#
 # J. Goswami
 #
 # Evaluate EOS from the parametrization given in 2212.10016 [hep-lat] and 1407.6387 [hep-lat]
 # The Eos parametrization is currently reliable in, T = [135:300] and muB / T = [0:2.5]
+#
+# You can use this code by, for instance, 
+#
+#   python main_HotQCDEoS.py --EosType "fixedsnB" --snB 50
+#   python main_HotQCDEoS.py --EosType "fixedmuB" --muBdivT 2.0
+#
+# Usage help: python main_HotQCDEoS.py -h
 #
 
 from latqcdtools.physics.HotQCDEOS import EOS

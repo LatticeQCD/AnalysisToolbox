@@ -14,11 +14,12 @@ Here are some more detailed articles:
 maxdepth: 1
 ---
 gauge.md
+continuumExtrap.md
 statisticalPhysics.md
+HRG.md
 latticeParameters.md
 observables.md
 referenceScales.md
 staticPotential.md
-HRG.md
-continuumExtrap.md
+freeDiracSpectra.md
 ```

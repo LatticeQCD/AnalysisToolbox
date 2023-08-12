@@ -14,6 +14,9 @@ import itertools
 I4 = np.eye(4)
 
 class GammaMatrix:
+    
+    """ The 4x4 gamma matrices used in Euclidean quantum field theory. """
+    
     @property
     def __repr__(self):
         return 'Gamma Matrix'
@@ -39,7 +42,6 @@ class GammaMatrix:
                                        [0.0, 0.0, 0.0, -1.0],
                                        [-1.0, 0.0, 0.0, 0.0],
                                        [0.0, -1.0, 0.0, 0.0]])
-
         return gamma
 
     def g5(self):
@@ -55,7 +57,16 @@ class DiracOp(GammaMatrix):
     def __repr__(self):
         return "DiracOp"
 
-    def __init__(self, Lx=None, Ly=None, Lz=None, Lt=None, fermion="Wilson"):
+    def __init__(self, Lx, Ly, Lz, Lt, fermion="Wilson"):
+        """ Represent Dirac operator on a Euclidean spacetime lattice.
+
+        Args:
+            Lx (int)
+            Ly (int)
+            Lz (int)
+            Lt (int)
+            fermion (str, optional): Type of fermion discretization. Defaults to "Wilson".
+        """
         self.Lx = Lx
         self.Ly = Ly
         self.Lz = Lz
@@ -63,6 +74,7 @@ class DiracOp(GammaMatrix):
         self.fermion = fermion
 
     def p(self):
+        """  Computes the momentum values px, py, pz, pt based on the provided lattice extents. """
         if self.Lt == self.Lx:
             px = 2 * np.pi * np.arange(-self.Lx / 2 + 1, self.Lx / 2 + 1, 1) / self.Lx
             py = 2 * np.pi * np.arange(-self.Ly / 2 + 1, self.Ly / 2 + 1, 1) / self.Ly
@@ -76,14 +88,35 @@ class DiracOp(GammaMatrix):
         return px, py, pz, pt
 
     def WilsonOp(self, p, mass):
+        """ Compute the Wilson operator
+
+        Args:
+            p (array-like): momentum vector
+            mass (float): scalar mass 
+
+        Returns:
+            array-like: Wilson Dirac operator 
+        """
         gamma = np.array([self.g(1), self.g(2), self.g(3), self.g(4)])
         term = sum(1j * np.sin(p[i]) * gamma[i] +
                    (1 - np.cos(p[i])) * I4 for i in range(len(gamma)))
         massterm = mass * I4
-        DWilson = term + massterm
-        return DWilson
+        return term + massterm
 
     def DWMobius4D(self, p, mass, M=1, b=1.5, c=0.5, Ls=12):
+        """_summary_
+
+        Args:
+            p (array-like): momentum vector
+            mass (float): scalar mass 
+            M (float, optional): domain wall parameter. Defaults to 1.
+            b (float, optional): domain wall parameter. Defaults to 1.5.
+            c (float, optional): domain wall parameter. Defaults to 0.5.
+            Ls (int, optional): domain wall parameter. Defaults to 12.
+
+        Returns:
+            array-like: Domain wall Dirac operator 
+        """
         gamma_5 = self.g5()
         hkNum = (b + c) * self.WilsonOp(p, -M)
         hkDen = 2 * I4 + (b - c) * self.WilsonOp(p, -M)
@@ -94,6 +127,18 @@ class DiracOp(GammaMatrix):
         return Ddw
 
     def eigvalues(self, mass, M=1, b=1.5, c=0.5, Ls=12):
+        """_summary_
+
+        Args:
+            mass (float): scalar mass 
+            M (float, optional): domain wall parameter. Defaults to 1.
+            b (float, optional): domain wall parameter. Defaults to 1.5.
+            c (float, optional): domain wall parameter. Defaults to 0.5.
+            Ls (int, optional): domain wall parameter. Defaults to 12.
+
+        Returns:
+            array-like: operator eigenvalues 
+        """
         eig = []
         px, py, pz, pt = self.p()
         if self.fermion == "Wilson":
