@@ -39,7 +39,7 @@ b        = args.b
 Tpc0     = args.Tpc
 r        = args.r
 temp     = args.temp
-muBmax   = max(1400,18*temp)
+muBmax   = max(600,4.5*temp)
 
 
 printArg("  hadron_list:",args.hadron_file)

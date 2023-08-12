@@ -11,10 +11,10 @@ BQSC = "2000"
 
 def task(temp, mode):
     if mode == 1:
-        subprocess.run(["python3", "HRGLCP.py", "--r", str(r),
+        subprocess.run(["python3", "main_HRG_LCP.py", "--r", str(r),
                        "--hadron_file", filepath, "--models", "QM", "--T", str(temp)])
     elif mode == 2:
-        subprocess.run(["python3", "HRGMeasure.py", "--hadron_file", filepath,
+        subprocess.run(["python3", "main_HRG_measure.py", "--hadron_file", filepath,
                        "--LCP_file", "HRG_LCP_T%0.1f_r0.4QM"%temp, "--bqsc", BQSC, "--obs", "chi"])
 
 parser = argparse.ArgumentParser(
@@ -45,7 +45,7 @@ def main():
     elif args.runMode == 3:
         for obs in ["energy", "specificheat"]:
             for mb in [0.0, 1.0, 1.5, 2.0, 2.5]:
-                subprocess.run(["python3", "mainStrangenessNeutral.py", "--hadron_file", filepath, "--fixedmuBNszerofile",
+                subprocess.run(["python3", "main_strangeness_neutral.py", "--hadron_file", filepath, "--fixedmuBNszerofile",
                                f"HRG_fixedmuBT{mb}_r0.4QMHRG2020_BI", "--obs", obs, "--r", str(r), "--tag", "QMHRG2020_BI_Nszero"])
     else:
         print("Invalid runMode")
