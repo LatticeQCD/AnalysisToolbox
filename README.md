@@ -2,7 +2,9 @@
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://latticeqcd.github.io/LatticeToolbox)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/LatticeQCD/LatticeToolbox/commits/main)
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7994982.svg)](https://doi.org/10.5281/zenodo.7994982) -->
+[![DOI](https://zenodo.org/badge/441246760.svg)](https://zenodo.org/badge/latestdoi/441246760)
+
+
 
 The LatticeToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
 particular toward lattice QCD.
