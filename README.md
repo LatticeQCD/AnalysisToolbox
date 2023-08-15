@@ -87,13 +87,21 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 [H.-T. Shu](https://github.com/haitaoshu), 
 [T. Ueding](https://github.com/SiggiUphues)
 
-<!-- 
 ## Crediting LatticeToolbox
 
 If you used this code in your research, your teaching, or found it generally useful, please help
 us out by citing
-
--->
+```
+@inproceedings{Altenkort:2023xxi,
+    author = "Altenkort, Luis and Clarke, David Anthony and Goswami, Jishnu and Sandmeyer, Hauke",
+    title = "{Streamlined data analysis in Python}",
+    eprint = "2308.06652",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-lat",
+    month = "8",
+    year = "2023"
+}
+```
 
 ## Acknowledgments
 
