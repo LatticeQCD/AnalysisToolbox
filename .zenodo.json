@@ -50,13 +50,11 @@
     "related_identifiers": [
         {
             "scheme": "url", 
-            "identifier": "https://github.com/LatticeQCD/LatticeToolbox/tree/v1.0.0", 
-            "relation": "isSupplementTo"
+            "identifier": "https://github.com/LatticeQCD/LatticeToolbox/tree/v1.0.0"
         }, 
         {
             "scheme": "doi", 
-            "identifier": "10.5281/zenodo.8241876", 
-            "relation": "isVersionOf"
+            "identifier": "10.5281/zenodo.8241876"
         }
     ]
 }
