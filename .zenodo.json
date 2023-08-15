@@ -1,10 +1,10 @@
 {
     "description": "A set of Python tools for analyzing physics data, in particular targeting lattice QCD.", 
     "license": "MIT", 
-    "title": "LatticeQCD/LatticeToolbox: The first release version.", 
-    "version": "v1.0.0", 
+    "title": "LatticeQCD/LatticeToolbox: v1.0.1.", 
+    "version": "v1.0.1", 
     "upload_type": "software", 
-    "publication_date": "2023-08-12", 
+    "publication_date": "2023-08-15", 
     "creators": [
         {
             "affiliation": "University of Utah", 
@@ -46,15 +46,5 @@
             "name": "T. Ueding"
         }
     ], 
-    "access_right": "open", 
-    "related_identifiers": [
-        {
-            "scheme": "url", 
-            "identifier": "https://github.com/LatticeQCD/LatticeToolbox/tree/v1.0.0"
-        }, 
-        {
-            "scheme": "doi", 
-            "identifier": "10.5281/zenodo.8241876"
-        }
-    ]
+    "access_right": "open"
 }
