@@ -10,32 +10,37 @@ import scipy.optimize as opt
 from scipy.optimize import newton_krylov, fsolve, root
 from scipy.optimize.nonlin import NoConvergence
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import DivideByZeroError, InvalidValueError
+from latqcdtools.base.check import DivideByZeroError, InvalidValueError, checkType
 from latqcdtools.base.utilities import unvector, envector 
 
 
 # This is the base list of exceptions. If encountered, we treat the solve as unreliable.
 opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
 
+root_methods =['hybr','lm','broyden1','broyden2','anderson','diagbroyden','krylov']
 
-def persistentSolve(LHS, guess, tol=1e-8, maxiter=200):
+
+def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
     """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
+    checkType(tol,float)
+    checkType(maxiter,int)
     try:
         logger.debug("Trying newton_krylov.")
-        solution = unvector( newton_krylov(LHS, guess, f_tol=tol, inner_maxiter=maxiter) )
+        return newton_krylov(LHS, guess, f_tol=tol, inner_maxiter=maxiter)
     except opt_exceptions:
         try:
             logger.debug("Trying fsolve.")
-            solution = unvector( fsolve(LHS, guess, xtol=tol, maxfev=maxiter) )
+            return fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
         except opt_exceptions:
             try:
                 logger.debug("Trying root.")
-                solution = unvector( root(LHS, guess, tol=tol) )
-                if type(solution).__name__ == "OptimizeResult":
-                    raise RuntimeWarning('RuntimeWarning: Bad progress on root solve.')
-            except Exception as e:
-                raise e
-    return unvector(solution)
+                for method in root_methods:
+                    try:  
+                        return root(LHS, guess, tol=tol, method=method).x
+                    except:
+                        continue
+            except:
+                raise NoConvergence
 
 
 def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):

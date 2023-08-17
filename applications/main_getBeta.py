@@ -9,7 +9,8 @@
 #
 
 import argparse
-from latqcdtools.physics.referenceScales import r0_div_a, r0_hQCD_2014, a_times_fk, fk_phys, ignoreBetaRange, CY_FK_PHYS, CY_A_TIMES_FK, CY_A_DIV_R0
+from latqcdtools.physics.referenceScales import r0_div_a, a_times_fk, ignoreBetaRange, CY_phys, CY_param
+from latqcdtools.physics.constants import fk_phys, r0_phys
 from latqcdtools.base.utilities import getArgs
 from latqcdtools.math.optimize import persistentSolve
 import latqcdtools.base.logger as logger
@@ -32,19 +33,18 @@ T          = args.T
 Nt         = args.Nt
 scaleYear  = args.scaleYear
 paramYear  = args.paramYear
-beta_guess = 6
+beta_guess = 6.0
+
+if paramYear is None:
+    paramYear = CY_param[scale]
+if scaleYear is None:
+    scaleYear = CY_phys[scale]
 
 # Implement target_T - T as the LHS of the solver.
 if scale == 'r0':
-    if paramYear is None:
-        paramYear = CY_A_DIV_R0
     def LHS(beta):
-        return r0_div_a(beta,paramYear)/r0_hQCD_2014("MeVinv")/Nt - T
+        return r0_div_a(beta,paramYear)/r0_phys(scaleYear,units="MeVinv")/Nt - T
 elif scale == 'fk':
-    if scaleYear is None:
-        scaleYear = CY_FK_PHYS
-    if paramYear is None:
-        paramYear = CY_A_TIMES_FK 
     def LHS(beta):
         return fk_phys(scaleYear,units="MeV")/a_times_fk(beta,paramYear)/Nt - T
 else:

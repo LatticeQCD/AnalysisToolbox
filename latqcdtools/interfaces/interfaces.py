@@ -6,6 +6,8 @@
 # Some common classes and functions that may be shared among multiple interfaces modules.
 #
 
+import re
+from sys import set_coroutine_origin_tracking_depth
 import yaml
 import numpy as np
 from latqcdtools.physics.lattice_params import latticeParams
@@ -84,3 +86,96 @@ def loadYAML(filename):
             return yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             logger.TBError('Encountered exception:',exc)
+            
+            
+class genericTable(list):
+    
+    def __init__(self,delimiter=None,pre='',post=''):
+        """ genericTable objects are to streamline output tables in an arbitrary format. A genericTable
+        is implemented as a list of lists.
+
+        Args:
+            delimiter (str, optional)
+            pre (str, optional): String to appear at beginning of every line table. Defaults to ''.
+            post (str, optional): String to appear at end of every line of table. Defaults to ''.
+        """
+        if delimiter is None:
+            logger.TBError('Please set a delimiter.')
+        checkType(delimiter,str)
+        checkType(pre,str)
+        checkType(post,str)
+        self.delimiter=delimiter
+        self.pre=pre
+        self.post=post
+
+    def append(self, item):
+        checkType(item, list)
+        super(genericTable, self).append(item)
+        
+    def outputTable(self,filename=None):
+        """ Lets you output a table.
+
+        Args:
+            filename (str, optional): If set, will output to file. Otherwise output to screen. 
+        """
+        if filename is not None:
+            outFile = open(filename,'w')
+        for row in self:
+            line = self.pre + ' ' +  str(row[0])
+            for col in range(1,len(row)):
+                line += ' ' + self.delimiter + ' ' + str(row[col])
+            line += ' ' + self.post
+            if filename is None:
+                logger.info(line)
+            else:
+                outFile.write(line+'\n')
+        if filename is not None:
+            outFile.close()
+
+
+class latexTable(genericTable):
+    def __init__(self):
+        super().__init__(delimiter='&', pre='', post='\\\\')
+
+
+class redmineTable(genericTable):
+    def __init__(self):
+        super().__init__(delimiter='|', pre='|', post='|')
+
+
+def convertTable(source,target):
+    """ Convert a source table into a target table. The assumption for the source file is that
+    is that the only lines are table lines, i.e. there's no intervening \hline or something like that.
+    The table type is determined by the file extensions of source and target.
+
+    Args:
+        source (str): source filename 
+        target (str): target filename 
+    """
+    checkType(source,str)
+    checkType(target,str)
+    sourceType = source.split('.')[-1]
+    targetType = target.split('.')[-1]
+    inFile = open(source,'r')
+    if sourceType == 'tex':
+        sourceTable = latexTable()
+    elif sourceType == 'redmine':
+        sourceTable = redmineTable()
+    else: 
+        logger.TBError('Unknown source file type',sourceType)
+    if targetType == 'tex':
+        targetTable = latexTable()
+    elif targetType == 'redmine':
+        targetTable = redmineTable()
+    else: 
+        logger.TBError('Unknown target file type',targetType)
+    for row in inFile:
+        start = len(sourceTable.pre)
+        end = len(sourceTable.post)
+        if end==2: # This is for LaTeX
+            end=3
+        items = row[start:-end]
+        items = items.split(sourceTable.delimiter)
+        targetTable.append(items)
+    targetTable.outputTable(target)
+    inFile.close()

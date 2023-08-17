@@ -35,6 +35,7 @@ cd ..
 
 cd interfaces
 runTestRoutine testReadWriteConf.py
+runTestRoutine testInterfaces.py
 cd ..
 
 

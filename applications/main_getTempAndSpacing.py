@@ -11,7 +11,7 @@
 import argparse
 from latqcdtools.physics.lattice_params import latticeParams
 from latqcdtools.base.utilities import getArgs
-from latqcdtools.physics.referenceScales import CY_A_DIV_R0, CY_FK_PHYS, CY_A_TIMES_FK
+from latqcdtools.physics.referenceScales import CY_param, CY_phys 
 import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')
@@ -38,16 +38,10 @@ if args.Ns is None:
 else:
     Ns = args.Ns
 
-if scale == 'r0':
-    if paramYear is None:
-        paramYear = CY_A_DIV_R0
-elif scale == 'fk':
-    if scaleYear is None:
-        scaleYear = CY_FK_PHYS
-    if paramYear is None:
-        paramYear = CY_A_TIMES_FK 
-else:
-    logger.TBError('Beta extraction not yet implemented for scale',scale)
+if paramYear is None:
+    paramYear = CY_param[scale]
+if scaleYear is None:
+    scaleYear = CY_phys[scale]
 
 lp = latticeParams(Ns, Nt, beta, mass1=None, mass2=None, scaleType=scale, paramYear=paramYear, scaleYear=scaleYear)
 
