@@ -568,18 +568,18 @@ class Fitter:
         return pcov
 
 
-    def _general_fit(self, start_params=None, algorithm="curve_fit", priorval=None, priorsigma=None):
+    def _general_fit(self, algorithm="curve_fit"): 
         """ Perform fit. No new fit data are generated. """
         params, chi2 = self.minimize_chi2(self._saved_params, algorithm)
         pcov, fit_errors = self.compute_err(params, chi2, algorithm)
         return params, fit_errors, chi2, pcov
 
 
-    def _tryAlgorithm(self,algorithm,start_params,priorval,priorsigma):
+    def _tryAlgorithm(self,algorithm):
         """ Wrapper that collects general fit results. Allows for parallelization. """
         logger.details("Trying", algorithm, "...")
         try:
-            params, fit_errors, chi2, pcov = self._general_fit(start_params, algorithm, priorval, priorsigma)
+            params, fit_errors, chi2, pcov = self._general_fit(algorithm) 
             logger.details(algorithm, "successful. Chi^2 = ", chi2)
             return params, fit_errors, chi2, pcov, None
         except Exception as e:
@@ -659,7 +659,7 @@ class Fitter:
             if len(self._priorval) != self._numb_params:
                 logger.TBError("Number priorval != number of fit parameters")
 
-        resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, args=(start_params, priorval, priorsigma), nproc=self._nproc )
+        resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )
         all_params     = [row[0] for row in resultSummary]
         all_fit_errors = [row[1] for row in resultSummary]
         all_chi2       = [row[2] for row in resultSummary]

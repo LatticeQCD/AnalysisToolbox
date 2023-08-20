@@ -164,7 +164,6 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-
 def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
     """ Check whether date1 comes before date2.
 
@@ -213,6 +212,37 @@ def deleteFile(target):
     else:
         pass
     logger.warn('Unable to remove file',target)
+
+
+# For byte conversions
+bytePrefix = { "Q"  : 1024**10,
+               "R"  : 1024**9,
+               "Y"  : 1024**8,  
+               "Z"  : 1024**7, 
+               "E"  : 1024**6, 
+               "P"  : 1024**5, 
+               "T"  : 1024**4, 
+               "G"  : 1024**3, 
+               "M"  : 1024**2, 
+               "k"  : 1024, 
+               "1"  : 1,
+               1    : 1 }
+
+
+def getPrefix(byteString):
+    if byteString=="B": 
+        prefix=1
+    else:
+        prefix=byteString[0]
+    return prefix
+
+
+def byteConvert(x,b1,b2):
+    p1=getPrefix(b1)
+    p2=getPrefix(b2)
+    num=bytePrefix[p1]
+    den=bytePrefix[p2]
+    return x*num/den
 
 
 class timer:

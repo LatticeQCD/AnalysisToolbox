@@ -1,1 +1,2 @@
-testing/physics/*.d linguist-vendored
+*.d linguist-vendored
+*.py linguist-detectable=true
