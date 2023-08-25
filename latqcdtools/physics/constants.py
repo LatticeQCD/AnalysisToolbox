@@ -109,11 +109,9 @@ def convert(x,unit1,unit2):
     elif u1u2==('y','h'):
         result = fac*x*(days_per_year*24)
 
-    # power <--> energy 
+    # power 
     elif u1u2==('W','Wh/y'):
         result = fac*x*convert(1,'h','y')
-    elif u1u2==('W','Wh'):
-        result = fac*x*convert(1,'s','h')
 
     # natural units
     elif u1u2==('m','eVinv'):

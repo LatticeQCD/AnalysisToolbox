@@ -621,7 +621,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
 
 
 
-def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = False, swapXY=False, **kwargs):
+def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = True, swapXY=False, **kwargs):
     """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
         To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
         bars in the x-direction instead of the y-direction. """
@@ -661,11 +661,7 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
         xmax = 10
 
     xdata = np.arange(xmin, xmax, (xmax - xmin) / kwargs['npoints'])
-
-    if func_sup_numpy:
-        ydata = wrap_func(xdata, *args)
-    else:
-        ydata = np.array([wrap_func(x, *args) for x in xdata])
+    ydata = wrap_func(xdata, *args)
 
     if func_err is not None:
         if func_sup_numpy:

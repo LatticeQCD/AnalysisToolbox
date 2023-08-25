@@ -16,7 +16,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.utilities import envector, unvector, isHigherDimensional, printDict
+from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, \
@@ -341,9 +341,6 @@ class Fitter:
     def fit_ansatz_array(self, params):
         """ Return the array of the fit ansatz values at each position in self._xdata. """
         params = np.asarray(params)
-
-        # If the function supports numpy objects as input, we can call it directly. Otherwise we have to loop over
-        # all values in self._xdata
         ret = self.wrap_func(self._xdata, params)
         self._cache_array = np.copy(ret)
         self._cache_p_array = params

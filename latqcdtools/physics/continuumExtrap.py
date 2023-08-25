@@ -9,7 +9,7 @@
 import numpy as np
 from latqcdtools.base.printErrorBars import get_err_str
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import plt, plot_dots, fill_param_dict
+from latqcdtools.base.plotting import plt, plot_dots
 from latqcdtools.statistics.fitting import Fitter, std_algs, bayes_algs
 from latqcdtools.base.speedify import DEFAULTTHREADS
 from latqcdtools.base.check import checkType
@@ -24,7 +24,7 @@ def powerSeries(x,coeffs):
 
 class Extrapolator(Fitter):
 
-    def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', nproc=DEFAULTTHREADS):
+    def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', ansatz=None, nproc=DEFAULTTHREADS):
         """ A framework for doing continuum limit extrapolations. Assume a power series to some order in a^2.
 
         Args:
@@ -41,6 +41,7 @@ class Extrapolator(Fitter):
         self._order              = order
         self._triedExtrapolation = False
         self._logGBF             = None
+        self._ansatz             = ansatz
 
         if xtype == "a":
             x = np.array(x)**2
@@ -51,7 +52,13 @@ class Extrapolator(Fitter):
         if order<1:
             logger.TBError('Please input order > 1.')
 
-        Fitter.__init__(self, powerSeries, x, obs, obs_err, norm_err_chi2=False, expand=False, error_strat=error_strat, nproc=nproc)
+        if ansatz is None:
+            ansatz = powerSeries
+        else:
+            if self._order != 1:
+                logger.warn('Not using a power series ansatz, but still using custom order.')
+
+        Fitter.__init__(self, ansatz, x, obs, obs_err, norm_err_chi2=False, expand=False, error_strat=error_strat, nproc=nproc)
 
     def extrapolate(self,start_coeffs=None,prior=None,prior_err=None):
         """ Carry out the extrapolation.
@@ -65,6 +72,8 @@ class Extrapolator(Fitter):
             (array-like, array-like, float, float): fit result, its error, chi^2/d.o.f., and logGBF if relevant.
         """
         if start_coeffs is None:
+            if self._ansatz is not None:
+                logger.TBError('You need to provide start_coeffs if you use an ansatz.')
             coeffs = ()
             for i in range(self._order+1):
                 coeffs += (1.0,)

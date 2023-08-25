@@ -9,17 +9,23 @@
 import os
 import numpy as np
 import concurrent.futures
-import pathos.pools
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from numba import njit
 from numba.typed import List
 
 
+# Resolve parallelizer dependencies
+DEFAULTPARALLELIZER = 'pathos.pools'
+try:
+    import pathos.pools
+except ModuleNotFoundError:
+    DEFAULTPARALLELIZER = 'concurrent.futures'
+
+
 COMPILENUMBA        = False
 MAXTHREADS          = os.cpu_count() 
 DEFAULTTHREADS      = MAXTHREADS - 2
-DEFAULTPARALLELIZER = 'pathos.pools'
 
 
 def numbaON():

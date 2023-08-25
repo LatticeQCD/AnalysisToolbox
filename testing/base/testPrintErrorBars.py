@@ -53,7 +53,6 @@ def testPrintErrorBars():
     y, ye = getValuesFromErrStr(test)
     print_results(y,-4560,ye,140,text=test,prec=1e-8) 
 
-    logger.TBPass('All tests passed!')
 
 if __name__ == '__main__':
     testPrintErrorBars()
