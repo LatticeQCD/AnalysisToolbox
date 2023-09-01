@@ -10,10 +10,8 @@ from latqcdtools.statistics.jackknife import jackknife
 from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 import numpy as np
-from latqcdtools.base.initialize import initialize, finalize
 
-initialize('testJackknife.log')
-#logger.set_log_level('INFO')
+logger.set_log_level('INFO')
 
 EPSILON=1e-15 # test precision
 
@@ -95,4 +93,3 @@ def Test_Jackknife():
 
 if __name__ == '__main__':
     Test_Jackknife()
-finalize()

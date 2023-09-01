@@ -10,7 +10,7 @@ s_div*
 *.redmine
 *.tex
 examples/chi2B.txt
-
+.vscode/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

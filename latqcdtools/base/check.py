@@ -16,6 +16,9 @@ from latqcdtools.base.utilities import envector, isArrayLike
 # I think in the instances I use complex numbers, they cannot really be avoided.
 warnings.filterwarnings("ignore", category=np.ComplexWarning)
 
+# I want solvers to try other strategies when they hit RuntimeWarnings.
+warnings.filterwarnings("error", category=RuntimeWarning)
+
 
 class DivideByZeroError(Exception): pass
 class UnderflowError(Exception): pass

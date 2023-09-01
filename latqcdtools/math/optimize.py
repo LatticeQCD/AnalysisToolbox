@@ -11,13 +11,15 @@ from scipy.optimize import newton_krylov, fsolve, root
 from scipy.optimize.nonlin import NoConvergence
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import DivideByZeroError, InvalidValueError, checkType
-from latqcdtools.base.utilities import unvector, envector 
+from latqcdtools.base.utilities import envector 
 
 
 # This is the base list of exceptions. If encountered, we treat the solve as unreliable.
 opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
 
-root_methods =['hybr','lm','broyden1','broyden2','anderson','diagbroyden','krylov']
+# This order is not necessarily optimal.
+
+root_methods = ['hybr','lm','broyden1','broyden2','anderson','diagbroyden','krylov']
 
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):

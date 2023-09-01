@@ -8,7 +8,7 @@
 # 
 
 import numpy as np
-from scipy.interpolate import LSQUnivariateSpline, UnivariateSpline, CubicSpline
+from scipy.interpolate import LSQUnivariateSpline, CubicSpline
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import AICc
 from latqcdtools.base.check import checkType

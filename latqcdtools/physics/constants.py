@@ -12,8 +12,11 @@ from latqcdtools.base.check import checkType
 
 
 # Base constants for unit conversions
-hceVm         = 197.3269788e-9   # PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
-days_per_year = 365.2422         # From NIST
+hceVm           = 197.3269788e-9  # PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
+cms             = 299792458       # c in [m/s]. NIST 2018.
+days_per_year   = 365.2422        # NIST 2018.
+meters_per_mile = 1609.344        # NIST 2023 based on international foot (not survey foot).
+BTU_per_Wh      = 3.412           # Many possible definitions, don't take too seriously. A stupid unit, indeed.
 
 
 # List of scientific prefixes
@@ -45,7 +48,22 @@ prefix = { "Q"  : 1e30,
            "q"  : 1e-30  }
 
 
-baseUnits = ["eV","m","min","s","h","y","W","Wh","Wh/y"]
+# Alphabetical order for easier finding
+baseUnits = [
+            "BTU",
+            "eV",
+            "h",
+            "m",
+            "m/s",
+            "mi",
+            "mi/h",
+            "min",
+            "s",
+            "W",
+            "Wh",
+            "Wh/y",
+            "y",
+            ]
 
 
 def separatePrefix(units):
@@ -109,9 +127,30 @@ def convert(x,unit1,unit2):
     elif u1u2==('y','h'):
         result = fac*x*(days_per_year*24)
 
+    # distance
+    elif u1u2==('mi','m'):
+        result = fac*x*meters_per_mile
+    elif u1u2==('m','mi'):
+        result = fac*x/meters_per_mile
+        
+    # speed
+    elif u1u2==('mi/h','m/s'):
+        result = fac*convert( convert(x,'mi','m'), 's','h')
+    elif u1u2==('m/s','mi/h'):
+        result = fac*convert( convert(x,'m','mi'), 'h','s')
+
     # power 
     elif u1u2==('W','Wh/y'):
-        result = fac*x*convert(1,'h','y')
+        result = fac*convert(x,'y','h')
+    elif u1u2==('Wh/y','W'):
+        result = fac*convert(x,'h','y')
+
+    # energy
+    elif u1u2==('Wh','BTU'):
+        result = fac*x*BTU_per_Wh
+    elif u1u2==('BTU','Wh'):
+        result = fac*x/BTU_per_Wh
+    
 
     # natural units
     elif u1u2==('m','eVinv'):

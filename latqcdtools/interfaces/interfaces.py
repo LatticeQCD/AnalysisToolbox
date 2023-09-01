@@ -6,8 +6,6 @@
 # Some common classes and functions that may be shared among multiple interfaces modules.
 #
 
-import re
-from sys import set_coroutine_origin_tracking_depth
 import yaml
 import numpy as np
 from latqcdtools.physics.lattice_params import latticeParams
