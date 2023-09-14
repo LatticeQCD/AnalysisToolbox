@@ -8,10 +8,6 @@
 #
 
 import numpy as np
-from latqcdtools.base.check import ignoreUnderflow
-
-
-ignoreUnderflow()
 
 
 def best_h(x):

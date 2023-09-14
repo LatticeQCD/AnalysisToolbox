@@ -66,6 +66,16 @@ You can also look at some of the scripts in the `applications` and `testing` dir
 To learn about the code in more detail, especially learning how to contribute, please have
 a look [the documentation](https://latticeqcd.github.io/LatticeToolbox).
 
+To whet your appetite, we advertise briefly here some features of the LatticeToolbox:
+- **General statistics:** Jackknife, bootstrap, Gaussian bootstrap, error propagation,
+estimate integrated autocorrelation time, and curve fitting with and without Bayesian priors.
+We stress that these methods are useful generally, independent of physics contexts.
+- **QCD physics:** Hadron resonance gas model, HotQCD equation of state, QCD beta function,
+physical constants, and critical exponents for various univesality classes. These methods
+are useful for QCD phenomenology, independent of lattice contexts.
+- **Lattice physics:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
+fields, reading in gauge fields, and the static quark-antiquark potential. These methods
+rather target 4-$d$ lattice QCD. 
 
 ## Getting help and bug reports
 

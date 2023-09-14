@@ -6,7 +6,7 @@
 # Warning and error control, along with methods to check internal code consistency. 
 #
 
-import warnings
+import warnings, inspect
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import envector, isArrayLike
@@ -99,30 +99,41 @@ def ignoreInvalidValue():
 
 
 def checkType(obj, expectedType):
-    """ Check the type of an object.
+    """ Check the type of an object. If it thinks the type is wrong, it will tell you what the
+    name of obj is (as you named it in your code) along with its type and what was expected.
+    Grabbing the name doesn't work if you pass him a dictionary element like myDict['key'];
+    it can only tell the name myDict.
 
     Args:
         obj (obj)
         expectedType (type): what type do you expect? Also accepts "array". 
     """
+    calling_frame = inspect.currentframe().f_back
+    locals_dict = calling_frame.f_locals
+    for var_name in locals_dict.keys():
+        objName = var_name
+        break 
     if expectedType=="array":
         if not isArrayLike(obj):
-            logger.TBError('Expected array-like object but received',type(obj),frame=3)
+            logger.TBError('Expected array-like object for',objName,'but received',type(obj),frame=3)
     else:
         if not isinstance(obj,expectedType):
-            logger.TBError('Expected type',expectedType,'but received',type(obj),frame=3)
+            logger.TBError('Expected type',expectedType,'for',objName,'but received',type(obj),frame=3)
 
 
-def checkDomain(obj, expectedDomain, variableName):
+def checkDomain(obj, expectedDomain):
     """ Check that obj lies in expectedDomain.
 
     Args:
         obj (obj)
         expectedDomain (list): list of values obj is allowed to take
-        variableName (str): name of obj 
-    """    
+    """
+    calling_frame = inspect.currentframe().f_back
+    locals_dict = calling_frame.f_locals
+    for var_name, _ in locals_dict.items():
+        objName = var_name  
     if not obj in expectedDomain:
-        logger.TBError('Expected',variableName,'to be one of',expectedDomain)
+        logger.TBError('Expected',objName,'to be one of',expectedDomain)
 
 
 def checkEqualLengths(*args):

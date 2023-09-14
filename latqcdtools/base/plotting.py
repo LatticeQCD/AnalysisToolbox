@@ -10,8 +10,9 @@ import itertools, warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as cl
+import matplotlib.ticker as ticker
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import checkEqualLengths
+from latqcdtools.base.check import checkEqualLengths, checkType
 from latqcdtools.base.utilities import convertToNumpy, unvector, isHigherDimensional
 from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -20,6 +21,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 ZOD        = 1      # Orders different layers 
 INITIALIZE = True   # A global flag to ensure we only initialize once
 LEGEND     = False  # A global flag to apply legend attributes when we have one
+FOREGROUND = 99999  # zorder = FOREGROUND to put someting in plot on top of everything else 
 
 
 colors = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
@@ -58,7 +60,6 @@ default_params = {
     'alpha_dots': None,          # Transperancy for different dots
     'alpha_lines': 1,            # Transperancy for different lines
     'alpha_fill_edge': 0,        # Transperancy for edges of error bands
-    'alpha_label': 0,            # Transperancy for labels
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 1.0,           # Linewidth of the error bars of caps af error bars
@@ -77,7 +78,7 @@ default_params = {
     'legend_col_spacing': None,  # Spacing between columns in the legend.
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
     'legend_title': None,        # Title of the legend.
-    'alpha_legend': 1,           # Transperancy for the legend
+    'alpha_legend': 1,           # Transperancy for the legend.
 
     # Options for plotting files and functions.
     'xcol': None,        # Column for the xdata when plotting a file.
@@ -85,16 +86,18 @@ default_params = {
     'yecol': None,       # Column for the errors in y-direction when plotting a file.
     'xecol': None,       # Column for the errors in x-direction when plotting a file.
     'style': "dots",     # Style when plotting a file.
-    'npoints': 1000,     # Number of points for function plotting
+    'npoints': 1000,     # Number of points for function plotting.
 
     # Adjust special aspects of the plot's axes
     'xtick_freq': None,
     'ytick_freq': None,
     'xtick_every_n': 2,    # If xtick_freq or ytick_freq is not None, label every nth tick.
     'ytick_every_n': 2,
-    'xmin': None,          # Does not directly change x-range
+    'xtick_format' : None, # Format the y-ticks, e.g. if you want to specify the number of decimals. 
+    'ytick_format' : None,
+    'xmin': None,          # Does not directly change x-range; used inside plotting methods.
     'xmax': None,
-    'ymin': None,          # Does not directly change y-range
+    'ymin': None,          # Does not directly change y-range; used inside plotting methods.
     'ymax': None,
     'xscale': 1.0,         # Scale data in xdata by this factor.
     'yscale': 1.0,
@@ -130,10 +133,9 @@ def clearPlot():
     clear_legend_labels()
 
 
-def getColorGradient(NUM_COLORS=None):
+def getColorGradient(NUM_COLORS):
     """ Return a preceptually uniform set of NUM_COLORS colors. Use this if you need more than 8 colors! """
-    if NUM_COLORS is None:
-        logger.TBError("Give me a number of colors.")
+    checkType(NUM_COLORS,int)
     cm = plt.get_cmap('viridis')
     gradColors=[]
     for i in range(NUM_COLORS):
@@ -284,10 +286,13 @@ def fill_param_dict(params):
             logger.warn("Encountered unexpected plotting parameter",key)
 
     if not LEGEND:
-        # When filling params for the first time, check if we show the legend. Triggered by one of the following keys
+        # When filling params, check if we show the legend. This is triggered by one of these keys
+        # being different from the default value. 
         for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 'alpha_legend'):
             if key in params:
-                LEGEND = True
+                if params[key] != default_params[key]:
+                    logger.debug('Found legend trigger',key)
+                    LEGEND = True
 
     for key, val in default_params.items():
         params.setdefault(key,val)
@@ -332,29 +337,39 @@ def set_params(**params):
     if ZOD is None:
         ZOD = globals()['ZOD']
 
+    if params['xlabelpos'] is not None:
+        if params['xlabel'] is None:
+            logger.warn('Set xlabelpos with no xlabel.')
+    if params['ylabelpos'] is not None:
+        if params['ylabel'] is None:
+            logger.warn('Set ylabelpos with no ylabel.')
+
     if params['xlabel'] is not None:
+        checkType(params['xlabel'],str)
         if params['labelsintoplot'] or params['xlabelpos'] is not None:
             if params['xlabelpos'] is None:
                 params['xlabelpos'] = (0.95,0.027)
             ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black',
                         fontsize=params['font_size'], fontweight=params['font_weight'], ha='right', va='bottom',
-                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=ZOD)
+                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None), zorder=FOREGROUND)
         else:
             ax.set_xlabel(params['xlabel'])
             ax.xaxis.get_label().set_fontsize(params['font_size'])
 
     if params['ylabel'] is not None:
+        checkType(params['ylabel'],str)
         if params['labelsintoplot'] or params['ylabelpos'] is not None:
             if params['ylabelpos'] is None:
                 params['ylabelpos'] = (0.025,0.972)
             ax.annotate(params['ylabel'], xy=params['ylabelpos'], xycoords='axes fraction', color='black',
                         fontsize=params['font_size'], ha='left', va='top', fontweight=params['font_weight'],
-                        bbox=dict(linewidth=0, facecolor='white', alpha=params['alpha_label']), zorder=ZOD)
+                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None), zorder=FOREGROUND)
         else:
             ax.set_ylabel(params['ylabel'])
             ax.yaxis.get_label().set_fontsize(params['font_size'])
 
     if params['title'] is not None:
+        checkType(params['title'],str)
         plt.title(params['title'])
 
     if params['xlogscale'] and params['xtick_freq'] is not None:
@@ -380,7 +395,7 @@ def set_params(**params):
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
-        leg.set_zorder(ZOD)
+        leg.set_zorder(FOREGROUND)
         plt.tight_layout()
 
     if params['xtick_freq'] is not None:
@@ -404,6 +419,22 @@ def set_params(**params):
         for n, label in enumerate(ax.yaxis.get_ticklabels()):
             if n % params['ytick_every_n'] != 0:
                 label.set_visible(False)
+
+    if params['xtick_format'] is not None:
+        checkType(params['xtick_format'],str)
+        if plt.rcParams['text.usetex']:
+            x_format = ticker.StrMethodFormatter('$'+params['xtick_format']+'$')
+        else:
+            x_format = ticker.StrMethodFormatter(params['xtick_format'])
+        ax.get_xaxis().set_major_formatter(x_format)
+
+    if params['ytick_format'] is not None:
+        checkType(params['ytick_format'],str)
+        if plt.rcParams['text.usetex']:
+            y_format = ticker.StrMethodFormatter('$'+params['ytick_format']+'$')
+        else:
+            y_format = ticker.StrMethodFormatter(params['ytick_format'])
+        ax.get_yaxis().set_major_formatter(y_format)
 
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS

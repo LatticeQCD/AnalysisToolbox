@@ -12,11 +12,12 @@ from latqcdtools.base.check import checkType
 
 
 # Base constants for unit conversions
-hceVm           = 197.3269788e-9  # PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
-cms             = 299792458       # c in [m/s]. NIST 2018.
-days_per_year   = 365.2422        # NIST 2018.
-meters_per_mile = 1609.344        # NIST 2023 based on international foot (not survey foot).
-BTU_per_Wh      = 3.412           # Many possible definitions, don't take too seriously. A stupid unit, indeed.
+hceVm           = 197.3269788e-9   # PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
+cms             = 299792458        # c in [m/s]. NIST 2018.
+days_per_year   = 365.2422         # NIST 2018.
+days_per_month  = days_per_year/12
+meters_per_mile = 1609.344         # NIST 2023 based on international foot (not survey foot).
+BTU_per_Wh      = 3.412            # Many possible definitions, don't take too seriously. A stupid unit, indeed.
 
 
 # List of scientific prefixes
