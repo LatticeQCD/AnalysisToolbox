@@ -21,7 +21,8 @@ warnings.filterwarnings("ignore", category=UserWarning)
 ZOD        = 1      # Orders different layers 
 INITIALIZE = True   # A global flag to ensure we only initialize once
 LEGEND     = False  # A global flag to apply legend attributes when we have one
-FOREGROUND = 99999  # zorder = FOREGROUND to put someting in plot on top of everything else 
+FOREGROUND = 99999  # zorder = FOREGROUND to put something in plot on top of everything else 
+BACKGROUND = 0      # zorder = BACKGROUND to put something in plot behind everything else 
 
 
 colors = ['#d32d11', '#0081bf', '#e5af11', '#7c966d', '#7570b3', '#ff934f', '#666666', '#D186B3']
@@ -49,7 +50,7 @@ default_params = {
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
     'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
     'markersize': 8,             # Size of the symbols.
-    'font_size': 14,             # Default font size for text.
+    'font_size': 16,             # Default font size for text.
     'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
     'ticksintoplot': True,       # Put ticks into plotting area.
@@ -133,10 +134,19 @@ def clearPlot():
     clear_legend_labels()
 
 
-def getColorGradient(NUM_COLORS):
-    """ Return a preceptually uniform set of NUM_COLORS colors. Use this if you need more than 8 colors! """
+def getColorGradient(NUM_COLORS,map='viridis'):
+    """ Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
+
+    Args:
+        NUM_COLORS (int): number of colors you need 
+        map (str, optional): use custom colormap. Defaults to 'viridis'.
+
+    Returns:
+        list: colors 
+    """
     checkType(NUM_COLORS,int)
-    cm = plt.get_cmap('viridis')
+    checkType(map,str)
+    cm = plt.get_cmap(map)
     gradColors=[]
     for i in range(NUM_COLORS):
         color = cm(1.*i/NUM_COLORS)

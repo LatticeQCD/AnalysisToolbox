@@ -12,7 +12,7 @@ from latqcdtools.base.check import checkType
 
 
 # Base constants for unit conversions
-hceVm           = 197.3269788e-9   # PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
+hceVm           = 197.3269788e-9   # hbar c in [eV m]. PDG 2018. DOI: 10.1103/PhysRevD.98.030001.
 cms             = 299792458        # c in [m/s]. NIST 2018.
 days_per_year   = 365.2422         # NIST 2018.
 days_per_month  = days_per_year/12
@@ -312,7 +312,20 @@ def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
         return convert(LMS,"MeV",units), convert(LMSerr,"MeV",units)
     else:
         return convert(LMS,"MeV",units)
-    
+
+
+def Rproton_phys(year=2018,units="fm",returnErr=False):
+    """ Physical value of proton charge radius. """
+    if year==2018:
+        # From NIST 2018. 
+        R, Rerr =  0.8414, 0.0019
+    else:
+        logger.TBError("Invalid year specification.")
+    if returnErr:
+        return convert(R,"fm",units), convert(Rerr,"fm",units)
+    else:
+        return convert(R,"fm",units)
+
 
 def r1_phys(year=2010,units="fm",returnErr=False):
     """ Physical value of Sommer scale r1. """    
