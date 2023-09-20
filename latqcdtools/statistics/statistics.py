@@ -13,13 +13,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import inv
 from scipy.special import betainc, erf
-import latqcdtools.base.logger as logger
-import latqcdtools.math.num_deriv as numDeriv
+from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
 from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.printErrorBars import get_err_str
+import latqcdtools.base.logger as logger
 
 
 def reduce_tuple(func):
@@ -379,7 +379,7 @@ def error_prop(func, means, errors, grad=None, args=()):
     if grad is not None:
         grad = grad(means, *args)
     else:
-        grad = numDeriv.diff_jac(means, func, args).transpose()
+        grad = diff_jac(means, func, args).transpose()
     error = 0
     try:
         for i in range(len(grad)):
@@ -621,7 +621,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
 
 
 
-def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_numpy = True, swapXY=False, **kwargs):
+def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=False, npoints=1000, **kwargs):
     """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
         To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
         bars in the x-direction instead of the y-direction. """
@@ -660,15 +660,11 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
     if xmax is None:
         xmax = 10
 
-    xdata = np.arange(xmin, xmax, (xmax - xmin) / kwargs['npoints'])
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
     ydata = wrap_func(xdata, *args)
 
     if func_err is not None:
-        if func_sup_numpy:
-            ydata_err = wrap_func_err(xdata, *args_err)
-        else:
-            ydata_err = np.array([wrap_func_err(x, *args_err) for x in xdata])
-
+        ydata_err = wrap_func_err(xdata, *args_err)
         if swapXY:
             return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
         else:
@@ -684,11 +680,7 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, func_sup_n
         # Optional arguments that are constant and, therefore, not part of the error propagation
         tmp_opt = tuple(args)[len(args_err):]
 
-        if func_sup_numpy:
-            ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
-        else:
-            ydata_err = np.array([error_prop_func(x, wrap_func, tmp_args, args_err, grad = wrap_grad,
-                                                  args = tmp_opt) for x in xdata])
+        ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
 
         if swapXY:
             return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)

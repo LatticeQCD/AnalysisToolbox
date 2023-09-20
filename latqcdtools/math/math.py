@@ -11,7 +11,6 @@
 import numpy as np
 from scipy.special import poch
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import UnderflowError
 from latqcdtools.base.utilities import envector, isArrayLike 
 
 
@@ -33,42 +32,6 @@ def logDet(mat):
     """ Logarithm of determinant. """
     _, ans = np.linalg.slogdet(mat)
     return ans
-
-
-# Some methods for dealing with underflow, which is when a number gets so small, it is smaller than the smallest number
-# that Python can represent. This gives you some control over how underflow is treated. 
-
-
-def underflowExp(x):
-    """ Exponential that replaces underflows with 0. """
-    try:
-        return np.exp(x)
-    except UnderflowError:
-        # log(2**(-1022)) ~ -708
-        flowMask = x>-708
-        return flowMask*np.exp(flowMask*x)
-
-
-def underflowPower(x,n):
-    """ x**n that replaces underflows with 0. """
-    try:
-        return np.power(x,n)
-    except UnderflowError:
-        return np.power(np.log(np.exp(x)),n)
-
-
-def underflowMultiply(*args):
-    """ Product of arbitrary number of reals/np.arrays that replaces underflows with 0. """
-    prod = 1
-    try:
-        for x in args:
-            prod *= x
-        return prod
-    except UnderflowError:
-        exponent = 0
-        for x in args:
-            exponent += np.log(x)
-        return underflowExp(exponent)
 
 
 # Some methods for doing comparisons between math objects.

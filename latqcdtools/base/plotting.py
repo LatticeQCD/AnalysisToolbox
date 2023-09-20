@@ -13,7 +13,7 @@ import matplotlib.colors as cl
 import matplotlib.ticker as ticker
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
-from latqcdtools.base.utilities import convertToNumpy, unvector, isHigherDimensional
+from latqcdtools.base.utilities import isHigherDimensional
 from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -80,14 +80,6 @@ default_params = {
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
     'legend_title': None,        # Title of the legend.
     'alpha_legend': 1,           # Transperancy for the legend.
-
-    # Options for plotting files and functions.
-    'xcol': None,        # Column for the xdata when plotting a file.
-    'ycol': None,        # Column for the ydata when plotting a file.
-    'yecol': None,       # Column for the errors in y-direction when plotting a file.
-    'xecol': None,       # Column for the errors in x-direction when plotting a file.
-    'style': "dots",     # Style when plotting a file.
-    'npoints': 1000,     # Number of points for function plotting.
 
     # Adjust special aspects of the plot's axes
     'xtick_freq': None,
@@ -450,7 +442,7 @@ def set_params(**params):
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
 
 
-def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), **params):
+def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), style='dots', **params):
     """ Plot data in file. You can set the style with the style argument. Columns indexed from 1.
 
     Args:
@@ -476,7 +468,7 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
     if yecol is not None:
         yedata = np.array(data[yecol - 1], dtype = float)
     else:
-        if params['style'] == "fill":
+        if style == "fill":
             logger.TBError("Need error column for filled plotting")
     if xecol is not None:
         xedata = np.array(data[xecol - 1], dtype = float)
@@ -492,16 +484,16 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
         else:
             xdata, ydata = func(xdata, ydata, *func_args)
 
-    if params['style'] == "dots":
+    if style == "dots":
         return plot_dots(xdata, ydata, yedata=yedata, xedata=xedata, **params)
-    if params['style'] == "lines":
+    elif style == "lines":
         return plot_lines(xdata, ydata, yedata=yedata, xedata=xedata, **params)
-    if params['style'] == "fill":
+    elif style == "fill":
         return plot_fill(xdata, ydata, yedata=yedata, **params)
-    if params['style'] == "band":
+    elif style == "band":
         return plot_band(xdata, ydata, yedata, xedata, **params)
-
-    logger.TBError("No such style: " + params['style'])
+    else:
+        logger.TBError("Unknown style",style)
 
 
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
@@ -514,7 +506,6 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         xedata (array-like, optional): x error. Defaults to None.
         **params: Additional parameters that can be set.
     """
-    xdata, ydata, yedata, xedata = convertToNumpy(xdata, ydata, yedata, xedata)
     checkEqualLengths(xdata,ydata,xedata,yedata)
     fill_param_dict(params)
     optional = add_optional(params)
@@ -573,7 +564,6 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
         linewidth (float, optional): Defaults to 0.2.
         **params: Additional parameters that can be set.
     """
-    xdata, ydata = convertToNumpy(xdata, ydata)
     checkEqualLengths(xdata,ydata)
     fill_param_dict(params)
     optional = add_optional(params)
@@ -615,7 +605,6 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
         bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
         **params: Additional parameters that can be set.
     """
-    data = unvector(convertToNumpy(data))
     fill_param_dict(params)
     ax = getAxObject(params)
     if bins is None:
@@ -641,7 +630,6 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
         xedata (array-like, optional): x error. Defaults to None.
         **params: Additional parameters that can be set.
     """
-    xdata, ydata, yedata, xedata = convertToNumpy(xdata, ydata, yedata, xedata)
     checkEqualLengths(xdata,ydata,yedata,xedata)
     fill_param_dict(params)
     optional = add_optional(params)
@@ -711,11 +699,9 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     optional = add_optional(params)
 
     if xedata is None:
-        xdata, ydata, yedata = convertToNumpy(xdata, ydata, yedata)
         checkEqualLengths(xdata,ydata,yedata)
         xdata, ydata, yedata = remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
     else:
-        xdata, ydata, xedata = convertToNumpy(xdata, ydata, xedata)
         checkEqualLengths(xdata,ydata,xedata)
         ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
 

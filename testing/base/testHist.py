@@ -17,7 +17,7 @@ data2    = bareCorr[:,6]*factor
 bareCorr = loadGPL('hist1.gpx')
 data1    = bareCorr[:,6]
 
-data   = [data1,data2]
+data   = (data1,data2)
 labels = ['hist1','hist2']
 
 plot_hist(data,bins=20,density=True,xlabel='corr$_{\\rm disc}(0)$',color=colors[0],label=labels) 

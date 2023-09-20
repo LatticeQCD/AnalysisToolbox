@@ -3,12 +3,12 @@
 # 
 # D. Clarke
 # 
-# Some methods to test the cleanData.py module. TODO: Add test for intersectAtCol
+# Some methods to test the cleanData.py module. 
 # 
 
 
 import numpy as np
-from latqcdtools.base.cleanData import clipRange,excludeAtCol,restrictAtCol
+from latqcdtools.base.cleanData import clipRange, excludeAtCol, restrictAtCol, intersectAtCol
 from latqcdtools.math.math import print_results
 import latqcdtools.base.logger as logger
 
@@ -47,11 +47,22 @@ def testDataCleaner():
     logger.TBPass("clipRange tests passed")
 
 
-    testArray=np.array([[1,2,2,1,1,2,1,2,2,1],
-                        [1,2,3,4,5,6,7,8,9,0]])
+    testArray =np.array([[1,2,2,1,1,2,1,2,2,1],
+                         [1,2,3,4,5,6,7,8,9,0]])
     correctResult=np.array([[1,1,1,1,1],[1,4,5,7,0]])
     print_results(restrictAtCol(testArray,0,1)[0],correctResult[0],text="restrictAtCol")
     print_results(excludeAtCol(testArray,0,2)[0],correctResult[0],text="excludeAtCol")
+
+
+    table1 = np.array([[0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2],
+                       [0,1,2,3,4,6,7,8,9,0,1,2,3,4,6,7,8,9,0,1,3,4,5,6,7,8,9]])
+    table2 = np.array([[0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2],
+                       [1,2,3,4,5,6,7,8,9,0,2,3,4,5,6,7,8,9,0,1,3,4,5,6,7,8,9]])
+    for stream in [0,1,2]:
+        temp1 = restrictAtCol(table1,0,stream)
+        temp2 = restrictAtCol(table2,0,stream)
+        res1, res2 = intersectAtCol(temp1,temp2,1) 
+        print_results(res1,res2,text='intersectAtCol stream '+str(stream))
 
 
 if __name__ == '__main__':

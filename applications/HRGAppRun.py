@@ -1,3 +1,5 @@
+#!/bin/python3
+
 # 
 # J. Goswami 
 # 

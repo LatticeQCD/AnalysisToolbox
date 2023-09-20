@@ -6,7 +6,6 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.constants import convert, fm_to_GeVinv, GeVinv_to_fm, fk_phys
 from latqcdtools.math.polynomials import Polynomial, Rational
 from latqcdtools.physics.betaFunction import beta_func, b0, b1
 

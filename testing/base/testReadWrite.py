@@ -5,11 +5,10 @@
 # 
 # Tests for read and write methods.
 #
-import argparse
+
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.utilities import getArgs
 
 logger.set_log_level('INFO')
 

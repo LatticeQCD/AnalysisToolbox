@@ -67,9 +67,9 @@ def testErrorProp():
 
     plot_func(func, args = [a, b, opt], func_err = err_func, args_err=[a,b,a_err,b_err, opt])
     plot_func(func, args = [a, b, opt], args_err = [a_err,b_err])
-    plot_func(func, args = [a, b, opt], args_err = [a_err,b_err], func_sup_numpy = True)
+    plot_func(func, args = [a, b, opt], args_err = [a_err,b_err])
     plot_func(func, args = [a, b, opt], args_err = [a_err,b_err,opt], grad = grad,
-            func_sup_numpy = True, title = "Please check if all error bands are the same")
+              title = "Please check if all error bands are the same")
 
     plt.savefig("errorprop.pdf")
 

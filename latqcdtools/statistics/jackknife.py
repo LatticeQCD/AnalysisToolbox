@@ -8,10 +8,9 @@
 
 import numpy as np
 import math
-from latqcdtools.statistics.statistics import std_mean, std_err
+from latqcdtools.statistics.statistics import std_mean, std_err, meanArgWrapper
 import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
-from latqcdtools.statistics.statistics import meanArgWrapper
 
 
 def pseudo(mean, mean_i, numb_blocks):

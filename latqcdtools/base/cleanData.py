@@ -14,12 +14,14 @@ import latqcdtools.base.logger as logger
 
 
 def deleteRow(array, row):
+    checkType(array, np.ndarray)
     if array.ndim != 2:
         logger.TBError('Expected 2-d numpy array.')       
     return np.delete(array,row,0)
 
 
 def deleteCol(array, col):
+    checkType(array, np.ndarray)
     if array.ndim != 2:
         logger.TBError('Expected 2-d numpy array.')       
     return np.delete(array,col,1)
@@ -42,8 +44,6 @@ def intersectAtCol(table1, table2, col):
     checkType(table1, np.ndarray)
     checkType(table2, np.ndarray)
     checkType(col, int)
-    table1      = np.array(table1)
-    table2      = np.array(table2)
     mask1using2 = np.isin( table1[col,:], table2[col,:] )
     mask2using1 = np.isin( table2[col,:], table1[col,:] )
     return table1[:,mask1using2], table2[:,mask2using1]
@@ -56,19 +56,15 @@ def spliceAtCol(table1, table2, col, atVal):
     checkType(table1, np.ndarray)
     checkType(table2, np.ndarray)
     checkType(col, int)
-    table1 = np.array(table1)
-    table2 = np.array(table2)
     mask1  = table1[col]<=atVal
     mask2  = table2[col]>atVal
-    result = np.column_stack( (table1[:,mask1], table2[:,mask2]) )
-    return result
+    return np.column_stack( (table1[:,mask1], table2[:,mask2]) )
 
 
 def restrictAtCol(table, col, atVal):
     """ Return only those rows of table where col has exactly the value atVal. """
     checkType(table, np.ndarray)
     checkType(col, int)
-    table = np.array(table)
     mask  = np.equal(table[col,:],atVal)
     return table[:,mask]
 
@@ -77,6 +73,5 @@ def excludeAtCol(table, col, atVal):
     """ Return everything except those rows of table where col has exactly the value atVal. """
     checkType(table, np.ndarray)
     checkType(col, int)
-    table = np.array(table)
     mask  = np.not_equal(table[col,:],atVal)
     return table[:,mask]

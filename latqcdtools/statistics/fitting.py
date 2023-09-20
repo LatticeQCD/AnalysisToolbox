@@ -22,7 +22,6 @@ from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, \
     cut_eig, chisquare, logGBF, DOF, funcExpand
 from inspect import signature
-import matplotlib as mpl
 
 
 # Allowed keys for the constructor

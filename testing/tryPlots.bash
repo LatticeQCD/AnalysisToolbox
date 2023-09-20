@@ -18,6 +18,7 @@ cd base
 runTestRoutine plotRandom.py
 runTestRoutine testPlotFormats.py
 runTestRoutine testPlot.py
+runTestRoutine testHist.py
 
 echo
 echo "Done!"

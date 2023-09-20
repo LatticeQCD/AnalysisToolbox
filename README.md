@@ -30,7 +30,7 @@ In order to use these scripts, please ensure that you have the following:
 The recommended way to proceed is to create a [Python virtual environment](https://realpython.com/python-virtual-environments-a-primer/),
 in which you install all the required packages. This is what the Python people seem to prefer, which you can
 read about in their [PEP 668](https://peps.python.org/pep-0668/).
-If you're old-fashioned like David is, you can also just directly `pip3 install` on your machine,
+If you're old fashioned like David is, you can also just directly `pip3 install` on your machine,
 potentially modifying your OS Python.
 
 Either way, for your convenience, packages (2-10) can be installed via
@@ -54,6 +54,11 @@ try running the tests. You can do this by going to the `testing` folder
 and calling
 ```shell
 bash runTests.bash
+```
+If you would also like to use the LatticeToolbox to make plots, also try
+calling
+```shell
+bash tryPlots.bash
 ```
 
 ## Getting started and documentation

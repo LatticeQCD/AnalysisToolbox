@@ -13,7 +13,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import studif
 from latqcdtools.base.printErrorBars import get_err_str
 
-parser = argparse.ArgumentParser(description='Do a Z-test.')
+parser = argparse.ArgumentParser(description='Do a T-test.')
 parser.add_argument('--xm1', dest='xm1', required=True, type=float, help='mean 1')
 parser.add_argument('--eb1', dest='eb1', required=True, type=float, help='error bar 1')
 parser.add_argument('--n1' , dest='n1' , required=True, type=int  , help='number of measurements 1')
