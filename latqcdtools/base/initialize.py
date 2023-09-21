@@ -23,7 +23,7 @@ def gitHash():
     PYTHONPATH = shell('echo $PYTHONPATH')
     for entry in PYTHONPATH.split(':'):
         # The package was called AnalysisToolbox, then LatticeToolbox, then AnalysisToolbox again. 
-        if ('LatticeToolbox' in entry) or ('AnalysisToolbox' in entry):
+        if ('AnalysisToolbox' in entry) or ('LatticeToolbox' in entry):
             toolboxLocation = entry.strip()
     hash=shell('git --git-dir="'+toolboxLocation+'/.git" rev-parse HEAD').strip()
     return hash 
@@ -32,12 +32,12 @@ def gitHash():
 def introduceYourself():
     """ Corporate branding. """
     logger.info()
-    logger.info("  _          _   _   _         _____           _ _                ")
-    logger.info(" | |    __ _| |_| |_(_) ___ __|_   _|__   ___ | | |__   _____  __ ")
-    logger.info(" | |   / _` | __| __| |/ __/ _ \| |/ _ \ / _ \| | '_ \ / _ \ \/ / ")
-    logger.info(" | |__| (_| | |_| |_| | (_|  __/| | (_) | (_) | | |_) | (_) >  <  ")
-    logger.info(" |_____\__,_|\__|\__|_|\___\___||_|\___/ \___/|_|_.__/ \___/_/\_\ ")
-    logger.info("                                                                  ")
+    logger.info("     _                _           _    _____           _ _                ")
+    logger.info("    / \   _ __   __ _| |_   _ ___(_)__|_   _|__   ___ | | |__   _____  __ ")
+    logger.info("   / _ \ | '_ \ / _` | | | | / __| / __|| |/ _ \ / _ \| | '_ \ / _ \ \/ / ")
+    logger.info("  / ___ \| | | | (_| | | |_| \__ \ \__ \| | (_) | (_) | | |_) | (_) >  <  ")
+    logger.info(" /_/   \_\_| |_|\__,_|_|\__, |___/_|___/|_|\___/ \___/|_|_.__/ \___/_/\_\ ")
+    logger.info("                        |___/                                             ")
     logger.info()
 
 

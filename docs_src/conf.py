@@ -17,12 +17,12 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'LatticeToolbox'
-copyright = '2022, LatticeQCD'
+project = 'AnalysisToolbox'
+copyright = '2023, LatticeQCD'
 author = 'LatticeQCD'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------

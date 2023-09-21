@@ -11,7 +11,7 @@ initialize('HRG.log')
 T = np.arange(100, 166, 1)
 
 # Read in hadron names, masses, charges, baryon number, strangeness,
-# charm, and degeneracy factor. This table is provided with LatticeToolbox.
+# charm, and degeneracy factor. This table is provided with AnalysisToolbox.
 QMHRG_table = '../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt'
 hadrons, M, Q, B, S, C, g = readTable(QMHRG_table, usecols=(0,1,2,3,4,5,6),
                                       dtype="U11,f8,i8,i8,i8,i8,i8")

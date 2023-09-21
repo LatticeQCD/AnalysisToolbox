@@ -3,7 +3,7 @@
 You have written some readable code and, crucially, you [wrote a test for it](testing.md). There is only one thing 
 left for you to do, to make sure your code can be easily used and adapted by future developers: You must document it!
 
-To create some documentation, please navigate to `LatticeToolbox/doc_src/`, where you can find its source code. Our 
+To create some documentation, please navigate to `AnalysisToolbox/doc_src/`, where you can find its source code. Our 
 source code is written using [Sphinx](https://www.sphinx-doc.org/en/master/), a python documentation generator, combined 
 with [MyST](https://myst-parser.readthedocs.io/en/latest/), which is an extension for Sphinx supporting 
 [Markdown](https://daringfireball.net/projects/markdown/). You can follow those links to learn more in detail about 
@@ -36,15 +36,15 @@ the web links above, you can also see examples of the block code in action by lo
 ## Compilation
 
 Once you have added a `.md` file for your file, incorporate it into the most appropriate overarching `.md` file. (For
-instance this one falls under `LatticeToolbox/docs_src/01_contributions/contributions.md`.) You can see how you did by 
-compiling your code using `LatticeToolbox/docs_src/build/compile.sh`. If you want to see how it looks, you can open the 
-`LatticeToolbox/docs_src/build/index.html` file using your favorite browser. For example you could call 
+instance this one falls under `AnalysisToolbox/docs_src/01_contributions/contributions.md`.) You can see how you did by 
+compiling your code using `AnalysisToolbox/docs_src/build/compile.sh`. If you want to see how it looks, you can open the 
+`AnalysisToolbox/docs_src/build/index.html` file using your favorite browser. For example you could call 
 `firefox index.html` from the command line inside the `build` folder. When it looks nice, you 
 can [commit your changes](git.md).
 
 ## Some stylistic guidelines for documentation
 
-The LatticeToolbox is, at the moment, managed only by a handful of rather busy scientists. Nevertheless we would like 
+The AnalysisToolbox is, at the moment, managed only by a handful of rather busy scientists. Nevertheless we would like 
 to have our code and documentation look professional and polished. This is difficult to achieve without someone 
 explicitly going through and checking for consistency; the best we can do is probably a bottom-up approach, 
 where we trust you to read these guidelines and try to keep them in mind. We will try to update this list as we think 

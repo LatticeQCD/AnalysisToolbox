@@ -6,7 +6,7 @@ these names automatically. Moreover some collaborations like to use third-party 
 format requirements, and it is helpful to be able to read these in. Being able to interface within this highly
 heterogeneous field is an important part of interoperability.
 
-To this end, the LatticeToolbox has some methods specifically for this purpose. At the moment we support
+To this end, the AnalysisToolbox has some methods specifically for this purpose. At the moment we support
 - MILC code configuration naming schemes
 - HotQCD configuration naming schemes
 - Reading `gpl` files

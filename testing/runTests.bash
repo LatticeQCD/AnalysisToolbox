@@ -5,7 +5,7 @@
 # 
 # D. Clarke 
 # 
-# Script to run every test in the LatticeToolbox. Please add your tests to this script
+# Script to run every test in the AnalysisToolbox. Please add your tests to this script
 # when you have written them. 
 #
 

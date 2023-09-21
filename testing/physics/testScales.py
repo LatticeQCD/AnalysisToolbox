@@ -3,7 +3,7 @@
 # 
 # D. Clarke
 # 
-# Test the lattice QCD reference scales. This test assumes that what was in the LatticeToolbox as of 28 Feb 2021
+# Test the lattice QCD reference scales. This test assumes that what was in the AnalysisToolbox as of 28 Feb 2021
 # was correct.
 #
 

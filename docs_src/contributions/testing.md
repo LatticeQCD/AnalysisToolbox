@@ -1,6 +1,6 @@
 # Writing Tests
 
-With each new module you write, please add a test. All the tests for the LatticeToolbox can be found in the
+With each new module you write, please add a test. All the tests for the AnalysisToolbox can be found in the
 `testing` folder. Once you have written your test, add a line for it to `testing/runTests.bash`.
 If you make any changes to the code, call
 ```shell

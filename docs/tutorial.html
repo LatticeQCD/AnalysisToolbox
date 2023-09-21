@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; LatticeToolbox 0.1 documentation</title>
+  <title>Tutorial &mdash; AnalysisToolbox 1.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Contributions" href="contributions/contributions.html" />
-    <link rel="prev" title="LatticeToolbox" href="index.html" /> 
+    <link rel="prev" title="AnalysisToolbox" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: #343131" >
-            <a href="index.html" class="icon icon-home"> LatticeToolbox
+            <a href="index.html" class="icon icon-home"> AnalysisToolbox
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">LatticeToolbox</a>
+          <a href="index.html">AnalysisToolbox</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -85,12 +85,12 @@ directory. The first shows a simple HRG calculation, while the second showcases
 a continuum limit extrapolation.</p>
 <section id="hadron-resonance-gas-calculation">
 <h2>Hadron resonance gas calculation<a class="headerlink" href="#hadron-resonance-gas-calculation" title="Permalink to this headline"></a></h2>
-<p>The hadron resonance gas (HRG) model, and its implementation in the LatticeToolbox,
+<p>The hadron resonance gas (HRG) model, and its implementation in the AnalysisToolbox,
 is described in some detail <a class="reference internal" href="physicsAnalysis/HRG.html"><span class="doc std std-doc">here</span></a>. Below is a small code
-that highlights some of the features of the LatticeToolbox. For example
+that highlights some of the features of the AnalysisToolbox. For example
 <code class="docutils literal notranslate"><span class="pre">initialize</span></code> simulataneously saves all screen output to the log file <code class="docutils literal notranslate"><span class="pre">HRG.log</span></code>
 along with the git commit hash, so you can track down which version of the
-LatticeToolbox you used.</p>
+AnalysisToolbox you used.</p>
 <p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_HRG_simple.py</span></code></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
@@ -105,7 +105,7 @@ LatticeToolbox you used.</p>
 <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">166</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Read in hadron names, masses, charges, baryon number, strangeness,</span>
-<span class="c1"># charm, and degeneracy factor. This table is provided with LatticeToolbox.</span>
+<span class="c1"># charm, and degeneracy factor. This table is provided with AnalysisToolbox.</span>
 <span class="n">QMHRG_table</span> <span class="o">=</span> <span class="s1">&#39;../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt&#39;</span>
 <span class="n">hadrons</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">readTable</span><span class="p">(</span><span class="n">QMHRG_table</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
                                       <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;U11,f8,i8,i8,i8,i8,i8&quot;</span><span class="p">)</span>
@@ -206,7 +206,7 @@ inflection point of the curve.</p>
 </pre></div>
 </div>
 <p>Above we show how such an extrapolation is achieved with
-the LatticeToolbox, along with error estimation, plotting the results, and
+the AnalysisToolbox, along with error estimation, plotting the results, and
 carrying out a statistical comparison with the known literature value.
 We assume you already have results for <span class="math notranslate nohighlight">\(\langle |P|\rangle\)</span> at various <span class="math notranslate nohighlight">\(N_\tau\)</span>, which we
 read in from tables of the form <code class="docutils literal notranslate"><span class="pre">Nt6.txt</span></code>.
@@ -242,7 +242,7 @@ Z-test, which is implemented in our <a class="reference internal" href="dataAnal
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, LatticeQCD.</p>
+    <p>&#169; Copyright 2023, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

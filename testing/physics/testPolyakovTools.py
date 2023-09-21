@@ -3,7 +3,7 @@
 # 
 # D. Clarke
 # 
-# Make sure Polyakov loop observables are calculated correctly. This test assumes that what was in the LatticeToolbox
+# Make sure Polyakov loop observables are calculated correctly. This test assumes that what was in the AnalysisToolbox
 # as of 28 Feb 2021 was correct.
 #
 

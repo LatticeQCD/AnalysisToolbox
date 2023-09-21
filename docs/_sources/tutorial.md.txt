@@ -6,12 +6,12 @@ a continuum limit extrapolation.
 
 ## Hadron resonance gas calculation
 
-The hadron resonance gas (HRG) model, and its implementation in the LatticeToolbox,
+The hadron resonance gas (HRG) model, and its implementation in the AnalysisToolbox,
 is described in some detail [here](physicsAnalysis/HRG.md). Below is a small code
-that highlights some of the features of the LatticeToolbox. For example
+that highlights some of the features of the AnalysisToolbox. For example
 `initialize` simulataneously saves all screen output to the log file `HRG.log`
 along with the git commit hash, so you can track down which version of the
-LatticeToolbox you used.
+AnalysisToolbox you used.
 
 Here is `latqcdtools/examples/main_HRG_simple.py`
 
@@ -29,7 +29,7 @@ initialize('HRG.log')
 T = np.arange(100, 166, 1)
 
 # Read in hadron names, masses, charges, baryon number, strangeness,
-# charm, and degeneracy factor. This table is provided with LatticeToolbox.
+# charm, and degeneracy factor. This table is provided with AnalysisToolbox.
 QMHRG_table = '../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt'
 hadrons, M, Q, B, S, C, g = readTable(QMHRG_table, usecols=(0,1,2,3,4,5,6),
                                       dtype="U11,f8,i8,i8,i8,i8,i8")
@@ -134,7 +134,7 @@ finalize()
 ```
 
 Above we show how such an extrapolation is achieved with
-the LatticeToolbox, along with error estimation, plotting the results, and
+the AnalysisToolbox, along with error estimation, plotting the results, and
 carrying out a statistical comparison with the known literature value.
 We assume you already have results for $\langle |P|\rangle$ at various $N_\tau$, which we
 read in from tables of the form `Nt6.txt`. 

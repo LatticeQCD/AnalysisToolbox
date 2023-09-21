@@ -1,18 +1,35 @@
-# LatticeToolbox
+# AnalysisToolbox
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://latticeqcd.github.io/LatticeToolbox)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/LatticeQCD/LatticeToolbox/commits/main)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://latticeqcd.github.io/AnalysisToolbox)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/LatticeQCD/AnalysisToolbox/commits/main)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8259640.svg)](https://doi.org/10.5281/zenodo.8259640)
 
 
 
+The AnalysisToolbox set of Python tools for statistically analyzing correlated data. 
+This includes aspects of lattice QCD applications related to QCD phenomenology. 
 
 
-The LatticeToolbox is a collection of Python tools that can be used for data analysis, with an aim in 
-particular toward lattice QCD.
+We advertise briefly here some features of the AnalysisToolbox:
+- **General statistics:** Jackknife, bootstrap, Gaussian bootstrap, error propagation,
+estimate integrated autocorrelation time, and curve fitting with and without Bayesian priors.
+We stress that these methods are useful generally, independent of physics contexts.
+- **QCD physics:** Hadron resonance gas model, HotQCD equation of state, QCD beta function,
+physical constants, and critical exponents for various univesality classes. These methods
+are useful for QCD phenomenology, independent of lattice contexts.
+- **Lattice QCD:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
+fields, reading in gauge fields, and the static quark-antiquark potential. These methods
+rather target lattice QCD. 
 
 
-## Setting up the LatticeToolbox
+In any of the above cases, after installing the AnalysisToolbox, you can easily incorporate
+it features in your own Python scripts like any other library.
+Some simple examples are in the [tutorial](https://latticeqcd.github.io/AnalysisToolbox/tutorial.html).
+A realistic use-case that weaves the AnalysisToolbox into a lattice
+QCD workflow can be found in [this data publication](https://pub.uni-bielefeld.de/record/2979080).
+
+
+## Setting up the AnalysisToolbox
 
 In order to use these scripts, please ensure that you have the following:
 1. Python 3.9+
@@ -37,7 +54,7 @@ Either way, for your convenience, packages (2-10) can be installed via
 ```shell
 pip3 install -r requirements.txt
 ```
-There are some further packages required if you would like to make contributions to the LatticeToolbox; in particular
+There are some further packages required if you would like to make contributions to the AnalysisToolbox; in particular
 there are many packages needed to compile the documentation. If you are interested in helping develop, you should
 instead
 ```shell
@@ -55,7 +72,7 @@ and calling
 ```shell
 bash runTests.bash
 ```
-If you would also like to use the LatticeToolbox to make plots, also try
+If you would also like to use the AnalysisToolbox to make plots, also try
 calling
 ```shell
 bash tryPlots.bash
@@ -63,28 +80,18 @@ bash tryPlots.bash
 
 ## Getting started and documentation
 
-To acquaint yourself with the LatticeToolbox, you can start by
-having a look at the [tutorial](https://latticeqcd.github.io/LatticeToolbox/tutorial.html),
+To acquaint yourself with the AnalysisToolbox, you can start by
+having a look at the [tutorial](https://latticeqcd.github.io/AnalysisToolbox/tutorial.html),
 which walks through some scripts in the `examples` directory.
 You can also look at some of the scripts in the `applications` and `testing` directories.
 
 To learn about the code in more detail, especially learning how to contribute, please have
-a look [the documentation](https://latticeqcd.github.io/LatticeToolbox).
+a look [the documentation](https://latticeqcd.github.io/AnalysisToolbox).
 
-To whet your appetite, we advertise briefly here some features of the LatticeToolbox:
-- **General statistics:** Jackknife, bootstrap, Gaussian bootstrap, error propagation,
-estimate integrated autocorrelation time, and curve fitting with and without Bayesian priors.
-We stress that these methods are useful generally, independent of physics contexts.
-- **QCD physics:** Hadron resonance gas model, HotQCD equation of state, QCD beta function,
-physical constants, and critical exponents for various univesality classes. These methods
-are useful for QCD phenomenology, independent of lattice contexts.
-- **Lattice physics:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
-fields, reading in gauge fields, and the static quark-antiquark potential. These methods
-rather target 4-$d$ lattice QCD. 
 
 ## Getting help and bug reports
 
-Open an [issue](https://github.com/LatticeQCD/LatticeToolbox/issues), if...
+Open an [issue](https://github.com/LatticeQCD/AnalysisToolbox/issues), if...
 - you have troubles running the code.
 - you have questions on how to implement your own routine.
 - you have found a bug.
@@ -106,7 +113,7 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 [H.-T. Shu](https://github.com/haitaoshu), 
 [T. Ueding](https://github.com/SiggiUphues)
 
-## Crediting LatticeToolbox
+## Crediting AnalysisToolbox
 
 If you used this code in your research, your teaching, or found it generally useful, please help
 us out by citing

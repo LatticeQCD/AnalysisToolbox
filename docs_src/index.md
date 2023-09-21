@@ -1,7 +1,7 @@
-LatticeToolbox
+AnalysisToolbox
 ===========
 
-The LatticeToolbox is a collection of Python tools written for statistical data analysis, with an aim specifically 
+The AnalysisToolbox is a collection of Python tools written for statistical data analysis, with an aim specifically 
 toward lattice field theory. It contains a variety of useful methods for these purposes, for example general jackknife 
 and bootstrap routines that can calculate error bars of arbitrary functions of data. It also includes modules tailored 
 for lattice field theory, such as methods for scale setting and universal quantities from commonly examined 
@@ -24,11 +24,11 @@ The source code is inside the `latqcdtools` folder. It is organized into several
    Discussed in more detail in the [physicsAnalysis](physicsAnalysis/physicsAnalysis.md) section.
 
 Also at the highest level is a `scripts` directory, containing Bash scripts that help write comments for 
-LatticeToolbox code, or to help repair it. The `examples` directory contains some pedagogical examples
-how to use the LatticeToolbox. Finally there is a `testing` folder, which has 
-unit tests for the LatticeToolbox methods. 
+AnalysisToolbox code, or to help repair it. The `examples` directory contains some pedagogical examples
+how to use the AnalysisToolbox. Finally there is a `testing` folder, which has 
+unit tests for the AnalysisToolbox methods. 
 
-We would love it if you are interested in helping develop the LatticeToolbox! Please have a look to the
+We would love it if you are interested in helping develop the AnalysisToolbox! Please have a look to the
 [contributions](contributions/contributions.md) section to learn how to do this in a nice way.
 
 ```{toctree}

@@ -1,6 +1,6 @@
 # Numerical calculus 
 
-In the LatticeToolbox we have some methods for numerical differentiation and integration.
+In the AnalysisToolbox we have some methods for numerical differentiation and integration.
 
 ## Numerical differentiation
 

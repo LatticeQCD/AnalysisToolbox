@@ -1,6 +1,6 @@
 # Run pip3 install -r requirements.txt to install these packages.
 
-# For the LatticeToolbox 
+# For the AnalysisToolbox 
 colorama
 cycler
 matplotlib

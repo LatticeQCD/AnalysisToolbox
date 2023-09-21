@@ -3,7 +3,7 @@
 
 There are many ways to fit a curve. There are strategies that minimize $\chi^2/{\rm d.o.f.}$ 
 for when you know the functional form ahead of time, splines for when you don't, and other methods. 
-The LatticeToolbox includes some routines that are helpful for this purpose.
+The AnalysisToolbox includes some routines that are helpful for this purpose.
 By default the `Fitter` is [parallelized](../base/speedify.md) with `DEFAULTTHREADS`
 processes. Set `nproc=1` if you want to turn off parallelization.
 Splines are not parallelized in this way, but should be fast because they wrap SciPy methods.

@@ -3,7 +3,7 @@
 # 
 # D. Clarke
 # 
-# Testing various aspects of formatting plots in the LatticeToolbox.
+# Testing various aspects of formatting plots in the AnalysisToolbox.
 #
 
 import matplotlib.pyplot as plt

@@ -3,7 +3,7 @@
 # 
 # D. Clarke 
 # 
-# Add the LatticeToolbox location to the PYTHONPATH in your bashrc.
+# Add the AnalysisToolbox location to the PYTHONPATH in your bashrc.
 #
 
 import os
@@ -19,13 +19,13 @@ with open(BASHRCFILE, 'r') as file:
     for i, line in enumerate(lines):
         if line.startswith("export PYTHONPATH="):
             found = True
-            print("Appending LatticeToolbox to PYTHONPATH.")
+            print("Appending AnalysisToolbox to PYTHONPATH.")
             lines[i] = line.strip()[:-1] + ':'+TOOLBOXDIR+'"\n'
             break
 
 # If the line is not found, create a new line 
 if not found:
-    print("Adding PYTHONPATH line for the LatticeToolbox.")
+    print("Adding PYTHONPATH line for the AnalysisToolbox.")
     lines.append('export PYTHONPATH="${PYTHONPATH}:'+TOOLBOXDIR+'"\n')
 
 # Write the updated content back to the file

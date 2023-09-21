@@ -2,7 +2,7 @@
 
 ## Making Plots
 
-The `LatticeToolbox` also has some wrappers for Matplotlib, which allow you to make Matplotlib 
+The `AnalysisToolbox` also has some wrappers for Matplotlib, which allow you to make Matplotlib 
 plots easily using python. All of them can be found in 
 ```Python
 import latqcdtools.base.plotting
@@ -163,7 +163,7 @@ rescale the x-axis by a factor 2, pass to your `plot_` command `xscale=2`. `ysca
 
 ### Having nice colors
 
-There is a set of eight base colors that the LatticeToolbox automatically cycles through. When plotting more
+There is a set of eight base colors that the AnalysisToolbox automatically cycles through. When plotting more
 eight things, for example a range of temperatures, it may be useful to generate a graded scale of colors.
 For this you can create your own list of `ncolors` colors `myColors` with
 ```Python
