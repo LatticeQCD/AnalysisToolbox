@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://latticeqcd.github.io/AnalysisToolbox)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/LatticeQCD/AnalysisToolbox/commits/main)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8259640.svg)](https://doi.org/10.5281/zenodo.8259640)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8259640.svg)](https://doi.org/10.5281/zenodo.8241876)
 
 
 
