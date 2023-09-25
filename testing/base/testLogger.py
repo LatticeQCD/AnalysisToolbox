@@ -9,16 +9,26 @@
 import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import parallel_function_eval
 
-logger.set_log_level('ALL')
 logger.createLogFile('testLogger.log')
 
-def testLogger(i):
+class testClass:
+    def __init__(self):
+        logger.set_log_level('ALL')
+        logger.debug('Never again to revisit my boyhood in Surrey!')
+        logger.details('Romping with my school chums')
+        logger.progress('among the fens and spinneys...')
+        logger.info('til the twilight bathed the hedgerows')
+        logger.warn('like a lambent flame.')
+        logger.set_log_level('INFO')
+    def __repr__(self) -> str:
+        return "testClass"
 
-    logger.debug('Never again to revisit my boyhood in Surrey!')
-    logger.details('Romping with my school chums')
-    logger.progress('among the fens and spinneys...')
-    logger.info('til the twilight bathed the hedgerows')
-    logger.warn('like a lambent flame.')
+def testLogger(i):
+    test = testClass()
 
 if __name__ == '__main__':
     parallel_function_eval(testLogger,range(2),nproc=2)
+
+logger.set_log_level('ALL')
+logger.warn('beep')
+logger.set_log_level('INFO')

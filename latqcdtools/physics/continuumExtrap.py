@@ -57,8 +57,12 @@ class Extrapolator(Fitter):
         else:
             if self._order != 1:
                 logger.warn('Not using a power series ansatz, but still using custom order.')
+            logger.debug('received ansatz',ansatz)
 
         Fitter.__init__(self, ansatz, x, obs, obs_err, norm_err_chi2=False, expand=False, error_strat=error_strat, nproc=nproc)
+
+    def __repr__(self) -> str:
+        return "Extrapolator"
 
     def extrapolate(self,start_coeffs=None,prior=None,prior_err=None):
         """ Carry out the extrapolation.

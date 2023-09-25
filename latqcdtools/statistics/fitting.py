@@ -19,9 +19,7 @@ from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
-from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, \
-    cut_eig, chisquare, logGBF, DOF, funcExpand
-from inspect import signature
+from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, DOF, funcExpand
 
 
 # Allowed keys for the constructor
@@ -47,68 +45,63 @@ class Fitter:
 
     There are two ways to compute the derivatives of the chisqare numerically. Either compute the
     numerical derivative of the whole chisquare (error_strat='hessian') or compute the derivatives of the fitting
-    function and use error propagation (error_strat='propagation'). The latter is expected to be more stable and is the
-    default case.
-
-    Parameters
-    ----------
-    func : callable
-        Function to be fitted. Depending on parameter expand the format has to be
-            func(x, a, b, *args)
-        or
-            func(x, params, *args)
-    xdata : array_like
-        xdata used for fit. These data may be higher dimensional. This may be the case when our fit functions needs
-        more than one parameter. However, the number of elements in the first axis has to be equal to the number of
-        elements in ydata.
-    ydata : array_like
-        ydata used for fit.
-    edata : array_like, optional, default: None
-        Data for the error. Either pass an 1D array of errors of a full covariance matrix. In case of errors, the
-        errors are interpreted as edata = sqrt(variance). For the case of the covariance matrix no root has to be
-        taken: variance = diag(edata).
-    grad : callable, optional, default: None
-        gradient of the fit function.
-    hess : callable, optional, default: None
-        hessian of the fit function.
-    args : array_like, optional, default: ()
-        Optional arguments that shall be passed to func and that should not be fitted.
-    grad_args : array_like, optional, default: None
-        Optional parameter for the gradient. If set to None the arguments for the function are used (args).
-    hess_args : array_like, optional, default: None
-        Optional parameter for the hessian. If set to None the arguments for the function are used (args).
-    expand : bool, optional, default: True
-        Expand the parameter for the fitting function. If true, function has to look like
-            func(x, a, b, *args)
-        otherwise it has to look like
-            func(x, params, *args).
-    tol : float, optional, default: 1e-12
-        Tolerance for the minimization.
-    max_fev: int, optional, default: 10000
-        Maximum number of iterations / function evaluations.
-    use_diff : bool, optional, default: True
-        In case of numerical derivative use the difference quotient for approximation.
-    norm_err_chi2 : bool, optional, default: True
-        Multiply errors with chi**2/d.o.f. This is the usual case for fitting algorithms.
-    derive_chisq : bool, optional, default: False
-        In case of numerical derivative, apply the derivative to the whole chisquare instead of the function.
-    eig_threshold : bool, optional, default: 1e-18
-        If we encounter an eigenvalue of the correlation matrix smaller than threshold, replace it with threshold.
-
-    Returns
-    -------
-    :class:`Fitter` object
-    """
-
+    function and use error propagation (error_strat='propagation'). The latter is the default case."""
 
     def __init__(self, func, xdata, ydata, edata = None, **kwargs):
+        """
+        Parameters
+        ----------
+        func : callable
+            Function to be fitted. Depending on parameter expand the format has to be
+                func(x, a, b, *args)
+            or
+                func(x, params, *args)
+        xdata : array_like
+            xdata used for fit. These data may be higher dimensional. This may be the case when our fit functions needs
+            more than one parameter. However, the number of elements in the first axis has to be equal to the number of
+            elements in ydata.
+        ydata : array_like
+            ydata used for fit.
+        edata : array_like, optional, default: None
+            Data for the error. Either pass an 1D array of errors of a full covariance matrix. In case of errors, the
+            errors are interpreted as edata = sqrt(variance). For the case of the covariance matrix no root has to be
+            taken: variance = diag(edata).
+        grad : callable, optional, default: None
+            gradient of the fit function.
+        hess : callable, optional, default: None
+            hessian of the fit function.
+        args : array_like, optional, default: ()
+            Optional arguments that shall be passed to func and that should not be fitted.
+        grad_args : array_like, optional, default: None
+            Optional parameter for the gradient. If set to None the arguments for the function are used (args).
+        hess_args : array_like, optional, default: None
+            Optional parameter for the hessian. If set to None the arguments for the function are used (args).
+        expand : bool, optional, default: True
+            Expand the parameter for the fitting function. If true, function has to look like
+                func(x, a, b, *args)
+            otherwise it has to look like
+                func(x, params, *args).
+        tol : float, optional, default: 1e-12
+            Tolerance for the minimization.
+        max_fev : int, optional, default: 10000
+            Maximum number of iterations / function evaluations.
+        use_diff : bool, optional, default: True
+            In case of numerical derivative use the difference quotient for approximation.
+        norm_err_chi2 : bool, optional, default: False 
+            Multiply errors with chi**2/d.o.f. Some people like to do this. 
+        derive_chisq : bool, optional, default: False
+            In case of numerical derivative, apply the derivative to the whole chisquare instead of the function.
+        eig_threshold : bool, optional, default: 1e-18
+            If we encounter an eigenvalue of the correlation matrix smaller than threshold, replace it with threshold.
+        nproc : int, optional, default: DEFAULTTHREADS
+            If you want you can accelerate the fits using nprocs threads.
+        """
 
         diff = set(set(kwargs.keys()) - set(allowed_keys))
         if len(diff) != 0:
             logger.TBError("Illegal argument(s) to fitter", *diff)
 
         # Some attributes that are set in functions other than __init__.
-        self._numb_params = 0
         self._grad        = None
         self._hess        = None
         self.hess         = None
@@ -116,9 +109,8 @@ class Fitter:
         self._pcov        = None
 
         # Store data
-        self._xdata     = np.array(xdata, dtype = float)
-        self._ydata     = np.array(ydata, dtype = float)
-        self._numb_data = len(self._ydata)
+        self._xdata = np.array(xdata, dtype = float)
+        self._ydata = np.array(ydata, dtype = float)
 
         # These attributes are described in the above doccumentation. If they aren't specified in the keyword
         # arguments when the Fitter is initialized, they take the default value shown here. 
@@ -134,6 +126,19 @@ class Fitter:
         self._errorAlg = kwargs.get('error_strat', 'propagation')
         self._eig_threshold = kwargs.get('eig_threshold', 1e-18)
         self._nproc = kwargs.get('nproc', DEFAULTTHREADS)
+        logger.debug('Initialize fitter with:')
+        logger.debug('  use_diff:',self._use_diff) 
+        logger.debug('  derive_chisq:',self._derive_chisq)
+        logger.debug('  expand:',self._expand)
+        logger.debug('  tol:',self._tol)
+        logger.debug('  test_tol:',self._test_tol)
+        logger.debug('  max_fev:',self._max_fev)
+        logger.debug('  norm_err_chi2:',self._norm_err_chi2)
+        logger.debug('  args:',self._args)
+        logger.debug('  grad_args:',self._grad_args)
+        logger.debug('  errorAlg:',self._errorAlg)
+        logger.debug('  eig_threshold:',self._eig_threshold)
+        logger.debug('  nproc:',self._nproc) 
 
         if self._grad_args is None:
             self._grad_args = self._args
@@ -144,7 +149,7 @@ class Fitter:
         if type(self._max_fev) is int:
             tmp_fev = self._max_fev
             self._max_fev = dict()
-            for alg in self._all_algs:
+            for alg in all_algs:
                 self._max_fev[alg] = tmp_fev
 
         if self._max_fev is None:
@@ -163,15 +168,9 @@ class Fitter:
         # Initialize func. This is also done in set_func, but we need it before that
         self._func = func
 
-        # Get number of parameters
-        self._get_numb_params()
-
-        # This variable stores the result from the last fit. This is used as start parameters for the next fit, if no
-        # new start parameters are provided
-        self._saved_params = np.ones(self._numb_params)
-
-        # Current status of the fit errors. Initialize with inf
-        self._saved_pcov = np.full((self._numb_params, self._numb_params), np.inf)
+        # The final parameters and covariance matrices will be saved in this. 
+        self._saved_params = None 
+        self._saved_pcov   = None 
 
         self.set_func(func, kwargs.get('grad', None), kwargs.get('hess', None))
 
@@ -198,45 +197,9 @@ class Fitter:
         self._fit_cor = cut_eig(self._cor, self._eig_threshold)
         self._fit_inv_cor = inv(self._fit_cor)
 
-        logger.details('Fitter initialized.')
-        logger.details('  use_diff:',self._use_diff) 
-        logger.details('  derive_chisq:',self._derive_chisq)
-        logger.details('  expand:',self._expand)
-        logger.details('  tol:',self._tol)
-        logger.details('  test_tol:',self._test_tol)
-        logger.details('  max_fev:',self._max_fev)
-        logger.details('  norm_err_chi2:',self._norm_err_chi2)
-        logger.details('  args:',self._args)
-        logger.details('  grad_args:',self._grad_args)
-        logger.details('  errorAlg:',self._errorAlg)
-        logger.details('  eig_threshold:',self._eig_threshold)
-        logger.details('  nproc:',self._nproc) 
 
-
-    def _get_numb_params(self):
-        """ Find out the number of parameters that the fit function takes. In case of non expanded parameters, we simply
-        try how large the parameter array has to be without generating an exception. Result is stored in
-        self._numb_params. """
-        ntries = 1000
-        if self._expand:
-            # signature().parameters gives the total number of parameters passed to a function. We subtract 1 (self)
-            # along with the number of arguments
-            self._numb_params = len(signature(self._func).parameters) - 1 - len(self._args)
-            return
-        else:
-            params = []
-            for i in range(ntries):
-                params.append(1)
-                try:
-                    i += 1
-                    self._func(self._xdata, params, *self._args)
-                    self._numb_params = i
-                    logger.details("number params = ", self._numb_params)
-                    return
-                except Exception as e:
-                    if i == ntries:
-                        logger.debug("Last error was", e)
-            logger.TBError("Fit function does not work with up to", ntries,"parameters. Enable DEBUG level for more details.")
+    def __repr__(self) -> str:
+        return "Fitter"
 
 
     def set_func(self, func, grad = None, hess = None, args = None, grad_args = None, hess_args = None):
@@ -302,25 +265,6 @@ class Fitter:
             self._hess_args = hess_args
         elif self._args is not None:
             self._hess_args = self._args
-
-        self.check_start_params()
-
-
-    def check_start_params(self):
-        """ Check if the start parameters work with the fitting function. If not: Generate new default start_parameters.
-        These are stored in self._saved_params. """
-        try:
-            funcExpand(self._func,self._xdata,self._saved_params,self._args,self._expand)
-        except Exception as e:
-            logger.warn("Function cannot handle start_parameters",self._saved_params)
-            self._get_numb_params()
-            self._saved_params = np.ones(self._numb_params)
-            raise e
-
-        if any(np.isnan(self._saved_params) | np.isinf(self._saved_params)):
-            logger.info("Nan or inf in start parameters. Generate new defaults")
-            self._get_numb_params()
-            self._saved_params = np.ones(self._numb_params)
 
 
     def num_grad(self, x, params):
@@ -630,14 +574,6 @@ class Fitter:
         if start_params is not None:
             self._saved_params = envector(start_params)
 
-        # Check for consistency.
-        self.check_start_params()
-
-        # If the fit function has parameters that have default values that should also be fitted, the automatically
-        # computed numb_params is wrong. Therefore we make sure that self._numb_params corresponds to self._saved_params
-        # at this point.
-        self._numb_params = len(self._saved_params)
-
         # Initialize prior values.
         if priorsigma is not None:
             if priorval is None:
@@ -647,13 +583,6 @@ class Fitter:
         else:
             if priorval is not None:
                 logger.TBError("priorval passed but priorsigma is None")
-
-        # Check for consistency.
-        if self._priorsigma is not None:
-            if len(self._priorsigma) != self._numb_params:
-                logger.TBError("Number priorsigma != number of fit parameters")
-            if len(self._priorval) != self._numb_params:
-                logger.TBError("Number priorval != number of fit parameters")
 
         resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )
         all_params     = [row[0] for row in resultSummary]

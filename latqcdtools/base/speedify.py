@@ -92,6 +92,9 @@ class ComputationClass:
             logger.warn('We recommend using fewer processes than',MAXTHREADS) 
         self._result = self.parallelization_wrapper() # compute the result when class is initialized
 
+    def __repr__(self) -> str:
+        return "ComputationClass"
+
     def parallelization_wrapper(self):
         if self._nproc==1:
             results = []

@@ -5,7 +5,9 @@
 # 
 # Some methods useful for calculating Polyakov loop observables. 
 #
+
 import numpy as np
+from latqcdtools.base.check import checkType
 
 
 # These entries come from A. Bazavov et al. "Polyakov loop in 2+1 flavor QCD from low to high temperatures".
@@ -107,8 +109,14 @@ class polyakovTools:
        parts of the Polyakov loop as numpy arrays, polReIm."""
 
     def __init__(self, Nsigma, Ntau):
+        checkType(Nsigma,int)
+        checkType(Ntau,int)
         self.Ns = Nsigma
         self.Nt = Ntau
+
+
+    def __repr__(self) -> str:
+        return "polyakovTools"
 
 
     # Absolute value of Polyakov loop

@@ -13,6 +13,9 @@ from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params
 class HotQCDParams(HotQCD_MILC_Params):
     """A class to handle and check the input parameters of a lattice run, especially for HotQCD."""
 
+    def __repr__(self) -> str:
+        return "HotQCDParams"
+
     def getcGradFlowPureGauge(self):
         return 's'+str(self.Ns).zfill(3)+'t'+str(self.Nt).zfill(2)+'_b0'+self.cbeta+'00'
 

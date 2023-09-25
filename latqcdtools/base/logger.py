@@ -41,22 +41,32 @@ def createLogFile(filename="Toolbox.log"):
     info('Created log file',filename)
 
 
-def log(outString):
+def _log(outString):
     global RECORDLOG
     if RECORDLOG:
         logging.info(outString[:-1])
 
 
-def getCallerName(frame):
+def _getCallerName(frame):
     """ Gets the name of the function that calls the present function. """
-    currframe = inspect.currentframe()
-    callframe = inspect.getouterframes(currframe, 2)
     # The way the frame works: Each nested function is labelled by the first index. 0 is the current function, i.e.
     # getCallerName. 1 is the function that called this function, and so on. Second index = 3 retrieves the name.
-    return str(callframe[frame][3])
+    currframe  = inspect.currentframe()
+    callframe  = inspect.getouterframes(currframe, 2)
+    methodName = str(callframe[frame][3])+': '
+    # If the main script is calling it, we don't need a name.
+    if methodName=='<module>: ':
+        methodName='' 
+    # If the method was called from within a class, get the class name too.
+    try:
+        call_locals = currframe.f_back.f_back.f_locals
+        className = str(call_locals['self'])+'.'
+    except KeyError:
+        className = ''
+    return className+methodName
 
 
-def getTimeStamp():
+def _getTimeStamp():
     """ Get HH:MM:SS """
     return ' ['+datetime.datetime.now().strftime("%H:%M:%S")+']'
 
@@ -75,44 +85,42 @@ def set_log_level(level):
 
 def debug(*args,frame=2):
     if CURRENT_LEVEL <= 1:
-        args       = [str(s) for s in args]
-        callerName = getCallerName(frame)
-        output     = getTimeStamp()+' DEBUG: '+callerName+'--'+(' '.join(args))
+        args   = [str(s) for s in args]
+        output = _getTimeStamp()+' DEBUG: '+_getCallerName(frame)+(' '.join(args))
         print(output)
-        log(output+'\n')
+        _log(output+'\n')
 
 
 def details(*args):
     if CURRENT_LEVEL <= 2:
         args   = [str(s) for s in args]
-        output = getTimeStamp()+' DETAILS: '+(' '.join(args))
+        output = _getTimeStamp()+' DETAILS: '+(' '.join(args))
         print(output)
-        log(output+'\n')
+        _log(output+'\n')
 
 
 def progress(*args):
     if CURRENT_LEVEL <= 3:
         args   = [str(s) for s in args]
-        output = getTimeStamp()+' PROGRESS: '+(' '.join(args))
+        output = _getTimeStamp()+' PROGRESS: '+(' '.join(args))
         print(output)
-        log(output+'\n')
+        _log(output+'\n')
 
 
 def info(*args):
     if CURRENT_LEVEL <= 4:
         args   = [str(s) for s in args]
-        output = getTimeStamp()+' INFO: '+(' '.join(args))
+        output = _getTimeStamp()+' INFO: '+(' '.join(args))
         print(output)
-        log(output+'\n')
+        _log(output+'\n')
 
 
 def warn(*args,frame=2):
     if CURRENT_LEVEL <= 5:
-        args       = [str(s) for s in args]
-        callerName = getCallerName(frame)
-        output     = getTimeStamp()+WARNING+' WARNING: '+callerName+'--'+(' '.join(args))+ENDC
+        args   = [str(s) for s in args]
+        output = _getTimeStamp()+WARNING+' WARNING: '+_getCallerName(frame)+(' '.join(args))+ENDC
         print(output)
-        log(output+'\n')
+        _log(output+'\n')
 
 
 # --------------------------------------------------------------------------------------------- INDEPENDENT OF LOG LEVEL
@@ -120,22 +128,21 @@ def warn(*args,frame=2):
 
 def TBFail(*args):
     args   = [str(s) for s in args]
-    output = getTimeStamp()+FAIL+' FAIL: '+(' '.join(args))+ENDC
+    output = _getTimeStamp()+FAIL+' FAIL: '+(' '.join(args))+ENDC
     print(output)
-    log(output + '\n')
+    _log(output + '\n')
 
 
 def TBError(*args,frame=2):
-    args = [str(s) for s in args]
-    callerName = getCallerName(frame)
-    output = getTimeStamp()+FAIL+' ERROR: '+callerName+'--'+(' '.join(args))+ENDC
+    args   = [str(s) for s in args]
+    output = _getTimeStamp()+FAIL+' ERROR: '+_getCallerName(frame)+(' '.join(args))+ENDC
     print(output)
-    log(output + '\n')
+    _log(output + '\n')
     sys.exit(-1)
 
 
 def TBPass(*args):
-    args = [str(s) for s in args]
-    output = getTimeStamp()+PASS+' SUCCESS: '+(' '.join(args))+ENDC
+    args   = [str(s) for s in args]
+    output = _getTimeStamp()+PASS+' SUCCESS: '+(' '.join(args))+ENDC
     print(output)
-    log(output + '\n')
+    _log(output + '\n')

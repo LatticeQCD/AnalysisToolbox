@@ -18,6 +18,9 @@ class HotQCD_MILC_Params(latticeParams):
     """ A class to handle and check the input parameters of a lattice run using conventions common to both the
         HotQCD and MILC collaborations. """
 
+    def __repr__(self) -> str:
+        return "HotQCD_MILC_Params"
+
     # String often used to label lattice configurations.
     def getcgeom(self):
         return 'l'+str(self.Ns)+str(self.Nt)
@@ -106,6 +109,9 @@ class genericTable(list):
         self.pre=pre
         self.post=post
 
+    def __repr__(self) -> str:
+        return "genericTable"
+
     def append(self, item):
         checkType(item, list)
         super(genericTable, self).append(item)
@@ -134,11 +140,15 @@ class genericTable(list):
 class latexTable(genericTable):
     def __init__(self):
         super().__init__(delimiter='&', pre='', post='\\\\')
+    def __repr__(self) -> str:
+        return "latexTable"
 
 
 class redmineTable(genericTable):
     def __init__(self):
         super().__init__(delimiter='|', pre='|', post='|')
+    def __repr__(self) -> str:
+        return "redmineTable"
 
 
 def convertTable(source,target):

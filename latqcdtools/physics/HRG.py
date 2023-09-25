@@ -78,6 +78,9 @@ class HRGbase:
         else:
             self.C = C
 
+    def __repr__(self) -> str:
+        return "HRGbase"
+
     def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
         """ mu_X * N_X, X = (B,Q,S,C) """
         return self.B[k]*muB_div_T + self.Q[k]*muQ_div_T + self.S[k]*muS_div_T + self.C[k]*muC_div_T
@@ -106,8 +109,8 @@ class HRG(HRGbase):
         self.NMAX_light = NMAX_light
         self.NMAX_heavy = NMAX_heavy
 
-    def __repr__(self):
-        return "hrg"
+    def __repr__(self) -> str:
+        return "HRG"
 
     def Nmax(self, k):
         """ Keep Nmax terms of the Taylor expansion. """
@@ -335,6 +338,9 @@ class HRGexact(HRGbase):
         logger.warn('ExactHRG numerical integration is not yet reliable...')
         HRGbase.__init__(self, Mass, g, w, B, S, Q, C)
 
+    def __repr__(self) -> str:
+        return "HRGexact"
+
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
 
@@ -425,8 +431,8 @@ class EVHRG(HRGbase):
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         HRGbase.__init__(self, Mass, g, w, B, S, Q, C)
 
-    def __repr__(self):
-        return "evhrg"
+    def __repr__(self) -> str:
+        return "EVHRG"
 
     def Pid(self, m, g, T):
         return g*(m/T)**2 * kn(2, (m/T)) / np.pi**2 / 2

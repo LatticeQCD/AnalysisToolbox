@@ -82,6 +82,10 @@ class gaugeField:
                             self.field[t,z,y,x,mu] = U
 
 
+    def __repr__(self) -> str:
+        return "gaugeField"
+
+
     def getLink(self,x,y,z,t,mu):
         """ Link accessor. """
         X, Y, Z, T = respectBCs(x,y,z,t,self.Ns,self.Nt)

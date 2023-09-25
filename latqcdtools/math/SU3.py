@@ -26,6 +26,7 @@ ze_3 = np.array([   [complex(0.), complex(0.), complex(0.)],
 
 @compile
 def fastUnitarize(self):
+
     # Normalize row 0.
     norm = np.sqrt( abs(self[0,0])**2 + abs(self[0,1])**2 + abs(self[0,2])**2 )
     self[0,0] /= norm
@@ -89,6 +90,10 @@ class SU3(np.matrix):
         if np.shape(obj) != (3,3):
             logger.TBError("SU(3) matrices must have shape (3,3).")
         return obj
+
+
+    def __repr__(self) -> str:
+        return "SU(3)"
 
 
     def trace(self, **kwargs):

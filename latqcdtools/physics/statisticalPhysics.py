@@ -27,7 +27,10 @@ class UniversalityClass:
     eta   = None
     omega = None
 
-    def name(self):
+    def __repr__(self) -> str:
+        return "UniversalityClass"
+
+    def name(self) -> str:
         return str(self.d)+"d, "+str(self.symm)
 
     def exponentSummary(self):
@@ -63,7 +66,8 @@ class O2_3d(UniversalityClass):
     delta = 4.7798
     alpha = 2.-beta*(1. + delta)
     gamma = beta*(delta-1.)
-
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
 
 class O3_3d(UniversalityClass):
     """ 3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class. """
@@ -74,6 +78,8 @@ class O3_3d(UniversalityClass):
     alpha = -0.12
     gamma = 1.395
     delta = (gamma+2*alpha)/(2*beta)
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
 
 
 class O4_3d(UniversalityClass):
@@ -85,6 +91,8 @@ class O4_3d(UniversalityClass):
     alpha = 2.-beta*(1.+delta)
     gamma = beta*(delta-1.)
     nu    = (beta/d)*(1+delta)
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
 
 
 # 4d Ising model
@@ -98,6 +106,8 @@ class Z2_4d(UniversalityClass):
     delta = 3
     nu    = 1/2
     eta   = 0
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
 
 
 # 3d Ising model
@@ -111,6 +121,8 @@ class Z2_3d(UniversalityClass):
     gamma = nu*(2 - eta)
     beta  = (nu*d -gamma)/2
     delta = nu*d/beta-1.
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
 
 
 # 2d Ising model
@@ -124,3 +136,5 @@ class Z2_2d(UniversalityClass):
     delta = 15
     nu    = 1
     eta   = 1/4
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name

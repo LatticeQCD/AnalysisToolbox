@@ -32,15 +32,15 @@ def pseudo_val(mean, mean_i, numb_blocks):
 def jackknifeSample1d(x, func):
     """Jackknife resampling of the estimator func"""
     ndat = len(x)
-    idx = np.arange(n)
-    sample = np.array([func(x[idx != i]) for i in range(n)])
+    idx = np.arange(ndat)
+    sample = np.array([func(x[idx != i]) for i in range(ndat)])
     return sample
 
 
 def jackknife1d(x, func):
     """Jackknife estiamte of the variance of the estimator func."""
     ndat = len(x)
-    idx = np.arange(n)
+    idx = np.arange(ndat)
     jsamp = jackknife(x, func)
     jackmean = np.mean(jsamp)
     jackstd = np.sqrt((ndat - 1) / (ndat + 0.0) * sum((func(x[idx != i]) - jsamp) ** 2.0
@@ -113,10 +113,12 @@ class nimbleJack:
                     rolled_data[:self._blocksize * self._nblocks], 0, self._confAxis + 1)
             # Get initial estimator of the mean
             self._mean = meanArgWrapper(func, used_data, args)
-            self._blockval = parallel_function_eval(
-                self.getJackknifeEstimator, range(self._nblocks), nproc=self._nproc)
+            self._blockval = parallel_function_eval(self.getJackknifeEstimator, range(self._nblocks), nproc=self._nproc)
             self._mean = std_mean(self._blockval)
             self._error = std_err(self._blockval)
+
+    def __repr__(self) -> str:
+        return "jackknife"
 
     def getJackknifeEstimator(self, i):
         """ Gets the ith jackknife estimator from throwing away jackknife block i. """
@@ -124,10 +126,7 @@ class nimbleJack:
         if self._confAxis == 1:
             for k in range(self._numb_observe):
                 block_data.append(self._data[k][0:i * self._blocksizes[k]])
-                block_data[k] = np.concatenate((block_data[k], self._data[k][(i + 1)
-                                                                             * self._blocksizes[k]:self._nblocks *
-                                                                             self._blocksizes[
-                    k]]))
+                block_data[k] = np.concatenate((block_data[k], self._data[k][(i + 1) * self._blocksizes[k]:self._nblocks * self._blocksizes[k]]))
         else:
             # The Jackknife blocks are constructed by rolling the conf axis to the first index. Then the jackknife
             # blocks are built. Aferwards the we roll back
@@ -182,6 +181,5 @@ def jackknife(func, data, numb_blocks=20, conf_axis=1, return_sample=False, args
         nproc : integer
             Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
     """
-    jk = nimbleJack(func, data, numb_blocks, conf_axis,
-                    return_sample, args, nproc)
+    jk = nimbleJack(func, data, numb_blocks, conf_axis, return_sample, args, nproc)
     return jk.getResults()

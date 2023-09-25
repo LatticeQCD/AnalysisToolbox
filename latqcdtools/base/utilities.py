@@ -194,7 +194,7 @@ def deleteFile(target):
             os.remove(target)
             logger.info("Deleted file",target)
             return
-        except OSError as e:
+        except OSError:
             pass
     else:
         pass
@@ -241,6 +241,8 @@ class timer:
         self._tstart = time.time()
         self._tend   = self._tstart
 
+    def __repr__(self) -> str:
+        return "timer"
 
     def printTiming(self, message=None):
         self._tstart = self._tend
@@ -250,7 +252,6 @@ class timer:
             logger.info("Time to finish: %12.8f [s]." % timing)
         else:
             logger.info("Time to finish "+message+": %12.8f [s]." % timing)
-
 
     def resetTimer(self):
         self._tstart = time.time()

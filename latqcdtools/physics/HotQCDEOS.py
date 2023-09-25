@@ -3,7 +3,6 @@
 # 
 # J. Goswami 
 # 
-# 
 
 import numpy as np
 import sympy as sy
@@ -31,6 +30,9 @@ r = 0.4
 class EOS:
     def __init__(self, temp):
         self.temp = temp
+
+    def __repr__(self) -> str:
+        return "EOS"
 
     def pressure(self):
         """

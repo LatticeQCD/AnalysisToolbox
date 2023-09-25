@@ -18,8 +18,8 @@ class GammaMatrix:
     """ The 4x4 gamma matrices used in Euclidean quantum field theory. """
     
     @property
-    def __repr__(self):
-        return 'Gamma Matrix'
+    def __repr__(self) -> str:
+        return 'GammaMatrix'
 
     def g(self, i=1):
         if i == 1:
@@ -53,8 +53,9 @@ class GammaMatrix:
 
 
 class DiracOp(GammaMatrix):
+
     @property
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "DiracOp"
 
     def __init__(self, Lx, Ly, Lz, Lt, fermion="Wilson"):

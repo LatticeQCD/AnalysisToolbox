@@ -79,6 +79,9 @@ class nimbleBoot:
             self._mean = std_median(self._sampleval)
             self._error = dev_by_dist(self._sampleval)
 
+    def __repr__(self) -> str:
+        return "nimbleBoot"
+
     def getBootstrapEstimator(self,i,my_seed):
         sample_data = []
         if self._conf_axis == 0: # Case of one dimensional array is special
@@ -191,6 +194,9 @@ class nimbleGaussianBoot:
         else:
             self._mean = std_median(self._sampleval)
             self._error = dev_by_dist(self._sampleval, return_both_q=asym_err)
+
+    def __repr__(self) -> str:
+        return "nimbleGaussianBoot"
 
     def getGaussianBootstrapEstimator(self,i,my_seed):
         sample_data = []

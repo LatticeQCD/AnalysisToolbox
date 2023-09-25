@@ -123,6 +123,10 @@ class latticeParams:
             logger.TBError("Unknown reference scale",scaleType)
 
 
+    def __repr__(self) -> str:
+        return "latticeParams"
+
+
     # a in [fm]
     def geta(self):
         if self.scale=='fk':

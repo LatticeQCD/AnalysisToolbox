@@ -41,6 +41,10 @@ class observablesOfInterest(list):
             self.dtypes += (float,float,)
 
 
+    def __repr__(self) -> str:
+        return "observablesOfInterest"
+
+
     def getCol(self,part,obs):
         """ op_to_obs will give back complex numbers, which are then output to a table. Given an observable obs with
         real or imaginary part part, getCol returns the column index. """
