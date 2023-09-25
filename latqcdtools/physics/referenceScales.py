@@ -7,7 +7,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.math.polynomials import Polynomial, Rational
-from latqcdtools.physics.betaFunction import beta_func, b0, b1
+from latqcdtools.physics.runningCoupling import beta_func, b0, b1
 
 
 CHECKBETARANGE = True
@@ -175,8 +175,10 @@ def a_times_ms_2014(beta):
 
 
 def wuppertal_type_ansatz(beta,c1,c2,c3,c4):
-    nf = 0
-    return np.exp( (beta/(12*b0(nf))+b1(nf)/(2.*b0(nf)**2)*np.log(6*b0(nf)/beta))
+    Nf = 0
+    B0 = b0(Nf)/(4*np.pi)**2
+    B1 = b1(Nf)/(4*np.pi)**4
+    return np.exp( (beta/(12*B0)+B1/(2.*B0**2)*np.log(6*B0/beta))
                    * (1+c1/beta+c2/beta**2)/(1+c3/beta+c4/beta**2) )
 
 
@@ -218,11 +220,16 @@ def r0_div_a(beta,year):
 # Based on https://arxiv.org/pdf/1503.05652.pdf
 # Latest update at 2017/01/11 by Lukas Mazur
 def sqrtt0_div_a(beta):
-    nf = 0
+    """ Get sqrt(t0/a)(beta)
+
+    Args:
+        beta (float)
+
+    Returns:
+        float: sqrt(t0/a) 
+    """
     c1 = -9.945
     c2 = 24.191
     c3 = -5.334
     c4 = 1.452
-    return np.exp( (beta/(12*b0(nf))+b1(nf)/(2.*b0(nf)**2)*np.log(6*b0(nf)/beta))
-                   * (1+c1/beta+c2/beta**2)/(1+c3/beta+c4/beta**2) )
-
+    return wuppertal_type_ansatz(beta,c1,c2,c3,c4)

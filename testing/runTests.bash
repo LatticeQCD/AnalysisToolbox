@@ -77,6 +77,7 @@ runTestRoutine testHotQCDEos.py
 runTestRoutine testHRG.py
 runTestRoutine testLatticeParams.py
 runTestRoutine testPolyakovTools.py
+runTestRoutine testRunningCoupling.py
 runTestRoutine testScales.py
 runTestRoutine testStaticPotential.py
 runTestRoutine testStatPhys.py
