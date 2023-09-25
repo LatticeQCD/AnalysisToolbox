@@ -43,3 +43,11 @@ integrateData(xdata,ydata,method='trapezoid')
 which will find the area under `ydata` given the grid points `xdata`. This uses the trapezoid rule by default,
 but it can also use the Simpson rule or the homebrew `spline` method, which fits the data with a spline,
 then evaluates the area by quadrature.
+
+Finally, if you want to solve an ODE of the form $dy/dt=f(t,y)$
+with some $y(t_0)=y_0$ already known, we have a method to solve initial value problems:
+```Python
+solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8)
+```
+The available methods are the same as those for SciPy's `solve_ivp`, described 
+[here](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html).

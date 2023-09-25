@@ -6,11 +6,35 @@
 # Some wrappers to do numerical integration.
 #
 
+
 import numpy as np
 import scipy.integrate as integrate
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import envector
+from latqcdtools.base.utilities import envector,unvector
 from latqcdtools.math.spline import getSpline
+
+
+def solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8):
+    """ Wrapper to solve an initial value problem of the form
+
+    dy/dt = dydt(t, y)
+    y(t0) = y0
+
+    Args:
+        dydt (func): RHS of IVP. Must have signature dydt(t,y).
+        t0 (float): initial time 
+        tf (float): final time 
+        y0 (array-like): y(t0)
+        method (str, optional): Integration method. Defaults to 'RK45'.
+        args (tuple, optional): Arguments to dydt. Defaults to ().
+        epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.
+        epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.
+
+    Returns:
+        array-like: y(tf) 
+    """
+    sol = integrate.solve_ivp(dydt,(t0,tf),envector(y0),method=method,args=args,rtol=epsrel,atol=epsabs)
+    return unvector(sol.y)[-1]
 
 
 def integrateData(xdata,ydata,method='trapezoid'):
