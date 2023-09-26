@@ -9,13 +9,22 @@
 import numpy as np
 from latqcdtools.base.printErrorBars import get_err_str
 import latqcdtools.base.logger as logger
-from latqcdtools.base.plotting import plt, plot_dots
+from latqcdtools.base.plotting import plt
 from latqcdtools.statistics.fitting import Fitter, std_algs, bayes_algs
 from latqcdtools.base.speedify import DEFAULTTHREADS
 from latqcdtools.base.check import checkType
 
 
 def powerSeries(x,coeffs):
+    """ The default fit form for a continuum extrapolation is a power series in a^2.
+
+    Args:
+        x (array-like): a^2 or 1/Nt^2 
+        coeffs (array-like): power series coefficients 
+
+    Returns:
+        array-like: power series in x 
+    """
     result = 0.
     for i in range(len(coeffs)):
         result += coeffs[i]*x**i
@@ -25,12 +34,13 @@ def powerSeries(x,coeffs):
 class Extrapolator(Fitter):
 
     def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', ansatz=None, nproc=DEFAULTTHREADS):
-        """ A framework for doing continuum limit extrapolations. Assume a power series to some order in a^2.
+        """ A framework for doing continuum limit extrapolations.
 
         Args:
             x (array-like): a data or Nt data 
             obs (array-like)
             obs_err (array-like)
+            ansatz (func, optional): continuum-limit fit ansatz. Power series in a^2 by default.
             order (int, optional): order of the power series. Defaults to 1.
             xtype (str, optional): choose to fit a data or Nt data. Defaults to "a".
             error_strat (str, optional): calculate errors using error propagation or augmented chi^2. Defaults to 'propagation'.
@@ -96,9 +106,13 @@ class Extrapolator(Fitter):
         """ Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. """
         if not self._triedExtrapolation:
             logger.TBError("Can't plot an extrapolation without having extrapolated first...")
-        plot_dots([0],self._result[0],self._result_err[0],**kwargs)
-        self.plot_data(**kwargs)
+        if (not 'xmin' in kwargs) or (kwargs['xmin'] is None):
+            kwargs['xmin'] = 1e-8 
+        if (not 'xmax' in kwargs) or (kwargs['xmax'] is None):
+            kwargs['xmax'] = np.max(self._xdata) 
         self.plot_fit(**kwargs)
+        kwargs['label']=None
+        self.plot_data(**kwargs)
 
     def showResults(self):
         """ Print extrapolation results to screen. """

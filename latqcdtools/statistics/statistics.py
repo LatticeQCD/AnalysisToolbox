@@ -621,7 +621,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
 
 
 
-def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=False, npoints=1000, **kwargs):
+def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=False, npoints=1000, expand=False, **kwargs):
     """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
         To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
         bars in the x-direction instead of the y-direction. """
@@ -630,8 +630,10 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=Fal
     kwargs['marker'] = None
     xmin = kwargs['xmin']
     xmax = kwargs['xmax']
+    if (xmin is None) or (xmax is None):
+        logger.TBError('I need to know xmin and xmax.')
 
-    if kwargs['expand']:
+    if expand:
         wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
         wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
         wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
@@ -640,29 +642,10 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=Fal
         wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
         wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
 
-    if xmin is None:
-        for line in plt.gca().lines:
-            xmin_new = np.min(line.get_xdata())
-            if xmin is None:
-                xmin = xmin_new
-            if xmin_new < xmin:
-                xmin = xmin_new
-    if xmax is None:
-        for line in plt.gca().lines:
-            xmax_new = np.max(line.get_xdata())
-            if xmax is None:
-                xmax = xmax_new
-            if xmax_new > xmax:
-                xmax = xmax_new
-
-    if xmin is None:
-        xmin = -10
-    if xmax is None:
-        xmax = 10
-
     xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
     ydata = wrap_func(xdata, *args)
 
+    # Received an explicit error function:
     if func_err is not None:
         ydata_err = wrap_func_err(xdata, *args_err)
         if swapXY:
@@ -670,6 +653,7 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=Fal
         else:
             return plot_fill(xdata, ydata, ydata_err, **kwargs)
 
+    # No explicit error function, but received a covariance matrix: 
     elif len(args_err) > 0:
         if grad is None:
             wrap_grad = None

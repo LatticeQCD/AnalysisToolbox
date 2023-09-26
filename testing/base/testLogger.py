@@ -28,7 +28,3 @@ def testLogger(i):
 
 if __name__ == '__main__':
     parallel_function_eval(testLogger,range(2),nproc=2)
-
-logger.set_log_level('ALL')
-logger.warn('beep')
-logger.set_log_level('INFO')

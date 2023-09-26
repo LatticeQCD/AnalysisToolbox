@@ -65,11 +65,11 @@ def testErrorProp():
 
     print_results(res, res_true, text = "Error_prop using self made grad")
 
-    plot_func(func, args = [a, b, opt], func_err = err_func, args_err=[a,b,a_err,b_err, opt])
-    plot_func(func, args = [a, b, opt], args_err = [a_err,b_err])
-    plot_func(func, args = [a, b, opt], args_err = [a_err,b_err])
-    plot_func(func, args = [a, b, opt], args_err = [a_err,b_err,opt], grad = grad,
-              title = "Please check if all error bands are the same")
+    plot_func(func, args = [a, b, opt], expand=True, func_err = err_func, args_err=[a,b,a_err,b_err, opt], xmin=-1, xmax=1)
+    plot_func(func, args = [a, b, opt], expand=True, args_err = [a_err,b_err], xmin=-1, xmax=1)
+    plot_func(func, args = [a, b, opt], expand=True, args_err = [a_err,b_err], xmin=-1, xmax=1)
+    plot_func(func, args = [a, b, opt], expand=True, args_err = [a_err,b_err,opt], grad = grad,
+              title = "Please check if all error bands are the same", xmin=-1,xmax=1)
 
     plt.savefig("errorprop.pdf")
 

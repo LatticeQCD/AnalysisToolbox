@@ -139,7 +139,8 @@ def checkDomain(obj, expectedDomain):
 def checkEqualLengths(*args):
     """ Check that all array-like objects passed have the same length. """
     length = len(envector(args[0]))
-    for array in args:
-        if array is not None:
-            if len(envector(array)) != length:
-                logger.TBError('Array length mismatch detected.',frame=3)
+    for i in range(len(args)):
+        if args[i] is not None:
+            if len(envector(args[i])) != length:
+                logger.info(length, len(envector(args[i])))
+                logger.TBError('Array length mismatch detected on array',i,frame=3)

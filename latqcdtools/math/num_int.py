@@ -10,6 +10,7 @@
 import numpy as np
 import scipy.integrate as integrate
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkEqualLengths
 from latqcdtools.base.utilities import envector,unvector
 from latqcdtools.math.spline import getSpline
 
@@ -33,8 +34,14 @@ def solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8):
     Returns:
         array-like: y(tf) 
     """
-    sol = integrate.solve_ivp(dydt,(t0,tf),envector(y0),method=method,args=args,rtol=epsrel,atol=epsabs)
-    return unvector(sol.y)[-1]
+    a = envector(t0)
+    b = envector(tf)
+    checkEqualLengths(a,b)
+    def g(A,B):
+        sol = integrate.solve_ivp(dydt,(A,B),envector(y0),method=method,args=args,rtol=epsrel,atol=epsabs)
+        return unvector(sol.y)[-1]
+    h = np.vectorize(g)
+    return np.asarray(h(a,b))
 
 
 def integrateData(xdata,ydata,method='trapezoid'):
@@ -99,8 +106,7 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
     """
     a = envector(a)
     b = envector(b)
-    if not len(a) == len(b):
-        logger.TBError('Integration bounds must have the same length.')
+    checkEqualLengths(a,b)
     isVec = False
     if len(a) > 1:
         isVec=True

@@ -25,7 +25,7 @@ rather target lattice QCD.
 
 
 In any of the above cases, after installing the AnalysisToolbox, you can easily incorporate
-it features in your own Python scripts like any other library.
+its features in your own Python scripts like any other library.
 Some simple examples are in the [tutorial](https://latticeqcd.github.io/AnalysisToolbox/tutorial.html).
 A realistic use-case that weaves the AnalysisToolbox into a lattice
 QCD workflow can be found in [this data publication](https://pub.uni-bielefeld.de/record/2979080).

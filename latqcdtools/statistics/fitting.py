@@ -13,6 +13,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.linalg import inv
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkEqualLengths
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, fill_param_dict, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
@@ -29,8 +30,8 @@ allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol
 # All possible algorithms.
 all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell", "Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
 
-# Standard algorithms for the minimization. All but COBYLA are rather fast.
-std_algs = ["curve_fit", "TNC", "Powell", "Nelder-Mead", "COBYLA"]
+# Standard algorithms for the minimization. 
+std_algs = ["curve_fit", "TNC", "Powell", "Nelder-Mead"]
 
 # Fast algorithms that work with priors. 
 bayes_algs = ["TNC", "Powell", "Nelder-Mead"]
@@ -584,6 +585,13 @@ class Fitter:
             if priorval is not None:
                 logger.TBError("priorval passed but priorsigma is None")
 
+        # See if a standard function evaluation works
+        try:
+            _test = self.wrap_func(self._xdata, self._saved_params)
+        except Exception as e:
+            logger.TBError('Fit function not compatible with xdata and parameters: Exception was',e)
+        checkEqualLengths(_test, self._xdata)
+
         resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )
         all_params     = [row[0] for row in resultSummary]
         all_fit_errors = [row[1] for row in resultSummary]
@@ -594,7 +602,7 @@ class Fitter:
         # Check to see if all the fits failed
         if np.all(np.array(all_chi2) == np.inf): 
             for i, algorithm in enumerate(algorithms):
-                logger.TBFail(algorithm+"--",all_except[i])
+                logger.TBFail(algorithm+": ",all_except[i])
             logger.TBError("No algorithm converged.See above list of exceptions.")
 
         # Find the smallest chi^2
@@ -674,6 +682,7 @@ class Fitter:
     def plot_fit(self, no_error = False, **kwargs):
         """ Plot the fit function. """
         # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters here.
+        logger.debug('Plotting fit.')
         if self._expand:
             func = lambda x, *params: self._func(x, *(tuple(params) + tuple(self._args)))
         else:
@@ -688,6 +697,7 @@ class Fitter:
 
     def plot_data(self, **kwargs):
         """ Plot the fit data. """
+        logger.debug('Plotting fit data.')
         if self._cov is not None:
             sigma = np.sqrt( np.diag(self._cov) )
             plot_dots(self._xdata, self._ydata, sigma, **kwargs)

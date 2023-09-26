@@ -38,9 +38,7 @@ legend_labels = []
 
 default_params = {
 
-    # Hidden python options. (Generally speaking do not touch these.)
-    'ax': plt,      # Axis object that is used for the plots. Default is matplotlib.pyplot.
-    'expand': True, # Defines whether the parameters get expanded or not, i.e func(x *param) or func(x param).
+    'ax': plt,  # Axis object that is used for the plots. Default is matplotlib.pyplot.
 
     # Basic options affecting most plots.
     'xlabel': None,
@@ -184,6 +182,8 @@ def remove_points(data, *args, minval=None, maxval=None):
     Returns:
         tuple: data, *args trimmed according to minval and maxval
     """
+    checkType(data,"array")
+    data = np.array(data)
     if minval is None:
         minval = -np.inf
     if maxval is None:
