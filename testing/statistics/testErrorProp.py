@@ -19,13 +19,17 @@ import latqcdtools.base.logger as logger
 logger.set_log_level('INFO')
 
 
-def func(x, A, B, OPT):
+def func(x, p, OPT):
+    A, B = p
     return OPT*A**2*np.sin(x)+B
 
-def grad(x, A, B, OPT):
+def grad(x, p, OPT):
+    A, B = p
     return [OPT*2*A*np.sin(x), 1]
 
-def err_func(x, A, B, A_err, B_err, OPT):
+def err_func(x, p, p_err, OPT):
+    A, B = p
+    A_err, B_err = p_err
     return np.sqrt((OPT*2*A*np.sin(x)*A_err)**2+B_err**2)
 
 
@@ -55,28 +59,25 @@ def testErrorProp():
     b_err  = 0.2
     opt    = 2
 
-    res_true = err_func(x_test, 1, 2, a_err, b_err, opt)
+    res_true = err_func(x_test, [1,2], [a_err,b_err], opt)
 
-    res = error_prop_func(x_test, func, [1, 2], [a_err, b_err], args=(opt,))
-    print_results(res, res_true, text = "Error_prop using diff quotient")
+    res = error_prop_func(x_test, func, params=[1,2], params_err=[a_err,b_err], args=(opt,))
+    print_results(res, res_true, text = "Error_prop using numerical derivative")
 
-    res = error_prop(lambda p, OPT: func(x_test, *p, OPT), [1, 2], [a_err, b_err], args=(opt,))[1]
-    print_results(res, res_true, text = "Direct error propagation using lambda to wrap x")
+    res = error_prop_func(x_test, func, grad=grad, params=[1,2], params_err=[a_err,b_err], args=(opt,))
+    print_results(res, res_true, text = "Error_prop using analytic gradient")
 
-    print_results(res, res_true, text = "Error_prop using self made grad")
-
-    plot_func(func, args = [a, b, opt], expand=True, func_err = err_func, args_err=[a,b,a_err,b_err, opt], xmin=-1, xmax=1)
-    plot_func(func, args = [a, b, opt], expand=True, args_err = [a_err,b_err], xmin=-1, xmax=1)
-    plot_func(func, args = [a, b, opt], expand=True, args_err = [a_err,b_err], xmin=-1, xmax=1)
-    plot_func(func, args = [a, b, opt], expand=True, args_err = [a_err,b_err,opt], grad = grad,
+    plot_func(func, params = (a,b), args=(opt,), func_err = err_func, params_err=[a_err,b_err], xmin=-1, xmax=1)
+    plot_func(func, params = (a,b), args=(opt,), params_err = [a_err,b_err], xmin=-1, xmax=1)
+    plot_func(func, params = (a,b), args=(opt,), params_err = [a_err,b_err], grad = grad,
               title = "Please check if all error bands are the same", xmin=-1,xmax=1)
 
     plt.savefig("errorprop.pdf")
 
     amean, aerr = 0.09, 0.001
-    mean, err =  error_prop(K_G, [1,m_mu_MeV,amean], [0,m_mu_MeV_err,aerr])
-    REFmean=176798.90810433426
-    REFerr =21366.184730206216
+    mean, err   = error_prop(K_G, [1,m_mu_MeV,amean], [0,m_mu_MeV_err,aerr])
+    REFmean     = 176798.90810433426
+    REFerr      = 21366.184730206216
 
     print_results(mean, REFmean, err, REFerr, text = "Test on BM kernel.")
 

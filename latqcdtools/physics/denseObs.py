@@ -9,6 +9,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import writeTable
+from latqcdtools.base.check import checkType, checkDomain
 
 
 _allowed_observables = ["confID",
@@ -29,11 +30,9 @@ class observablesOfInterest(list):
         if iterable is None:
             iterable = _allowed_observables
         super().__init__(iterable)
-        if not isinstance(iterable,list):
-            logger.TBError('observablesOfInterest object must be initialized with list.')
+        checkType(iterable,list)
         for item in iterable:
-            if not item in _allowed_observables:
-                logger.TBError('Unknown observable',item)
+            checkDomain(item,_allowed_observables)
         if not iterable[0] == "confID":
             logger.TBError('observablesOfInterest[0] must be confID.')
         self.dtypes=('U12',)
@@ -48,8 +47,7 @@ class observablesOfInterest(list):
     def getCol(self,part,obs):
         """ op_to_obs will give back complex numbers, which are then output to a table. Given an observable obs with
         real or imaginary part part, getCol returns the column index. """
-        if not obs in _allowed_observables:
-            logger.TBError('Unknown observable', obs)
+        checkDomain(obs,_allowed_observables)
         if obs=="confID":
             return 0
         if part == "Re":

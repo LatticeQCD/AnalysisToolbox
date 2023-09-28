@@ -43,7 +43,7 @@ def diff_deriv(x, func, args = (), h = None):
     return (func(up, *args) - func(down, *args)) / (2*h)
 
 
-def diff_grad(params, func, args = (), h = None, expand = False):
+def diff_grad(params, func, args = (), h = None):
     """ Gradient using difference quotient. """
     ret = [0.0]*len(params)
     up = np.array(params, dtype = float)
@@ -53,20 +53,14 @@ def diff_grad(params, func, args = (), h = None, expand = False):
             h = best_h(params[i])
         up[i] += h
         down[i] -= h
-        if expand:
-            ret[i] = (func(*(tuple(up) + tuple(args))) - func(*(tuple(down) + tuple(args)))) / (2*h)
-        else:
-            ret[i] = (func(up, *args) - func(down, *args)) / (2*h)
+        ret[i] = (func(up, *args) - func(down, *args)) / (2*h)
         up[i] = params[i]
         down[i] = params[i]
     return np.array(ret)
 
 
-def diff_hess(params, func, args = (), h = None, expand = False):
+def diff_hess(params, func, args = (), h = None):
     """ Hessian using difference quotient. """
-    if expand:
-        wrap_func = lambda params: func(*(tuple(params) + tuple(args)))
-        return diff_hess(params, wrap_func, h = h, expand = False)
 
     # This has to be a list, as we might put in arrays, if params is higher dimensional
     ret = [ [0.0]*len(params) for _ in range(len(params)) ]
@@ -120,26 +114,19 @@ def diff_hess(params, func, args = (), h = None, expand = False):
     return np.array(ret)
 
 
-def diff_fit_grad(x, params, func, args = (), h = None, expand = False):
+def diff_fit_grad(x, params, func, args = (), h = None):
     """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
     change the order using this wrapper. """
-    if expand:
-        f = lambda p: func(x, *(tuple(p) + tuple(args)))
-    else:
-        f = lambda p: func(x, p, *args)
-    return diff_grad(params, f, h = h, expand = False)
+    f = lambda p: func(x, p, *args)
+    return diff_grad(params, f, h = h)
 
 
-
-def diff_fit_hess(x, params, func, args = (), h = None, expand = False):
+def diff_fit_hess(x, params, func, args = (), h = None):
     """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
     change the order using this wrapper. """
-    if expand:
-        f = lambda p: func(x, *(tuple(p) + tuple(args)))
-    else:
-        f = lambda p: func(x, p, *args)
-    return diff_hess(params, f, h = h, expand = False)
+    f = lambda p: func(x, p, *args)
+    return diff_hess(params, f, h = h)
 
 
-def diff_jac(params, func, args = (), h = None, expand = False):
-    return diff_grad(params, func, args, h, expand).transpose()
+def diff_jac(params, func, args = (), h = None):
+    return diff_grad(params, func, args, h).transpose()

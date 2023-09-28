@@ -22,24 +22,28 @@ TESTPLOTS = False
 
 
 ''' Quadratic fit '''
-def fit_func(x, a, b, c):
+def fit_func(x, p):
+    a, b, c = p
     return a * x**2 + b * x + c
 
-def grad_fit_func(x, a, b, c):
+def grad_fit_func(x, p):
     return np.array([x**2, x, np.ones(len(x))])
 
-def hess_fit_func(x, a, b, c):
+def hess_fit_func(x, p):
     return np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
 
 ''' Correlator fit. '''
-def one_state(x, A, m, Nt):
+def one_state(x, p, Nt):
+    A, m = p
     return A * np.cosh(m * (Nt / 2 - x))
 
-def grad_one_state(x, A, m, Nt):
+def grad_one_state(x, p, Nt):
+    A, m = p
     return np.array([np.cosh(m * (Nt / 2 - x)), A * np.sinh(m * (Nt / 2 - x)) * (Nt / 2 - x)])
 
-def hess_one_state(x, A, m, Nt):
+def hess_one_state(x, p, Nt):
+    A, m = p
     return np.array([ [0, np.sinh(m * (Nt / 2 - x)) * (Nt / 2 - x)],
                       [np.sinh(m*(Nt/2-x))*(Nt/2-x), A*np.cosh(m*(Nt/2-x)) * (Nt/2-x)**2] ])
 
@@ -141,7 +145,7 @@ def testFit():
     res_err_true = [5.042611e-08, 8.380914e-05]
 
 
-    res, res_err, _ = do_fit(one_state, xdata, ydata, edata,[1, 1], grad=grad_one_state, hess=hess_one_state,
+    res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
                                      args=(64,), norm_err_chi2=True, algorithm="curve_fit")
     print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
 

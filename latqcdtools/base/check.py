@@ -126,7 +126,7 @@ def checkDomain(obj, expectedDomain):
 
     Args:
         obj (obj)
-        expectedDomain (list): list of values obj is allowed to take
+        expectedDomain (array-like): collection of values obj is allowed to take
     """
     calling_frame = inspect.currentframe().f_back
     locals_dict = calling_frame.f_locals

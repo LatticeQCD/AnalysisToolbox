@@ -20,11 +20,12 @@ from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
-from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, DOF, funcExpand
+from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, DOF, \
+    expandArgs, error_budget
 
 
 # Allowed keys for the constructor
-allowed_keys = ['grad', 'hess', 'args', 'expand', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
+allowed_keys = ['grad', 'hess', 'args', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
                 'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'nproc']
 
 # All possible algorithms.
@@ -53,9 +54,7 @@ class Fitter:
         Parameters
         ----------
         func : callable
-            Function to be fitted. Depending on parameter expand the format has to be
-                func(x, a, b, *args)
-            or
+            Function to be fitted. Must have form 
                 func(x, params, *args)
         xdata : array_like
             xdata used for fit. These data may be higher dimensional. This may be the case when our fit functions needs
@@ -77,11 +76,6 @@ class Fitter:
             Optional parameter for the gradient. If set to None the arguments for the function are used (args).
         hess_args : array_like, optional, default: None
             Optional parameter for the hessian. If set to None the arguments for the function are used (args).
-        expand : bool, optional, default: True
-            Expand the parameter for the fitting function. If true, function has to look like
-                func(x, a, b, *args)
-            otherwise it has to look like
-                func(x, params, *args).
         tol : float, optional, default: 1e-12
             Tolerance for the minimization.
         max_fev : int, optional, default: 10000
@@ -117,7 +111,6 @@ class Fitter:
         # arguments when the Fitter is initialized, they take the default value shown here. 
         self._use_diff = kwargs.get('use_diff', True)
         self._derive_chisq = kwargs.get('derive_chisq', False)
-        self._expand = kwargs.get('expand', True)
         self._tol = kwargs.get('tol', 1e-10)
         self._test_tol = kwargs.get('test_tol', 1e-10)
         self._max_fev = kwargs.get('max_fev', None)
@@ -130,7 +123,6 @@ class Fitter:
         logger.debug('Initialize fitter with:')
         logger.debug('  use_diff:',self._use_diff) 
         logger.debug('  derive_chisq:',self._derive_chisq)
-        logger.debug('  expand:',self._expand)
         logger.debug('  tol:',self._tol)
         logger.debug('  test_tol:',self._test_tol)
         logger.debug('  max_fev:',self._max_fev)
@@ -269,17 +261,17 @@ class Fitter:
 
 
     def num_grad(self, x, params):
-        return diff_fit_grad(x, params, self._func, self._args, expand = self._expand)
+        return diff_fit_grad(x, params, self._func, self._args)
     def num_hess(self, x, params):
-        return diff_fit_hess(x, params, self._func, self._args, expand = self._expand)
+        return diff_fit_hess(x, params, self._func, self._args)
 
 
     def wrap_grad(self, x, params):
-        return funcExpand(self._grad,x,params,self._grad_args,expand=self._expand)
+        return expandArgs(self._grad,x,params,self._grad_args)
     def wrap_hess(self, x, params):
-        return funcExpand(self._hess,x,params,self._hess_args,expand=self._expand)
+        return expandArgs(self._hess,x,params,self._hess_args)
     def wrap_func(self, x, params):
-        return funcExpand(self._func,x,params,self._args,expand=self._expand)
+        return expandArgs(self._func,x,params,self._args)
 
 
     def fit_ansatz_array(self, params):
@@ -318,7 +310,7 @@ class Fitter:
         else:
             prior, prior_err = None, None
         return chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, params, prior=prior,
-                         prior_err=prior_err, expand=self._expand)
+                         prior_err=prior_err)
 
 
     def grad_chisquare(self, params):
@@ -589,7 +581,7 @@ class Fitter:
         try:
             _test = self.wrap_func(self._xdata, self._saved_params)
         except Exception as e:
-            logger.TBError('Fit function not compatible with xdata and parameters: Exception was',e)
+            logger.TBError('Fit function must have signature func(xdata,params,args). Got exception',e)
         checkEqualLengths(_test, self._xdata)
 
         resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )
@@ -629,7 +621,7 @@ class Fitter:
                      all_fit_errors[min_ind],
                      chidof,
                      logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                            prior=self._priorval,prior_err=self._priorsigma, expand=self._expand),
+                            prior=self._priorval,prior_err=self._priorsigma),
                      np.copy(self._saved_pcov)
                    )
         else:
@@ -662,37 +654,25 @@ class Fitter:
         if xmax is None:
             xmax = np.max(self._xdata)
 
-        # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters.
-        if self._expand:
-            func = lambda x, *params: self._func(x, *(tuple(params) + tuple(self._args)))
-        else:
-            func = lambda x, *params: self._func(x, params, *self._args)
+        func = lambda x, *params: self._func(x, params, *self._args)
 
         if not no_error:
             # Call the grad wrapper instead of directly self._grad
             grad = lambda x, *params: np.asarray(self.grad(x, params))
 
             save_func(func, filename, xmin = xmin, xmax = xmax, args = params, args_err = params_err, grad = grad,
-                      color = color, alpha = alpha, expand = True, header = header, **kwargs)
+                      color = color, alpha = alpha, header = header, **kwargs)
         else:
-            save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color, header = header,
-                      expand = True, **kwargs)
+            save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color, header = header, **kwargs)
 
 
     def plot_fit(self, no_error = False, **kwargs):
         """ Plot the fit function. """
-        # Error propagation is not implemented for non-expanded parameters. Therefore, we use expanded parameters here.
         logger.debug('Plotting fit.')
-        if self._expand:
-            func = lambda x, *params: self._func(x, *(tuple(params) + tuple(self._args)))
-        else:
-            func = lambda x, *params: self._func(x, params, *self._args)
         if not no_error:
-            # Call the grad wrapper instead of directly self._grad
-            grad = lambda x, *params: np.asarray(self.grad(x, params))
-            plot_func(func, args = self._saved_params, args_err = self._saved_pcov, grad = grad, expand = True, **kwargs)
+            plot_func(self._func, params=self._saved_params, params_err=self._saved_pcov, grad=self._grad, args=self._args, **kwargs)
         else:
-            plot_func(func, args = self._saved_params, expand = True, **kwargs)
+            plot_func(self._func, params=self._saved_params, args=self._args, **kwargs)
 
 
     def plot_data(self, **kwargs):
@@ -737,55 +717,25 @@ class Fitter:
             plot_bar(range(len(eig_imag)), eig_imag, color='#0081bf', label="imag", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
 
 
-    def get_func(self, x, params = None, params_err = None):
-        """ Get value and error of the fit at a specific point x
+    def printErrorBudget(self,atVal):
+        func = lambda x, *params: self._func(x, params, *self._args)
 
-        Parameters
-        ----------
-        x: scalar
-            x-value at which the function is evaluated.
-        params: array_like, optional, default = None
-            parameters for the function.
-        params_err: array_like, optional, default = None
-            error of the parameters for the function.
-        """
+        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+        wrap_grad = lambda x, *wrap_args: self.grad(x, wrap_args)
 
-        if params_err is None and params is None:
-            params_err = self._saved_pcov
-        if params is None:
-            params = self._saved_params
-
-        if params_err is None:
-            logger.TBFail("Please pass params along with params_err")
-            raise ValueError
-
-        value = self.wrap_func(x, params)
-
-        func = lambda x, *params: self.wrap_func(x, params)
-        grad = lambda x, *params: self.grad(x, params)
-        try:
-            error = [error_prop_func(xval, func, params, params_err, grad = grad) for xval in x]
-        except (ValueError, TypeError):
-            error = error_prop_func(x, func, params, params_err, grad = grad)
-
-        return value, error
+        error_budget(atVal, wrap_func, self._xdata, np.diag(self._cov), grad=wrap_grad)
 
 
 
-
+# TODO: is this the right place for this?
 def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, header=None, **params):
     fill_param_dict(params)
     xmin = params['xmin']
     xmax = params['xmax']
 
-    if params['expand']:
-        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
-        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
-        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
-    else:
-        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
-        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
-        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
+    wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+    wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
+    wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
 
     if xmin is None:
         for line in plt.gca().lines:

@@ -20,13 +20,14 @@ echo
 
 
 cd base
+runTestRoutine testCheck.py
 runTestRoutine testDataCleaner.py
 runTestRoutine testInitialize.py
 runTestRoutine testLogger.py
 runTestRoutine testPrintErrorBars.py
 runTestRoutine testReadWrite.py
-runTestRoutine testUtilities.py
 runTestRoutine testSpeedify.py
+runTestRoutine testUtilities.py
 cd ..
 
 

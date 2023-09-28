@@ -13,6 +13,7 @@ from latqcdtools.base.plotting import plt
 from latqcdtools.statistics.fitting import Fitter, std_algs, bayes_algs
 from latqcdtools.base.speedify import DEFAULTTHREADS
 from latqcdtools.base.check import checkType
+from latqcdtools.base.utilities import unvector
 
 
 def powerSeries(x,coeffs):
@@ -32,6 +33,7 @@ def powerSeries(x,coeffs):
 
 
 class Extrapolator(Fitter):
+
 
     def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', ansatz=None, nproc=DEFAULTTHREADS):
         """ A framework for doing continuum limit extrapolations.
@@ -69,10 +71,12 @@ class Extrapolator(Fitter):
                 logger.warn('Not using a power series ansatz, but still using custom order.')
             logger.debug('received ansatz',ansatz)
 
-        Fitter.__init__(self, ansatz, x, obs, obs_err, norm_err_chi2=False, expand=False, error_strat=error_strat, nproc=nproc)
+        Fitter.__init__(self, ansatz, x, obs, obs_err, norm_err_chi2=False, error_strat=error_strat, nproc=nproc)
+
 
     def __repr__(self) -> str:
         return "Extrapolator"
+
 
     def extrapolate(self,start_coeffs=None,prior=None,prior_err=None):
         """ Carry out the extrapolation.
@@ -102,6 +106,7 @@ class Extrapolator(Fitter):
                                                                                          algorithms=bayes_algs, detailedInfo=True)
             return self._result, self._result_err, self._chidof, self._logGBF
 
+
     def plot(self,**kwargs):
         """ Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. """
         if not self._triedExtrapolation:
@@ -114,6 +119,7 @@ class Extrapolator(Fitter):
         kwargs['label']=None
         self.plot_data(**kwargs)
 
+
     def showResults(self):
         """ Print extrapolation results to screen. """
         if not self._triedExtrapolation:
@@ -125,6 +131,10 @@ class Extrapolator(Fitter):
         if self._logGBF is not None:
             logger.info('     logGBF =',round(self._logGBF, 3))
         logger.info()
+
+
+    def printErrorBudget(self):
+        return super().printErrorBudget(1e-8)
 
 
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,prior_err=None,

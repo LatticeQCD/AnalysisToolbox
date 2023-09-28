@@ -18,7 +18,8 @@ days_per_year   = 365.2422         # NIST 2018.
 days_per_month  = days_per_year/12
 meters_per_mile = 1609.344         # NIST 2023 based on international foot (not survey foot).
 BTU_per_Wh      = 3.412            # Many possible definitions, don't take too seriously. A stupid unit, indeed.
-
+kBJdivK         = 1.380649e-23     # kB in [J/K]. NIST 2018.
+eC              = 1.602176634e-19  # e in [C]. NIST 2018.
 
 # List of scientific prefixes
 prefix = { "Q"  : 1e30,
@@ -51,19 +52,21 @@ prefix = { "Q"  : 1e30,
 
 # Alphabetical order for easier finding
 baseUnits = [
-            "BTU",
-            "eV",
-            "h",
-            "m",
-            "m/s",
-            "mi",
-            "mi/h",
-            "min",
-            "s",
-            "W",
-            "Wh",
-            "Wh/y",
-            "y",
+            "BTU",    # British thermal unit
+            "eV",     # electron-volt
+            "h",      # hour
+            "J",      # Joule
+            "K",      # Kelvin
+            "m",      # meter
+            "m/s",    # meter/second
+            "mi",     # mile
+            "mi/h",   # mile/hour
+            "min",    # minute
+            "s",      # second
+            "W",      # Watt
+            "Wh",     # Watt-hour
+            "Wh/y",   # Watt-hour/year
+            "y",      # year
             ]
 
 
@@ -108,65 +111,76 @@ def convert(x,unit1,unit2):
     fac = num/den
 
     if u1==u2:
-        result = fac*x
+        result = x
 
     # time 
     elif u1u2==('s','min'):
-        result = fac*x/60
+        result = x/60
     elif u1u2==('min','s'):
-        result = fac*x*60
+        result = x*60
     elif u1u2==('s','h'):
-        result = fac*x/60**2
+        result = x/60**2
     elif u1u2==('h','s'):
-        result = fac*x*60**2
+        result = x*60**2
     elif u1u2==('s','y'):
-        result = fac*x/(days_per_year*24*60**2)
+        result = x/(days_per_year*24*60**2)
     elif u1u2==('y','s'):
-        result = fac*x*(days_per_year*24*60**2)
+        result = x*(days_per_year*24*60**2)
     elif u1u2==('h','y'):
-        result = fac*x/(days_per_year*24)
+        result = x/(days_per_year*24)
     elif u1u2==('y','h'):
-        result = fac*x*(days_per_year*24)
+        result = x*(days_per_year*24)
 
     # distance
     elif u1u2==('mi','m'):
-        result = fac*x*meters_per_mile
+        result = x*meters_per_mile
     elif u1u2==('m','mi'):
-        result = fac*x/meters_per_mile
+        result = x/meters_per_mile
         
     # speed
     elif u1u2==('mi/h','m/s'):
-        result = fac*convert( convert(x,'mi','m'), 's','h')
+        result = convert( convert(x,'mi','m'), 's','h')
     elif u1u2==('m/s','mi/h'):
-        result = fac*convert( convert(x,'m','mi'), 'h','s')
+        result = convert( convert(x,'m','mi'), 'h','s')
 
     # power 
     elif u1u2==('W','Wh/y'):
-        result = fac*convert(x,'y','h')
+        result = convert(x,'y','h')
     elif u1u2==('Wh/y','W'):
-        result = fac*convert(x,'h','y')
+        result = convert(x,'h','y')
 
     # energy
     elif u1u2==('Wh','BTU'):
-        result = fac*x*BTU_per_Wh
+        result = x*BTU_per_Wh
     elif u1u2==('BTU','Wh'):
-        result = fac*x/BTU_per_Wh
-    
+        result = x/BTU_per_Wh
+    elif u1u2==('Wh','J'):
+        result = convert(x,'h','s')
+    elif u1u2==('J','Wh'):
+        result = convert(x,'s','h')
+    elif u1u2==('eV','J'): # [J] = [V C]
+        result = x*eC 
+    elif u1u2==('J','eV'):
+        result = x/eC 
 
     # natural units
     elif u1u2==('m','eVinv'):
-        result = fac*x/hceVm
+        result = x/hceVm
     elif u1u2==('eVinv','m'):
-        result = fac*x*hceVm
+        result = x*hceVm
     elif u1u2==('eV','minv'):
-        result = fac*x/hceVm
+        result = x/hceVm
     elif u1u2==('minv','eV'):
-        result = fac*x*hceVm
+        result = x*hceVm
+    elif u1u2==('eV','K'):
+        result = convert(x,'eV','J')/kBJdivK
+    elif u1u2==('K','eV'):
+        result = convert(x*kBJdivK,'J','eV')
 
     else:
         logger.TBError('No rule for conversion of ['+u1+'] to ['+u2+']') 
 
-    return result
+    return fac*result
 
 
 hcMeVfm = convert( convert(hceVm,"eV","MeV"), "m","fm" )

@@ -96,19 +96,23 @@ def jack_mean_and_err(data):
     return mean, err
 
 
-def funcExpand(func, x, params=(), args=(), expand=True):
-    """ In the context of modelling, one likes to do maximum likelihood estimates to select a best model. In the context
-    of LQCD this is most usually a curve fit, but in principle it can be something else. Best-model algorithms involve
-    varying some of the function func's arguments, trying to look out for the best ones, here set aside as params. On
-    the other hand, the function may take other arguments that should not be varied. When constructing func, the author
-    may have chosen to collect all parameters together as a tuple/list and similarly collect all args as a tuple/list.
-    Depending on this choice, one may have to wrap the function differently.
+def expandArgs(func, x, params=(), args=()):
+    """ In general we distinguish between parameters and arguments. Parameters should be passed
+    together as a collection, e.g. as a tuple, list, or np.array. Other function arguments can
+    be passed how you like and will be expanded here.
 
-    What if the function has no arguments? This isn't a problem. When the function has no arguments, this is handled
-    as a default args=(). It turns out that for a general function, python treats func(x,*()) as func(x).
+    Args:
+        func (func)
+        x (array-like)
+        params (tuple, optional): Model parameters. Defaults to ().
+        args (tuple, optional): Function arguments. Defaults to ().
+
+    Returns:
+        func(x,params,args) 
     """
-    if expand:
-        return func(x, *(tuple(params) + tuple(args)))
+    if len(params)==0:
+        # Python treats func(x,*()) as func(x)
+        return func(x, *args)
     else:
         return func(x, params, *args)
 
@@ -149,7 +153,7 @@ def DOF(ndat,nparam,priorsigma):
     return dof
 
 
-def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,expand=True):
+def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None):
     """ Calculate chi^2.
 
     Args:
@@ -161,13 +165,12 @@ def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,e
         params (tuple, optional): fit parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
         prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
-        expand (bool, optional): see funcExpand above. Defaults to True.
 
     Returns:
         float: chi^2 
     """
     checkPrior(prior,prior_err)
-    y    = funcExpand(func,xdata,params,args,expand)
+    y    = expandArgs(func,xdata,params,args)
     cor  = norm_cov(cov)
     diff = ( ydata - y )/np.sqrt( np.diag(cov) )
     res  = diff.dot( inv(cor).dot(diff) )
@@ -176,7 +179,7 @@ def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None,e
     return res
 
 
-def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
+def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None):
     """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
@@ -190,14 +193,13 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=No
         params (tuple, optional): fit parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
         prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
-        expand (bool, optional): see funcExpand above. Defaults to True.
 
     Returns:
         float: log( Gaussian Bayes factor ) 
     """
-    chi2       = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
-    nparams    = countParams(func,params)
-    dof        = DOF(len(ydata),nparams,prior_err)
+    chi2    = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err)
+    nparams = countParams(func,params)
+    dof     = DOF(len(ydata),nparams,prior_err)
     logger.debug('chi^2 =',chi2)
     logger.debug('nparams =',nparams)
     logger.debug('dof =',dof)
@@ -207,7 +209,7 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=No
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(prior_err)**2)) )
 
 
-def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
+def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None):
     """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
@@ -222,17 +224,16 @@ def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None,
         params (tuple, optional): fit parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
         prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
-        expand (bool, optional): see funcExpand above. Defaults to True.
 
     Returns:
         float: AIC
     """
     nparams    = countParams(func,params)
-    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
+    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err)
     return 2*nparams - 2*likelihood
 
 
-def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None, expand=True):
+def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None):
     """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
     infinity, one recovers the AIC.
@@ -246,14 +247,13 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
         params (tuple, optional): fit parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
         prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
-        expand (bool, optional): see funcExpand above. Defaults to True.
 
     Returns:
         float: corrected AIC 
     """
     nparams = countParams(func,params)
     ndat    = len(ydata)
-    aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err, expand)
+    aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err)
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
 
 
@@ -391,16 +391,49 @@ def error_prop(func, means, errors, grad=None, args=()):
     return mean, error
 
 
-def error_prop_func(x, func, means, errors, grad=None, args=()):
-    """ Automatically wraps your function for error_prop. It only returns the error, not the mean. """
-    # For fitting or plotting we expect the first argument of func to be x instead of params.
-    # Therefore we have to change the order using this wrapper
-    wrap_func = lambda p, *wrap_args: func(x, *(tuple(p) + tuple(wrap_args)))
-    if grad is not None:
-        wrap_grad = lambda p, *grad_args: grad(x, *(tuple(p) + tuple(grad_args)))
-    else:
+def error_prop_func(x, func, params, params_err, grad=None, args=()):
+    """ Propagate error in f(x;params,params_err). This needs its own special treatment, since
+    the error propagation method on its own only propagates params_err to f(params,params_err).
+
+    Args:
+        x (array-like)
+        func (func)
+        params (array-like): Model parameters. 
+        params_err (array-like): Error in model parameters. 
+        grad (func, optional): Gradient function. Defaults to None.
+        args (tuple, optional): Arguments of func. Defaults to ().
+    """
+    def wrap_func(m,a=()):
+        if isinstance(a,tuple): 
+            return func(x,m,*a)
+        else:
+            return func(x,m,a)
+    if grad is None:
         wrap_grad = None
-    return error_prop(wrap_func, means, errors, wrap_grad, args)[1]
+    else:
+        def wrap_grad(m,a=()):
+            if isinstance(a,tuple): 
+                return grad(x,m,*a)
+            else:
+                return grad(x,m,a)
+    return error_prop(wrap_func, params, params_err, wrap_grad, args)[1]
+
+
+def error_budget(x, func, means, errors, grad=None, args=()):
+    if isHigherDimensional(errors):
+        logger.TBError('Covariance matrix not yet supported.')
+    # Strategy is to see separately contribution from each error
+    sigma_f0 = error_prop_func(x,func,means,errors,grad=grad,args=args)
+    sigma_fi = []
+    for i in range(len(errors)):
+        err_contrib    = np.zeros(len(errors))
+        err_contrib[i] = errors[i]
+        sigma_fi.append(error_prop_func(x,func,means,err_contrib,grad=grad,args=args))
+    sigma_fi = np.array(sigma_fi)
+    perc_fi = sigma_fi/sigma_f0
+    print(np.sum(perc_fi))
+    for i in range(len(errors)):
+        logger.info('x_'+str(i),':',round(perc_fi[i],4))
 
 
 def gaudif(x1,e1,x2,e2):
@@ -621,11 +654,19 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
 
 
 
-def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=False, npoints=1000, expand=False, **kwargs):
-    """ To plot an error band with an explicit error function, use func_err. args_err are all parameters for func_err.
-        To use a numerical derivative, just pass the errors of args to args_err. The option swapXY allows for error
-        bars in the x-direction instead of the y-direction. """
+def plot_func(func, params=(), args=(), func_err=None, params_err=(), grad = None, swapXY=False, npoints=1000, **kwargs):
+    """ Plot a function along with its error bands.
 
+    Args:
+        func (func)
+        params (tuple, optional): Model parameters. Defaults to ().
+        params_err (tuple, optional): Error in model parameters. Defaults to ().
+        args (tuple, optional): Optional function arguments. Defaults to ().
+        func_err (func, optional): Explicit error function. Defaults to None.
+        grad (_type_, optional): Explicit function gradient to compute error. Defaults to None.
+        swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
+        npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
+    """
     fill_param_dict(kwargs)
     kwargs['marker'] = None
     xmin = kwargs['xmin']
@@ -633,44 +674,26 @@ def plot_func(func, args=(), func_err=None, args_err=(), grad = None, swapXY=Fal
     if (xmin is None) or (xmax is None):
         logger.TBError('I need to know xmin and xmax.')
 
-    if expand:
-        wrap_func = lambda x, *wrap_args: func(x, *wrap_args)
-        wrap_func_err = lambda x, *wrap_args_err: func_err(x, *wrap_args_err)
-        wrap_grad = lambda x, *wrap_args: grad(x, *wrap_args)
-    else:
-        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
-        wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
-        wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
-
     xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
-    ydata = wrap_func(xdata, *args)
+    ydata = func(xdata, params, *args)
 
     # Received an explicit error function:
     if func_err is not None:
-        ydata_err = wrap_func_err(xdata, *args_err)
+        ydata_err = func_err(xdata, params, params_err, *args)
         if swapXY:
             return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
         else:
             return plot_fill(xdata, ydata, ydata_err, **kwargs)
 
     # No explicit error function, but received a covariance matrix: 
-    elif len(args_err) > 0:
-        if grad is None:
-            wrap_grad = None
-
-        # Arguments that are part of the error propagation
-        tmp_args = tuple(args)[0:len(args_err)]
-
-        # Optional arguments that are constant and, therefore, not part of the error propagation
-        tmp_opt = tuple(args)[len(args_err):]
-
-        ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
-
+    elif len(params_err) > 0:
+        ydata_err = error_prop_func(xdata, func, params=params, params_err=params_err, grad=grad, args=args)
         if swapXY:
             return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
         else:
             return plot_fill(xdata, ydata, ydata_err, **kwargs)
 
+    # No errors at all: 
     else:
         if swapXY:
             return plot_lines(ydata, xdata, yedata=None, xedata=None, **kwargs)

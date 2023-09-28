@@ -9,6 +9,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv, fk_phys, r0_phys, r1_phys
 from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, CY_param, CY_phys
+from latqcdtools.base.check import checkDomain
 
 
 def massStringToFloat(string):
@@ -50,8 +51,7 @@ class latticeParams:
             mu : float
                 Baryon chemical potential.
         """
-        if not scaleType in CY_phys.keys():
-            logger.TBError('Scale type',scaleType,'not yet supported.')
+        checkDomain(scaleType,CY_phys.keys())
         self.scale = scaleType
         self.fK    = fk_phys(CY_phys['fk'],"MeV")
         self.r1    = r1_phys(CY_phys['r1'],"fm")
