@@ -2,9 +2,9 @@ Contributions
 =============
 
 Here are a few basic guidelines to follow when making a contribution to the AnalysisToolbox:
-- Please write documentation (like this one) for any new module that you make. 
-- Please write a test for each new feature you implement. We keep our tests in `AnalysisToolbox/testing`.
-- Make sure you run all the tests when you're done to check that nothing was broken. You can find more information
+- Please **write documentation** (like this one) for any new module that you make. 
+- Please **write a test for each new feature you implement**. We keep our tests in `AnalysisToolbox/testing`.
+- Make sure you **run all the tests** when you're done to check that nothing was broken. You can find more information
 about the tests [here](testing.md). 
 - For all screen output and for terminating your program because of errors: Please try to use the `logger` in `latqcdtools/base/logger.py`. 
 This has the advantage that all scripts are terminated in the same way. Also you can have your program make little log files in 
@@ -19,7 +19,7 @@ it as a *docstring*. (You can find an explanation of docstrings [here](https://w
 An advantage to using these is that people can easily learn about your function by calling `help(functionName)`. Certain IDEs, such as 
 VSCode, include tools to generate your docstrings largely automatically. Also in VSCode, when I hover over a function, it reports
 to me its docstring, which I find helpful.
-- We do not allow the `from X import *` construction anywhere within the AnalysisToolbox, as it makes it difficult to tell where 
+- **We do not allow the `from X import *` construction** anywhere within the AnalysisToolbox, as it makes it difficult to tell where 
 function methods are truly coming from. The problem with modules is just that other people may want to use them and add to them, 
 and for that they need to understand where all the methods are defined. This syntax also confuses IDEs.
 - Please wrap all your `main_*` applications and `test*` tests like so:
@@ -33,7 +33,7 @@ and for that they need to understand where all the methods are defined. This syn
   This has a few advantages: (1) you can put functions outside this definition, then import your main program and borrow those 
   functions without running anything; (2) the logger will give more meaningful output when called in your main function; and (3) 
   weirdly this seems to help some of our parallelizers run on some Macs.
-- Please include a `__repr__` function for all your classes! For instance
+- Please **include a `__repr__` function for all your classes**. For instance
   ```Python
   class CAT():
         def __init__(self):
@@ -51,6 +51,9 @@ and for that they need to understand where all the methods are defined. This syn
   so I try to include it.
 - If you have a method that you think shouldn't be called outside of a module, for instance some kind of internal helper method
   or auxiliary method, try to prefix that method with an underscore, like `_method()`.
+- Please for the love of God **don't use lambda functions**. I've been coding in Python since about 2012, and I 
+  still can't read these things. Why can't you just implement it as a normal function? Using a lambda function saves one line, 
+  but drastically reduces readability. 
 
 Here are some more detailed articles:
 

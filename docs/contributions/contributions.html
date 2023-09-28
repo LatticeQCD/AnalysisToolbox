@@ -86,9 +86,9 @@
 <h1>Contributions<a class="headerlink" href="#contributions" title="Permalink to this headline"></a></h1>
 <p>Here are a few basic guidelines to follow when making a contribution to the AnalysisToolbox:</p>
 <ul>
-<li><p>Please write documentation (like this one) for any new module that you make.</p></li>
-<li><p>Please write a test for each new feature you implement. We keep our tests in <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/testing</span></code>.</p></li>
-<li><p>Make sure you run all the tests when you’re done to check that nothing was broken. You can find more information
+<li><p>Please <strong>write documentation</strong> (like this one) for any new module that you make.</p></li>
+<li><p>Please <strong>write a test for each new feature you implement</strong>. We keep our tests in <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/testing</span></code>.</p></li>
+<li><p>Make sure you <strong>run all the tests</strong> when you’re done to check that nothing was broken. You can find more information
 about the tests <a class="reference internal" href="testing.html"><span class="doc std std-doc">here</span></a>.</p></li>
 <li><p>For all screen output and for terminating your program because of errors: Please try to use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/logger.py</span></code>.
 This has the advantage that all scripts are terminated in the same way. Also you can have your program make little log files in
@@ -103,7 +103,7 @@ it as a <em>docstring</em>. (You can find an explanation of docstrings <a class=
 An advantage to using these is that people can easily learn about your function by calling <code class="docutils literal notranslate"><span class="pre">help(functionName)</span></code>. Certain IDEs, such as
 VSCode, include tools to generate your docstrings largely automatically. Also in VSCode, when I hover over a function, it reports
 to me its docstring, which I find helpful.</p></li>
-<li><p>We do not allow the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">X</span> <span class="pre">import</span> <span class="pre">*</span></code> construction anywhere within the AnalysisToolbox, as it makes it difficult to tell where
+<li><p><strong>We do not allow the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">X</span> <span class="pre">import</span> <span class="pre">*</span></code> construction</strong> anywhere within the AnalysisToolbox, as it makes it difficult to tell where
 function methods are truly coming from. The problem with modules is just that other people may want to use them and add to them,
 and for that they need to understand where all the methods are defined. This syntax also confuses IDEs.</p></li>
 <li><p>Please wrap all your <code class="docutils literal notranslate"><span class="pre">main_*</span></code> applications and <code class="docutils literal notranslate"><span class="pre">test*</span></code> tests like so:</p>
@@ -118,7 +118,7 @@ and for that they need to understand where all the methods are defined. This syn
 functions without running anything; (2) the logger will give more meaningful output when called in your main function; and (3)
 weirdly this seems to help some of our parallelizers run on some Macs.</p>
 </li>
-<li><p>Please include a <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> function for all your classes! For instance</p>
+<li><p>Please <strong>include a <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> function for all your classes</strong>. For instance</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CAT</span><span class="p">():</span>
       <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
           <span class="sd">&quot;&quot;&quot; A class for cats. &quot;&quot;&quot;</span>
@@ -137,6 +137,9 @@ general you may write methods that might return multiple kinds of types. In the 
 so I try to include it.</p></li>
 <li><p>If you have a method that you think shouldn’t be called outside of a module, for instance some kind of internal helper method
 or auxiliary method, try to prefix that method with an underscore, like <code class="docutils literal notranslate"><span class="pre">_method()</span></code>.</p></li>
+<li><p>Please for the love of God <strong>don’t use lambda functions</strong>. I’ve been coding in Python since about 2012, and I
+still can’t read these things. Why can’t you just implement it as a normal function? Using a lambda function saves one line,
+but drastically reduces readability.</p></li>
 </ul>
 <p>Here are some more detailed articles:</p>
 <div class="toctree-wrapper compound">
