@@ -68,6 +68,15 @@ def envector(*args):
     return unvector(result)
 
 
+def toNumpy(*args):
+    result = ()
+    for obj in args:
+        if isArrayLike(obj):
+            obj = np.array(obj)
+        result += (obj,)
+    return result
+
+
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
 
 

@@ -28,6 +28,8 @@ def testUnits():
     print_results(convert(1,'Wh','J'),3600,text='[Wh] to [J]')
     print_results(convert(1,'eV','J'),1.602176634e-19,text='[eV] to [J]')
     print_results(convert(1,'eV','K'),11604.518121550082,text='[eV] to [K]')
+    print_results(convert(10,'kK','degC'),9726.85,text='[K] to [degC]')
+    print_results(convert(12,'kdegC','degF'),21632,text='[degC] to [degF]')
 
     # Identity operation checks
     print_results( convert( convert(1,'s'   ,'min' ),'min' ,'s'   ), 1, text='identity: [s], [min]' )
@@ -35,12 +37,17 @@ def testUnits():
     print_results( convert( convert(1,'s'   ,'y'   ),'y'   ,'s'   ), 1, text='identity: [s], [y]' )
     print_results( convert( convert(1,'h'   ,'y'   ),'y'   ,'h'   ), 1, text='identity: [h], [y]' )
     print_results( convert( convert(1,'mi'  ,'m'   ),'m'   ,'mi'  ), 1, text='identity: [m], [mi]' )
+    print_results( convert( convert(1,'mi'  ,'ft'  ),'ft'  ,'mi'  ), 1, text='identity: [mi], [ft]' )
+    print_results( convert( convert(1,'ft'  ,'m'   ),'m'   ,'ft'  ), 1, text='identity: [ft], [m]' )
     print_results( convert( convert(1,'m/s' ,'mi/h'),'mi/h','m/s' ), 1, text='identity: [mi/h], [m/s]' )
     print_results( convert( convert(1,'Wh/y','W'   ),'W'   ,'Wh/y'), 1, text='identity: [Wh/y], [W]' )
     print_results( convert( convert(1,'Wh'  ,'BTU' ),'BTU' ,'Wh'  ), 1, text='identity: [Wh], [BTU]' )
     print_results( convert( convert(1,'Wh'  ,'J'   ),'J'   ,'Wh'  ), 1, text='identity: [Wh], [J]' )
     print_results( convert( convert(1,'eV'  ,'J'   ),'J'   ,'eV'  ), 1, text='identity: [eV], [J]' )
     print_results( convert( convert(1,'eV'  ,'K'   ),'K'   ,'eV'  ), 1, text='identity: [eV], [K]' )
+    print_results( convert( convert(1,'K'   ,'degC'),'degC','K'   ), 1, text='identity: [K], [degC]' )
+    print_results( convert( convert(1,'K'   ,'degF'),'degF','K'   ), 1, text='identity: [K], [degF]' )
+    print_results( convert( convert(1,'degF','degC'),'degC','degF'), 1, text='identity: [degF], [degC]' )
     print_results( fm_to_MeVinv( MeVinv_to_fm(1) ), 1, text='identity: [fm], [1/MeV]' )
     print_results( fm_to_GeVinv( GeVinv_to_fm(1) ), 1, text='identity: [fm], [1/GeV]' )
 

@@ -5,7 +5,7 @@
 #
 # A collection of basic methods for statistical analysis. The following methods have been adapted from software of
 # Bernd Berg, Markov Chain Monte Carlo and their Statistical Analysis, World Scientific, 2004, ISBN=978-981-3106-37-6:
-#     gaudif, studif, jackknifeFrom, tauint, tauintj, getTauInt
+#     gaudif, studif, remove1Jackknife, tauint, tauintj, getTauInt
 #
 
 
@@ -19,6 +19,7 @@ from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, cl
 from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.printErrorBars import get_err_str
+from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 
 
@@ -257,41 +258,25 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
 
 
-#https://mathoverflow.net/questions/11803/unbiased-estimate-of-the-variance-of-a-weighted-mean
-#In above source, the weights are normalized. We normalize like Wikipedia
-#https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
-
-
 def weighted_mean(data, weights):
-    """ Compute the weighted mean. """
-    data    = np.asarray(data)
-    weights = np.asarray(weights)
+    """ Compute the weighted mean. If you want to weight with error bars, the weights should be
+    1/error**2. See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html. """
+    data    = np.array(data)
+    weights = np.array(weights)
     return np.sum(data.dot(weights))/np.sum(weights)
 
 
-def weighted_mean_variance(errors, weights = None):
-    """ Compute the variance of the weighted mean based on error propagation. This is only valid if the error bars of
-    the data are of reasonable size, meaning that most of the error bars include the mean value. If you expect that
-    there are unknown systematic errors, you should use unbiased_mean_variance instead.
-    
-    This tends to yield an error bar that is tighter than if you were to simply combine two data sets directly, then
-    calculate the mean and error on that. For instance in the case where you have two estimates, one noisy and one
-    clean, the noisy data will make the clean data also noisy. Taking the weighted mean instead gives preference
-    to the clean estimate.
+def weighted_mean_variance(errors):
+    """ Get variance of above weighted mean, when the weights are statistical errors. 
 
     Parameters
     ----------
 
     errors: array_like
         The errors of the data points.
-    weights: array_like, optional, default = None
-        If you do not use weights = 1/errors**2, you can pass additional weights.
-        If None, weights = computed as 1/errors**2. 
     """
-    errors = np.asarray(errors)
-    if weights is None:
-        weights = 1 / errors**2
-    return np.sum(weights**2 * errors**2) / np.sum(weights)**2
+    weights = 1/np.array(errors)**2
+    return 1/np.sum(weights)
 
 
 def biased_sample_variance(data, weights):
@@ -419,21 +404,21 @@ def error_prop_func(x, func, params, params_err, grad=None, args=()):
     return error_prop(wrap_func, params, params_err, wrap_grad, args)[1]
 
 
-def error_budget(x, func, means, errors, grad=None, args=()):
-    if isHigherDimensional(errors):
-        logger.TBError('Covariance matrix not yet supported.')
-    # Strategy is to see separately contribution from each error
-    sigma_f0 = error_prop_func(x,func,means,errors,grad=grad,args=args)
-    sigma_fi = []
-    for i in range(len(errors)):
-        err_contrib    = np.zeros(len(errors))
-        err_contrib[i] = errors[i]
-        sigma_fi.append(error_prop_func(x,func,means,err_contrib,grad=grad,args=args))
-    sigma_fi = np.array(sigma_fi)
-    perc_fi = sigma_fi/sigma_f0
-    print(np.sum(perc_fi))
-    for i in range(len(errors)):
-        logger.info('x_'+str(i),':',round(perc_fi[i],4))
+#def error_budget(x, func, means, errors, grad=None, args=()):
+#    if isHigherDimensional(errors):
+#        logger.TBError('Covariance matrix not yet supported.')
+#    # Strategy is to see separately contribution from each error
+#    sigma_f0 = error_prop_func(x,func,means,errors,grad=grad,args=args)
+#    sigma_fi = []
+#    for i in range(len(errors)):
+#        err_contrib    = np.zeros(len(errors))
+#        err_contrib[i] = errors[i]
+#        sigma_fi.append(error_prop_func(x,func,means,err_contrib,grad=grad,args=args))
+#    sigma_fi = np.array(sigma_fi)
+#    perc_fi = sigma_fi/sigma_f0
+#    print(np.sum(perc_fi))
+#    for i in range(len(errors)):
+#        logger.info('x_'+str(i),':',round(perc_fi[i],4))
 
 
 def gaudif(x1,e1,x2,e2):
@@ -491,20 +476,33 @@ def studif(x1,e1,ndat1,x2,e2,ndat2):
         return 2-betainc(dof/2,1/2,x)
 
 
-def jackknifeFrom(x):
-    """ Create jackknife data from float list. The number of bins is the number of data.
+def checkTS(ts):
+    """ Some methods require 1-d time series. This checks that the type, dimensionality,
+    and length are appropriate.
 
-    INPUT:
-       x--List of data.
+    Args:
+        ts (array-like): time series 
+    """
+    checkType(ts,'array')
+    if isHigherDimensional(ts):
+        logger.TBError('Expected 1-d time series.')
+    if len(ts) < 2:
+        logger.TBError('Time series needs at least two measurements.')
 
-    OUTPUT:
-      xj--List of jackknife data. """
-    x=np.array(x)
+
+def remove1Jackknife(ts):
+    """ Create remove-1 jackknife list from 1-d series.
+
+    Args:
+        ts (array-like): time series 
+
+    Returns:
+        np.array: 1-d array of jackknife means 
+    """
+    checkTS(ts)
+    x=np.array(ts)
     ndat=len(x)
-    if ndat<2:
-        logger.TBError("Need n>1.")
-    xj=1.0/(ndat-1.0)*(np.sum(x)-x)
-    return xj
+    return 1.0/(ndat-1.0)*(np.sum(x)-x)
 
 
 def tauint(nt,ts,xhat = None):
@@ -518,11 +516,10 @@ def tauint(nt,ts,xhat = None):
 
     OUTPUT:
       acint--List of integrated autocorrelation times. """
+    checkTS(ts)
     ndat=len(ts)
-    if ndat<2:
-        logger.TBError("Need ndat>1.")
     if nt>=ndat:
-        logger.TBError("Need nt>ndat.")
+        logger.TBError("Need nt<ndat.")
     if xhat is not None:
         x=xhat
     else:
@@ -560,13 +557,12 @@ def tauintj(nt,nbins,ts,xhat = None):
 
     OUTPUT:
       acintj--2D list indexed by time, then bin number acintj[it][ibin] """
+    checkTS(ts)
     ndat=len(ts)
-    # The time series ought to have more than one element.
-    if ndat<2:
-        logger.TBError("Need ndat>1.")
-    # And there ought to be at least one jackknife bin.
     if nbins<2:
         logger.TBError("Need nbins>1.")
+    if nbins>=ndat:
+        logger.TBError("Need nbins<ndat.")
     if xhat is not None:
         x=xhat
     else:
@@ -591,7 +587,7 @@ def tauintj(nt,nbins,ts,xhat = None):
             # Bias correction
             if xhat is None:
                 acor[ibin]=acor[ibin]*ndat/(ndat-1.)
-        acorj.append(jackknifeFrom(acor))
+        acorj.append(remove1Jackknife(acor))
     # Now make acintj
     acintj=[[1.]*nbins]
     for it in range(1,nt+1):
@@ -616,7 +612,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
          tau_inte--Its (jackknife) error bar.
       tau_intbias--Its bias.
            itpick--The Monte Carlo separation at which this method found its estimate for tau_int. """
-
+    checkTS(ts)
     acoutfile=open(acoutfileName,'w')
 
     # Get integrated autocorrelation time list and corresponding jackknife list.
@@ -675,7 +671,10 @@ def plot_func(func, params=(), args=(), func_err=None, params_err=(), grad = Non
         logger.TBError('I need to know xmin and xmax.')
 
     xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
-    ydata = func(xdata, params, *args)
+    try:
+        ydata = func(xdata, params, *args)
+    except TypeError:
+        ydata = func(xdata, *params, *args)
 
     # Received an explicit error function:
     if func_err is not None:
@@ -707,10 +706,7 @@ def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, t
 
     test = True
 
-    res          = envector(res)
-    res_true     = envector(res_true)
-    res_err      = envector(res_err)
-    res_err_true = envector(res_err_true)
+    res, res_true, res_err, res_err_true = envector(res, res_true, res_err, res_err_true)
 
     for i in range(len(res)):
 

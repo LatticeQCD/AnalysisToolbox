@@ -34,8 +34,7 @@ def solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8):
     Returns:
         array-like: y(tf) 
     """
-    a = envector(t0)
-    b = envector(tf)
+    a, b = envector(t0, tf)
     checkEqualLengths(a,b)
     def g(A,B):
         sol = integrate.solve_ivp(dydt,(A,B),envector(y0),method=method,args=args,rtol=epsrel,atol=epsabs)
@@ -104,8 +103,7 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
     Returns:
         float: Integral of func from a to b. 
     """
-    a = envector(a)
-    b = envector(b)
+    a, b = envector(a,b)
     checkEqualLengths(a,b)
     isVec = False
     if len(a) > 1:

@@ -17,7 +17,7 @@ latexify()
 
 def testPlotFormats():
 
-    plot_file("wurf.dat", 1, 3, 4, 2, style="dots", label="wurf", marker = 'o')
+    plot_file("wurf.dat", 0, 2, 3, 1, style="dots", label="wurf", marker = 'o')
 
     set_params(xlabel   ="$T$ [MeV]",
                ylabel   ="$\\chi^{\\rm{bare}}_{\\Re P}$",

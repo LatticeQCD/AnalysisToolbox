@@ -21,7 +21,7 @@ from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, DOF, \
-    expandArgs, error_budget
+    expandArgs
 
 
 # Allowed keys for the constructor
@@ -717,13 +717,13 @@ class Fitter:
             plot_bar(range(len(eig_imag)), eig_imag, color='#0081bf', label="imag", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
 
 
-    def printErrorBudget(self,atVal):
-        func = lambda x, *params: self._func(x, params, *self._args)
-
-        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
-        wrap_grad = lambda x, *wrap_args: self.grad(x, wrap_args)
-
-        error_budget(atVal, wrap_func, self._xdata, np.diag(self._cov), grad=wrap_grad)
+#    def printErrorBudget(self,atVal):
+#        func = lambda x, *params: self._func(x, params, *self._args)
+#
+#        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
+#        wrap_grad = lambda x, *wrap_args: self.grad(x, wrap_args)
+#
+#        error_budget(atVal, wrap_func, self._xdata, np.diag(self._cov), grad=wrap_grad)
 
 
 

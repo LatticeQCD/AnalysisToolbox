@@ -13,7 +13,7 @@ import matplotlib.colors as cl
 import matplotlib.ticker as ticker
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
-from latqcdtools.base.utilities import isHigherDimensional
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy
 from latqcdtools.base.readWrite import readTable
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -442,8 +442,8 @@ def set_params(**params):
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
 
 
-def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, func_args = (), style='dots', **params):
-    """ Plot data in file. You can set the style with the style argument. Columns indexed from 1.
+def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, func_args = (), style='dots', **params):
+    """ Plot data in file. You can set the style with the style argument. Columns indexed from 0.
 
     Args:
         filename (str): _description_
@@ -457,21 +457,20 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
     """
     fill_param_dict(params)
     data = readTable(filename)
-    if xcol is not None:
-        xdata = np.array(data[xcol - 1], dtype = float)
-    else:
-        xdata = np.arange(len(data))
-    ydata = np.array(data[ycol - 1], dtype = float)
+    checkType(xcol,int)
+    checkType(ycol,int)
+    xdata  = data[xcol]
+    ydata  = data[ycol]
     yedata = None
     xedata = None
 
     if yecol is not None:
-        yedata = np.array(data[yecol - 1], dtype = float)
+        yedata = data[yecol]
     else:
         if style == "fill":
             logger.TBError("Need error column for filled plotting")
     if xecol is not None:
-        xedata = np.array(data[xecol - 1], dtype = float)
+        xedata = data[xecol]
 
     checkEqualLengths(xdata,ydata,xedata,yedata)
 
@@ -507,6 +506,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         **params: Additional parameters that can be set.
     """
     checkEqualLengths(xdata,ydata,xedata,yedata)
+    xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     fill_param_dict(params)
     optional = add_optional(params)
 
@@ -565,6 +565,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
         **params: Additional parameters that can be set.
     """
     checkEqualLengths(xdata,ydata)
+    xdata, ydata = toNumpy(xdata, ydata)
     fill_param_dict(params)
     optional = add_optional(params)
     ax  = getAxObject(params)
@@ -631,6 +632,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
         **params: Additional parameters that can be set.
     """
     checkEqualLengths(xdata,ydata,yedata,xedata)
+    xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     fill_param_dict(params)
     optional = add_optional(params)
     xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
@@ -694,15 +696,15 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
         logger.TBError("Please pass some error bars.")
     if (yedata is not None) and (xedata is not None):
         logger.TBError("Please pass either x-error or y-error, not both.")
+    xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
+    checkEqualLengths(xdata,ydata,xedata,yedata)
 
     fill_param_dict(params)
     optional = add_optional(params)
 
     if xedata is None:
-        checkEqualLengths(xdata,ydata,yedata)
         xdata, ydata, yedata = remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
     else:
-        checkEqualLengths(xdata,ydata,xedata)
         ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
 
     xscale = params['xscale']
@@ -749,6 +751,8 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
         center (_type_, optional): _description_. Defaults to None.
         **params: Additional parameters that can be set.
     """
+    xdata, low_lim, up_lim, center = toNumpy(xdata, low_lim, up_lim, center)
+    checkEqualLengths(xdata, low_lim, up_lim, center)
     fill_param_dict(params)
     optional = add_optional(params)
     if center is not None:

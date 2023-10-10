@@ -21,6 +21,7 @@ BTU_per_Wh      = 3.412            # Many possible definitions, don't take too s
 kBJdivK         = 1.380649e-23     # kB in [J/K]. NIST 2018.
 eC              = 1.602176634e-19  # e in [C]. NIST 2018.
 
+
 # List of scientific prefixes
 prefix = { "Q"  : 1e30,
            "R"  : 1e27,
@@ -53,7 +54,10 @@ prefix = { "Q"  : 1e30,
 # Alphabetical order for easier finding
 baseUnits = [
             "BTU",    # British thermal unit
+            "degC",   # Celsius
+            "degF",   # Fahrenheit
             "eV",     # electron-volt
+            "ft",     # feet
             "h",      # hour
             "J",      # Joule
             "K",      # Kelvin
@@ -136,6 +140,14 @@ def convert(x,unit1,unit2):
         result = x*meters_per_mile
     elif u1u2==('m','mi'):
         result = x/meters_per_mile
+    elif u1u2==('mi','ft'):
+        result = x*5280
+    elif u1u2==('ft','mi'):
+        result = x/5280
+    elif u1u2==('ft','m'):
+        result = convert( convert(x,'ft','mi'), 'mi','m')
+    elif u1u2==('m','ft'):
+        result = convert( convert(x,'m','mi'), 'mi','ft')
         
     # speed
     elif u1u2==('mi/h','m/s'):
@@ -148,6 +160,20 @@ def convert(x,unit1,unit2):
         result = convert(x,'y','h')
     elif u1u2==('Wh/y','W'):
         result = convert(x,'h','y')
+
+    # temperature
+    elif u1u2==('K','degC'):
+        result = x - 273.15/fac 
+    elif u1u2==('degC','K'):
+        result = x + 273.15/fac 
+    elif u1u2==('degC','degF'):
+        result = x*9/5 + 32/fac
+    elif u1u2==('degF','degC'):
+        result = (5/9)*(x-32/fac) 
+    elif u1u2==('degF','K'):
+        result = convert( convert(x,'degF','degC'), 'degC','K' )
+    elif u1u2==('K','degF'):
+        result = convert( convert(x,'K','degC'), 'degC','degF' )
 
     # energy
     elif u1u2==('Wh','BTU'):

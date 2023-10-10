@@ -72,8 +72,7 @@ def print_results(res, res_true, res_err = None, res_err_true = None, text = "",
     else:
         abs_prec = 1e-14
 
-    res = envector(res)
-    res_true = envector(res_true)
+    res, res_true = envector(res, res_true)
     if res_err is not None:
         res_err = envector(res_err)
     if res_err_true is not None:

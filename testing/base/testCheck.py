@@ -12,20 +12,6 @@ import latqcdtools.base.logger as logger
 logger.set_log_level('INFO')
 
 
-def func1(x):
-    return np.log(x)
-
-def func2(x,p):
-    A, B, C = p
-    return A*( 1 + B*x**2 + C*x**2*np.log(x) )
-
-def func3(x,p,opt):
-    A, B, C = p
-    if opt:
-        logger.info('I found my optional.')
-    return A*( 1 + B*x**2 + C*x**2*np.log(x) )
-
-
 def testCheck():
 
     checkType(1,int) 
