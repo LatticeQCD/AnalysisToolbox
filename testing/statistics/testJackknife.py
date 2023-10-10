@@ -48,7 +48,14 @@ A, B = (np.array(range(1000)),
         np.array(range(1000, 2000)))
 
 
+testdata =  np.random.default_rng(234).normal(0, 1, 200)
+
 def Test_Jackknife():
+    # 1d jackknife test since bias is almost zero
+    REFm = np.mean(testdata)
+    REFe = np.std(testdata)/np.sqrt(testdata.size - 1)
+    TESTm, TESTe = jackknife(simple_mean, testdata, numb_blocks=1, conf_axis=1, nproc=1)
+    print_results(TESTm, REFm, TESTe, REFe, "single proc 1 delete jackknife simple mean test", EPSILON) 
     REFm = 499.5
     REFe = 95.74271077563381
     TESTm, TESTe = jackknife(simple_mean, A, numb_blocks=10, conf_axis=1, nproc=1)
