@@ -26,7 +26,7 @@ def testAutocor():
           61.9, 61.9, 61.9, 61.6, 61.9, 61.5, 61.9, 62.2, 61.8, 61.8, 61.8, 62.9, 62.1, 62.1, 62  , 61.9, 62.6, 62  , 62  ,
           62.4, 62.4, 62.2, 61.8, 62.3, 62  , 61.7, 61.7, 62  , 61.4, 61.4, 61.4, 62.3, 62  , 62  , 62  , 62.1]
 
-    tau_int, tau_inte, tau_intbias, itpick = getTauInt(ts, nbins, nt, 'acor.d')
+    tau_int, tau_inte, tau_intbias, itpick = getTauInt(ts, nbins, nt, 'acor.d', showPlot=True)
 
     TESTitpick   = 33
     TESTtau_int  = 18.24028851979112

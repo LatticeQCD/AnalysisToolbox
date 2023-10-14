@@ -42,7 +42,9 @@ default_params = {
 
     # Basic options affecting most plots.
     'xlabel': None,
+    'alpha_xlabel' : 1,          # Transparency for x-label
     'ylabel': None,
+    'alpha_ylabel' : 1,          # Transparency for y-label
     'title': None,
     'label': None,               # What are the data called? (Will appear in legend.)
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
@@ -117,9 +119,12 @@ def latexify(bold=False):
 
 
 def clearPlot():
-    """ Clears plot object and legend handles. Useful if you want to do multiple plots in the same script. """
-    global INITIALIZE
+    """ Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. """
+    logger.debug('Reset plot defaults.')
+    global INITIALIZE, ZOD, LEGEND
+    ZOD        = 1
     INITIALIZE = True
+    LEGEND     = False
     plt.clf()
     clear_legend_labels()
 
@@ -353,7 +358,8 @@ def set_params(**params):
                 params['xlabelpos'] = (0.95,0.027)
             ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black',
                         fontsize=params['font_size'], fontweight=params['font_weight'], ha='right', va='bottom',
-                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None), zorder=FOREGROUND)
+                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=params['alpha_xlabel']), 
+                        zorder=FOREGROUND)
         else:
             ax.set_xlabel(params['xlabel'])
             ax.xaxis.get_label().set_fontsize(params['font_size'])
@@ -365,7 +371,8 @@ def set_params(**params):
                 params['ylabelpos'] = (0.025,0.972)
             ax.annotate(params['ylabel'], xy=params['ylabelpos'], xycoords='axes fraction', color='black',
                         fontsize=params['font_size'], ha='left', va='top', fontweight=params['font_weight'],
-                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None), zorder=FOREGROUND)
+                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=params['alpha_ylabel']), 
+                        zorder=FOREGROUND)
         else:
             ax.set_ylabel(params['ylabel'])
             ax.yaxis.get_label().set_fontsize(params['font_size'])
@@ -442,6 +449,22 @@ def set_params(**params):
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
 
 
+def preliminary(x,y,text='PRELIMINARY',**kwargs):
+    """ Generate a PRELIMINARY tag on the plot.
+
+    Args:
+        x (float): x-position of bottom-left corner (in units of x-axis) 
+        y (float): y-position of bottom-left corner (in units of y-axis) 
+        text (str, optional): Text indicating result is preliminary. Defaults to 'PRELIMINARY'.
+    """
+    checkType(text,str)
+    if 'color' in kwargs: 
+        color=kwargs['color']
+    else:
+        color='gray'
+    plt.text(x, y, text, color=color)
+
+
 def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, func_args = (), style='dots', **params):
     """ Plot data in file. You can set the style with the style argument. Columns indexed from 0.
 
@@ -453,6 +476,7 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         xecol (int, optional): Which column has x error. Defaults to None.
         func (function, optional): Apply this function to the data. Defaults to None.
         func_args (tuple, optional): Arguments to func. Defaults to ().
+        style (str, optional): Choose from dots, lines, fill, and band. Defaults to 'dots'.
         **params: Additional parameters that can be set.
     """
     fill_param_dict(params)

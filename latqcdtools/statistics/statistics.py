@@ -643,7 +643,7 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
 
     if showPlot:
         clearPlot()
-        plot_file(acoutfileName, xcol=1, ycol=2, yecol=3, xlabel='conf', ylabel='$\\tau_{\\rm int}$')
+        plot_file(acoutfileName, xcol=0, ycol=1, yecol=2, xlabel='conf', ylabel='$\\tau_{\\rm int}$')
         plt.show()
 
     return tau_int, tau_inte, tau_intbias, itpick

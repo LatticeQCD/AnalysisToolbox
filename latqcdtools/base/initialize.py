@@ -41,11 +41,12 @@ def introduceYourself():
     logger.info()
 
 
-def initialize(logFile='Toolbox.log'):
+def initialize(logFile='Toolbox.log',logLevel='INFO'):
     """ Some common tasks to do at the start of a run where you want to keep track of things. """
     global INITIALIZED
     INITIALIZED = True
     introduceYourself()
+    logger.set_log_level(logLevel)
     logger.createLogFile(logFile)
     logger.info("Current git commit =",gitHash())
     logger.info()

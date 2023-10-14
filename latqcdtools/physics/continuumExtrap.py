@@ -115,9 +115,9 @@ class Extrapolator(Fitter):
             kwargs['xmin'] = 1e-8 
         if (not 'xmax' in kwargs) or (kwargs['xmax'] is None):
             kwargs['xmax'] = np.max(self._xdata) 
-        self.plot_fit(**kwargs)
-        kwargs['label']=None
         self.plot_data(**kwargs)
+        kwargs['label']=None
+        self.plot_fit(**kwargs)
 
 
     def showResults(self):
