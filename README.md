@@ -74,11 +74,7 @@ and calling
 ```shell
 bash runTests.bash
 ```
-If you would also like to use the AnalysisToolbox to make plots, also try
-calling
-```shell
-bash tryPlots.bash
-```
+
 
 ## Getting started and documentation
 
