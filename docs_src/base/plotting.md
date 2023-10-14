@@ -69,9 +69,9 @@ Other plot style options besides `plot_dots` include `plot_lines`, `plot_fill`, 
 
 If you are using a single python script to plot multiple files, python will remember the labels 
 from the last plot for some reason. Thankfully there is a command which addresses this problem: 
-After you have written your code to generate some plot `plot1`, you can call `clear_legend_labels()` 
-before your code to generate `plot2`. This will reset the legend and generate your correct 
-plot as expected.
+After you have written your code to generate some plot `plot1`, you can call `clearPlot()` 
+before your code to generate `plot2`. This will reset all the plot defaults and legend handles
+to get you ready for your next figure. 
 
 ## Some options you might commonly require
 
@@ -144,17 +144,15 @@ plt.savefig("example.pdf")
 ```
 Note that the relative order of `plt.show()` and `plt.savefig()` has changed.
 
-### Adding a text box
+### Adding PRELIMINARY 
 
 Do you have a preliminary result, which requires you to write PRELIMINARY in? You can accomplish 
 this with
 ```Python
-plt.text(xcoordinate, ycoordinate, 'PRELIMINARY', color='gray')
+preliminary(xcoordinate, ycoordinate) 
 ```
 The `xcoordinate` and `ycoordinate` are measured according to the axes themselves; for example if 
 my x-axis is temperature and I want to put the text at 150 MeV, I just set `xcoordinate=150`. 
-Further options for `text` can be found 
-[here](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html).
 
 ### Rescaling an axis
 

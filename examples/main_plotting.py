@@ -15,7 +15,7 @@ from latqcdtools.statistics.statistics import plot_func
 from latqcdtools.interfaces.interfaces import loadGPL
 
 
-initialize('example_plotting.log')
+initialize('example_plotting.log','DEBUG')
 
 latexify()
 

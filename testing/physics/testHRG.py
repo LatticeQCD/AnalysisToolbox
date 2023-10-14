@@ -12,7 +12,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.math.math import print_results
 from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clear_legend_labels
+from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clearPlot
 from latqcdtools.base.utilities import timer
 from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS 
 from latqcdtools.math.num_deriv import diff_deriv
@@ -36,8 +36,7 @@ def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
         plot_lines(T,testQuantity,xmax=175,marker=None,color=colors[0])
         plot_file(controlFile,style="lines",marker=None,label=controlLabel,color=colors[1])
         plt.show()
-        plt.clf()
-        clear_legend_labels()
+        clearPlot()
 
 
 # QM and PDG HRG files

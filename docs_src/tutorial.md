@@ -160,4 +160,3 @@ The temperatures calculated in this code implicitly had units of
 MeV, hence we need $r_0$ in [physical units](physicsAnalysis/referenceScales.md). 
 Finally we call `gaudif` to carry out a Gaussian difference test or
 Z-test, which is implemented in our [statistics](dataAnalysis/statistics.md) module.
-

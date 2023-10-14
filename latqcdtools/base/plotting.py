@@ -32,8 +32,12 @@ markers_1 = ['o', 'v', 'D', 's', 'p', '^', 'h', 'd', 'x', '+', '*']
 markers   = itertools.cycle(markers_1)
 
 
-legend_handles = []
-legend_labels = []
+# Handles are what graphics you're going to use to represent a particular legend element. Usually
+# these are taken from some feature of the plotted data. The labels are the names they will have.
+# We implement these as dictionaries to allow the user to have different legend objects in
+# for instance multiple subplots.
+legend_handles = { plt : [] }
+legend_labels  = { plt : [] }
 
 
 default_params = {
@@ -121,12 +125,13 @@ def latexify(bold=False):
 def clearPlot():
     """ Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. """
     logger.debug('Reset plot defaults.')
-    global INITIALIZE, ZOD, LEGEND
+    global INITIALIZE, ZOD, LEGEND, legend_labels, legend_handles
     ZOD        = 1
     INITIALIZE = True
     LEGEND     = False
+    legend_handles = { plt : [] }
+    legend_labels  = { plt : [] }
     plt.clf()
-    clear_legend_labels()
 
 
 def getColorGradient(NUM_COLORS,map='viridis'):
@@ -149,10 +154,20 @@ def getColorGradient(NUM_COLORS,map='viridis'):
     return gradColors
 
 
+def set_xrange(xmin=None, xmax=None):
+    _set_xmin(xmin)
+    _set_xmax(xmax)
+
+
+def set_yrange(ymin=None, ymax=None):
+    _set_ymin(ymin)
+    _set_ymax(ymax)
+
+
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
-def initializePlt(size,xmin,xmax,ymin,ymax):
+def _initializePlt(size,xmin,xmax,ymin,ymax):
     """ Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
         so that this only gets called once per plot script. """
     global INITIALIZE
@@ -174,7 +189,7 @@ def initializePlt(size,xmin,xmax,ymin,ymax):
         set_yrange(ymin,ymax)
 
 
-def remove_points(data, *args, minval=None, maxval=None):
+def _remove_points(data, *args, minval=None, maxval=None):
     """ Assuming *args are a tuple of arrays of the same length as data, cut data and
     args so that data fall between minval and maxval, and keep only the corresponding
     elements of args. 
@@ -206,76 +221,65 @@ def remove_points(data, *args, minval=None, maxval=None):
     return ret
 
 
-def clear_legend_labels():
+def _update_labels(ax,label):
+    checkType(label,str)
     global legend_labels
-    legend_labels = []
+    if ax in legend_labels:
+        legend_labels[ax].append(label)
+    else:
+        legend_labels[ax] = [label]
+
+
+def _update_handles(ax,handle):
     global legend_handles
-    legend_handles = []
+    if ax in legend_handles:
+        legend_handles[ax].append(handle)
+    else:
+        legend_handles[ax] = [handle]
 
 
-def get_legend_handles():
-    return legend_handles, legend_labels
-
-
-def getAxObject(params):
+def _getAxObject(params):
     if params['ax']==plt:
         return plt.gca()
     else:
         return params['ax']
 
 
-def set_markers(marker_set=None):
-    if marker_set is None:
-        marker_set = markers_1
-    global markers
-    markers = itertools.cycle(marker_set)
-
-
-def set_xmin(x_min=None):
+def _set_xmin(x_min=None):
     if x_min is not None:
         ax = plt.gca()
         x1, x2 = ax.get_xlim()
         ax.set_xlim([x_min,x2])
 
 
-def set_xmax(x_max=None):
+def _set_xmax(x_max=None):
     if x_max is not None:
         ax = plt.gca()
         x1, x2 = ax.get_xlim()
         ax.set_xlim([x1,x_max])
 
 
-def set_ymin(y_min=None):
+def _set_ymin(y_min=None):
     if y_min is not None:
         ax = plt.gca()
         y1, y2 = ax.get_ylim()
         ax.set_ylim([y_min,y2])
 
 
-def set_ymax(y_max=None):
+def _set_ymax(y_max=None):
     if y_max is not None:
         ax = plt.gca()
         y1, y2 = ax.get_ylim()
         ax.set_ylim([y1,y_max])
 
 
-def set_xrange(xmin=None, xmax=None):
-    set_xmin(xmin)
-    set_xmax(xmax)
-
-
-def set_yrange(ymin=None, ymax=None):
-    set_ymin(ymin)
-    set_ymax(ymax)
-
-
-def set_default_param(**kwargs):
+def _set_default_params(**kwargs):
     for key, val in kwargs.items():
         default_params[key] = val
 
 
 def fill_param_dict(params):
-    """Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with
+    """ Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with
     a default value.
     
         Parameters
@@ -283,9 +287,6 @@ def fill_param_dict(params):
         params: dictionary
             Dictionary with all parameters that are already set by the user
 
-        Returns
-        -------
-            Dictionary filled with all default parameters
     """
     global LEGEND
     for key in params:
@@ -305,7 +306,7 @@ def fill_param_dict(params):
         params.setdefault(key,val)
 
 
-def add_optional(params):
+def _add_optional(params):
     """Optional parameter that are not defined in fill_param_dict are collected by this function.
 
         Parameters
@@ -336,9 +337,9 @@ def set_params(**params):
 
     fill_param_dict(params)
 
-    initializePlt(params['font_size'],params['xmin'],params['xmax'],params['ymin'],params['ymax'])
+    _initializePlt(params['font_size'],params['xmin'],params['xmax'],params['ymin'],params['ymax'])
 
-    ax  = getAxObject(params)
+    ax  = _getAxObject(params)
     ZOD = params['ZOD']
 
     if ZOD is None:
@@ -400,7 +401,7 @@ def set_params(**params):
         ax.tick_params(top=True,right=True)
 
     if LEGEND:
-        leg = ax.legend(legend_handles, legend_labels, numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
+        leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
@@ -532,11 +533,11 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     checkEqualLengths(xdata,ydata,xedata,yedata)
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     fill_param_dict(params)
-    optional = add_optional(params)
+    optional = _add_optional(params)
 
-    xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
+    xdata, ydata, yedata, xedata = _remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
 
-    ax  = getAxObject(params)
+    ax  = _getAxObject(params)
 
     xscale = params['xscale']
     yscale = params['yscale']
@@ -566,8 +567,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
                            **optional)
 
     if params['label'] is not None:
-        legend_labels.append(params['label'])
-        legend_handles.append(ebar)
+        _update_labels(ax,params['label'])
+        _update_handles(ax,ebar)
 
     globals()['ZOD'] += 1
     set_params(**params)
@@ -591,8 +592,8 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
     checkEqualLengths(xdata,ydata)
     xdata, ydata = toNumpy(xdata, ydata)
     fill_param_dict(params)
-    optional = add_optional(params)
-    ax  = getAxObject(params)
+    optional = _add_optional(params)
+    ax  = _getAxObject(params)
 
     if width is None:
         width = xdata[1] - xdata[0]
@@ -612,8 +613,8 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
                      linewidth=linewidth, alpha=alpha, **optional)
 
     if params['label'] is not None:
-        legend_labels.append(params['label'])
-        legend_handles.append(bar)
+        _update_labels(ax,params['label'])
+        _update_handles(ax,bar)
 
     globals()['ZOD'] += 1
     set_params(**params)
@@ -631,7 +632,7 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
         **params: Additional parameters that can be set.
     """
     fill_param_dict(params)
-    ax = getAxObject(params)
+    ax = _getAxObject(params)
     if bins is None:
         bins = 'auto'
     if isHigherDimensional(data):
@@ -658,11 +659,11 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     checkEqualLengths(xdata,ydata,yedata,xedata)
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     fill_param_dict(params)
-    optional = add_optional(params)
-    xdata, ydata, yedata, xedata = remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
+    optional = _add_optional(params)
+    xdata, ydata, yedata, xedata = _remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
     xscale=params['xscale']
     yscale=params['yscale']
-    ax  = getAxObject(params)
+    ax  = _getAxObject(params)
 
     if xedata is not None:
         xedata=np.copy(xedata*xscale)
@@ -698,8 +699,8 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
                        alpha = params["alpha_lines"], **optional)
 
     if params['label'] is not None:
-        legend_labels.append(params['label'])
-        legend_handles.append((line, ebar))
+        _update_labels(ax,params['label'])
+        _update_handles(ax,(line,ebar))
 
     set_params(**params)
     return ebar
@@ -724,16 +725,16 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     checkEqualLengths(xdata,ydata,xedata,yedata)
 
     fill_param_dict(params)
-    optional = add_optional(params)
+    optional = _add_optional(params)
 
     if xedata is None:
-        xdata, ydata, yedata = remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
+        xdata, ydata, yedata = _remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
     else:
-        ydata, xdata, xedata = remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
+        ydata, xdata, xedata = _remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
 
     xscale = params['xscale']
     yscale = params['yscale']
-    ax     = getAxObject(params)
+    ax     = _getAxObject(params)
     ZOD    = params['ZOD']
     if ZOD is None:
         ZOD = globals()['ZOD']
@@ -758,8 +759,8 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
                              alpha=params['alpha'],linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
 
     if params['label'] is not None:
-        legend_labels.append(params['label'])
-        legend_handles.append((ebar, pl))
+        _update_labels(ax,params['label'])
+        _update_handles(ax,(ebar,pl))
 
     set_params(**params)
     return ebar,pl
@@ -778,15 +779,15 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     xdata, low_lim, up_lim, center = toNumpy(xdata, low_lim, up_lim, center)
     checkEqualLengths(xdata, low_lim, up_lim, center)
     fill_param_dict(params)
-    optional = add_optional(params)
+    optional = _add_optional(params)
     if center is not None:
-        xdata, low_lim, up_lim, center = remove_points(xdata, low_lim, up_lim, center, minval=params['xmin'], maxval=params['xmax'])
+        xdata, low_lim, up_lim, center = _remove_points(xdata, low_lim, up_lim, center, minval=params['xmin'], maxval=params['xmax'])
     else:
-        xdata, low_lim, up_lim = remove_points(xdata, low_lim, up_lim, minval=params['xmin'], maxval=params['xmax'])
+        xdata, low_lim, up_lim = _remove_points(xdata, low_lim, up_lim, minval=params['xmin'], maxval=params['xmax'])
 
     xscale=params['xscale']
     yscale=params['yscale']
-    ax  = getAxObject(params)
+    ax  = _getAxObject(params)
 
     ZOD = params['ZOD']
     if ZOD is None:
@@ -814,11 +815,11 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
                            alpha = params['alpha_lines'], **optional)
 
     if params['label'] is not None:
-        legend_labels.append(params['label'])
+        _update_labels(ax,params['label'])
         if ebar is not None:
-            legend_handles.append((ebar, pl))
+            _update_handles(ax,(ebar, pl))
         else:
-            legend_handles.append(pl)
+            _update_handles(ax, pl)
 
     set_params(**params)
     if ebar is not None:
