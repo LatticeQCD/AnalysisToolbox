@@ -7,6 +7,8 @@
 # 
 
 import numpy as np
+from latqcdtools.base.speedify import numbaON
+numbaON()
 from latqcdtools.math.SU3 import SU3, id_3
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import rel_check
@@ -14,7 +16,6 @@ from latqcdtools.testing import concludeTest
 
 
 logger.set_log_level('INFO')
-
 
 def testSU3():
 

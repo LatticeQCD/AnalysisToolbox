@@ -32,10 +32,10 @@ def even_knots(xdata, nknots):
 
 def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     """ Return a list of nknots randomly spaced knots. """
-    np.random.seed(SEED)
+    rng = np.random.default_rng(SEED)
     flat_xdata = np.sort(np.asarray(xdata))
-    sample_xdata = np.random.choice(flat_xdata,int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots)),
-                                    replace=False)
+    sample_xdata = rng.choice(flat_xdata,int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots)),
+                              replace=False)
     # Retry if too many data points are removed by np.unique
     if len(np.unique(sample_xdata)) < nknots + 1:
         return random_knots(xdata, nknots, randomization_factor)

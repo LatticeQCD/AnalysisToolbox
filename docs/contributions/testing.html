@@ -93,7 +93,7 @@ If you make any changes to the code, call</p>
 </div>
 <p>from the <code class="docutils literal notranslate"><span class="pre">testing</span></code> folder to make sure nothing is broken.</p>
 <p>There are a couple modules that assist with testing. The module</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.math.check</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.math.math</span>
 </pre></div>
 </div>
 <p>contains a method</p>
@@ -102,11 +102,26 @@ If you make any changes to the code, call</p>
 </div>
 <p>to compare the floats <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> up to precision <code class="docutils literal notranslate"><span class="pre">prec</span></code>. This is essentially
 a wrapper for <code class="docutils literal notranslate"><span class="pre">math.isclose</span></code>, and it’s what we recommend especially when <code class="docutils literal notranslate"><span class="pre">a=0</span></code> or <code class="docutils literal notranslate"><span class="pre">b=0</span></code>.</p>
-<p>One also finds in this module</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prec</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">)</span>
+<p>In the <code class="docutils literal notranslate"><span class="pre">latqcdtools.testing</span></code> module, one finds</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prec</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>which is a convenient method for comparing two array-like objects <code class="docutils literal notranslate"><span class="pre">res</span></code> and <code class="docutils literal notranslate"><span class="pre">res_true</span></code>.</p>
+<p>which is a convenient method for comparing two array-like objects <code class="docutils literal notranslate"><span class="pre">res</span></code> and <code class="docutils literal notranslate"><span class="pre">res_true</span></code>, optionally allowing
+you to compare errors as well. This returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">res</span></code> and <code class="docutils literal notranslate"><span class="pre">res_true</span></code> agree. Most test scripts are
+structured to summarize the results of all tests using <code class="docutils literal notranslate"><span class="pre">concludeTest()</span></code>, which is also in this module,
+and prints a standard message depending on the test outcomes. For instance</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lpass</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">lpass</span> <span class="o">*=</span> <span class="n">print_results</span><span class="p">(</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res_true1</span> <span class="p">)</span>
+<span class="n">lpass</span> <span class="o">*=</span> <span class="n">print_results</span><span class="p">(</span> <span class="n">res2</span><span class="p">,</span> <span class="n">res_true2</span> <span class="p">)</span>
+<span class="n">concludeTest</span><span class="p">(</span><span class="n">lpass</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally if you would like your test to be statistical, you can do Z-tests between two vectors given
+their Gaussian error bars using</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err_true</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">qcut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">testMode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can read more about our Z-test implementation <a class="reference internal" href="../dataAnalysis/statistics.html"><span class="doc std std-doc">here</span></a></p>
 <p>It is also sometimes important during testing to time your code. This can be important for example to verify that
 parallelizing indeed speeds up your code. (Maybe something could go wrong here for an unexpected reason.) the module</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.utilities</span>

@@ -14,6 +14,11 @@ from latqcdtools.math.math import rel_check
 from latqcdtools.base.speedify import compile
 
 
+# Eventually we would like to use default_rng here too, but it doesn't compile straightforwardly
+# using numba. Will have to think about it.
+rng = np.random
+
+
 id_3 = np.array([   [complex(1.), complex(0.), complex(0.)],
                     [complex(0.), complex(1.), complex(0.)],
                     [complex(0.), complex(0.), complex(1.)] ])
@@ -65,7 +70,7 @@ def fastUnitarize(self):
 def fastRandomize(self):
     for i in range(3):
         for j in range(3):
-            self[i,j] = complex( 1 - 2*np.random.random(), 1 - 2*np.random.random() )
+            self[i,j] = complex( 1 - 2*rng.uniform(0,1), 1 - 2*rng.uniform(0,1) )
 
 
 class SU3(np.matrix):

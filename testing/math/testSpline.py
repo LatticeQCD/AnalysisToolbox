@@ -32,7 +32,7 @@ def testSpline():
 
     knots=random_knots(x, 3, SEED=DEFAULTSEED)
 
-    lpass *= print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
+    lpass *= print_results(knots,[-0.55, -0.10999999999999999, 0.10999999999999999], text="random_knots")
 
     aicc_arr = []
     for knots in [10,30,60]:
