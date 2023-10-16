@@ -10,7 +10,7 @@ import numpy as np
 from numpy.random import normal
 from latqcdtools.statistics.statistics import gaudif, std_mean, std_err, weighted_mean, weighted_variance, \
     unbiased_mean_variance, unbiased_sample_variance
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.initialize import DEFAULTSEED
 import latqcdtools.base.logger as logger
 
@@ -21,6 +21,8 @@ np.random.seed(DEFAULTSEED)
 
 
 def testWeightedMean():
+
+    lpass = True
 
     data   = normal(10, 10, 100)
     errors = np.full_like(data, 10)
@@ -33,10 +35,10 @@ def testWeightedMean():
     TRUEx        , TRUExe        = 10.786789615738144, 1.0
     TRUExe_unbias, TRUEse_unbias = 1.1149172148742512, 11.14917214874251
 
-    print_results(TRUEx        ,x        ,text='weighted average',prec=PREC)
-    print_results(TRUExe       ,xe       ,text='weighted average error',prec=PREC)
-    print_results(TRUExe_unbias,xe_unbias,text='unbiased weighted average error',prec=PREC)
-    print_results(TRUEse_unbias,se_unbias,text='unbiased sample average error',prec=PREC)
+    lpass *= print_results(TRUEx        ,x        ,text='weighted average',prec=PREC)
+    lpass *= print_results(TRUExe       ,xe       ,text='weighted average error',prec=PREC)
+    lpass *= print_results(TRUExe_unbias,xe_unbias,text='unbiased weighted average error',prec=PREC)
+    lpass *= print_results(TRUEse_unbias,se_unbias,text='unbiased sample average error',prec=PREC)
 
     # Now see what happens we we combine two samples with different variances and statistics
     data1 = normal(0,1,600)
@@ -55,8 +57,7 @@ def testWeightedMean():
 
     if q<0.05 or e12>e:
         logger.TBFail('Combination test 1')
-    else:
-        logger.TBPass('Combination test 1') 
+        lpass = False
 
     N1  = len(data1)
     N2  = len(data2)
@@ -69,7 +70,10 @@ def testWeightedMean():
     x     = std_mean(data)
     e     = std_err(data)
 
-    print_results(x,x12,e,e12,prec=1e-4,text='Combination test 2')
+    lpass *= print_results(x,x12,e,e12,prec=1e-4,text='Combination test 2')
+
+    concludeTest(lpass)
+
 
 if __name__ == '__main__':
     testWeightedMean()

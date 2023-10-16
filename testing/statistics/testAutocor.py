@@ -8,7 +8,7 @@
 #
 
 from latqcdtools.statistics.statistics import getTauInt
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 
 
@@ -16,6 +16,8 @@ logger.set_log_level('INFO')
 
 
 def testAutocor():
+
+    lpass = True
 
     nt = 48
     nbins = 8
@@ -33,7 +35,9 @@ def testAutocor():
     TESTtau_inte = 5.9003840732043
     TESTbias     = 4.79395572142051
 
-    print_results( [TESTitpick,TESTtau_int,TESTtau_inte,TESTbias],[itpick,tau_int,tau_inte,tau_intbias], None, None, "tau_int", 1e-14 )
+    lpass *= print_results( [TESTitpick,TESTtau_int,TESTtau_inte,TESTbias],[itpick,tau_int,tau_inte,tau_intbias], None, None, "tau_int", 1e-14 )
+
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

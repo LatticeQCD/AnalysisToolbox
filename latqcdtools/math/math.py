@@ -11,7 +11,7 @@
 import numpy as np
 from scipy.special import poch
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import envector, isArrayLike 
+from latqcdtools.base.utilities import isArrayLike 
 
 
 def fallFactorial(n,m):
@@ -32,9 +32,6 @@ def logDet(mat):
     """ Logarithm of determinant. """
     _, ans = np.linalg.slogdet(mat)
     return ans
-
-
-# Some methods for doing comparisons between math objects.
 
 
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
@@ -59,41 +56,3 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
             return np.isclose( a, b, rtol = prec, atol = abs_prec)
         except TypeError:
             logger.TBError('Expected reals, complexes, or array-like. Received a, b types =',type(a),',',type(b))
-
-
-def print_results(res, res_true, res_err = None, res_err_true = None, text = "", prec = 1e-10, abs_prec = None):
-    """ Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
-        if you like.) Carries out with precision prec. Use abs_prec for comparisons with zero. """
-    test = True
-    compareZero = False
-
-    if abs_prec is not None:
-        compareZero = True
-    else:
-        abs_prec = 1e-14
-
-    res, res_true = envector(res, res_true)
-    if res_err is not None:
-        res_err = envector(res_err)
-    if res_err_true is not None:
-        res_err_true = envector(res_err_true)
-
-    for i in range(len(res)):
-        if not rel_check(res[i], res_true[i], prec, abs_prec):
-            test = False
-            logger.info("res[" + str(i) + "] = " + str(res[i]) + " != res_true[" + str(i) + "] = " + str(res_true[i]))
-        if res_err is not None and res_err_true is not None:
-            if not rel_check(res_err[i], res_err_true[i], prec, abs_prec):
-                test = False
-                logger.info("res_err[" + str(i) + "] = " + str(res_err[i]) + " != res_err_true[" + str(i) + "] = " + str(res_err_true[i]))
-
-    if test:
-        if compareZero:
-            logger.TBPass(text,'(abs_prec = %.2e)' % abs_prec)
-        else:
-            logger.TBPass(text,'(prec = %.2e)' % prec)
-    else:
-        if compareZero:
-            logger.TBFail(text, '(abs_prec = %.2e)' % abs_prec)
-        else:
-            logger.TBFail(text, '(prec = %.2e)' % prec)

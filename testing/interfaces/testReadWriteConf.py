@@ -24,7 +24,7 @@ def testReadWriteConf():
 
     print(gauge.getLink(0,0,1,1,0)) # Get the link at site (0,0,1,1) pointing in the 0 direction.
 
-    logger.TBPass('All tests passed!')
+    logger.TBPass('No problems encountered.')
 
 if __name__ == '__main__':
     testReadWriteConf()

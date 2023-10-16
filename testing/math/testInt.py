@@ -8,7 +8,7 @@
 
 
 from latqcdtools.math.num_int import integrateData, integrateFunction
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 
 
@@ -22,6 +22,8 @@ def g(s,a,b):
     return a*s+b
 
 def testInt():
+
+    lpass = True
 
     x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
          30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
@@ -45,31 +47,33 @@ def testInt():
     I_spline=5.49427272
 
     # a result from real lattice data
-    print_results(integrateData(x,y,method='simpson')  ,I_simp  ,text="simpson"  ,prec=EPSILON)
-    print_results(integrateData(x,y,method='trapezoid'),I_trap  ,text="trapezoid",prec=EPSILON)
-    print_results(integrateData(x,y,method='spline')   ,I_spline,text="spline"   ,prec=EPSILON)
+    lpass *= print_results(integrateData(x,y,method='simpson')  ,I_simp  ,text="simpson"  ,prec=EPSILON)
+    lpass *= print_results(integrateData(x,y,method='trapezoid'),I_trap  ,text="trapezoid",prec=EPSILON)
+    lpass *= print_results(integrateData(x,y,method='spline')   ,I_spline,text="spline"   ,prec=EPSILON)
 
     # try a simple integral to compare against the fundamental theorem of calculus
     FTC=(x[-1]**2-x[0]**2)/2
 
-    print_results(integrateData(x,x,method='simpson')  ,FTC,text="simpson integrate f(x) = x")
-    print_results(integrateData(x,x,method='trapezoid'),FTC,text="trapezoid integrate f(x) = x")
-    print_results(integrateData(x,x,method='spline')   ,FTC,text="spline integrate f(x) = x")
+    lpass *= print_results(integrateData(x,x,method='simpson')  ,FTC,text="simpson integrate f(x) = x")
+    lpass *= print_results(integrateData(x,x,method='trapezoid'),FTC,text="trapezoid integrate f(x) = x")
+    lpass *= print_results(integrateData(x,x,method='spline')   ,FTC,text="spline integrate f(x) = x")
 
     # try some vectorization
-    print_results(integrateFunction(f,[0,0],[1,2],method='trapezoid'), [0.5,2], text="trapezoid vector function")
-    print_results(integrateFunction(f,0,1,method='trapezoid'), 0.5, text="trapezoid scalar function")
-    print_results(integrateFunction(f,[0,0],[1,2],method='quad'), [0.5,2], text="quadrature vector function")
-    print_results(integrateFunction(f,0,1,method='quad'), 0.5, text="quadrature scalar function")
-    print_results(integrateFunction(f,[0,0],[1,2],method='romberg'), [0.5,2], text="romberg vector function")
-    print_results(integrateFunction(f,0,1,method='romberg'), 0.5, text="romberg scalar function")
+    lpass *= print_results(integrateFunction(f,[0,0],[1,2],method='trapezoid'), [0.5,2], text="trapezoid vector function")
+    lpass *= print_results(integrateFunction(f,0,1,method='trapezoid'), 0.5, text="trapezoid scalar function")
+    lpass *= print_results(integrateFunction(f,[0,0],[1,2],method='quad'), [0.5,2], text="quadrature vector function")
+    lpass *= print_results(integrateFunction(f,0,1,method='quad'), 0.5, text="quadrature scalar function")
+    lpass *= print_results(integrateFunction(f,[0,0],[1,2],method='romberg'), [0.5,2], text="romberg vector function")
+    lpass *= print_results(integrateFunction(f,0,1,method='romberg'), 0.5, text="romberg scalar function")
 
     # Default functionality
-    print_results(integrateFunction(f,0,1), 0.5, text="default")
+    lpass *= print_results(integrateFunction(f,0,1), 0.5, text="default")
 
     # try passing some arguments. Ax+B --> Ax^2/2 + Bx
-    print_results(integrateFunction(g,0,1,method='quad',args=(2,3)),4,text='quadrature with arg') 
-    print_results(integrateFunction(g,0,1,method='trapezoid',args=(2,3)),4,text='trapezoid with arg') 
+    lpass *= print_results(integrateFunction(g,0,1,method='quad',args=(2,3)),4,text='quadrature with arg') 
+    lpass *= print_results(integrateFunction(g,0,1,method='trapezoid',args=(2,3)),4,text='trapezoid with arg') 
+
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

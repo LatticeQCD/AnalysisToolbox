@@ -16,9 +16,8 @@ from scipy.special import betainc, erf
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
-from latqcdtools.base.utilities import envector, isHigherDimensional
+from latqcdtools.base.utilities import isHigherDimensional
 from latqcdtools.base.cleanData import clipRange
-from latqcdtools.base.printErrorBars import get_err_str
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 
@@ -713,30 +712,3 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
             return plot_lines(ydata, xdata, yedata=None, xedata=None, **kwargs)
         else:
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
-
-
-def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, testMode=True):
-    """ Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks
-        to see whether res and res_true are statistically compatible. """
-
-    test = True
-
-    res, res_true, res_err, res_err_true = envector(res, res_true, res_err, res_err_true)
-
-    for i in range(len(res)):
-
-        q = gaudif(res[i], res_err[i], res_true[i], res_err_true[i])
-
-        if q < qcut:
-            test = False
-            resstr     = get_err_str(res[i]     ,res_err[i])
-            restruestr = get_err_str(res_true[i],res_err_true[i])
-            logger.info("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
-
-    if testMode:
-        if test:
-            logger.TBPass(text)
-        else:
-            logger.TBFail(text)
-    else:
-        logger.info(text)

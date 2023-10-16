@@ -14,6 +14,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.cleanData import restrictAtCol
 from latqcdtools.math.math import rel_check
 from latqcdtools.base.readWrite import readTable
+from latqcdtools.testing import concludeTest
 
 logger.set_log_level('INFO')
 
@@ -141,10 +142,7 @@ def testDensObs():
             lpass = False
             logger.TBFail('chi2Q',chi2Q,'ref',REFchi2Q,'conf',confID)
 
-    if lpass:
-        logger.TBPass('All tests passed.')
-    else:
-        logger.TBFail('At least one test failed.')
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

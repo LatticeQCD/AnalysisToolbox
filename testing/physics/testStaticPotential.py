@@ -8,7 +8,7 @@
 
 
 from latqcdtools.physics.staticPotential import impdist
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 
 
@@ -16,6 +16,8 @@ logger.set_log_level('INFO')
 
 
 def testStaticPotential():
+
+    lpass = True
 
     impdistancesNs32r16  = impdist(32,16)
     impdistancesNs56r200 = impdist(56,200)
@@ -68,8 +70,10 @@ def testStaticPotential():
                             13.454991684510022, 13.46540160070299 , 13.493807103515437, 13.523597492906603,
                             13.544391972286602, 13.58028166502769 , 13.614215294566756, 13.6765398945205]
 
-    print_results(impdistancesNs32r16 , refdistancesNs32r16 , text="Ns=32, r2max=16")
-    print_results(impdistancesNs56r200, refdistancesNs56r200, text="Ns=64, r2max=200")
+    lpass *= print_results(impdistancesNs32r16 , refdistancesNs32r16 , text="Ns=32, r2max=16")
+    lpass *= print_results(impdistancesNs56r200, refdistancesNs56r200, text="Ns=64, r2max=200")
+
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@
 import numpy as np
 from latqcdtools.math.spline import even_knots, random_knots, getSpline
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 from latqcdtools.base.initialize import DEFAULTSEED
 
@@ -20,17 +20,19 @@ SHOWPLOT = False
 
 def testSpline():
 
+    lpass = True
+
     x  = np.linspace(-1, 1, 101)
     y  = 10*x**2 + np.random.randn(len(x))
     ye = np.repeat(1.,len(y))
 
     knots = even_knots(x, 3)
 
-    print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
+    lpass *= print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
 
     knots=random_knots(x, 3, SEED=DEFAULTSEED)
 
-    print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
+    lpass *= print_results(knots,[-0.56, 0.11000000000000004, 0.5000000000000001], text="random_knots")
 
     aicc_arr = []
     for knots in [10,30,60]:
@@ -49,8 +51,11 @@ def testSpline():
 
     if aicc_arr[0]>aicc_arr[-1]:
         logger.TBFail("AICc should penalize overfitting.")
+        lpass=False
     else:
         logger.TBPass("AICc penalizes overfitting.")
+
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

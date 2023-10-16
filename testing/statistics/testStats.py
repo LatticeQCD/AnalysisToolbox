@@ -9,6 +9,7 @@
 import numpy as np
 from latqcdtools.statistics.statistics import gaudif, studif
 import latqcdtools.base.logger as logger
+from latqcdtools.testing import concludeTest
 
 logger.set_log_level('INFO')
 
@@ -38,7 +39,7 @@ s12control=0.33726853
 
 def testStats():
 
-    ltest = True
+    lpass = True
 
     A = []
     B = []
@@ -54,27 +55,23 @@ def testStats():
 
     # Test gaussian difference
     if abs(q12-q12control) > eps:
-        ltest=False
+        lpass=False
     if abs(q13-q13control) > eps:
-        ltest=False
+        lpass=False
     if abs(q14-q14control) > eps:
-        ltest=False
+        lpass=False
 
     s12=studif(x1,e1,ndat1,x2,e2,ndat2)
 
     # Test student difference
     if abs(s12-s12control) > eps:
-        ltest=False
+        lpass=False
 
     # Student and Gaussian difference tests should agree for large sample sizes
     if studif(x1,e1,300,x2,e2,300)/gaudif(x1,e1,x2,e2) > 1.005:
-        ltest=False
+        lpass=False
         
-
-    if ltest:
-        logger.TBPass('All tests passed.')
-    else:
-        logger.TBError('At least one test failed.')
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':
