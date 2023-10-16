@@ -45,7 +45,7 @@ logger.info("       pcov: \n\n",pcov,"\n")
 
 # We can plot the fit and data using commands like this one. You can combine these commands with anything from
 # plotting.py if you want to spice up your plot a bit.
-fitter.plot_fit(xmin=np.min(xdata),xmax=np.max(xdata))
+fitter.plot_fit(domain=(np.min(xdata),np.max(xdata)))
 fitter.plot_data()
 plt.show()
 

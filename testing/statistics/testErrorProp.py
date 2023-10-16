@@ -67,10 +67,10 @@ def testErrorProp():
     res = error_prop_func(x_test, func, grad=grad, params=[1,2], params_err=[a_err,b_err], args=(opt,))
     print_results(res, res_true, text = "Error_prop using analytic gradient")
 
-    plot_func(func, params = (a,b), args=(opt,), func_err = err_func, params_err=[a_err,b_err], xmin=-1, xmax=1)
-    plot_func(func, params = (a,b), args=(opt,), params_err = [a_err,b_err], xmin=-1, xmax=1)
-    plot_func(func, params = (a,b), args=(opt,), params_err = [a_err,b_err], grad = grad,
-              title = "Please check if all error bands are the same", xmin=-1,xmax=1)
+    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), func_err = err_func, params_err=[a_err,b_err])
+    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), params_err = [a_err,b_err]) 
+    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), params_err = [a_err,b_err], grad = grad,
+              title = "Please check if all error bands are the same")
 
     plt.savefig("errorprop.pdf")
 

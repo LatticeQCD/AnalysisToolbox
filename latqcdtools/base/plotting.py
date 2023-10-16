@@ -49,6 +49,10 @@ default_params = {
     'alpha_xlabel' : 1,          # Transparency for x-label
     'ylabel': None,
     'alpha_ylabel' : 1,          # Transparency for y-label
+    'xmin': None,
+    'xmax': None,
+    'ymin': None,
+    'ymax': None,
     'title': None,
     'label': None,               # What are the data called? (Will appear in legend.)
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
@@ -92,10 +96,6 @@ default_params = {
     'ytick_every_n': 2,
     'xtick_format' : None, # Format the y-ticks, e.g. if you want to specify the number of decimals. 
     'ytick_format' : None,
-    'xmin': None,          # Does not directly change x-range; used inside plotting methods.
-    'xmax': None,
-    'ymin': None,          # Does not directly change y-range; used inside plotting methods.
-    'ymax': None,
     'xscale': 1.0,         # Scale data in xdata by this factor.
     'yscale': 1.0,
     'xlogscale': False,    # Should we use a log scale for the x-axis?
@@ -154,14 +154,14 @@ def getColorGradient(NUM_COLORS,map='viridis'):
     return gradColors
 
 
-def set_xrange(xmin=None, xmax=None):
-    _set_xmin(xmin)
-    _set_xmax(xmax)
+def set_xrange(xmin=None, xmax=None, ax=plt.gca()):
+    _set_xmin(ax,xmin)
+    _set_xmax(ax,xmax)
 
 
-def set_yrange(ymin=None, ymax=None):
-    _set_ymin(ymin)
-    _set_ymax(ymax)
+def set_yrange(ymin=None, ymax=None, ax=plt.gca()):
+    _set_ymin(ax,ymin)
+    _set_ymax(ax,ymax)
 
 
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
@@ -245,37 +245,28 @@ def _getAxObject(params):
         return params['ax']
 
 
-def _set_xmin(x_min=None):
+def _set_xmin(ax,x_min=None):
     if x_min is not None:
-        ax = plt.gca()
         x1, x2 = ax.get_xlim()
         ax.set_xlim([x_min,x2])
 
 
-def _set_xmax(x_max=None):
+def _set_xmax(ax,x_max=None):
     if x_max is not None:
-        ax = plt.gca()
         x1, x2 = ax.get_xlim()
         ax.set_xlim([x1,x_max])
 
 
-def _set_ymin(y_min=None):
+def _set_ymin(ax,y_min=None):
     if y_min is not None:
-        ax = plt.gca()
         y1, y2 = ax.get_ylim()
         ax.set_ylim([y_min,y2])
 
 
-def _set_ymax(y_max=None):
+def _set_ymax(ax,y_max=None):
     if y_max is not None:
-        ax = plt.gca()
         y1, y2 = ax.get_ylim()
         ax.set_ylim([y1,y_max])
-
-
-def _set_default_params(**kwargs):
-    for key, val in kwargs.items():
-        default_params[key] = val
 
 
 def fill_param_dict(params):
@@ -399,6 +390,9 @@ def set_params(**params):
 
     if params['surroundWithTicks']:
         ax.tick_params(top=True,right=True)
+
+    set_xrange(params['xmin'],params['xmax'],ax)
+    set_yrange(params['ymin'],params['ymax'],ax)
 
     if LEGEND:
         leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],

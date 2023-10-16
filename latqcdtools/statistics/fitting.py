@@ -21,7 +21,7 @@ from latqcdtools.base.utilities import envector, isHigherDimensional
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, DOF, \
-    expandArgs
+    expandArgs, checkDomain
 
 
 # Allowed keys for the constructor
@@ -636,43 +636,30 @@ class Fitter:
         return self.try_fit([algorithm], **kwargs)
 
 
-    def save_func(self, filename, params = None, params_err = None, xmin = None, xmax = None, color = None, alpha = 0.1,
-                  no_error = False, header=None, **kwargs):
+    def save_func(self, filename, domain, no_error = False, header=None, **kwargs):
         """ Save fit data to table. """
-
-        if params_err is None and params is None:
-            params_err = self._saved_pcov
-
-        if params is None:
-            params = self._saved_params
-
-        if params_err is None:
-            params_err = []
-
-        if xmin is None:
-            xmin = np.min(self._xdata)
-        if xmax is None:
-            xmax = np.max(self._xdata)
-
+        checkDomain(domain)
+        params_err = self._saved_pcov
+        params = self._saved_params
         func = lambda x, *params: self._func(x, params, *self._args)
-
-        if not no_error:
+        if no_error:
+            save_func(func, filename, domain=domain, args = params, header = header, **kwargs)
+        else:
             # Call the grad wrapper instead of directly self._grad
             grad = lambda x, *params: np.asarray(self.grad(x, params))
-
-            save_func(func, filename, xmin = xmin, xmax = xmax, args = params, args_err = params_err, grad = grad,
-                      color = color, alpha = alpha, header = header, **kwargs)
-        else:
-            save_func(func, filename, xmin = xmin, xmax = xmax, args = params, color = color, header = header, **kwargs)
+            save_func(func, filename, domain=domain, args = params, args_err = params_err, grad = grad,
+                      header = header, **kwargs)
 
 
-    def plot_fit(self, no_error = False, **kwargs):
+    def plot_fit(self, domain, no_error = False, **kwargs):
         """ Plot the fit function. """
         logger.debug('Plotting fit.')
+        checkDomain(domain)
         if not no_error:
-            plot_func(self._func, params=self._saved_params, params_err=self._saved_pcov, grad=self._grad, args=self._args, **kwargs)
+            plot_func(self._func, domain=domain, params=self._saved_params, params_err=self._saved_pcov, 
+                      grad=self._grad, args=self._args, **kwargs)
         else:
-            plot_func(self._func, params=self._saved_params, args=self._args, **kwargs)
+            plot_func(self._func, domain=domain, params=self._saved_params, args=self._args, **kwargs)
 
 
     def plot_data(self, **kwargs):
@@ -728,10 +715,12 @@ class Fitter:
 
 
 # TODO: is this the right place for this?
-def save_func(func, filename, args=(), func_err=None, args_err=(), grad = None, header=None, **params):
+def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad = None, header=None, **params):
+
+    checkDomain(domain)
     fill_param_dict(params)
-    xmin = params['xmin']
-    xmax = params['xmax']
+    xmin = domain[0] 
+    xmax = domain[1] 
 
     wrap_func = lambda x, *wrap_args: func(x, wrap_args)
     wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)

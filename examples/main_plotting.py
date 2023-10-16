@@ -15,7 +15,7 @@ from latqcdtools.statistics.statistics import plot_func
 from latqcdtools.interfaces.interfaces import loadGPL
 
 
-initialize('example_plotting.log','DEBUG')
+initialize('example_plotting.log')
 
 latexify()
 
@@ -60,7 +60,7 @@ plot_file("data2.txt", 0, 1, 2, 3, style="fill", alpha=0.3, label="linear")
 plot_file("data3.txt", 0, 1, 2, 3, style="fill", alpha=0.9, label="linear 2", legendpos = "best", capsize = 2)
 
 # At the moment plot_func is inside the statistics.statistics module to allow for error propagation.
-plot_func(np.sin,xmin=-5,xmax=10)
+plot_func(np.sin,domain=(-5,10))
 
 set_params(legendpos=9)
 plt.show()

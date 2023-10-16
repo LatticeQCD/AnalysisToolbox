@@ -490,6 +490,20 @@ def checkTS(ts):
         logger.TBError('Time series needs at least two measurements.')
 
 
+def checkDomain(domain):
+    """ Some methods require that you do something over an interval, which we refer to in this module as
+    a 'domain'. This checks the domain makes sense.
+
+    Args:
+        domain (tuple)
+    """
+    checkType(domain,tuple)
+    if len(domain) != 2:
+        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].')
+    if domain[0]>=domain[1]:
+        logger.TBError('Must have domain[1]>domain[0].')
+
+
 def remove1Jackknife(ts):
     """ Create remove-1 jackknife list from 1-d series.
 
@@ -649,12 +663,13 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     return tau_int, tau_inte, tau_intbias, itpick
 
 
-
-def plot_func(func, params=(), args=(), func_err=None, params_err=(), grad = None, swapXY=False, npoints=1000, **kwargs):
+def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
+              grad = None, swapXY=False, npoints=1000, **kwargs ):
     """ Plot a function along with its error bands.
 
     Args:
         func (func)
+        domain (tuple): Domain of function. 
         params (tuple, optional): Model parameters. Defaults to ().
         params_err (tuple, optional): Error in model parameters. Defaults to ().
         args (tuple, optional): Optional function arguments. Defaults to ().
@@ -665,10 +680,9 @@ def plot_func(func, params=(), args=(), func_err=None, params_err=(), grad = Non
     """
     fill_param_dict(kwargs)
     kwargs['marker'] = None
-    xmin = kwargs['xmin']
-    xmax = kwargs['xmax']
-    if (xmin is None) or (xmax is None):
-        logger.TBError('I need to know xmin and xmax.')
+    checkDomain(domain)
+    xmin = domain[0] 
+    xmax = domain[1] 
 
     xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
     try:

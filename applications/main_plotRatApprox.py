@@ -63,11 +63,11 @@ latexify()
 
 set_params(ylogscale=True, xlabel="$x$", ylabel="(Approx - exact)/exact", title="$m_l = "+str(ml)+"$ $m_s = "+str(ms)+"$")
 
-plot_func(diff_1f_rat_func, xmin = ms**2, xmax = 5, args=(r_inv_1f_const, r_inv_1f_num, r_inv_1f_den, 3/8.), label = "1f inv")
-plot_func(diff_1f_rat_func, xmin = ms**2, xmax = 5, args=(r_1f_const, r_1f_num, r_1f_den, -3/8.), label = "1f")
-plot_func(diff_1f_rat_func, xmin = ms**2, xmax = 5, args=(r_bar_1f_const, r_bar_1f_num, r_bar_1f_den, -3/4.), label = "1f bar")
-plot_func(diff_2f_rat_func, xmin = ml**2, xmax = 5, args=(r_inv_2f_const, r_inv_2f_num, r_inv_2f_den, 1/4.), label = "2f inv")
-plot_func(diff_2f_rat_func, xmin = ml**2, xmax = 5, args=(r_2f_const, r_2f_num, r_2f_den, -1/4.), label = "2f")
-plot_func(diff_2f_rat_func, xmin = ms**2, xmax = 5, args=(r_bar_2f_const, r_bar_2f_num, r_bar_2f_den, -1/2.), label = "2f bar")
+plot_func(diff_1f_rat_func, domain=(ms**2, 5), args=(r_inv_1f_const, r_inv_1f_num, r_inv_1f_den, 3/8.), label = "1f inv")
+plot_func(diff_1f_rat_func, domain=(ms**2, 5), args=(r_1f_const, r_1f_num, r_1f_den, -3/8.), label = "1f")
+plot_func(diff_1f_rat_func, domain=(ms**2, 5), args=(r_bar_1f_const, r_bar_1f_num, r_bar_1f_den, -3/4.), label = "1f bar")
+plot_func(diff_2f_rat_func, domain=(ml**2, 5), args=(r_inv_2f_const, r_inv_2f_num, r_inv_2f_den, 1/4.), label = "2f inv")
+plot_func(diff_2f_rat_func, domain=(ml**2, 5), args=(r_2f_const, r_2f_num, r_2f_den, -1/4.), label = "2f")
+plot_func(diff_2f_rat_func, domain=(ms**2, 5), args=(r_bar_2f_const, r_bar_2f_num, r_bar_2f_den, -1/2.), label = "2f bar")
 
 plt.show()
