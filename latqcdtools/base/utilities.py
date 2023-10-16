@@ -176,10 +176,23 @@ def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
     return date1_converted < date2_converted
 
 
+def convert(text):
+    if text.isdigit():
+        return int(text)
+    else:
+        return text.lower()
+
+
+def alphanum_key(key):
+    """ Splits the string `key` at any point where there is one or more consecutive digits. 
+    The regular expression `([0-9]+)` is used to match one or more digits. The parentheses `()` 
+    capture the matched digits as separate elements. For example, if `key` were 
+    `'abc123def456ghi'`, the resulting list would be `['abc', '123', 'def', '456', 'ghi']`. """
+    return [convert(c) for c in re.split('([0-9]+)', key)]
+
+
 def naturalSort(l):
-    """ Sort list of strings so that, e.g. '10' comes after '9' rather than before it. """
-    convert = lambda text: int(text) if text.isdigit() else text.lower()
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    """Sort list of strings so that, e.g. '10' comes after '9' rather than before it."""
     return sorted(l, key=alphanum_key)
 
 

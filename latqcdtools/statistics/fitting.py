@@ -385,13 +385,18 @@ class Fitter:
 
             if self._priorsigma is not None:
                 logger.TBError('The curve_fit algorithm is not yet able to handle priors.')
-            func = lambda x, *p: self.wrap_func(x, p)
+
+            # This ensures that however func is used, whatever is passed to him as arguments will be captured as a
+            # tuple, which is then plugged into wrap_func.
+            def func(x, *p):
+                return self.wrap_func(x, p)
 
             cov = self._cov
             # If no gradient has been provided by the user, it is probably better to use the numerical derivative from
             # curve_fit instead of our own.
             if self._grad is not None:
-                grad = lambda x, *p: np.array(self.grad(x, p)).transpose()
+                def grad(x, *p):
+                    return np.array(self.grad(x, p)).transpose()
             else:
                 grad = None
 
@@ -641,12 +646,13 @@ class Fitter:
         checkDomain(domain)
         params_err = self._saved_pcov
         params = self._saved_params
-        func = lambda x, *params: self._func(x, params, *self._args)
+        def func(self, x, *params):
+            return self._func(x, params, *self._args)
         if no_error:
             save_func(func, filename, domain=domain, args = params, header = header, **kwargs)
         else:
-            # Call the grad wrapper instead of directly self._grad
-            grad = lambda x, *params: np.asarray(self.grad(x, params))
+            def grad(self, x, *params):
+                return np.asarray(self.grad(x, params))
             save_func(func, filename, domain=domain, args = params, args_err = params_err, grad = grad,
                       header = header, **kwargs)
 
@@ -704,14 +710,6 @@ class Fitter:
             plot_bar(range(len(eig_imag)), eig_imag, color='#0081bf', label="imag", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
 
 
-#    def printErrorBudget(self,atVal):
-#        func = lambda x, *params: self._func(x, params, *self._args)
-#
-#        wrap_func = lambda x, *wrap_args: func(x, wrap_args)
-#        wrap_grad = lambda x, *wrap_args: self.grad(x, wrap_args)
-#
-#        error_budget(atVal, wrap_func, self._xdata, np.diag(self._cov), grad=wrap_grad)
-
 
 
 # TODO: is this the right place for this?
@@ -722,9 +720,15 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
     xmin = domain[0] 
     xmax = domain[1] 
 
-    wrap_func = lambda x, *wrap_args: func(x, wrap_args)
-    wrap_func_err = lambda x, *wrap_args_err: func_err(x, wrap_args_err)
-    wrap_grad = lambda x, *wrap_args: grad(x, wrap_args)
+    # Again we're just trying to make sure wrap_func captures his arguments as a tuple.
+    def wrap_func(x, *wrap_args):
+        return func(x, *wrap_args)
+    
+    def wrap_func_err(x, *wrap_args_err): 
+        return func_err(x, *wrap_args_err)
+    
+    def wrap_grad(x, *wrap_args):
+        return grad(x, *wrap_args)
 
     if xmin is None:
         for line in plt.gca().lines:

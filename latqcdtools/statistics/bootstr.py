@@ -11,6 +11,16 @@ import numpy as np
 from latqcdtools.statistics.statistics import meanArgWrapper, std_mean, std_dev, std_median, dev_by_dist
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.initialize import DEFAULTSEED
+from latqcdtools.base.check import checkType
+
+
+def autoSeed(seed):
+    """ We use seed=None to flag the seed should be automatically chosen. The problem is that we need
+    seed to be an integer when enforcing that different bootstrap samples use different seeds. """
+    if seed is None:
+        return np.random.randint(0,DEFAULTSEED)
+    else:
+        return seed
 
 
 def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for_obs, i, my_seed):
@@ -51,7 +61,8 @@ class nimbleBoot:
         self._same_rand_for_obs=same_rand_for_obs
         self._conf_axis=conf_axis
         self._return_sample=return_sample
-        self._seed=seed
+        self._seed=autoSeed(seed)
+        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._args=args
         self._nproc = nproc 
@@ -164,7 +175,8 @@ class nimbleGaussianBoot:
         self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._return_sample=return_sample
-        self._seed=seed
+        self._seed=autoSeed(seed)
+        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._useCovariance=useCovariance
         self._Covariance=Covariance

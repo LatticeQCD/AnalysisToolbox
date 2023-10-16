@@ -115,16 +115,18 @@ def diff_hess(params, func, args = (), h = None):
 
 
 def diff_fit_grad(x, params, func, args = (), h = None):
-    """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
-    change the order using this wrapper. """
-    f = lambda p: func(x, p, *args)
+    """ When fitting we're trying to optimize params, and hence we want to think of func as a function of
+    its parameters rather than x. """ 
+    def f(p):
+        return func(x, p, *args)
     return diff_grad(params, f, h = h)
 
 
 def diff_fit_hess(x, params, func, args = (), h = None):
-    """ For fitting or plotting we expect the first argument of func to be x instead of params. Therefore we have to
-    change the order using this wrapper. """
-    f = lambda p: func(x, p, *args)
+    """ When fitting we're trying to optimize params, and hence we want to think of func as a function of
+    its parameters rather than x. """ 
+    def f(p):
+        return func(x, p, *args)
     return diff_hess(params, f, h = h)
 
 
