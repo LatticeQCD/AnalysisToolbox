@@ -395,6 +395,8 @@ def set_params(**params):
     set_yrange(params['ymin'],params['ymax'],ax)
 
     if LEGEND:
+        if not ax in legend_handles:
+            logger.TBError('Legend for axis',ax,'was activated without any label.')
         leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])

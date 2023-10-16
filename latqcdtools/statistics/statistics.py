@@ -80,15 +80,6 @@ def std_err(data, axis = 0):
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
 
 
-# TODO: should this be true or false?
-def std_cov(data):
-    """ If data is a table indexed by observable and measurement number, calculate covariance between observables. """
-    data = np.asarray(data)
-    if not data.ndim==2:
-        logger.TBError('Expected 2d table.')
-    return np.cov( data, bias=True )
-
-
 def jack_mean_and_err(data):
     data   = np.asarray(data)
     n      = len(data)
@@ -116,6 +107,34 @@ def expandArgs(func, x, params=(), args=()):
         return func(x, *args)
     else:
         return func(x, params, *args)
+
+
+def checkTS(ts):
+    """ Some methods require 1-d time series. This checks that the type, dimensionality,
+    and length are appropriate.
+
+    Args:
+        ts (array-like): time series 
+    """
+    checkType(ts,'array')
+    if isHigherDimensional(ts):
+        logger.TBError('Expected 1-d time series.')
+    if len(ts) < 2:
+        logger.TBError('Time series needs at least two measurements.')
+
+
+def checkDomain(domain):
+    """ Some methods require that you do something over an interval, which we refer to in this module as
+    a 'domain'. This checks the domain makes sense.
+
+    Args:
+        domain (tuple)
+    """
+    checkType(domain,tuple)
+    if len(domain) != 2:
+        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].')
+    if domain[0]>=domain[1]:
+        logger.TBError('Must have domain[1]>domain[0].')
 
 
 def checkPrior(prior,prior_err):
@@ -258,49 +277,59 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
 
 
-def weighted_mean(data, weights):
-    """ Compute the weighted mean. If you want to weight with error bars, the weights should be
-    1/error**2. See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html. """
-    data    = np.array(data)
-    weights = np.array(weights)
-    return np.sum(data.dot(weights))/np.sum(weights)
+def weighted_mean(data, err):
+    """ Compute the weighted mean. Here the weights are Gaussian error bars.
+    See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
+
+    Args:
+        data (array-like)
+        errcov (array-like): error if 1d or cov if 2d. 
+
+    Returns:
+        float: weighted mean 
+    """
+    data = np.array(data)
+    weights  = 1/np.array(err)**2
+    return np.sum( weights @ data )/np.sum(weights)
 
 
-def weighted_mean_variance(errors):
+def weighted_variance(err):
     """ Get variance of above weighted mean, when the weights are statistical errors. 
 
     Parameters
     ----------
 
-    errors: array_like
+    err: array_like
         The errors of the data points.
     """
-    weights = 1/np.array(errors)**2
+    weights = 1/np.array(err)**2
     return 1/np.sum(weights)
 
 
-def biased_sample_variance(data, weights):
+def biased_sample_variance(data, err):
     """ Compute the biased weighted sample variance, i.e. the biased variance of an individual measurement and not the
     variance of the mean. """
-    mean = weighted_mean(data, weights)
+    mean = weighted_mean(data, err)
+    weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     return weights.dot((data - mean)**2) / V1
 
 
-def unbiased_sample_variance(data, weights):
+def unbiased_sample_variance(data, err):
     """ Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
     the variance of the mean. Do not use this function if your weights are frequency weights. """
+    weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
 
 
-def unbiased_mean_variance(data, weights):
+def unbiased_mean_variance(data, err):
     """ Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
     weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
     constructed using the deviations of the individual data points. """
     data    = np.asarray(data)
-    weights = np.asarray(weights)
+    weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
@@ -474,34 +503,6 @@ def studif(x1,e1,ndat1,x2,e2,ndat2):
         return betainc(dof/2,1/2,x)
     else:
         return 2-betainc(dof/2,1/2,x)
-
-
-def checkTS(ts):
-    """ Some methods require 1-d time series. This checks that the type, dimensionality,
-    and length are appropriate.
-
-    Args:
-        ts (array-like): time series 
-    """
-    checkType(ts,'array')
-    if isHigherDimensional(ts):
-        logger.TBError('Expected 1-d time series.')
-    if len(ts) < 2:
-        logger.TBError('Time series needs at least two measurements.')
-
-
-def checkDomain(domain):
-    """ Some methods require that you do something over an interval, which we refer to in this module as
-    a 'domain'. This checks the domain makes sense.
-
-    Args:
-        domain (tuple)
-    """
-    checkType(domain,tuple)
-    if len(domain) != 2:
-        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].')
-    if domain[0]>=domain[1]:
-        logger.TBError('Must have domain[1]>domain[0].')
 
 
 def remove1Jackknife(ts):
