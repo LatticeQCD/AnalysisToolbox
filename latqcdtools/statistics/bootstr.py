@@ -168,6 +168,14 @@ class nimbleGaussianBoot:
     def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed,
                  err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
 
+        checkType(numb_samples,int)
+        checkType(sample_size,int)
+        checkType(same_rand_for_obs,bool)
+        checkType(return_sample,bool)
+        checkType(err_by_dist,bool)
+        checkType(useCovariance,bool)
+        checkType(nproc,int)
+        checkType(asym_err,bool)
         self._func=func
         self._data=np.array(data)
         self._data_std_dev=np.array(data_std_dev)

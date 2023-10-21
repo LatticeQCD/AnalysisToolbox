@@ -11,22 +11,33 @@ import math
 from latqcdtools.statistics.statistics import std_mean, std_err, meanArgWrapper
 import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
+from latqcdtools.base.utilities import isHigherDimensional
+from latqcdtools.base.check import checkType
 
 
 def pseudo(mean, mean_i, numb_blocks):
-    """ Calculate pseudo values of elements of objects that are not tuple. """
-    return numb_blocks * mean - (numb_blocks - 1) * mean_i
+    """ Calculate the 'pseudovalue' from the ith jackknife estimator. The pseudovalue is unbiased
+    up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. """ 
+    return numb_blocks*mean - (numb_blocks - 1)*mean_i
 
 
 def pseudo_val(mean, mean_i, numb_blocks):
     if type(mean) is tuple:
         retvalue = ()
         for i in range(len(mean)):
-            retvalue += (pseudo(np.array(mean[i]),
-                         np.array(mean_i[i]), numb_blocks),)
+            retvalue += (pseudo(np.array(mean[i]), np.array(mean_i[i]), numb_blocks),)
         return retvalue
     else:
         return pseudo(np.array(mean), np.array(mean_i), numb_blocks)
+
+
+def getBlocksize(ndat,nblocks):
+    if ndat < nblocks:
+        logger.TBError('More blocks than data! nblocks, ndat =',nblocks,ndat)
+    elif ndat==nblocks:
+        return 1
+    else:
+        return math.floor(ndat/nblocks)
 
 
 class nimbleJack:
@@ -34,78 +45,55 @@ class nimbleJack:
 
     def __init__(self, func, data, nblocks, confAxis, return_sample, args, nproc):
 
+        checkType(nblocks,int)
+        checkType(confAxis,int)
+        checkType(return_sample,bool)
+        checkType(nproc,int)
         self._func = func
         self._data = np.array(data)
-        self._nblocks = nblocks
-        self._confAxis = confAxis
+        if nblocks==1:
+            self._nblocks = len(data) 
+        else:
+            self._nblocks = nblocks
+        if not isHigherDimensional(self._data):
+            self._confAxis = 0
+        else:
+            self._confAxis = confAxis
         self._return_sample = return_sample
         self._args = args
         self._nproc = nproc
 
-        # If the measurements are accessed by the second index in data, we construct the jackknife  manually to allow
-        # different size of sets of measurements. conf_axis==1 is the only case that allows different lengths of data
-        # arrays per observable.
+        # It could be that different observables have different numbers of measurements/configurations. We only
+        # allow for that possibility by setting confAxis==1. If your configurations are ragged and along a
+        # different axis, you're going to have to handle that yourself for now.
         if self._confAxis == 1:
-            try:
-                self._lengths = [len(self._data[i])
-                                 for i in range(len(self._data))]
-                self._blocksizes = [math.floor(
-                    length / self._nblocks) for length in self._lengths]
-                for length in self._lengths:
-                    if length < self._nblocks:
-                        raise IndexError("More blocks than datapoints!")
-            except TypeError:  # if we get an 1D array
-                self._confAxis = 0
-                self._length = self._data.shape[self._confAxis]
-                self._blocksize = math.floor(self._length / self._nblocks)
+            self._lengths = [len(self._data[i]) for i in range(len(self._data))]
+            self._blocksizes = [getBlocksize(length, self._nblocks) for length in self._lengths]
         else:
             self._length = self._data.shape[self._confAxis]
-            self._blocksize = math.floor(self._length / self._nblocks)
+            self._blocksize = getBlocksize(self._length,self._nblocks)
 
         if self._confAxis == 1:
             self._numb_observe = len(self._data)
-            used_data = [self._data[i][:self._nblocks * self._blocksizes[i]]
-                         for i in range(self._numb_observe)]
+            used_data = [self._data[i][:self._nblocks * self._blocksizes[i]] for i in range(self._numb_observe)]
             used_data = np.array(used_data)
         else:
             if self._length < self._nblocks:
-                logger.TBError(
-                    "More blocks than data. length, self._nblocks=", self._length, self._nblocks)
-            rolled_data = np.rollaxis(self._data, self._confAxis)
-            used_data = np.rollaxis(
-                rolled_data[:self._blocksize*self._nblocks], 0, self._confAxis+1)
+                logger.TBError("More blocks than data. length, nblocks=", self._length, self._nblocks)
+            swap_data = np.swapaxes(self._data, axis1=self._confAxis, axis2=0)
+            used_data = np.swapaxes(swap_data[:self._blocksize*self._nblocks], 0, self._confAxis)
+            if self._nblocks==self._length:
+                if not np.array_equal(used_data,self._data):
+                    logger.TBError('Something went wrong constucting used_data for remove-1 jackknife.')
 
         # Get initial estimator of the mean
-        if self._nblocks == 1:
-            ndat = len(self._data)
-            idx = np.arange(ndat)
-            self._mean = np.mean(self.getJackknifeEstimator1d())
-            self._error = np.sqrt(
-                (ndat - 1) / ndat * sum((self._func(self._data[idx != i]) - self._mean)**2 for i in range(ndat)))
-        else :     
-            self._mean = meanArgWrapper(func, used_data, args)
-            self._blockval = parallel_function_eval(
-                self.getJackknifeEstimator, range(self._nblocks), nproc=self._nproc)
-            self._mean = std_mean(self._blockval)
-            self._error = std_err(self._blockval)
+        self._mean = meanArgWrapper(func, used_data, args)
+        self._blockval = parallel_function_eval(self.getJackknifeEstimator, range(self._nblocks), nproc=self._nproc)
+        self._mean = std_mean(self._blockval)
+        self._error = std_err(self._blockval)
 
     def __repr__(self) -> str:
             return "jackknife"
-
-    def getJackknifeEstimator1d(self):
-        ndat = len(self._data)
-        idx = np.arange(ndat)
-        sample = np.array([self._func(self._data[idx != i])
-                              for i in range(ndat)])
-        return sample
-
-    def getResults1d(self):
-        ndat = len(self._data)
-        jsamp = self._get_jackknife_estimator_1d()
-        jackmean = np.mean(jsamp)
-        jackstd = np.sqrt((ndat - 1) * np.sum((jsamp - jackmean)**2))
-        return jackmean, jackstd
-
         
     def getJackknifeEstimator(self, i):
         """ Gets the ith jackknife estimator from throwing away jackknife block i. """
@@ -115,16 +103,17 @@ class nimbleJack:
                 block_data.append(self._data[k][0:i * self._blocksizes[k]])
                 block_data[k] = np.concatenate((block_data[k], self._data[k][(i + 1) * self._blocksizes[k]:self._nblocks * self._blocksizes[k]]))
         else:
-            # The Jackknife blocks are constructed by rolling the conf axis to the first index. Then the jackknife
-            # blocks are built. Aferwards the we roll back
-            rolled_data = np.rollaxis(self._data, self._confAxis)
-            for j in range(i * self._blocksize):
-                block_data.append(rolled_data[j])
-            for j in range((i + 1) * self._blocksize, self._nblocks * self._blocksize):
-                block_data.append(rolled_data[j])
-            block_data = np.rollaxis(
-                np.array(block_data), 0, self._confAxis + 1)
-        block_data = np.array(block_data)
+            # The idea is that the Markov time measurements are along the _confAxis. We construct the block_data
+            # by swapping the conf_data to the 0th axis, so that we can cut out the ith configuration block
+            # by just appending together using syntax like "swap_data[j]". Then we swap back at the end to restore
+            # the original data structure.
+            swap_data = np.swapaxes(self._data,axis1=self._confAxis,axis2=0)
+            block_data = []
+            for j in range(i*self._blocksize):
+                block_data.append(swap_data[j])
+            for j in range((i+1)*self._blocksize, self._nblocks*self._blocksize):
+                block_data.append(swap_data[j])
+            block_data = np.swapaxes(np.array(block_data), axis1=0, axis2=self._confAxis)
         mean_i = meanArgWrapper(self._func, block_data, self._args)
         return pseudo_val(self._mean, mean_i, self._nblocks)
 
@@ -157,7 +146,7 @@ def jackknife(func, data, numb_blocks=20, conf_axis=1, return_sample=False, args
             Number of jackknife blocks
 
         conf_axis : integer, optional, default = 0 for dim(data) = 1 and default = 1 for dim(data) >= 2
-            Axis that should be resampled
+            Axis that should be resampled.
 
         return_sample : boolean, optional, default = False                                           
             Along with the mean and the error also return the results from the individual samples
@@ -168,6 +157,7 @@ def jackknife(func, data, numb_blocks=20, conf_axis=1, return_sample=False, args
         nproc : integer
             Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
     """
-    jk = nimbleJack(func, data, numb_blocks, conf_axis,
-                    return_sample, args, nproc)
+    jk = nimbleJack(func, data, numb_blocks, conf_axis, return_sample, args, nproc)
     return jk.getResults()
+
+
