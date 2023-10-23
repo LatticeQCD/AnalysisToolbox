@@ -121,6 +121,20 @@ def checkPrior(prior,prior_err):
         logger.TBError('prior != None, prior_err = None')
 
 
+def checkTS(ts):
+    """ Some methods require 1-d time series. This checks that the type, dimensionality,
+    and length are appropriate.
+
+    Args:
+        ts (array-like): time series 
+    """
+    checkType(ts,'array')
+    if isHigherDimensional(ts):
+        logger.TBError('Expected 1-d time series.')
+    if len(ts) < 2:
+        logger.TBError('Time series needs at least two measurements.')
+
+
 def countParams(func,params):
     """ If we have a function, return length of params. Else, we must have a spline. """
     nparams = len(params)
@@ -251,6 +265,21 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
     ndat    = len(ydata)
     aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err)
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
+
+
+def pearson(x,y):
+    """ Get the Pearson correlation coefficient between the time series x and y.
+
+    Args:
+        x (array-like): _description_
+        y (array-like): _description_
+
+    Returns:
+        float: R 
+    """
+    checkTS(x)
+    checkTS(y)
+    return np.corrcoef(x,y)[0,1]
 
 
 def weighted_mean(data, err):

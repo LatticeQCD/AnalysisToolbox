@@ -8,26 +8,10 @@
 # 
 
 import numpy as np
-from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import isHigherDimensional
-from latqcdtools.statistics.statistics import std_mean, std_err
+from latqcdtools.statistics.statistics import std_mean, std_err, checkTS
 from latqcdtools.base.plotting import plt, clearPlot, plot_file
 from latqcdtools.statistics.jackknife import jackknife 
-
-
-def checkTS(ts):
-    """ Some methods require 1-d time series. This checks that the type, dimensionality,
-    and length are appropriate.
-
-    Args:
-        ts (array-like): time series 
-    """
-    checkType(ts,'array')
-    if isHigherDimensional(ts):
-        logger.TBError('Expected 1-d time series.')
-    if len(ts) < 2:
-        logger.TBError('Time series needs at least two measurements.')
 
 
 def remove1Jackknife(ts):
