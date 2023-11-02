@@ -38,7 +38,7 @@ def ignoreBetaRange():
     logger.warn('Squelching beta range warnings.')
 
 
-def print_out_of_beta_range_warning(beta, beta_range):
+def _betaRangeWarn(beta, beta_range):
     """ Many of these ansätze a(beta) have coefficients that were determined by performing a fit within a certain
     beta range. This warning flashes whenever you are using information outside of that range, where the ansatz
     is less likely be to reliable.
@@ -88,7 +88,7 @@ def a_times_fk(beta: float, year):
     # https://arxiv.org/pdf/2107.10011.pdf, 10.1103/PhysRevD.104.074512
     if str(year) == "2021":
         beta_range = [6.175, 7.220]
-        print_out_of_beta_range_warning(beta, beta_range)
+        _betaRangeWarn(beta, beta_range)
         c0fk = 7.486
         c2fk = 41935.0
         d2fk = 3273.0
@@ -132,7 +132,7 @@ def a_div_r1(beta, year):
     # https://arxiv.org/pdf/1710.05024.pdf
     elif str(year) == "2018":
         beta_range = [7.030, 8.4]
-        print_out_of_beta_range_warning(beta, beta_range)
+        _betaRangeWarn(beta, beta_range)
         c0 = 43.12
         c2 = 347008
         d2 = 5584
@@ -204,7 +204,7 @@ def r0_div_a(beta,year):
     # https://arxiv.org/abs/1503.05652
     elif str(year) == "2015":
         beta_range = [5.7, 6.92]
-        print_out_of_beta_range_warning(beta, beta_range)
+        _betaRangeWarn(beta, beta_range)
         c1 = -8.17273
         c2 = 14.9600
         c3 = -3.95983

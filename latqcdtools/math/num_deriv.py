@@ -10,7 +10,7 @@
 import numpy as np
 
 
-def best_h(x):
+def _best_h(x):
     """ This routine attempts to automatically determine the best possible step size h when calculating numerical
     derivatives. One does not like the step size to be too large, since one pays a ~h^2 penalty. On the other hand,
     if the step size is too small, the function may not change within machine precision eps, and hence the derivative
@@ -37,7 +37,7 @@ def best_h(x):
 def diff_deriv(x, func, args = (), h = None):
     """ Numerical derivative using central difference. """
     if h is None:
-        h = best_h(x)
+        h = _best_h(x)
     up   = x + h
     down = x - h
     return (func(up, *args) - func(down, *args)) / (2*h)
@@ -50,7 +50,7 @@ def diff_grad(params, func, args = (), h = None):
     down = np.array(params, dtype = float)
     for i in range(len(params)):
         if h is None:
-            h = best_h(params[i])
+            h = _best_h(params[i])
         up[i] += h
         down[i] -= h
         ret[i] = (func(up, *args) - func(down, *args)) / (2*h)
@@ -74,7 +74,7 @@ def diff_hess(params, func, args = (), h = None):
 
     for i in range(len(params)):
         if h is None:
-            hi = best_h(params[i])
+            hi = _best_h(params[i])
         else:
             hi = h
         up[i] += hi
@@ -87,7 +87,7 @@ def diff_hess(params, func, args = (), h = None):
 
         for j in range(i):
             if h is None:
-                hj = best_h(params[j])
+                hj = _best_h(params[j])
             else:
                 hj=h
 

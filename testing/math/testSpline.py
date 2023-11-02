@@ -7,7 +7,7 @@
 # 
 
 import numpy as np
-from latqcdtools.math.spline import even_knots, random_knots, getSpline
+from latqcdtools.math.spline import _even_knots, _random_knots, getSpline
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
@@ -26,11 +26,11 @@ def testSpline():
     y  = 10*x**2 + np.random.randn(len(x))
     ye = np.repeat(1.,len(y))
 
-    knots = even_knots(x, 3)
+    knots = _even_knots(x, 3)
 
     lpass *= print_results(knots,[-0.5, 0.0, 0.5], text="even_knots")
 
-    knots=random_knots(x, 3, SEED=DEFAULTSEED)
+    knots = _random_knots(x, 3, SEED=DEFAULTSEED)
 
     lpass *= print_results(knots,[-0.55, -0.10999999999999999, 0.10999999999999999], text="random_knots")
 

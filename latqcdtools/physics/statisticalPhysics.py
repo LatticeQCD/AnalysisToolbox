@@ -8,7 +8,7 @@
 import latqcdtools.base.logger as logger
 
 
-def printExponent(prefix, exponent):
+def _printExponent(prefix, exponent):
     if exponent is not None:
         logger.info(prefix, round(exponent, 4))
 
@@ -36,12 +36,12 @@ class UniversalityClass:
     def exponentSummary(self):
         logger.info()
         logger.info("Summary of "+self.name()+" critical exponents:")
-        printExponent(" alpha =",self.alpha)
-        printExponent("  beta =",self.beta)
-        printExponent(" gamma =",self.gamma)
-        printExponent(" delta =",self.delta)
-        printExponent(" omega =",self.omega)
-        printExponent("    nu =",self.nu)
+        _printExponent(" alpha =",self.alpha)
+        _printExponent("  beta =",self.beta)
+        _printExponent(" gamma =",self.gamma)
+        _printExponent(" delta =",self.delta)
+        _printExponent(" omega =",self.omega)
+        _printExponent("    nu =",self.nu)
         logger.info()
 
     def hyperscalingCheck(self, tol=1e-6):

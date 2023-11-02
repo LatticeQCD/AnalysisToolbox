@@ -14,7 +14,7 @@ from latqcdtools.base.initialize import DEFAULTSEED
 from latqcdtools.base.check import checkType
 
 
-def autoSeed(seed):
+def _autoSeed(seed):
     """ We use seed=None to flag the seed should be automatically chosen. The problem is that we need
     seed to be an integer when enforcing that different bootstrap samples use different seeds. """
     if seed is None:
@@ -61,7 +61,7 @@ class nimbleBoot:
         self._same_rand_for_obs=same_rand_for_obs
         self._conf_axis=conf_axis
         self._return_sample=return_sample
-        self._seed=autoSeed(seed)
+        self._seed=_autoSeed(seed)
         checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._args=args
@@ -183,7 +183,7 @@ class nimbleGaussianBoot:
         self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._return_sample=return_sample
-        self._seed=autoSeed(seed)
+        self._seed=_autoSeed(seed)
         checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._useCovariance=useCovariance

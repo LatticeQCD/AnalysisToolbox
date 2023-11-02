@@ -10,23 +10,13 @@
 import numpy as np
 from numpy.linalg import det
 import latqcdtools.base.logger as logger
-from latqcdtools.math.math import rel_check
+from latqcdtools.math.math import rel_check, id_3, ze_3
 from latqcdtools.base.speedify import compile
 
 
 # Eventually we would like to use default_rng here too, but it doesn't compile straightforwardly
 # using numba. Will have to think about it.
 rng = np.random
-
-
-id_3 = np.array([   [complex(1.), complex(0.), complex(0.)],
-                    [complex(0.), complex(1.), complex(0.)],
-                    [complex(0.), complex(0.), complex(1.)] ])
-
-
-ze_3 = np.array([   [complex(0.), complex(0.), complex(0.)],
-                    [complex(0.), complex(0.), complex(0.)],
-                    [complex(0.), complex(0.), complex(0.)] ])
 
 
 @compile

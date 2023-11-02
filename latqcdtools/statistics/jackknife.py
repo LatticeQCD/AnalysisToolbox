@@ -15,23 +15,23 @@ from latqcdtools.base.utilities import isHigherDimensional
 from latqcdtools.base.check import checkType
 
 
-def pseudo(mean, mean_i, numb_blocks):
+def _pseudo(mean, mean_i, numb_blocks):
     """ Calculate the 'pseudovalue' from the ith jackknife estimator. The pseudovalue is unbiased
     up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. """ 
     return numb_blocks*mean - (numb_blocks - 1)*mean_i
 
 
-def pseudo_val(mean, mean_i, numb_blocks):
+def _pseudo_val(mean, mean_i, numb_blocks):
     if type(mean) is tuple:
         retvalue = ()
         for i in range(len(mean)):
-            retvalue += (pseudo(np.array(mean[i]), np.array(mean_i[i]), numb_blocks),)
+            retvalue += (_pseudo(np.array(mean[i]), np.array(mean_i[i]), numb_blocks),)
         return retvalue
     else:
-        return pseudo(np.array(mean), np.array(mean_i), numb_blocks)
+        return _pseudo(np.array(mean), np.array(mean_i), numb_blocks)
 
 
-def getBlocksize(ndat,nblocks):
+def _getBlocksize(ndat,nblocks):
     if ndat < nblocks:
         logger.TBError('More blocks than data! nblocks, ndat =',nblocks,ndat)
     elif ndat==nblocks:
@@ -68,10 +68,10 @@ class nimbleJack:
         # different axis, you're going to have to handle that yourself for now.
         if self._confAxis == 1:
             self._lengths = [len(self._data[i]) for i in range(len(self._data))]
-            self._blocksizes = [getBlocksize(length, self._nblocks) for length in self._lengths]
+            self._blocksizes = [_getBlocksize(length, self._nblocks) for length in self._lengths]
         else:
             self._length = self._data.shape[self._confAxis]
-            self._blocksize = getBlocksize(self._length,self._nblocks)
+            self._blocksize = _getBlocksize(self._length,self._nblocks)
 
         if self._confAxis == 1:
             self._numb_observe = len(self._data)
@@ -115,7 +115,7 @@ class nimbleJack:
                 block_data.append(swap_data[j])
             block_data = np.swapaxes(np.array(block_data), axis1=0, axis2=self._confAxis)
         mean_i = meanArgWrapper(self._func, block_data, self._args)
-        return pseudo_val(self._mean, mean_i, self._nblocks)
+        return _pseudo_val(self._mean, mean_i, self._nblocks)
 
     def getResults(self):
         if self._return_sample:

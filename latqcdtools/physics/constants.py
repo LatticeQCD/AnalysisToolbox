@@ -23,60 +23,60 @@ eC              = 1.602176634e-19  # e in [C]. NIST 2018.
 
 
 # List of scientific prefixes
-prefix = { "Q"  : 1e30,
-           "R"  : 1e27,
-           "Y"  : 1e24,  
-           "Z"  : 1e21, 
-           "E"  : 1e18, 
-           "P"  : 1e15, 
-           "T"  : 1e12, 
-           "G"  : 1e9, 
-           "M"  : 1e6, 
-           "k"  : 1e3, 
-           "h"  : 1e2, 
-           "da" : 1e1, 
-           "1"  : 1,
-           1    : 1,
-           "d"  : 1e-1,
-           "c"  : 1e-2, 
-           "m"  : 1e-3, 
-           "u"  : 1e-6, 
-           "n"  : 1e-9, 
-           "p"  : 1e-12, 
-           "f"  : 1e-15, 
-           "a"  : 1e-18, 
-           "z"  : 1e-21, 
-           "y"  : 1e-24, 
-           "r"  : 1e-27, 
-           "q"  : 1e-30  }
+_prefix = { "Q"  : 1e30,
+            "R"  : 1e27,
+            "Y"  : 1e24,  
+            "Z"  : 1e21, 
+            "E"  : 1e18, 
+            "P"  : 1e15, 
+            "T"  : 1e12, 
+            "G"  : 1e9, 
+            "M"  : 1e6, 
+            "k"  : 1e3, 
+            "h"  : 1e2, 
+            "da" : 1e1, 
+            "1"  : 1,
+            1    : 1,
+            "d"  : 1e-1,
+            "c"  : 1e-2, 
+            "m"  : 1e-3, 
+            "u"  : 1e-6, 
+            "n"  : 1e-9, 
+            "p"  : 1e-12, 
+            "f"  : 1e-15, 
+            "a"  : 1e-18, 
+            "z"  : 1e-21, 
+            "y"  : 1e-24, 
+            "r"  : 1e-27, 
+            "q"  : 1e-30  }
 
 
 # Alphabetical order for easier finding
-baseUnits = [
-            "BTU",    # British thermal unit
-            "degC",   # Celsius
-            "degF",   # Fahrenheit
-            "eV",     # electron-volt
-            "ft",     # feet
-            "h",      # hour
-            "J",      # Joule
-            "K",      # Kelvin
-            "m",      # meter
-            "m/s",    # meter/second
-            "mi",     # mile
-            "mi/h",   # mile/hour
-            "min",    # minute
-            "s",      # second
-            "W",      # Watt
-            "Wh",     # Watt-hour
-            "Wh/y",   # Watt-hour/year
-            "y",      # year
-            ]
+_baseUnits = [
+             "BTU",    # British thermal unit
+             "degC",   # Celsius
+             "degF",   # Fahrenheit
+             "eV",     # electron-volt
+             "ft",     # feet
+             "h",      # hour
+             "J",      # Joule
+             "K",      # Kelvin
+             "m",      # meter
+             "m/s",    # meter/second
+             "mi",     # mile
+             "mi/h",   # mile/hour
+             "min",    # minute
+             "s",      # second
+             "W",      # Watt
+             "Wh",     # Watt-hour
+             "Wh/y",   # Watt-hour/year
+             "y",      # year
+             ]
 
 
-def separatePrefix(units):
+def _separatePrefix(units):
     checkType(units,str)
-    if units in baseUnits: 
+    if units in _baseUnits: 
         prefix=1
         baseUnit=units
     else:
@@ -96,22 +96,22 @@ def convert(x,unit1,unit2):
     Returns:
         float: measurement in [unit2]. 
     """
-    p1, u1 = separatePrefix(unit1)
-    p2, u2 = separatePrefix(unit2)
-    if not p1 in prefix:
+    p1, u1 = _separatePrefix(unit1)
+    p2, u2 = _separatePrefix(unit2)
+    if not p1 in _prefix:
         logger.TBError('Unknown prefix',p1)
-    if not p2 in prefix:
+    if not p2 in _prefix:
         logger.TBError('Unknown prefix',p2)
     u1u2 = (u1,u2)
 
     if u1.endswith('inv'):
-        num=1/prefix[p1]
+        num=1/_prefix[p1]
     else:
-        num=prefix[p1]
+        num=_prefix[p1]
     if u2.endswith('inv'):
-        den=1/prefix[p2]
+        den=1/_prefix[p2]
     else:
-        den=prefix[p2]
+        den=_prefix[p2]
     fac = num/den
 
     if u1==u2:

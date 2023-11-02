@@ -25,7 +25,7 @@ from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_c
 
 
 # Allowed keys for the constructor
-allowed_keys = ['grad', 'hess', 'args', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
+_allowed_keys = ['grad', 'hess', 'args', 'grad_args', 'hess_args', 'tol', 'use_diff', 'error_strat',
                 'norm_err_chi2', 'derive_chisq', 'eig_threshold', 'test_tol', 'max_fev', 'nproc']
 
 # All possible algorithms.
@@ -92,7 +92,7 @@ class Fitter:
             If you want you can accelerate the fits using nprocs threads.
         """
 
-        diff = set(set(kwargs.keys()) - set(allowed_keys))
+        diff = set(set(kwargs.keys()) - set(_allowed_keys))
         if len(diff) != 0:
             logger.TBError("Illegal argument(s) to fitter", *diff)
 

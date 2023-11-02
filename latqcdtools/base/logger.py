@@ -74,10 +74,6 @@ def _getTimeStamp():
 # ----------------------------------------------------------------------------------------------- DEPENDENT ON LOG LEVEL
 
 
-def isLevel(level):
-    return log_levels[level] >= CURRENT_LEVEL
-
-
 def set_log_level(level):
     global CURRENT_LEVEL
     CURRENT_LEVEL = log_levels[level]

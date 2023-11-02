@@ -15,7 +15,7 @@ from latqcdtools.base.speedify import DEFAULTTHREADS
 from latqcdtools.base.check import checkType
 
 
-def powerSeries(x,coeffs):
+def _powerSeries(x,coeffs):
     """ The default fit form for a continuum extrapolation is a power series in a^2.
 
     Args:
@@ -64,7 +64,7 @@ class Extrapolator(Fitter):
             logger.TBError('Please input order > 1.')
 
         if ansatz is None:
-            ansatz = powerSeries
+            ansatz = _powerSeries
         else:
             if self._order != 1:
                 logger.warn('Not using a power series ansatz, but still using custom order.')
