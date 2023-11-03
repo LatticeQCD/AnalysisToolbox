@@ -15,6 +15,7 @@ from latqcdtools.base.cleanData import restrictAtCol
 from latqcdtools.math.math import rel_check
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest
+from latqcdtools.base.utilities import unvector
 
 logger.set_log_level('INFO')
 
@@ -67,18 +68,18 @@ def testDensObs():
 
         # When the reference data were calculated, n_B used a different convention, because I was following a paper
         # that did not include a factor 1/3.
-        REFReN     = float( REFdata_sc[2]/3 )
-        REFImN     = float( REFdata_sc[3]/3 )
-        REFReN2    = float( REFdata_sc[4]/9 )
-        REFImN2    = float( REFdata_sc[5]/9 )
-        REFReDN    = float( REFdata_sc[6]/9 )
-        REFImDN    = float( REFdata_sc[7]/9 )
-        REFchi2l   = float( REFdata_sc[8]   )
-        REFchi2s   = float( REFdata_sc[9]   )
-        REFchi11ll = float( REFdata_sc[10]  )
-        REFchi11ls = float( REFdata_sc[11]  )
-        REFchi2B   = float( REFdata_sc[12]  )
-        REFchi2Q   = float( REFdata_sc[13]  )
+        REFReN     = unvector( REFdata_sc[2]/3 )
+        REFImN     = unvector( REFdata_sc[3]/3 )
+        REFReN2    = unvector( REFdata_sc[4]/9 )
+        REFImN2    = unvector( REFdata_sc[5]/9 )
+        REFReDN    = unvector( REFdata_sc[6]/9 )
+        REFImDN    = unvector( REFdata_sc[7]/9 )
+        REFchi2l   = unvector( REFdata_sc[8]   )
+        REFchi2s   = unvector( REFdata_sc[9]   )
+        REFchi11ll = unvector( REFdata_sc[10]  )
+        REFchi11ls = unvector( REFdata_sc[11]  )
+        REFchi2B   = unvector( REFdata_sc[12]  )
+        REFchi2Q   = unvector( REFdata_sc[13]  )
 
         ReN     = data[obs.getCol('Re','NB')][iconf]
         ImN     = data[obs.getCol('Im','NB')][iconf]
