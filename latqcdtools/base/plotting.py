@@ -456,7 +456,7 @@ def plot_file(filename, xcol=1, ycol=2, yecol=None, xecol=None, func = None, fun
         **params: Additional parameters that can be set.
     """
     fill_param_dict(params)
-    data = readTable(filename)
+    data = readTable(filename,dtype=str)
     if xcol is not None:
         xdata = np.array(data[xcol - 1], dtype = float)
     else:
