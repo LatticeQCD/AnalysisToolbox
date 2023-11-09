@@ -12,7 +12,7 @@ from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, 
 from latqcdtools.base.check import checkDomain
 
 
-def massStringToFloat(string):
+def _massStringToFloat(string):
     if string is None:
         return None
     else:
@@ -87,8 +87,8 @@ class latticeParams:
                 logger.TBError('Nf=2+1 expects only 2 mass parameters.')
             self.cml  = mass1
             self.cms  = mass2
-            self.ml   = massStringToFloat(mass1)
-            self.ms   = massStringToFloat(mass2)
+            self.ml   = _massStringToFloat(mass1)
+            self.ms   = _massStringToFloat(mass2)
             self.cm   = None
             self.cpre = None
             self.m    = None
@@ -97,9 +97,9 @@ class latticeParams:
             self.cml  = mass1
             self.cms  = mass2
             self.cmc  = mass3
-            self.ml   = massStringToFloat(mass1)
-            self.ms   = massStringToFloat(mass2)
-            self.mc   = massStringToFloat(mass3)
+            self.ml   = _massStringToFloat(mass1)
+            self.ms   = _massStringToFloat(mass2)
+            self.mc   = _massStringToFloat(mass3)
             self.cm   = None
             self.cpre = None
             self.m    = None
@@ -113,8 +113,8 @@ class latticeParams:
             self.ms   = None
             self.cm   = mass1
             self.cpre = mass2
-            self.m    = massStringToFloat(mass1)
-            self.pre  = massStringToFloat(mass2)
+            self.m    = _massStringToFloat(mass1)
+            self.pre  = _massStringToFloat(mass2)
         if (self.ml is not None) and (self.ms is not None):
             self.msml=int(round(self.ms/self.ml))
         if (self.beta<1.) or (10.<self.beta):

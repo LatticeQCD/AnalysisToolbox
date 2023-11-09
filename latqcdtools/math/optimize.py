@@ -18,7 +18,6 @@ from latqcdtools.base.utilities import envector
 opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
 
 # This order is not necessarily optimal.
-
 root_methods = ['hybr','lm','broyden1','broyden2','anderson','diagbroyden','krylov']
 
 

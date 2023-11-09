@@ -10,7 +10,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.statistics.statistics import error_prop, error_prop_func, plot_func
 from latqcdtools.physics.constants import M_mu_phys 
 import latqcdtools.base.logger as logger
@@ -52,6 +52,8 @@ def K_G(data):
 
 def testErrorProp():
 
+    lpass = True
+
     x_test = [0.5, 0.1, 2]
     a      = 1
     b      = 2
@@ -62,16 +64,15 @@ def testErrorProp():
     res_true = err_func(x_test, [1,2], [a_err,b_err], opt)
 
     res = error_prop_func(x_test, func, params=[1,2], params_err=[a_err,b_err], args=(opt,))
-    print_results(res, res_true, text = "Error_prop using numerical derivative")
+    lpass *= print_results(res, res_true, text = "Error_prop using numerical derivative")
 
     res = error_prop_func(x_test, func, grad=grad, params=[1,2], params_err=[a_err,b_err], args=(opt,))
-    print_results(res, res_true, text = "Error_prop using analytic gradient")
+    lpass *= print_results(res, res_true, text = "Error_prop using analytic gradient")
 
-    plot_func(func, params = (a,b), args=(opt,), func_err = err_func, params_err=[a_err,b_err], xmin=-1, xmax=1)
-    plot_func(func, params = (a,b), args=(opt,), params_err = [a_err,b_err], xmin=-1, xmax=1)
-    plot_func(func, params = (a,b), args=(opt,), params_err = [a_err,b_err], grad = grad,
-              title = "Please check if all error bands are the same", xmin=-1,xmax=1)
-
+    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), func_err = err_func, params_err=[a_err,b_err])
+    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), params_err = [a_err,b_err]) 
+    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), params_err = [a_err,b_err], grad = grad,
+              title = "Please check if all error bands are the same")
     plt.savefig("errorprop.pdf")
 
     amean, aerr = 0.09, 0.001
@@ -79,7 +80,9 @@ def testErrorProp():
     REFmean     = 176798.90810433426
     REFerr      = 21366.184730206216
 
-    print_results(mean, REFmean, err, REFerr, text = "Test on BM kernel.")
+    lpass *= print_results(mean, REFmean, err, REFerr, text = "Test on BM kernel.")
+
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

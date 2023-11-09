@@ -8,7 +8,8 @@
 
 import numpy as np
 from latqcdtools.statistics.fitting import do_fit, try_fit, Fitter
-from latqcdtools.math.math import print_results, rel_check
+from latqcdtools.math.math import rel_check
+from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import timer
 from latqcdtools.statistics.statistics import std_mean
@@ -109,6 +110,7 @@ EPSILON=1e-4
 def testFit():
 
     timey = timer()
+    lpass = True
 
     logger.info("Testing quadradic fit with expansion of parameters...")
 
@@ -119,19 +121,19 @@ def testFit():
 
 
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="TNC", grad = grad_fit_func, norm_err_chi2=True)
-    print_results(res, res_true, res_err, res_err_true, "Exact TNC",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Exact TNC",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="L-BFGS-B", derive_chisq = True, norm_err_chi2=True)
-    print_results(res, res_true, res_err, res_err_true,"Numerical L-BFGS-B using built-in derivative",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true,"Numerical L-BFGS-B using built-in derivative",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="SLSQP", derive_chisq= True, norm_err_chi2=True)
-    print_results(res, res_true, res_err, res_err_true,"Numerical SLSQP using built-in derivative",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true,"Numerical SLSQP using built-in derivative",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="Powell", norm_err_chi2=True)
-    print_results(res, res_true, res_err, res_err_true, "Powell quadratic ",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Powell quadratic ",prec=EPSILON)
 
 
 
@@ -147,26 +149,26 @@ def testFit():
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
                                      args=(64,), norm_err_chi2=True, algorithm="curve_fit")
-    print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, np.diag(edata)**2, [1, 1], grad=grad_one_state,
                                      hess=hess_one_state, args=(64,), norm_err_chi2=True,
                                      algorithm="curve_fit")
-    print_results(res, res_true, res_err, res_err_true, "Diagonal correlation matrix",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Diagonal correlation matrix",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = False,
                                      norm_err_chi2=True, algorithm="curve_fit")
-    print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit with difference quotient applied on chisquare"
-                  ,prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit with difference quotient applied on chisquare",
+                           prec=EPSILON)
 
 
     # Numerical derivative gives a slightly different result
     res_err_true = [5.0425819803e-08, 8.38114689761e-05]
     res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = True,
                                      norm_err_chi2=True, algorithm="curve_fit", )
-    print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
 
 
     xdata, data, nconfs = readCorrelatorTable("corr_pure.dat",1,2)
@@ -181,22 +183,20 @@ def testFit():
                 cov_test = False
                 logger.info("cov[" + str(i) + "," + str(j) + "] = " + str(cov[i, j])
                         + " != cov_true[" + str(i) + "," + str(j) + "] = " + str(cov_true[i, j]))
-    if cov_test:
-        logger.TBPass("Covariance matrix test")
-    else:
+    if not cov_test:
         logger.TBFail("Covariance matrix test")
-
+        lpass = False
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
                              hess=hess_one_state, args=(64,), norm_err_chi2=True,algorithm="curve_fit")
     res_true = [4.988713e-05, 2.950030e-01]
     res_err_true = [1.176005e-06, 5.573209e-04]
-    print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, cov / nconfs, res_true, args=(64,),
                              algorithm = "curve_fit", norm_err_chi2=True)
-    print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit for correlated data",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit for correlated data",prec=EPSILON)
 
 
 
@@ -208,7 +208,7 @@ def testFit():
     res, res_err, _, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err, args=(64,),
                                     norm_err_chi2=True, detailedInfo=True,
                                     algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
-    print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
 
 
@@ -236,7 +236,9 @@ def testFit():
         fitter.plot_eig()
         plt.show()
 
-    logger.TBPass("No problems encountered.")
+
+    concludeTest(lpass)
+
 
 if __name__ == '__main__':
     testFit()

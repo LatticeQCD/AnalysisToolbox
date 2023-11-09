@@ -42,17 +42,17 @@ def massRatioToMasses(msml, Nt, cbeta, Nf='21'):
             cm1=massTable[cbeta][0]
             cm2=massTable[cbeta][1]
         except KeyError:
-            badbeta(cbeta,msml,Nt,Nf)
+            _badbeta(cbeta,msml,Nt,Nf)
     return cm1, cm2
 
 
-def badbeta(beta,msml,Nt,Nf):
+def _badbeta(beta,msml,Nt,Nf):
     logger.TBError("No entries for beta =",beta,", Nf =",Nf,", Nt =",Nt,", msml =",msml)
-def badmsml(msml,Nt,Nf):
+def _badmsml(msml,Nt,Nf):
     logger.TBError("No entries for Nf =",Nf,", Nt =",Nt,", msml =",msml)
-def badNt(Nt,Nf):
+def _badNt(Nt,Nf):
     logger.TBError("No entries for Nf =",Nf,", Nt =",Nt)
-def badNf(Nf):
+def _badNf(Nf):
     logger.TBError("No entries for Nf =",Nf)
 
 
@@ -69,7 +69,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6850': ['00157', '0424'],
                          '6910': ['00148', '0401']}
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
 
         elif Nt==8:
 
@@ -118,7 +118,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6500': ['00228', '0614'],
                          '6640': ['00196', '0528']}
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
 
         elif Nt==6:
             if msml==27:
@@ -133,7 +133,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '5850': ['005274','1424'],
                 }
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
         
         elif Nt==4:
             if msml==27:
@@ -150,10 +150,10 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6000': ['004215', '1138'],
                          '6025': ['004074', '1100']} 
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
 
         else:
-            badNt(Nt,Nf) 
+            _badNt(Nt,Nf) 
 
     elif Nf=='3':
 
@@ -171,7 +171,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '6285': ['00293', '07911'],
                          '6315': ['00281', '07587']}
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
 
         elif Nt==16:
 
@@ -179,10 +179,10 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                 Table = {'6050': ['00394', '1064'],
                          '6315': ['00281', '07587']}
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
 
         else:
-            badNt(Nt,Nf) 
+            _badNt(Nt,Nf) 
 
     elif Nf=='5':
 
@@ -209,13 +209,13 @@ def quarkMassTableHISQ(Nf, Nt, msml):
                          '4690': ['002', '05'],
                          '4700': ['002', '05']} 
             else:
-                badmsml(msml,Nt,Nf)
+                _badmsml(msml,Nt,Nf)
 
         else:
-            badNt(Nt,Nf) 
+            _badNt(Nt,Nf) 
 
     else:
-        badNf(Nf) 
+        _badNf(Nf) 
 
     return Table
 

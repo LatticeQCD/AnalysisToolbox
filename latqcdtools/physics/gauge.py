@@ -9,7 +9,8 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.math.SU3 import SU3, id_3
+from latqcdtools.math.SU3 import SU3
+from latqcdtools.math.math import id_3
 from latqcdtools.base.speedify import compile, parallel_reduce
 from latqcdtools.base.check import checkType
 

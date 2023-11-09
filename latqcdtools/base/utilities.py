@@ -12,6 +12,44 @@ import time, re, datetime, os
 import latqcdtools.base.logger as logger
 
 
+# For byte conversions
+_bytePrefix = { "Q"  : 1024**10,
+                "R"  : 1024**9,
+                "Y"  : 1024**8,  
+                "Z"  : 1024**7, 
+                "E"  : 1024**6, 
+                "P"  : 1024**5, 
+                "T"  : 1024**4, 
+                "G"  : 1024**3, 
+                "M"  : 1024**2, 
+                "k"  : 1024, 
+                "1"  : 1,
+                1    : 1 }
+
+
+def _getPrefix(byteString):
+    if byteString=="B": 
+        prefix=1
+    else:
+        prefix=byteString[0]
+    return prefix
+
+
+def _convert(text):
+    if text.isdigit():
+        return int(text)
+    else:
+        return text.lower()
+
+
+def _alphanum_key(key):
+    """ Splits the string `key` at any point where there is one or more consecutive digits. 
+    The regular expression `([0-9]+)` is used to match one or more digits. The parentheses `()` 
+    capture the matched digits as separate elements. For example, if `key` were 
+    `'abc123def456ghi'`, the resulting list would be `['abc', '123', 'def', '456', 'ghi']`. """
+    return [_convert(c) for c in re.split('([0-9]+)', key)]
+
+
 # ---------------------------------------------------------------------------------- MAKE INTERNAL FUNCTIONS MORE SMOOTH
 
 
@@ -66,6 +104,15 @@ def envector(*args):
             obj = np.array([obj])
         result += (obj,)
     return unvector(result)
+
+
+def toNumpy(*args):
+    result = ()
+    for obj in args:
+        if isArrayLike(obj):
+            obj = np.array(obj)
+        result += (obj,)
+    return result
 
 
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
@@ -168,10 +215,8 @@ def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
 
 
 def naturalSort(l):
-    """ Sort list of strings so that, e.g. '10' comes after '9' rather than before it. """
-    convert = lambda text: int(text) if text.isdigit() else text.lower()
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
-    return sorted(l, key=alphanum_key)
+    """Sort list of strings so that, e.g. '10' comes after '9' rather than before it."""
+    return sorted(l, key=_alphanum_key)
 
 
 def find_nearest_idx(array, value):
@@ -201,34 +246,21 @@ def deleteFile(target):
     logger.warn('Unable to remove file',target)
 
 
-# For byte conversions
-bytePrefix = { "Q"  : 1024**10,
-               "R"  : 1024**9,
-               "Y"  : 1024**8,  
-               "Z"  : 1024**7, 
-               "E"  : 1024**6, 
-               "P"  : 1024**5, 
-               "T"  : 1024**4, 
-               "G"  : 1024**3, 
-               "M"  : 1024**2, 
-               "k"  : 1024, 
-               "1"  : 1,
-               1    : 1 }
-
-
-def getPrefix(byteString):
-    if byteString=="B": 
-        prefix=1
-    else:
-        prefix=byteString[0]
-    return prefix
-
-
 def byteConvert(x,b1,b2):
-    p1=getPrefix(b1)
-    p2=getPrefix(b2)
-    num=bytePrefix[p1]
-    den=bytePrefix[p2]
+    """ Convert between bytes given scientific prefixes.
+
+    Args:
+        x (float): Bytes in original units. 
+        b1 (str): Original units. 
+        b2 (str): Target units.
+
+    Returns:
+        float: Bytes in target units. 
+    """
+    p1=_getPrefix(b1)
+    p2=_getPrefix(b2)
+    num=_bytePrefix[p1]
+    den=_bytePrefix[p2]
     return x*num/den
 
 

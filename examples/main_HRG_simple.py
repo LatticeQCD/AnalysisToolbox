@@ -5,7 +5,7 @@ from latqcdtools.base.readWrite import readTable, writeTable
 from latqcdtools.base.initialize import initialize, finalize
 
 # Write terminal output to log file. Includes git commit hash.
-initialize('HRG.log')
+initialize('example_HRG.log')
 
 # Pick a temperature range in MeV
 T = np.arange(100, 166, 1)

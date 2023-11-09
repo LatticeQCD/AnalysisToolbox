@@ -154,9 +154,9 @@ use</p>
 Other plot style options besides <code class="docutils literal notranslate"><span class="pre">plot_dots</span></code> include <code class="docutils literal notranslate"><span class="pre">plot_lines</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_fill</span></code>, and <code class="docutils literal notranslate"><span class="pre">plot_band</span></code>.</p>
 <p>If you are using a single python script to plot multiple files, python will remember the labels
 from the last plot for some reason. Thankfully there is a command which addresses this problem:
-After you have written your code to generate some plot <code class="docutils literal notranslate"><span class="pre">plot1</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">clear_legend_labels()</span></code>
-before your code to generate <code class="docutils literal notranslate"><span class="pre">plot2</span></code>. This will reset the legend and generate your correct
-plot as expected.</p>
+After you have written your code to generate some plot <code class="docutils literal notranslate"><span class="pre">plot1</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">clearPlot()</span></code>
+before your code to generate <code class="docutils literal notranslate"><span class="pre">plot2</span></code>. This will reset all the plot defaults and legend handles
+to get you ready for your next figure.</p>
 </section>
 <section id="some-options-you-might-commonly-require">
 <h2>Some options you might commonly require<a class="headerlink" href="#some-options-you-might-commonly-require" title="Permalink to this headline"></a></h2>
@@ -228,17 +228,15 @@ Use</p>
 </div>
 <p>Note that the relative order of <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.savefig()</span></code> has changed.</p>
 </section>
-<section id="adding-a-text-box">
-<h3>Adding a text box<a class="headerlink" href="#adding-a-text-box" title="Permalink to this headline"></a></h3>
+<section id="adding-preliminary">
+<h3>Adding PRELIMINARY<a class="headerlink" href="#adding-preliminary" title="Permalink to this headline"></a></h3>
 <p>Do you have a preliminary result, which requires you to write PRELIMINARY in? You can accomplish
 this with</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xcoordinate</span><span class="p">,</span> <span class="n">ycoordinate</span><span class="p">,</span> <span class="s1">&#39;PRELIMINARY&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">preliminary</span><span class="p">(</span><span class="n">xcoordinate</span><span class="p">,</span> <span class="n">ycoordinate</span><span class="p">)</span> 
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">xcoordinate</span></code> and <code class="docutils literal notranslate"><span class="pre">ycoordinate</span></code> are measured according to the axes themselves; for example if
-my x-axis is temperature and I want to put the text at 150 MeV, I just set <code class="docutils literal notranslate"><span class="pre">xcoordinate=150</span></code>.
-Further options for <code class="docutils literal notranslate"><span class="pre">text</span></code> can be found
-<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html">here</a>.</p>
+my x-axis is temperature and I want to put the text at 150 MeV, I just set <code class="docutils literal notranslate"><span class="pre">xcoordinate=150</span></code>.</p>
 </section>
 <section id="rescaling-an-axis">
 <h3>Rescaling an axis<a class="headerlink" href="#rescaling-an-axis" title="Permalink to this headline"></a></h3>

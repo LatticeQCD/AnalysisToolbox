@@ -78,25 +78,25 @@ def writeTable(filename,*args,**kwargs):
             data += (col_arr.real,)
             data += (col_arr.imag,)
             form += '  %15.8e  %15.8e'
-            dtypes.append( (lab(colno), float) )
-            dtypes.append( (lab(colno+1), float) )
+            dtypes.append( (_lab(colno), float) )
+            dtypes.append( (_lab(colno+1), float) )
             colno += 2
         elif isinstance(col_arr[0],str):
             data += (col_arr,)
             form += '  %12s'
-            dtypes.append( (lab(colno), 'U12' ) ) # 12 characters
+            dtypes.append( (_lab(colno), 'U12' ) ) # 12 characters
             colno += 1
         else:
             data += (col_arr,)
             form += '  %15.8e'
-            dtypes.append( (lab(colno), float) )
+            dtypes.append( (_lab(colno), float) )
             colno += 1
     ab = np.zeros(data[0].size, dtype=dtypes)
     for i in range(colno):
-        ab[lab(i)] = data[i]
+        ab[_lab(i)] = data[i]
     np.savetxt(filename, ab, fmt=form, header=head)
 
 
-def lab(num):
+def _lab(num):
     """ Create a short string label for each column of a data table. Needed for writeTable. """
     return 'var' + str(num)

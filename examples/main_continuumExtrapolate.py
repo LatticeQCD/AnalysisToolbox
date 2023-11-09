@@ -1,7 +1,6 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.printErrorBars import get_err_str
 from latqcdtools.base.initialize import initialize, finalize
 from latqcdtools.math.num_deriv import diff_deriv
 from latqcdtools.math.spline import getSpline
@@ -11,7 +10,7 @@ from latqcdtools.physics.continuumExtrap import continuumExtrapolate
 from latqcdtools.physics.constants import r0_phys
 from latqcdtools.physics.lattice_params import latticeParams
 
-initialize('cont.log')
+initialize('example_continuumExtrapolate.log')
 
 Nts         = [6,8,10,12,14,16,18,20]
 Tds, Tderrs = [], []

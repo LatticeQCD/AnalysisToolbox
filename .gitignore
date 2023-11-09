@@ -11,6 +11,7 @@ s_div*
 *.tex
 examples/chi2B.txt
 .vscode/*
+venv/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

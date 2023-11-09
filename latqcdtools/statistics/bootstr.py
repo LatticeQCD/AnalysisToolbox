@@ -8,16 +8,25 @@
 
 
 import numpy as np
-from numpy.random import randint, normal, multivariate_normal
 from latqcdtools.statistics.statistics import meanArgWrapper, std_mean, std_dev, std_median, dev_by_dist
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.initialize import DEFAULTSEED
+from latqcdtools.base.check import checkType
+
+
+def _autoSeed(seed):
+    """ We use seed=None to flag the seed should be automatically chosen. The problem is that we need
+    seed to be an integer when enforcing that different bootstrap samples use different seeds. """
+    if seed is None:
+        return np.random.randint(0,DEFAULTSEED)
+    else:
+        return seed
 
 
 def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for_obs, i, my_seed):
     """ Recursive function to fill the sample. """
 
-    np.random.seed(my_seed+i)
+    rng = np.random.default_rng(my_seed+i)
     if axis + 1 == conf_axis:
         numb_observe = len(data)
         if sample_size == 0:
@@ -26,9 +35,9 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
             sample_sizes = [sample_size]*len(data)
 
         if not same_rand_for_obs:
-            randints = [randint(0, len(data[x]), size=sample_sizes[x]) for x in range(numb_observe)]
+            randints = [rng.integers(0, len(data[x]), size=sample_sizes[x]) for x in range(numb_observe)]
         else:
-            tmp_rand = randint(0, len(data[0]), size=sample_sizes[0])
+            tmp_rand = rng.integers(0, len(data[0]), size=sample_sizes[0])
             randints = [tmp_rand]*numb_observe
         for x in range(numb_observe):
             sample_data.append(np.array(data[x])[randints[x]])
@@ -38,14 +47,6 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
         for j in range(len(data)):
             sample_data.append([])
             recurs_append(data[j], sample_data[j], axis + 1, conf_axis, sample_size, same_rand_for_obs, i, my_seed)
-
-
-def setSeed(seed):
-    """ Generate a time-dependent my_seed if seed is None. """
-    if seed is not None:
-        return seed
-    else:
-        return randint(0, DEFAULTSEED)
 
 
 class nimbleBoot:
@@ -60,17 +61,16 @@ class nimbleBoot:
         self._same_rand_for_obs=same_rand_for_obs
         self._conf_axis=conf_axis
         self._return_sample=return_sample
-        self._seed=seed
+        self._seed=_autoSeed(seed)
+        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._args=args
-        
         self._nproc = nproc 
-        my_seed     = setSeed(self._seed)
 
         if  self._data.ndim == 1:
             self._conf_axis = 0
 
-        self._sampleval = parallel_function_eval(self.getBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(my_seed,))
+        self._sampleval = parallel_function_eval(self.getBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(self._seed,))
 
         if not self._err_by_dist:
             self._mean = std_mean(self._sampleval)
@@ -85,12 +85,12 @@ class nimbleBoot:
     def getBootstrapEstimator(self,i,my_seed):
         sample_data = []
         if self._conf_axis == 0: # Case of one dimensional array is special
-            np.random.seed(my_seed+i)
+            rng = np.random.default_rng(my_seed+i)
             if self._sample_size == 0:
                 sample_size_tmp = len(self._data)
             else:
                 sample_size_tmp = self._sample_size
-            randints = randint(0, len(self._data), size=sample_size_tmp)
+            randints = rng.integers(0, len(self._data), size=sample_size_tmp)
             sample_data = self._data[randints]
 
         else:
@@ -168,6 +168,14 @@ class nimbleGaussianBoot:
     def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed,
                  err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
 
+        checkType(numb_samples,int)
+        checkType(sample_size,int)
+        checkType(same_rand_for_obs,bool)
+        checkType(return_sample,bool)
+        checkType(err_by_dist,bool)
+        checkType(useCovariance,bool)
+        checkType(nproc,int)
+        checkType(asym_err,bool)
         self._func=func
         self._data=np.array(data)
         self._data_std_dev=np.array(data_std_dev)
@@ -175,18 +183,16 @@ class nimbleGaussianBoot:
         self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._return_sample=return_sample
-        self._seed=seed
+        self._seed=_autoSeed(seed)
+        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._useCovariance=useCovariance
         self._Covariance=Covariance
         self._args=args
-
         self._numb_observe = len(data)
-
         self._nproc = nproc 
-        my_seed     = setSeed(self._seed)
 
-        self._sampleval=parallel_function_eval(self.getGaussianBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(my_seed,))
+        self._sampleval=parallel_function_eval(self.getGaussianBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(self._seed,))
 
         if not self._err_by_dist:
             self._mean = std_mean(self._sampleval)
@@ -202,42 +208,42 @@ class nimbleGaussianBoot:
         sample_data = []
         if not self._same_rand_for_obs:
             for k in range(self._numb_observe):
-                np.random.seed(my_seed+i+(k+1)*self._numb_samples)
+                rng=np.random.default_rng(my_seed+i+(k+1)*self._numb_samples)
                 if not self._useCovariance:
                     if self._sample_size == 1:
-                        sample_data.append(normal(self._data[k], self._data_std_dev[k]))
+                        sample_data.append(rng.normal(self._data[k], self._data_std_dev[k]))
                     else:
-                        sample_data.append(normal(self._data[k], self._data_std_dev[k], self._sample_size))
+                        sample_data.append(rng.normal(self._data[k], self._data_std_dev[k], self._sample_size))
                 else:
                     if self._sample_size == 1:
                         if self._Covariance is None:
-                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2)))
+                            sample_data.append(rng.multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2)))
                         else:
-                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k]))
+                            sample_data.append(rng.multivariate_normal(self._data[k], self._Covariance[k]))
                     else:
                         if self._Covariance is None:
-                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2), self._sample_size))
+                            sample_data.append(rng.multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2), self._sample_size))
                         else:
-                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k], self._sample_size))
+                            sample_data.append(rng.multivariate_normal(self._data[k], self._Covariance[k], self._sample_size))
         else:
-            np.random.seed(my_seed+i)
+            rng=np.random.default_rng(my_seed+i)
             for k in range(self._numb_observe):
                 if not self._useCovariance:
                     if self._sample_size == 1:
-                        sample_data.append(normal(self._data[k], self._data_std_dev[k]))
+                        sample_data.append(rng.normal(self._data[k], self._data_std_dev[k]))
                     else:
-                        sample_data.append(normal(self._data[k], self._data_std_dev[k], self._sample_size))
+                        sample_data.append(rng.normal(self._data[k], self._data_std_dev[k], self._sample_size))
                 else:
                     if self._sample_size == 1:
                         if self._Covariance is None:
-                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2)))
+                            sample_data.append(rng.multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2)))
                         else:
-                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k]))
+                            sample_data.append(rng.multivariate_normal(self._data[k], self._Covariance[k]))
                     else:
                         if self._Covariance is None:
-                            sample_data.append(multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2), self._sample_size))
+                            sample_data.append(rng.multivariate_normal(self._data[k], np.diag(self._data_std_dev[k]**2), self._sample_size))
                         else:
-                            sample_data.append(multivariate_normal(self._data[k], self._Covariance[k], self._sample_size))
+                            sample_data.append(rng.multivariate_normal(self._data[k], self._Covariance[k], self._sample_size))
 
         sample_data = np.array(sample_data)
 

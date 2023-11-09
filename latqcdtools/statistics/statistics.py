@@ -5,20 +5,19 @@
 #
 # A collection of basic methods for statistical analysis. The following methods have been adapted from software of
 # Bernd Berg, Markov Chain Monte Carlo and their Statistical Analysis, World Scientific, 2004, ISBN=978-981-3106-37-6:
-#     gaudif, studif, jackknifeFrom, tauint, tauintj, getTauInt
+#     gaudif, studif
 #
 
 
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.linalg import inv
 from scipy.special import betainc, erf
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet
-from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, clearPlot, plot_file
-from latqcdtools.base.utilities import envector, isHigherDimensional
+from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines
+from latqcdtools.base.utilities import isHigherDimensional
 from latqcdtools.base.cleanData import clipRange
-from latqcdtools.base.printErrorBars import get_err_str
+from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 
 
@@ -79,23 +78,6 @@ def std_err(data, axis = 0):
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
 
 
-# TODO: should this be true or false?
-def std_cov(data):
-    """ If data is a table indexed by observable and measurement number, calculate covariance between observables. """
-    data = np.asarray(data)
-    if not data.ndim==2:
-        logger.TBError('Expected 2d table.')
-    return np.cov( data, bias=True )
-
-
-def jack_mean_and_err(data):
-    data   = np.asarray(data)
-    n      = len(data)
-    mean   = np.mean(data)
-    err    = np.sqrt( (n-1)*np.mean((data-mean)**2) )
-    return mean, err
-
-
 def expandArgs(func, x, params=(), args=()):
     """ In general we distinguish between parameters and arguments. Parameters should be passed
     together as a collection, e.g. as a tuple, list, or np.array. Other function arguments can
@@ -117,12 +99,40 @@ def expandArgs(func, x, params=(), args=()):
         return func(x, params, *args)
 
 
+def checkDomain(domain):
+    """ Some methods require that you do something over an interval, which we refer to in this module as
+    a 'domain'. This checks the domain makes sense.
+
+    Args:
+        domain (tuple)
+    """
+    checkType(domain,tuple)
+    if len(domain) != 2:
+        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].')
+    if domain[0]>=domain[1]:
+        logger.TBError('Must have domain[1]>domain[0].')
+
+
 def checkPrior(prior,prior_err):
     """ Make sure prior and prior_err status are compatible. """
     if prior is None and prior_err is not None:
         logger.TBError('prior = None, prior_err != None')
     if prior_err is None and prior is not None:
         logger.TBError('prior != None, prior_err = None')
+
+
+def checkTS(ts):
+    """ Some methods require 1-d time series. This checks that the type, dimensionality,
+    and length are appropriate.
+
+    Args:
+        ts (array-like): time series 
+    """
+    checkType(ts,'array')
+    if isHigherDimensional(ts):
+        logger.TBError('Expected 1-d time series.')
+    if len(ts) < 2:
+        logger.TBError('Time series needs at least two measurements.')
 
 
 def countParams(func,params):
@@ -257,65 +267,74 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
 
 
-#https://mathoverflow.net/questions/11803/unbiased-estimate-of-the-variance-of-a-weighted-mean
-#In above source, the weights are normalized. We normalize like Wikipedia
-#https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
+def pearson(x,y):
+    """ Get the Pearson correlation coefficient between the time series x and y.
+
+    Args:
+        x (array-like): _description_
+        y (array-like): _description_
+
+    Returns:
+        float: R 
+    """
+    checkTS(x)
+    checkTS(y)
+    return np.corrcoef(x,y)[0,1]
 
 
-def weighted_mean(data, weights):
-    """ Compute the weighted mean. """
-    data    = np.asarray(data)
-    weights = np.asarray(weights)
-    return np.sum(data.dot(weights))/np.sum(weights)
+def weighted_mean(data, err):
+    """ Compute the weighted mean. Here the weights are Gaussian error bars.
+    See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
+
+    Args:
+        data (array-like)
+        errcov (array-like): error if 1d or cov if 2d. 
+
+    Returns:
+        float: weighted mean 
+    """
+    data = np.array(data)
+    weights  = 1/np.array(err)**2
+    return np.sum( weights @ data )/np.sum(weights)
 
 
-def weighted_mean_variance(errors, weights = None):
-    """ Compute the variance of the weighted mean based on error propagation. This is only valid if the error bars of
-    the data are of reasonable size, meaning that most of the error bars include the mean value. If you expect that
-    there are unknown systematic errors, you should use unbiased_mean_variance instead.
-    
-    This tends to yield an error bar that is tighter than if you were to simply combine two data sets directly, then
-    calculate the mean and error on that. For instance in the case where you have two estimates, one noisy and one
-    clean, the noisy data will make the clean data also noisy. Taking the weighted mean instead gives preference
-    to the clean estimate.
+def weighted_variance(err):
+    """ Get variance of above weighted mean, when the weights are statistical errors. 
 
     Parameters
     ----------
 
-    errors: array_like
+    err: array_like
         The errors of the data points.
-    weights: array_like, optional, default = None
-        If you do not use weights = 1/errors**2, you can pass additional weights.
-        If None, weights = computed as 1/errors**2. 
     """
-    errors = np.asarray(errors)
-    if weights is None:
-        weights = 1 / errors**2
-    return np.sum(weights**2 * errors**2) / np.sum(weights)**2
+    weights = 1/np.array(err)**2
+    return 1/np.sum(weights)
 
 
-def biased_sample_variance(data, weights):
+def biased_sample_variance(data, err):
     """ Compute the biased weighted sample variance, i.e. the biased variance of an individual measurement and not the
     variance of the mean. """
-    mean = weighted_mean(data, weights)
+    mean = weighted_mean(data, err)
+    weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     return weights.dot((data - mean)**2) / V1
 
 
-def unbiased_sample_variance(data, weights):
+def unbiased_sample_variance(data, err):
     """ Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
     the variance of the mean. Do not use this function if your weights are frequency weights. """
+    weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
 
 
-def unbiased_mean_variance(data, weights):
+def unbiased_mean_variance(data, err):
     """ Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
     weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
     constructed using the deviations of the individual data points. """
     data    = np.asarray(data)
-    weights = np.asarray(weights)
+    weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
@@ -419,21 +438,21 @@ def error_prop_func(x, func, params, params_err, grad=None, args=()):
     return error_prop(wrap_func, params, params_err, wrap_grad, args)[1]
 
 
-def error_budget(x, func, means, errors, grad=None, args=()):
-    if isHigherDimensional(errors):
-        logger.TBError('Covariance matrix not yet supported.')
-    # Strategy is to see separately contribution from each error
-    sigma_f0 = error_prop_func(x,func,means,errors,grad=grad,args=args)
-    sigma_fi = []
-    for i in range(len(errors)):
-        err_contrib    = np.zeros(len(errors))
-        err_contrib[i] = errors[i]
-        sigma_fi.append(error_prop_func(x,func,means,err_contrib,grad=grad,args=args))
-    sigma_fi = np.array(sigma_fi)
-    perc_fi = sigma_fi/sigma_f0
-    print(np.sum(perc_fi))
-    for i in range(len(errors)):
-        logger.info('x_'+str(i),':',round(perc_fi[i],4))
+#def error_budget(x, func, means, errors, grad=None, args=()):
+#    if isHigherDimensional(errors):
+#        logger.TBError('Covariance matrix not yet supported.')
+#    # Strategy is to see separately contribution from each error
+#    sigma_f0 = error_prop_func(x,func,means,errors,grad=grad,args=args)
+#    sigma_fi = []
+#    for i in range(len(errors)):
+#        err_contrib    = np.zeros(len(errors))
+#        err_contrib[i] = errors[i]
+#        sigma_fi.append(error_prop_func(x,func,means,err_contrib,grad=grad,args=args))
+#    sigma_fi = np.array(sigma_fi)
+#    perc_fi = sigma_fi/sigma_f0
+#    print(np.sum(perc_fi))
+#    for i in range(len(errors)):
+#        logger.info('x_'+str(i),':',round(perc_fi[i],4))
 
 
 def gaudif(x1,e1,x2,e2):
@@ -491,191 +510,32 @@ def studif(x1,e1,ndat1,x2,e2,ndat2):
         return 2-betainc(dof/2,1/2,x)
 
 
-def jackknifeFrom(x):
-    """ Create jackknife data from float list. The number of bins is the number of data.
-
-    INPUT:
-       x--List of data.
-
-    OUTPUT:
-      xj--List of jackknife data. """
-    x=np.array(x)
-    ndat=len(x)
-    if ndat<2:
-        logger.TBError("Need n>1.")
-    xj=1.0/(ndat-1.0)*(np.sum(x)-x)
-    return xj
-
-
-def tauint(nt,ts,xhat = None):
-    """ Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
-
-    INPUT:
-         nt--The largest you think tau_int could be.
-         ts--Time series array of measurments. Must be taken from equilibrium ensemble so that
-             time translation invariance holds. List must be in order of Markov chain generation.
-       xhat--True mean of time series (if you know it).
-
-    OUTPUT:
-      acint--List of integrated autocorrelation times. """
-    ndat=len(ts)
-    if ndat<2:
-        logger.TBError("Need ndat>1.")
-    if nt>=ndat:
-        logger.TBError("Need nt>ndat.")
-    if xhat is not None:
-        x=xhat
-    else:
-        x=std_mean(ts)
-    # Create array of autocovariance
-    acov=[]
-    for it in range(nt+1):
-        numt=ndat-it # number of pairs of time series elements separated by computer time it
-        c_it=0.
-        for i in range(numt):
-            c_it=c_it+(ts[i]-x)*(ts[i+it]-x)
-        c_it=c_it/numt
-        # Bias correction. This is needed for c(t) to be correct in the limit of uncorrelated data. In principle
-        # you don't know ahead of time whether your raw data are effectively correlated. The factor is ndat rather than
-        # ndat-it because ndat data points were used to calculate x, which is what matters for the bias.
-        if xhat is None:
-            c_it=c_it*ndat/(ndat-1.)
-        acov.append(c_it)
-    # Calculate integrated autocorrelation time
-    acint=[1.]
-    for it in range(1,nt+1):
-        acint.append( acint[it-1] + 2.*acov[it]/acov[0] )
-    return acint
-
-
-def tauintj(nt,nbins,ts,xhat = None):
-    """ Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
-
-    INPUT:
-          nt--The largest nt at which you think your estimate for tau_int could lie.
-       nbins--The number of jackknife bins.
-          ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
-              time translation invariance holds. List must be in order of markov chain generation
-        xhat--True mean of time series (if you know it).
-
-    OUTPUT:
-      acintj--2D list indexed by time, then bin number acintj[it][ibin] """
-    ndat=len(ts)
-    # The time series ought to have more than one element.
-    if ndat<2:
-        logger.TBError("Need ndat>1.")
-    # And there ought to be at least one jackknife bin.
-    if nbins<2:
-        logger.TBError("Need nbins>1.")
-    if xhat is not None:
-        x=xhat
-    else:
-        x=std_mean(ts)
-    # For each it, create a list of nbins jackknife measurements of the autocovariance. The measurements are an average
-    # over binsize data with separation it. Everything is stored in a 2D array acorj[it][ibin].
-    acorj=[]
-    for it in range(nt+1):
-        numt=ndat-it
-        binsize=int(numt/nbins)
-        acor=[0.]*nbins
-        # This is a check that we can't spill into the last bin
-        itmax=nbins*binsize-binsize
-        if it>=itmax:
-            logger.TBError("it>=itmax.")
-        for ibin in range(nbins):
-            i1=ibin*binsize
-            i2=(ibin+1)*binsize-1
-            for i in range(i1,i2+1):
-                acor[ibin]=acor[ibin]+(ts[i]-x)*(ts[i+it]-x)
-            acor[ibin]=acor[ibin]/binsize
-            # Bias correction
-            if xhat is None:
-                acor[ibin]=acor[ibin]*ndat/(ndat-1.)
-        acorj.append(jackknifeFrom(acor))
-    # Now make acintj
-    acintj=[[1.]*nbins]
-    for it in range(1,nt+1):
-        tauintbins=[]
-        for ibin in range(nbins):
-            tauintbins.append(acintj[it-1][ibin]+2.*acorj[it][ibin]/acorj[0][ibin])
-        acintj.append(tauintbins)
-    return acintj
-
-
-def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
-    """ Given a time series, return estimates for the integrated autocorrelation time and its error.
-
-    INPUT:
-         tpickMax--The largest nt where you think your estimate might become unreliable.
-            nbins--The number of jackknife bins (for estimating the error in tau_int)
-               ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
-                   time translation invariance holds. List must be in order of markov chain generation
-
-    OUTPUT:
-          tau_int--Estimate for integrated autocorrelation time.
-         tau_inte--Its (jackknife) error bar.
-      tau_intbias--Its bias.
-           itpick--The Monte Carlo separation at which this method found its estimate for tau_int. """
-
-    acoutfile=open(acoutfileName,'w')
-
-    # Get integrated autocorrelation time list and corresponding jackknife list.
-    acint  = np.array( tauint (tpickMax,ts,) )
-    acintj = np.array( tauintj(tpickMax,nbins,ts) )
-
-    # This block outputs time, tau_int, tau_int error and bias, then gives an estimate of tau_int. When tau_int
-    # decreases for the first time, we call that our estimate. This is because we know tau_int should be a monotonically
-    # increasing function of t.
-    lmonoton=True
-    tau_int=0.
-    tau_inte=-1
-    tau_intbias=-1
-    itpick=-1
-    for it in range(tpickMax+1):
-        acm, ace = jack_mean_and_err(acintj[it])
-        acbias=(nbins-1)*abs(acint[it]-acm)
-        acoutfile.write(str(it)+'\t'+str(acint[it])+'\t'+str(ace)+'\t'+str(acbias)+'\n')
-        if lmonoton:
-            if not acint[it]<tau_int:
-                tau_int=acint[it]
-                tau_inte=ace
-                tau_intbias=acbias
-                itpick=it
-            else:  # acint[it] < tau_int ==> tau_int decreased
-                lmonoton=False
-    acoutfile.close()
-
-    if showPlot:
-        clearPlot()
-        plot_file(acoutfileName, xcol=1, ycol=2, yecol=3, xlabel='conf', ylabel='$\\tau_{\\rm int}$')
-        plt.show()
-
-    return tau_int, tau_inte, tau_intbias, itpick
-
-
-
-def plot_func(func, params=(), args=(), func_err=None, params_err=(), grad = None, swapXY=False, npoints=1000, **kwargs):
+def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
+              grad = None, swapXY=False, npoints=1000, **kwargs ):
     """ Plot a function along with its error bands.
 
     Args:
         func (func)
+        domain (tuple): Domain of function. 
         params (tuple, optional): Model parameters. Defaults to ().
         params_err (tuple, optional): Error in model parameters. Defaults to ().
         args (tuple, optional): Optional function arguments. Defaults to ().
         func_err (func, optional): Explicit error function. Defaults to None.
-        grad (_type_, optional): Explicit function gradient to compute error. Defaults to None.
+        grad (func, optional): Explicit function gradient to compute error. Defaults to None.
         swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
         npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
     """
     fill_param_dict(kwargs)
     kwargs['marker'] = None
-    xmin = kwargs['xmin']
-    xmax = kwargs['xmax']
-    if (xmin is None) or (xmax is None):
-        logger.TBError('I need to know xmin and xmax.')
+    checkDomain(domain)
+    xmin = domain[0] 
+    xmax = domain[1] 
 
     xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
-    ydata = func(xdata, params, *args)
+    try:
+        ydata = func(xdata, params, *args)
+    except TypeError:
+        ydata = func(xdata, *params, *args)
 
     # Received an explicit error function:
     if func_err is not None:
@@ -699,33 +559,3 @@ def plot_func(func, params=(), args=(), func_err=None, params_err=(), grad = Non
             return plot_lines(ydata, xdata, yedata=None, xedata=None, **kwargs)
         else:
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
-
-
-def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, testMode=True):
-    """ Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks
-        to see whether res and res_true are statistically compatible. """
-
-    test = True
-
-    res          = envector(res)
-    res_true     = envector(res_true)
-    res_err      = envector(res_err)
-    res_err_true = envector(res_err_true)
-
-    for i in range(len(res)):
-
-        q = gaudif(res[i], res_err[i], res_true[i], res_err_true[i])
-
-        if q < qcut:
-            test = False
-            resstr     = get_err_str(res[i]     ,res_err[i])
-            restruestr = get_err_str(res_true[i],res_err_true[i])
-            logger.info("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
-
-    if testMode:
-        if test:
-            logger.TBPass(text)
-        else:
-            logger.TBFail(text)
-    else:
-        logger.info(text)

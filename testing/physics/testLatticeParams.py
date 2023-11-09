@@ -9,7 +9,7 @@
 from latqcdtools.physics.lattice_params import latticeParams
 from latqcdtools.interfaces.HotQCD import HotQCDParams
 from latqcdtools.interfaces.MILC import MILCParams
-from latqcdtools.math.math import print_results
+from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 
 
@@ -20,12 +20,14 @@ def testLatticeParams():
 
     import params
 
+    lpass = True
+
     lp = latticeParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms)
     lp.paramSummary()
     a = lp.geta()
     T = lp.getT()
-    print_results(a,0.14027137436021253,text='fK test, a')
-    print_results(T,175.84394864955703,text='fK test, T')
+    lpass *= print_results(a,0.14027137436021253,text='fK test, a')
+    lpass *= print_results(T,175.84394864955703,text='fK test, T')
     del lp
 
     lp = HotQCDParams(params.Ns, params.Nt, params.cbeta, params.cml, params.cms, Nf='3')
@@ -43,9 +45,11 @@ def testLatticeParams():
     lp.paramSummary()
     a = lp.geta()
     T = lp.getT()
-    print_results(a,0.04195979097233082,text='r0 test, a')
-    print_results(T,146.96136335775122,text='r0 test, T')
+    lpass *= print_results(a,0.04195979097233082,text='r0 test, a')
+    lpass *= print_results(T,146.96136335775122,text='r0 test, T')
     del lp
+
+    concludeTest(lpass)
 
 
 if __name__ == '__main__':

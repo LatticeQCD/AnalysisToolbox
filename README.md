@@ -46,13 +46,56 @@ In order to use these scripts, please ensure that you have the following:
 10. sympy
 11. LaTeX (Probably best if you install TeXLive-Full)
 
-The recommended way to proceed is to create a [Python virtual environment](https://realpython.com/python-virtual-environments-a-primer/),
-in which you install all the required packages. This is what the Python people seem to prefer, which you can
-read about in their [PEP 668](https://peps.python.org/pep-0668/).
-If you're old fashioned like David is, you can also just directly `pip3 install` on your machine,
-potentially modifying your OS Python.
+You can set up the AnalysisToolbox using either a [Python virtual environment](https://realpython.com/python-virtual-environments-a-primer/)
+or by modifying the Python on your local machine. You can set up the former or the latter by adjusting the user preferences
+in `configureToolbox.py`.
 
-Either way, for your convenience, packages (2-10) can be installed via
+### Configuring for a virtual environment
+
+The recommended way to proceed is to create a Python virtual environment 
+in which you install all the required packages. This is what the Python people seem to prefer, which you can
+read about in their [PEP 668](https://peps.python.org/pep-0668/). It is also more convenient for use on
+supercomputers, since you don't need superuser privileges to install any missing packages.
+
+In `configureToolbox.py` set
+```Python
+STRATEGY = "VENV" 
+```
+then run
+```Bash
+./configureToolbox.bash
+```
+This will create a `venv` folder containing all the information about your virtual environment. Every time you open a new
+terminal, if you want to use the AnalysisToolbox, you will need to 
+```Bash
+cd scripts
+source startVENV.bash
+```
+You can terminate your virtual environment any time using
+```Bash
+deactivate
+```
+
+### Configuring using your OS Python directly 
+
+If you're old-fashioned like David is, you can also just directly `pip3 install` on your machine,
+modifying your OS Python.
+
+In `configureToolbox.py` set
+```Python
+STRATEGY = "BASIC" 
+```
+then run
+```Bash
+./configureToolbox.bash
+```
+This makes sure your `PYTHONPATH` environment variable points
+to the correct place. You then need to close your terminal and open a new one.
+
+### Installing the required packages
+
+Once you carried out one of the above to strategies,
+packages (2-10) can be installed via
 ```shell
 pip3 install -r requirements.txt
 ```
@@ -62,23 +105,14 @@ instead
 ```shell
 pip3 install -r developerRequirements.txt
 ```
-Additionally you need to make sure your `PYTHONPATH` environment variable points
-to the correct place. This can be accomplished by
-```shell
-python3 installToolbox.py
-```
-You then need to close your terminal and open a new one.
+
 Once this has all been settled,
 try running the tests. You can do this by going to the `testing` folder
 and calling
 ```shell
 bash runTests.bash
 ```
-If you would also like to use the AnalysisToolbox to make plots, also try
-calling
-```shell
-bash tryPlots.bash
-```
+
 
 ## Getting started and documentation
 

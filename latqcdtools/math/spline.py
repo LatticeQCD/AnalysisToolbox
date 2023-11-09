@@ -14,7 +14,7 @@ from latqcdtools.statistics.statistics import AICc
 from latqcdtools.base.check import checkType
 
 
-def even_knots(xdata, nknots):
+def _even_knots(xdata, nknots):
     """ Return a list of nknots evenly spaced knots. """
     if len(xdata)<nknots:
         logger.TBError('number of data < number of knots')
@@ -30,16 +30,16 @@ def even_knots(xdata, nknots):
     return knots
 
 
-def random_knots(xdata, nknots, randomization_factor=1, SEED=None):
+def _random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     """ Return a list of nknots randomly spaced knots. """
-    np.random.seed(SEED)
+    rng = np.random.default_rng(SEED)
     flat_xdata = np.sort(np.asarray(xdata))
-    sample_xdata = np.random.choice(flat_xdata,int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots)),
-                                    replace=False)
+    sample_xdata = rng.choice(flat_xdata,int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots)),
+                              replace=False)
     # Retry if too many data points are removed by np.unique
     if len(np.unique(sample_xdata)) < nknots + 1:
-        return random_knots(xdata, nknots, randomization_factor)
-    return even_knots(sample_xdata, nknots)
+        return _random_knots(xdata, nknots, randomization_factor)
+    return _even_knots(sample_xdata, nknots)
 
 
 def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False):
@@ -92,9 +92,9 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
                 logger.TBError("len(fixedKnots) cannot exceed num_knots.")
         if nknots>0:
             if rand:
-                knots = random_knots(xdata,nknots)
+                knots = _random_knots(xdata,nknots)
             else:
-                knots = even_knots(xdata,nknots)
+                knots = _even_knots(xdata,nknots)
         else:
             knots=[]
         if fixedKnots is not None:

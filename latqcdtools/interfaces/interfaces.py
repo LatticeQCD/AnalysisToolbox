@@ -32,6 +32,14 @@ class HotQCD_MILC_Params(latticeParams):
 
 
 def paramFrom_HotQCD_MILC(ensemble):
+    """ Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.
+
+    Args:
+        ensemble (str): ensemble label of the form l3216f3b6050m00394m1064
+
+    Returns:
+        tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string
+    """
     checkType(ensemble,str)
     NsNt = substringBetween(ensemble,'l','f') 
     if len(NsNt)==3:
@@ -49,10 +57,12 @@ def paramFrom_HotQCD_MILC(ensemble):
     return int(Ns), int(Nt), Nf, cbeta, cm1, cm2 
 
 
-def loadGPL(filename,discardTag=True):
+def readGPL(filename,discardTag=True):
     """ Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
     tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
     rather than using genfromtxt to allow the possibility of ragged tables. """
+    checkType(filename,str)
+    checkType(discardTag,bool)
     gplFile = open(filename,'r')
     minIndex = 0
     data = []
@@ -78,17 +88,29 @@ def loadGPL(filename,discardTag=True):
         return np.array(data,dtype=object)
 
 
-def loadYAML(filename):
+def readYAML(filename):
     """ Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. """
+    checkType(filename,str)
     if not filename.endswith('yaml'):
         logger.TBError('Expected a yaml file.')
-    with open(filename, 'r') as stream:
+    with open(filename, 'r') as file:
         try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            logger.TBError('Encountered exception:',exc)
-            
-            
+            return yaml.safe_load(file)
+        except yaml.YAMLError as e:
+            logger.TBError('Encountered exception:',e)
+
+
+def writeYAML(data,filename):
+    """ Write dictionary to YAML file. """ 
+    checkType(data,dict)
+    checkType(filename,str)
+    with open(filename, 'w') as file:
+        try:
+            yaml.safe_dump(data, file) 
+        except yaml.YAMLError as e:
+            logger.TBError('Encountered exception:',e)
+
+
 class genericTable(list):
     
     def __init__(self,delimiter=None,pre='',post=''):
@@ -96,7 +118,7 @@ class genericTable(list):
         is implemented as a list of lists.
 
         Args:
-            delimiter (str, optional)
+            delimiter (str)
             pre (str, optional): String to appear at beginning of every line table. Defaults to ''.
             post (str, optional): String to appear at end of every line of table. Defaults to ''.
         """
@@ -123,6 +145,7 @@ class genericTable(list):
             filename (str, optional): If set, will output to file. Otherwise output to screen. 
         """
         if filename is not None:
+            checkType(filename,str)
             outFile = open(filename,'w')
         for row in self:
             line = self.pre + ' ' +  str(row[0])

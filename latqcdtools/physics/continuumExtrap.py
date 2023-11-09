@@ -13,10 +13,9 @@ from latqcdtools.base.plotting import plt
 from latqcdtools.statistics.fitting import Fitter, std_algs, bayes_algs
 from latqcdtools.base.speedify import DEFAULTTHREADS
 from latqcdtools.base.check import checkType
-from latqcdtools.base.utilities import unvector
 
 
-def powerSeries(x,coeffs):
+def _powerSeries(x,coeffs):
     """ The default fit form for a continuum extrapolation is a power series in a^2.
 
     Args:
@@ -65,7 +64,7 @@ class Extrapolator(Fitter):
             logger.TBError('Please input order > 1.')
 
         if ansatz is None:
-            ansatz = powerSeries
+            ansatz = _powerSeries
         else:
             if self._order != 1:
                 logger.warn('Not using a power series ansatz, but still using custom order.')
@@ -111,13 +110,10 @@ class Extrapolator(Fitter):
         """ Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. """
         if not self._triedExtrapolation:
             logger.TBError("Can't plot an extrapolation without having extrapolated first...")
-        if (not 'xmin' in kwargs) or (kwargs['xmin'] is None):
-            kwargs['xmin'] = 1e-8 
-        if (not 'xmax' in kwargs) or (kwargs['xmax'] is None):
-            kwargs['xmax'] = np.max(self._xdata) 
-        self.plot_fit(**kwargs)
-        kwargs['label']=None
+        domain=(1e-8,np.max(self._xdata))
         self.plot_data(**kwargs)
+        kwargs['label']=None
+        self.plot_fit(domain,**kwargs)
 
 
     def showResults(self):
