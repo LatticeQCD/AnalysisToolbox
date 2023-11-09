@@ -53,8 +53,10 @@ def writeTable(filename,*args,**kwargs):
     Args:
         filename (str): output file name
     """
+    npkwargs=kwargs
     if 'header' in kwargs:
         head = kwargs['header']
+        del npkwargs['header']
         if isinstance(head,list):
             form = '%15s'
             temp = (head[0],)
@@ -94,7 +96,7 @@ def writeTable(filename,*args,**kwargs):
     ab = np.zeros(data[0].size, dtype=dtypes)
     for i in range(colno):
         ab[_lab(i)] = data[i]
-    np.savetxt(filename, ab, fmt=form, header=head)
+    np.savetxt(filename, ab, fmt=form, header=head, **kwargs)
 
 
 def _lab(num):

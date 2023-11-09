@@ -56,6 +56,7 @@ The recommended way to proceed is to create a Python virtual environment
 in which you install all the required packages. This is what the Python people seem to prefer, which you can
 read about in their [PEP 668](https://peps.python.org/pep-0668/). It is also more convenient for use on
 supercomputers, since you don't need superuser privileges to install any missing packages.
+On the other hand, virtual environments can be slower.
 
 In `configureToolbox.py` set
 ```Python

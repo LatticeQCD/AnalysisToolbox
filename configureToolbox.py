@@ -14,8 +14,8 @@
 
 # ----------------------------------------------------------------------- USER PREFERENCES
 
-SHELL    = "BASH"   # POWERSHELL to be added later
-STRATEGY = "VENV"   # Options are "VENV" and "BASIC"
+SHELL    = "BASH"    # POWERSHELL to be added later
+STRATEGY = "BASIC"   # Options are "VENV" and "BASIC"
 
 # ------------------------------------------------------------------------------ MAIN CODE 
 
@@ -70,4 +70,4 @@ if STRATEGY=="BASIC":
    
 elif STRATEGY=="VENV":
 
-    shell('mkdir -p venv; cd venv; python -m venv AnalysisToolbox')
+    shell('mkdir -p venv; cd venv; python3 -m venv AnalysisToolbox')
