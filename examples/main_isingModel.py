@@ -28,17 +28,17 @@ latexify()
 # Simulation parameters. 
 #
 Nd    = 2        # number of dimensions
-Tlow  = 2.2      # lowest temperature to sample (kB=1)
-Thi   = 2.4      # highest temperature to sample
+Tlow  = 2.0      # lowest temperature to sample (kB=1)
+Thi   = 3.0      # highest temperature to sample
 h     = 0.       # external magnetic field
-L     = 40       # spatial extension
-Nequi = 5000     # equilibrate with this many MCMC sweeps
-Nmeas = 10000    # measure this many MCMC sweeps
+L     = 20       # spatial extension
+Nequi = 1000     # equilibrate with this many MCMC sweeps
+Nmeas = 1000      # measure this many MCMC sweeps
 Nskip = 5        # separate measurements by this many MCMC sweeps
 start = 'hot'    # start with all spins up (up), down (down), or random (hot)
 
 
-Tlist = np.linspace(Tlow,Thi,DEFAULTTHREADS)
+Tlist = np.linspace(Tlow,Thi,2*DEFAULTTHREADS)
 logger.info()
 logger.info('Starting parameters:')
 logger.info('  Nequi =',Nequi)
@@ -85,6 +85,7 @@ def runIsingModel(T):
     
 
     def getMagnetization():
+        """ Order parameter is |M|. """
         return np.abs(np.sum(lat.grid)/lat.vol)
     
     
@@ -118,42 +119,61 @@ def runIsingModel(T):
 
 
     def chi_M(M):
+        """ Magnetic susceptibility. """
         return lat.vol*( std_mean(M**2)-std_mean(M)**2 )
+
+
+    def binder(M):
+        """ Binder cumulant. For the ising model in 2d, this should tend to 2/3 below
+        Tc, while it should tend to 0 above Tc, in the thermodynamic limit. """
+        return 1-np.mean(M**4)/(3*np.mean(M**2)**2)
 
 
     # We have parallelized over the temperatures, so we're not allowed to parallelize over the jackknife;
     # that would be nested parallelization.
     Mm  , Me   = jackknife( std_mean, magnetizations, nproc=1 )
     chim, chie = jackknife( chi_M   , magnetizations, nproc=1 )
-    logger.info('T, <|M|> =',round(T,2),get_err_str(Mm,Me))
-    return Mm, Me, chim, chie
+    Bm  , Be   = jackknife( binder  , magnetizations, nproc=1 )
+    logger.info('T, <|M|>, chi, B =',round(T,2),get_err_str(Mm,Me),get_err_str(chim,chie),get_err_str(Bm,Be))
+    return Mm, Me, chim, chie, Bm, Be
 
 
-
+# Parallelize over the temperatures. This parallelization is easiest since each temperature
+# amounts to an independent run.
 data = parallel_function_eval(runIsingModel,Tlist)
+
 
 res_M    = []
 res_E    = []
 res_chi  = []
 res_chie = []
+res_B    = []
+res_Be   = []
 for i in range(len(Tlist)):
     res_M.append(   data[i][0])
     res_E.append(   data[i][1])
     res_chi.append( data[i][2])
     res_chie.append(data[i][3])
+    res_B.append(   data[i][4])
+    res_Be.append(  data[i][5])
 
+
+# Plot the magnetization.
 plot_dots(Tlist,res_M,res_E)
-set_params(xlabel='$T$',ylabel='$\\ev{|M|}$',title='$V='+str(L)+'^3$ Ising model',alpha_xlabel=0)
+set_params(xlabel='$T$',ylabel='$\\ev{|M|}$',title='$V='+str(L)+'^'+str(Nd)+'$ Ising model',alpha_xlabel=0)
 plt.show()
-
 clearPlot()
 
+
+# Plot the magnetic susceptibility.
 plot_dots(Tlist,res_chi,res_chie)
-set_params(xlabel='$T$',ylabel='$\\ev{\\chi}$',title='$V='+str(L)+'^3$ Ising model',alpha_xlabel=0)
+set_params(xlabel='$T$',ylabel='$\\ev{\\chi}$',title='$V='+str(L)+'^'+str(Nd)+'$ Ising model',alpha_xlabel=0)
 plt.show()
 
-writeTable('ising_'+str(L)+'_'+str(Nd)+'.d',Tlist,res_M,res_E,res_chi,res_chie,header=['T','|M|','|M|_err','chi','chi_err'])
 
+# Record the results in a nicely formatted table.
+writeTable('ising_'+str(L)+'_'+str(Nd)+'.d',Tlist,res_M,res_E,res_chi,res_chie,res_B,res_Be,
+           header=['T','|M|','|M|_err','chi','chi_err','B','Be'])
 finalize()
 
 
