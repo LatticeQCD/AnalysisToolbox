@@ -16,9 +16,10 @@ SciPy numerical integration and solving IVPs.
 - **General statistics:** Jackknife, bootstrap, Gaussian bootstrap, error propagation,
 estimate integrated autocorrelation time, and curve fitting with and without Bayesian priors.
 We stress that our math and statistics methods are generally useful, independent of physics contexts.
-- **QCD physics:** Hadron resonance gas model, HotQCD equation of state, QCD beta function,
-physical constants, unit conversions, and critical exponents for various univesality classes. These methods
-are useful for QCD phenomenology, independent of lattice contexts.
+- **General physics:** Unit conversions, critical exponents for various universality
+classes, physical constants, Ising model in arbitrary dimensions.
+- **QCD physics:** Hadron resonance gas model, HotQCD equation of state, and the QCD beta function. 
+These methods are useful for QCD phenomenology, independent of lattice contexts.
 - **Lattice QCD:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
 fields, reading in gauge fields, and the static quark-antiquark potential. These methods
 rather target lattice QCD. 
@@ -90,12 +91,13 @@ then run
 ```Bash
 ./configureToolbox.bash
 ```
-This makes sure your `PYTHONPATH` environment variable points
-to the correct place. You then need to close your terminal and open a new one.
 
 ### Installing the required packages
 
-Once you carried out one of the above to strategies,
+Either strategy will make sure your `PYTHONPATH` environment variable points
+to the correct place. You will need to close your terminal and open a new one.
+
+Once you carried out one of the above two strategies,
 packages (2-10) can be installed via
 ```shell
 pip3 install -r requirements.txt
