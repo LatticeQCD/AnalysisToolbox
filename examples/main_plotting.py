@@ -12,10 +12,12 @@ from latqcdtools.base.plotting import latexify, set_params, plot_file, clearPlot
     plot_bar, plot_hist, plt
 from latqcdtools.base.initialize import initialize, finalize
 from latqcdtools.statistics.statistics import plot_func
-from latqcdtools.interfaces.interfaces import loadGPL
+from latqcdtools.interfaces.interfaces import readGPL 
+import latqcdtools.base.logger as logger
 
 
 initialize('example_plotting.log')
+logger.set_log_level('INFO')
 
 latexify()
 
@@ -23,7 +25,7 @@ latexify()
 # columns to use from the file. For the style you can choose between dots, line, fill, band.
 # You should in general be able to pass standard matplotlib keyword arguments like 'marker'
 # to many of the plotting module's methods. 
-plot_file("wurf.dat", 0, 2, 3, 1, style="dots", label="wurf", marker='o')
+plot_file("wurf.dat", 0, 2, 3, 1, style="dots", label="$\\chi_{\\rm wurf}$", marker='o')
 
 # Sometimes a result is preliminary. You can put a marker that indicates your plot is preliminary
 # using this command. The arguments set the x- and y-coordinates in units of the axes. 
@@ -73,10 +75,10 @@ plt.show()
 clearPlot()
 
 # Simple histogram. Note that one can read in gpl-type files like used in Peter LePage's code.
-bareCorr = loadGPL('hist2.gpx')
+bareCorr = readGPL('hist2.gpx')
 factor   = 9*8.3724494170096e-08
 data2    = bareCorr[:,6]*factor
-bareCorr = loadGPL('hist1.gpx')
+bareCorr = readGPL('hist1.gpx')
 data1    = bareCorr[:,6]
 
 # Here we put two histograms on the same plot.

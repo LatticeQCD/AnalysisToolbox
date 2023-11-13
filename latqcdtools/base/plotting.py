@@ -154,12 +154,12 @@ def getColorGradient(NUM_COLORS,map='viridis'):
     return gradColors
 
 
-def set_xrange(xmin=None, xmax=None, ax=plt.gca()):
+def set_xrange(xmin=None, xmax=None, ax=plt):
     _set_xmin(ax,xmin)
     _set_xmax(ax,xmax)
 
 
-def set_yrange(ymin=None, ymax=None, ax=plt.gca()):
+def set_yrange(ymin=None, ymax=None, ax=plt):
     _set_ymin(ax,ymin)
     _set_ymax(ax,ymax)
 
