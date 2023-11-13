@@ -164,6 +164,12 @@ def set_yrange(ymin=None, ymax=None, ax=plt):
     _set_ymax(ax,ymax)
 
 
+def set_default_param(**kwargs):
+    """ Lets the user adjust the default parameter settings. """
+    for key, val in kwargs.items():
+        default_params[key] = val
+
+
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
