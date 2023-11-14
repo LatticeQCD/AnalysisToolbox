@@ -55,7 +55,8 @@ def get_err_str(param, param_err, numb_err_dig=2):
     param_err = float(param_err)
 
     if param_err<=0:
-        logger.TBError('Encountered non-positive error',param_err)
+        logger.details('Encountered non-positive error',param_err)
+        return param
 
     if numb_err_dig < 1:
         logger.TBError("Number of error digits has to be larger than 0!")
@@ -83,11 +84,11 @@ def get_err_str(param, param_err, numb_err_dig=2):
     if numdig < 0:
         numdig = 0
 
-    # floor does not support a second index -> we have to multipily and then divide
+    # floor does not support a second index -> we have to multiply and then divide
     param_err *= pow(10, roundidx)
     param_err = math.ceil(param_err) * pow(10, -roundidx)
 
-    # as the exponent might have changed through rounding, we have to recalc it
+    # as the exponent might have changed through rounding, we have to recalculate it
     relnum = get_exp(param_err)
     roundidx = -relnum + numb_err_dig - 1
     param = round(paramtmp, roundidx)
