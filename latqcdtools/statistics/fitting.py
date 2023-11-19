@@ -15,13 +15,13 @@ from scipy.linalg import inv
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
-from latqcdtools.base.plotting import plot_dots, fill_param_dict, plot_bar, plt
+from latqcdtools.base.plotting import plot_dots, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.utilities import envector, isHigherDimensional
+from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_hess, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, norm_cov, cut_eig, chisquare, logGBF, DOF, \
-    expandArgs, checkDomain
+    expandArgs, checkDomain, BAIC, AIC, AICc
 
 
 # Allowed keys for the constructor
@@ -104,8 +104,8 @@ class Fitter:
         self._pcov        = None
 
         # Store data
-        self._xdata = np.array(xdata, dtype = float)
-        self._ydata = np.array(ydata, dtype = float)
+        checkEqualLengths(xdata,ydata)
+        self._xdata, self._ydata = toNumpy(xdata, ydata) 
 
         # These attributes are described in the above doccumentation. If they aren't specified in the keyword
         # arguments when the Fitter is initialized, they take the default value shown here. 
@@ -554,10 +554,8 @@ class Fitter:
             The error of this fit parameters.
         chidof:
             chi^2/dof.
-        pcov:
-            The covariance matrix of the parameters.
-        logGBF:
-            log of Gaussian Bayes factor.
+        stats:
+            If detailedInfo, return dictionary with logGBF, BAIC, pcov.
         """
 
         logger.debug('Using algorithms',algorithms)
@@ -586,7 +584,7 @@ class Fitter:
         try:
             _test = self.wrap_func(self._xdata, self._saved_params)
         except Exception as e:
-            logger.TBError('Fit function must have signature func(xdata,params,args). Got exception',e)
+            logger.TBError('Fit function must have signature func(xdata,params,args). Got exception:',e)
         checkEqualLengths(_test, self._xdata)
 
         resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )
@@ -625,9 +623,14 @@ class Fitter:
             return ( np.copy(self._saved_params),
                      all_fit_errors[min_ind],
                      chidof,
-                     logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                            prior=self._priorval,prior_err=self._priorsigma),
-                     np.copy(self._saved_pcov)
+                     { 'logGBF' : logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                                         prior=self._priorval,prior_err=self._priorsigma),
+                        'pcov'  : np.copy(self._saved_pcov),
+                        'chi2'  : all_chi2[min_ind],
+                        'BAIC'  : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
+                        'AIC'   : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
+                        'AICc'  : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
+                     }
                    )
         else:
             return ( np.copy(self._saved_params),
@@ -641,20 +644,20 @@ class Fitter:
         return self.try_fit([algorithm], **kwargs)
 
 
-    def save_func(self, filename, domain, no_error = False, header=None, **kwargs):
+    def save_func(self, filename, domain, no_error=False, header=None, npoints=1000, **kwargs):
         """ Save fit data to table. """
         checkDomain(domain)
         params_err = self._saved_pcov
         params = self._saved_params
-        def func(self, x, *params):
+        def func(x, params):
             return self._func(x, params, *self._args)
         if no_error:
-            save_func(func, filename, domain=domain, args = params, header = header, **kwargs)
+            save_func(func, filename, domain=domain, args=params, header=header, npoints=npoints,**kwargs)
         else:
-            def grad(self, x, *params):
+            def grad(x, params):
                 return np.asarray(self.grad(x, params))
-            save_func(func, filename, domain=domain, args = params, args_err = params_err, grad = grad,
-                      header = header, **kwargs)
+            save_func(func, filename, domain=domain, args=params, args_err=params_err, grad=grad,
+                      header=header, npoints=npoints, **kwargs)
 
 
     def plot_fit(self, domain, no_error = False, **kwargs):
@@ -710,25 +713,12 @@ class Fitter:
             plot_bar(range(len(eig_imag)), eig_imag, color='#0081bf', label="imag", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
 
 
-
-
-# TODO: is this the right place for this?
-def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad = None, header=None, **params):
+def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad = None, header=None, 
+              npoints=1000, **kwargs):
 
     checkDomain(domain)
-    fill_param_dict(params)
     xmin = domain[0] 
     xmax = domain[1] 
-
-    # Again we're just trying to make sure wrap_func captures his arguments as a tuple.
-    def wrap_func(x, *wrap_args):
-        return func(x, *wrap_args)
-    
-    def wrap_func_err(x, *wrap_args_err): 
-        return func_err(x, *wrap_args_err)
-    
-    def wrap_grad(x, *wrap_args):
-        return grad(x, *wrap_args)
 
     if xmin is None:
         for line in plt.gca().lines:
@@ -745,22 +735,16 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
             if xmax_new > xmax:
                 xmax = xmax_new
 
-    if xmin is None:
-        xmin = -10
-    if xmax is None:
-        xmax = 10
-
-    xdata = np.arange(xmin, xmax, (xmax - xmin) / params['npoints'])
-    ydata = wrap_func(xdata, *args)
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
+    ydata = func(xdata, args)
 
     if func_err is not None:
-        ydata_err = wrap_func_err(xdata, *args_err)
-        writeTable(filename,xdata,ydata,ydata_err,header=header)
+        ydata_err = func_err(xdata, args_err)
+        writeTable(filename,xdata,ydata,ydata_err,header=header,**kwargs)
 
     elif len(args_err) > 0:
         if grad is None:
             logger.warn("Used numerical derivative!")
-            wrap_grad = None
 
         # Arguments that are part of the error propagation
         tmp_args = tuple(args)[0:len(args_err)]
@@ -768,24 +752,24 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
         # Optional arguments that are constant and, therefore, not part of the error propagation
         tmp_opt = tuple(args)[len(args_err):]
 
-        ydata_err = error_prop_func(xdata, wrap_func, tmp_args, args_err, grad = wrap_grad, args = tmp_opt)
+        ydata_err = error_prop_func(xdata, func, tmp_args, args_err, grad=grad, args=tmp_opt)
 
-        writeTable(filename,xdata,ydata,ydata_err,header=header)
+        writeTable(filename,xdata,ydata,ydata_err,header=header,**kwargs)
 
     else:
-        writeTable(filename,xdata,ydata,header=header)
+        writeTable(filename,xdata,ydata,header=header,**kwargs)
 
 
-def do_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-           algorithm = "curve_fit", detailedInfo=False, **kwargs):
+def do_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None,
+           algorithm="curve_fit", detailedInfo=False, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.do_fit(start_params = start_params, priorval = priorval, priorsigma = priorsigma, algorithm = algorithm,
+    return fit.do_fit(start_params=start_params, priorval=priorval, priorsigma=priorsigma, algorithm=algorithm,
                       detailedInfo=detailedInfo)
 
 
-def try_fit(func, xdata, ydata, edata = None, start_params = None, priorval = None, priorsigma = None,
-            algorithms = std_algs, detailedInfo=False, **kwargs):
+def try_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None,
+            algorithms=std_algs, detailedInfo=False, **kwargs):
     """ Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
     algorithms has no default values here. """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)

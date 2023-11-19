@@ -6,16 +6,15 @@
 # Collection of convenience tools for plotting using matplotlib.
 #
 
-import itertools, warnings
+import itertools
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.colors as cl
+import matplotlib.colors
 import matplotlib.ticker as ticker
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy
 from latqcdtools.base.readWrite import readTable
-warnings.filterwarnings("ignore", category=UserWarning)
 
 
 ZOD        = 1      # Orders different layers 
@@ -304,7 +303,7 @@ def fill_param_dict(params):
 
 
 def _add_optional(params):
-    """Optional parameter that are not defined in fill_param_dict are collected by this function.
+    """ Optional parameters that are not defined in fill_param_dict are collected by this function.
 
         Parameters
         ----------
@@ -803,7 +802,7 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
         pl = ax.fill_between(xdata*xscale, yscale*low_lim, yscale*up_lim, facecolor=params['color'],
                              alpha=params['alpha'], linewidth=0, zorder=1)
 
-    col = cl.rgb2hex(pl.get_facecolor()[0])
+    col = matplotlib.colors.rgb2hex(pl.get_facecolor()[0])
 
     if params['alpha_lines'] != 0:
         ax.errorbar(xdata*xscale, yscale*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,

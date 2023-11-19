@@ -98,6 +98,10 @@ report to you where the messages are coming from.</p></li>
 <li><p>For reading or writing any data table: Please try to use <code class="docutils literal notranslate"><span class="pre">readTable</span></code> and <code class="docutils literal notranslate"><span class="pre">writeTable</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/readWrite.py</span></code>.</p></li>
 <li><p>If you would like to make your python script an executable (e.g. by using <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span></code>) you should add the line <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/env</span> <span class="pre">python3</span></code>
 at the beginning of your script.</p></li>
+<li><p>Please <strong>be mindful of backward compatibility</strong>. David is sometimes the worst offender in this regard. In particular, try not to
+delete functions, even if it seems like they are not being used. If you find a better way of organizing things, you may need
+to implement wrappers to maintain backward compatibility. There are many people using the AnalysisToolbox, and we don’t want
+to disrupt their workflows too much.</p></li>
 <li><p>If you are writing a method, and you want to put a comment explaining what the method generally does and how to use it, you should include
 it as a <em>docstring</em>. (You can find an explanation of docstrings <a class="reference external" href="https://www.programiz.com/python-programming/docstrings">here</a>.)
 An advantage to using these is that people can easily learn about your function by calling <code class="docutils literal notranslate"><span class="pre">help(functionName)</span></code>. Certain IDEs, such as

@@ -44,8 +44,9 @@ def testContExtrap():
     lam = MeV_to_fminv(500)
     a *= lam
 
-    result, result_err, chidof, logGBF = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,order=2,
-                                                              prior=prior,prior_err=prior_err,error_strat='hessian')
+    result, result_err, chidof, stats = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,order=2,
+                                                             prior=prior,prior_err=prior_err,error_strat='hessian')
+
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]
     REFresult_err = [0.00930215, 0.1100613,  0.10344893]
     REFchidof     = 1.2219934235330452
@@ -53,7 +54,7 @@ def testContExtrap():
 
     lpass *= print_results(result,REFresult,result_err,REFresult_err,text='O(a^4) with prior',prec=PREC)
     lpass *= print_results(chidof,REFchidof,text='O(a^4) chi^2/d.o.f.',prec=PREC)
-    lpass *= print_results(logGBF,REFlogGBF,text='O(a^4) logGBF',prec=PREC)
+    lpass *= print_results(stats['logGBF'],REFlogGBF,text='O(a^4) logGBF',prec=PREC)
 
     concludeTest(lpass)
 

@@ -28,6 +28,10 @@ def testPrintErrorBars():
     y, ye = getValuesFromErrStr(test)
     lpass *= print_results(y,-5.5e-8,ye,2.2e-8,text=test,prec=1e-8) 
 
+    test = "-0.00000005500(22)"
+    y, ye = getValuesFromErrStr(test)
+    lpass *= print_results(y,-5.5e-8,ye,2.2e-10,text=test,prec=1e-8) 
+
     test = "3.4(1.4)"
     y, ye = getValuesFromErrStr(test)
     lpass *= print_results(y,3.4,ye,1.4,text=test,prec=1e-8) 
@@ -35,6 +39,14 @@ def testPrintErrorBars():
     test = "3.45(99)"
     y, ye = getValuesFromErrStr(test)
     lpass *= print_results(y,3.45,ye,0.99,text=test,prec=1e-8) 
+
+    test = "1.587(32)"
+    y, ye = getValuesFromErrStr(test)
+    lpass *= print_results(y,1.587,ye,0.032,text=test,prec=1e-8) 
+
+    test = "1.58007(32)"
+    y, ye = getValuesFromErrStr(test)
+    lpass *= print_results(y,1.58007,ye,0.00032,text=test,prec=1e-8) 
 
     test = "0.44(14)"
     y, ye = getValuesFromErrStr(test)
@@ -51,6 +63,10 @@ def testPrintErrorBars():
     test = "318.45(54)"
     y, ye = getValuesFromErrStr(test)
     lpass *= print_results(y,318.45,ye,0.54,text=test,prec=1e-8) 
+
+    test = "318.4500000(54)"
+    y, ye = getValuesFromErrStr(test)
+    lpass *= print_results(y,318.45,ye,0.0000054,text=test,prec=1e-8) 
 
     test = "-4560.(140.)"
     y, ye = getValuesFromErrStr(test)

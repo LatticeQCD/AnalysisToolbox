@@ -20,6 +20,10 @@ id_4 = np.eye(4,dtype=complex)
 ze_3 = np.zeros((3,3), dtype=complex)
 
 
+def normalize(arr):
+    return arr/np.sum(arr)
+
+
 def fallFactorial(n,m):
     """ Falling factorial n fall to m. """
     if m>n:

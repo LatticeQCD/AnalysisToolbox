@@ -205,9 +205,9 @@ def testFit():
     prior        = [5e-05,3e-01]
     prior_err    = [5e-05,3e-01]
     res_err_true = [1.148967933055725e-06, 0.0005445077355994696]
-    res, res_err, _, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err, args=(64,),
-                                    norm_err_chi2=True, detailedInfo=True,
-                                    algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
+    res, res_err, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = prior_err, args=(64,),
+                                 norm_err_chi2=True, detailedInfo=True,
+                                 algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
     lpass *= print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
 

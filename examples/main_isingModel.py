@@ -28,12 +28,12 @@ latexify()
 # Simulation parameters. 
 #
 Nd    = 2        # number of dimensions
-Tlow  = 2.0      # lowest temperature to sample (kB=1)
+Tlow  = 1.0      # lowest temperature to sample (kB=1)
 Thi   = 3.0      # highest temperature to sample
 h     = 0.       # external magnetic field
-L     = 20       # spatial extension
-Nequi = 1000     # equilibrate with this many MCMC sweeps
-Nmeas = 1000      # measure this many MCMC sweeps
+L     = 8        # spatial extension
+Nequi = 300      # equilibrate with this many MCMC sweeps
+Nmeas = 100      # measure this many MCMC sweeps
 Nskip = 5        # separate measurements by this many MCMC sweeps
 start = 'hot'    # start with all spins up (up), down (down), or random (hot)
 
@@ -64,8 +64,8 @@ def runIsingModel(T):
 
     # Initialize the lattice object. The first argument says the lattice geometry will be L**Nd,
     # while the second argument is an example of the kind of object that will be on each site.
-    # Here's a scalar, so I just put in the number 1.
-    lat = Lattice((L,)*Nd,1)
+    # Here each site has a scalar, so I just put in the number 1.
+    lat = Lattice( (L,)*Nd, 1 )
 
     def initialize_site(coord):
         if start == 'up':
@@ -105,11 +105,14 @@ def runIsingModel(T):
         elif rng.random() < np.exp(-dH):
             lat.setElement(coord,-s0)
     
-    
+
+    # Equilibrate the lattice by carrying out Nequi equilibration steps.   
     for iequi in range(Nequi):
         lat.iterateOverRandom(mcLocal)
     
-    
+
+    # With the remaining MCMC steps, we measure the magnetization. We skip every Nskip MCMC 
+    # steps to reduce autocorrelation.    
     magnetizations = []
     for imeas in range(Nmeas):
         for iskip in range(Nskip):
@@ -129,8 +132,8 @@ def runIsingModel(T):
         return 1-np.mean(M**4)/(3*np.mean(M**2)**2)
 
 
-    # We have parallelized over the temperatures, so we're not allowed to parallelize over the jackknife;
-    # that would be nested parallelization.
+    # We have parallelized over the temperatures, so we're not allowed to parallelize over the jackknife:
+    # that would be nested parallelization!
     Mm  , Me   = jackknife( std_mean, magnetizations, nproc=1 )
     chim, chie = jackknife( chi_M   , magnetizations, nproc=1 )
     Bm  , Be   = jackknife( binder  , magnetizations, nproc=1 )
@@ -138,7 +141,7 @@ def runIsingModel(T):
     return Mm, Me, chim, chie, Bm, Be
 
 
-# Parallelize over the temperatures. This parallelization is easiest since each temperature
+# Parallelize over the temperatures. This parallelization strategy is easiest since each temperature
 # amounts to an independent run.
 data = parallel_function_eval(runIsingModel,Tlist)
 
