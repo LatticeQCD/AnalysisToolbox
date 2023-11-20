@@ -14,6 +14,10 @@ report to you where the messages are coming from.
 - For reading or writing any data table: Please try to use `readTable` and `writeTable` in `latqcdtools/base/readWrite.py`.
 - If you would like to make your python script an executable (e.g. by using `chmod +x`) you should add the line `#!/usr/bin/env python3` 
 at the beginning of your script.
+- Please **be mindful of backward compatibility**. David is sometimes the worst offender in this regard. In particular, try not to
+delete functions, even if it seems like they are not being used. If you find a better way of organizing things, you may need
+to implement wrappers to maintain backward compatibility. There are many people using the AnalysisToolbox, and we don't want
+to disrupt their workflows too much.
 - If you are writing a method, and you want to put a comment explaining what the method generally does and how to use it, you should include 
 it as a *docstring*. (You can find an explanation of docstrings [here](https://www.programiz.com/python-programming/docstrings).) 
 An advantage to using these is that people can easily learn about your function by calling `help(functionName)`. Certain IDEs, such as 

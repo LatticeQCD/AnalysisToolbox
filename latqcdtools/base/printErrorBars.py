@@ -16,7 +16,7 @@ def getValuesFromErrStr(errStr):
     """ Convert A string of the form XX.XX(YY) into a float mean and error bar. Scientific notation not yet supported.
 
     Args:
-        errStr (str): string of the form XX.XX(YY).
+        errStr (str): string of the form XX.XXXX(YY).
 
     Returns:
         float, float: mean, error. 
@@ -24,22 +24,19 @@ def getValuesFromErrStr(errStr):
     checkType(errStr,str)
     try:
         meanStr = errStr.split('(')[0]
-        mean  = float(meanStr)
-        err   = float(errStr.split('(')[1][:-1])
-        e_exp = get_exp(err)
-        m_exp = get_exp(mean)
-        if e_exp==0:
+        mean    = float(meanStr)
+        err     = float(errStr.split('(')[1][:-1])
+        if get_exp(err)==0:
             return mean, err
-        if m_exp < 0:
-            err *= pow(10,m_exp-e_exp)
-        elif m_exp==0:
-            err *= pow(10,-e_exp-1)
-        else:
-            if '.' in meanStr and not meanStr.endswith('.'):
-                err *= pow(10,-e_exp-1)
+        if not '.' in errStr:
+            return mean, err
+        dot_index = errStr.find('.')
+        parenthesis_index = errStr.find('(')
+        N = parenthesis_index - dot_index - 1
+        err *= pow(10,-N)
         return mean, err        
     except:
-        logger.TBError('Expected string of form XX.XX(YY).')
+        logger.TBError('Expected string of form XX.XXXX(YY).')
 
 
 def get_exp(param):

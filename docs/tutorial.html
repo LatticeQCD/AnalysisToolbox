@@ -80,9 +80,10 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h1>
-<p>Here we walk through two example calculations found in the <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples</span></code>
-directory. The first shows a simple HRG calculation, while the second showcases
-a continuum limit extrapolation.</p>
+<p>Here we walk through some examples found in the <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples</span></code>
+directory. We try to showcase the flexibility of things like the
+<a class="reference internal" href="dataAnalysis/bootstrap.html"><span class="doc std std-doc">bootstrap</span></a> routine, some convenience wrappers
+for plotting, and some pre-packaged physics analysis code.</p>
 <section id="hadron-resonance-gas-calculation">
 <h2>Hadron resonance gas calculation<a class="headerlink" href="#hadron-resonance-gas-calculation" title="Permalink to this headline"></a></h2>
 <p>The hadron resonance gas (HRG) model, and its implementation in the AnalysisToolbox,
@@ -136,6 +137,191 @@ generic conserved charge cumlants like the one computed with <code class="docuti
 contains many methods for various thermodynamic observables such as the
 pressure and entropy.
 The results are saved in a table <code class="docutils literal notranslate"><span class="pre">chi2B.txt</span></code>.</p>
+</section>
+<section id="ising-model">
+<h2>Ising model<a class="headerlink" href="#ising-model" title="Permalink to this headline"></a></h2>
+<p>The AnalysisToolbox is equipped with a <code class="docutils literal notranslate"><span class="pre">Lattice</span></code> class. This class takes care of
+indexing, assumes you have periodic boundary conditions, and has iterators, i.e.
+functions that perform some operation on every site of a subset of the lattice.
+This allows you to write your own statistical mechanical simulations.</p>
+<p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_isingModel.py</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.physics.lattice</span> <span class="kn">import</span> <span class="n">Lattice</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.plotting</span> <span class="kn">import</span> <span class="n">latexify</span><span class="p">,</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">set_params</span><span class="p">,</span> <span class="n">clearPlot</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.printErrorBars</span> <span class="kn">import</span> <span class="n">get_err_str</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.statistics.statistics</span> <span class="kn">import</span> <span class="n">std_mean</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.speedify</span> <span class="kn">import</span> <span class="n">parallel_function_eval</span><span class="p">,</span> <span class="n">DEFAULTTHREADS</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">writeTable</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.statistics.jackknife</span> <span class="kn">import</span> <span class="n">jackknife</span>
+<span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
+
+
+<span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;example_ising.log&#39;</span><span class="p">)</span>
+<span class="n">latexify</span><span class="p">()</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Simulation parameters. </span>
+<span class="c1">#</span>
+<span class="n">Nd</span>    <span class="o">=</span> <span class="mi">2</span>        <span class="c1"># number of dimensions</span>
+<span class="n">Tlow</span>  <span class="o">=</span> <span class="mf">1.0</span>      <span class="c1"># lowest temperature to sample (kB=1)</span>
+<span class="n">Thi</span>   <span class="o">=</span> <span class="mf">3.0</span>      <span class="c1"># highest temperature to sample</span>
+<span class="n">h</span>     <span class="o">=</span> <span class="mf">0.</span>       <span class="c1"># external magnetic field</span>
+<span class="n">L</span>     <span class="o">=</span> <span class="mi">8</span>        <span class="c1"># spatial extension</span>
+<span class="n">Nequi</span> <span class="o">=</span> <span class="mi">300</span>      <span class="c1"># equilibrate with this many MCMC sweeps</span>
+<span class="n">Nmeas</span> <span class="o">=</span> <span class="mi">100</span>      <span class="c1"># measure this many MCMC sweeps</span>
+<span class="n">Nskip</span> <span class="o">=</span> <span class="mi">5</span>        <span class="c1"># separate measurements by this many MCMC sweeps</span>
+<span class="n">start</span> <span class="o">=</span> <span class="s1">&#39;hot&#39;</span>    <span class="c1"># start with all spins up (up), down (down), or random (hot)</span>
+
+
+<span class="n">Tlist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">Tlow</span><span class="p">,</span><span class="n">Thi</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting parameters:&#39;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Nequi =&#39;</span><span class="p">,</span><span class="n">Nequi</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Nmeas =&#39;</span><span class="p">,</span><span class="n">Nmeas</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Nskip =&#39;</span><span class="p">,</span><span class="n">Nskip</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   Latt =&#39;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;^&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Nd</span><span class="p">))</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;      h =&#39;</span><span class="p">,</span><span class="n">h</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># We wrap our simulation inside a function. This allows us to trivially parallelize our run</span>
+<span class="c1"># over the temperatures using parallel_function_eval.</span>
+<span class="c1">#</span>
+<span class="k">def</span> <span class="nf">runIsingModel</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+
+    <span class="n">beta</span>  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">T</span>
+ 
+    <span class="c1"># Initialize the random number generator. When carrying out a statistical physic MCMC, it&#39;s</span>
+    <span class="c1"># crucially important that you pick a good one. The default_rng() constructor is what</span>
+    <span class="c1"># numpy recommends, which at the time of writing utilizes O&#39;Neill&#39;s PCG algorithm. </span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+
+    <span class="c1"># Initialize the lattice object. The first argument says the lattice geometry will be L**Nd,</span>
+    <span class="c1"># while the second argument is an example of the kind of object that will be on each site.</span>
+    <span class="c1"># Here each site has a scalar, so I just put in the number 1.</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">Lattice</span><span class="p">(</span> <span class="p">(</span><span class="n">L</span><span class="p">,)</span><span class="o">*</span><span class="n">Nd</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">initialize_site</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">setElement</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">start</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">setElement</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">start</span> <span class="o">==</span> <span class="s1">&#39;hot&#39;</span><span class="p">:</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">setElement</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">TBError</span><span class="p">(</span><span class="s1">&#39;Unknown start option&#39;</span><span class="p">,</span><span class="n">start</span><span class="p">)</span>
+
+    <span class="c1"># We then initialize all sites. Here interateOverRandom, whose naming convention follows that</span>
+    <span class="c1"># of SIMULATeQCD, is an iterator that applies the function initialize_site to each site.</span>
+    <span class="c1"># The function should take an array-like coord as argument. Look into the Lattice class to</span>
+    <span class="c1"># see what other iterators are possible. </span>
+    <span class="n">lat</span><span class="o">.</span><span class="n">iterateOverRandom</span><span class="p">(</span><span class="n">initialize_site</span><span class="p">)</span>
+    
+
+    <span class="k">def</span> <span class="nf">getMagnetization</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; Order parameter is |M|. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span><span class="o">/</span><span class="n">lat</span><span class="o">.</span><span class="n">vol</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">mcLocal</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The Markov step. </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coord (array-like): local coordinate </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s0</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">getElement</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span>
+        <span class="n">NNsum</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">mu</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nd</span><span class="p">):</span>
+            <span class="n">NNsum</span> <span class="o">+=</span> <span class="n">lat</span><span class="o">.</span><span class="n">getElement</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">march</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">lat</span><span class="o">.</span><span class="n">getElement</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">march</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">dH</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="o">*</span><span class="n">s0</span><span class="o">*</span><span class="n">NNsum</span>
+        <span class="k">if</span> <span class="n">dH</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">setElement</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="o">-</span><span class="n">s0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dH</span><span class="p">):</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">setElement</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="o">-</span><span class="n">s0</span><span class="p">)</span>
+    
+
+    <span class="c1"># Equilibrate the lattice by carrying out Nequi equilibration steps.   </span>
+    <span class="k">for</span> <span class="n">iequi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nequi</span><span class="p">):</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">iterateOverRandom</span><span class="p">(</span><span class="n">mcLocal</span><span class="p">)</span>
+    
+
+    <span class="c1"># With the remaining MCMC steps, we measure the magnetization. We skip every Nskip MCMC </span>
+    <span class="c1"># steps to reduce autocorrelation.    </span>
+    <span class="n">magnetizations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">imeas</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nmeas</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">iskip</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nskip</span><span class="p">):</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">iterateOverRandom</span><span class="p">(</span><span class="n">mcLocal</span><span class="p">)</span>
+        <span class="n">magnetizations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">getMagnetization</span><span class="p">())</span>
+    <span class="n">magnetizations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">magnetizations</span><span class="p">)</span> 
+
+
+    <span class="k">def</span> <span class="nf">chi_M</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Magnetic susceptibility. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">lat</span><span class="o">.</span><span class="n">vol</span><span class="o">*</span><span class="p">(</span> <span class="n">std_mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">std_mean</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">binder</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Binder cumulant. For the ising model in 2d, this should tend to 2/3 below</span>
+<span class="sd">        Tc, while it should tend to 0 above Tc, in the thermodynamic limit. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+
+    <span class="c1"># We have parallelized over the temperatures, so we&#39;re not allowed to parallelize over the jackknife:</span>
+    <span class="c1"># that would be nested parallelization!</span>
+    <span class="n">Mm</span>  <span class="p">,</span> <span class="n">Me</span>   <span class="o">=</span> <span class="n">jackknife</span><span class="p">(</span> <span class="n">std_mean</span><span class="p">,</span> <span class="n">magnetizations</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+    <span class="n">chim</span><span class="p">,</span> <span class="n">chie</span> <span class="o">=</span> <span class="n">jackknife</span><span class="p">(</span> <span class="n">chi_M</span>   <span class="p">,</span> <span class="n">magnetizations</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+    <span class="n">Bm</span>  <span class="p">,</span> <span class="n">Be</span>   <span class="o">=</span> <span class="n">jackknife</span><span class="p">(</span> <span class="n">binder</span>  <span class="p">,</span> <span class="n">magnetizations</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;T, &lt;|M|&gt;, chi, B =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">get_err_str</span><span class="p">(</span><span class="n">Mm</span><span class="p">,</span><span class="n">Me</span><span class="p">),</span><span class="n">get_err_str</span><span class="p">(</span><span class="n">chim</span><span class="p">,</span><span class="n">chie</span><span class="p">),</span><span class="n">get_err_str</span><span class="p">(</span><span class="n">Bm</span><span class="p">,</span><span class="n">Be</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Mm</span><span class="p">,</span> <span class="n">Me</span><span class="p">,</span> <span class="n">chim</span><span class="p">,</span> <span class="n">chie</span><span class="p">,</span> <span class="n">Bm</span><span class="p">,</span> <span class="n">Be</span>
+
+
+<span class="c1"># Parallelize over the temperatures. This parallelization strategy is easiest since each temperature</span>
+<span class="c1"># amounts to an independent run.</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">parallel_function_eval</span><span class="p">(</span><span class="n">runIsingModel</span><span class="p">,</span><span class="n">Tlist</span><span class="p">)</span>
+
+
+<span class="n">res_M</span>    <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res_E</span>    <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res_chi</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res_chie</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res_B</span>    <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res_Be</span>   <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Tlist</span><span class="p">)):</span>
+    <span class="n">res_M</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>   <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">res_E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>   <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">res_chi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">res_chie</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">res_B</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>   <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">res_Be</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>  <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">])</span>
+
+
+<span class="c1"># Plot the magnetization.</span>
+<span class="n">plot_dots</span><span class="p">(</span><span class="n">Tlist</span><span class="p">,</span><span class="n">res_M</span><span class="p">,</span><span class="n">res_E</span><span class="p">)</span>
+<span class="n">set_params</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$T$&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">ev{|M|}$&#39;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;$V=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;^&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Nd</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;$ Ising model&#39;</span><span class="p">,</span><span class="n">alpha_xlabel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">clearPlot</span><span class="p">()</span>
+
+
+<span class="c1"># Plot the magnetic susceptibility.</span>
+<span class="n">plot_dots</span><span class="p">(</span><span class="n">Tlist</span><span class="p">,</span><span class="n">res_chi</span><span class="p">,</span><span class="n">res_chie</span><span class="p">)</span>
+<span class="n">set_params</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;$T$&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">ev{</span><span class="se">\\</span><span class="s1">chi}$&#39;</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;$V=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;^&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Nd</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;$ Ising model&#39;</span><span class="p">,</span><span class="n">alpha_xlabel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="c1"># Record the results in a nicely formatted table.</span>
+<span class="n">writeTable</span><span class="p">(</span><span class="s1">&#39;ising_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Nd</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.d&#39;</span><span class="p">,</span><span class="n">Tlist</span><span class="p">,</span><span class="n">res_M</span><span class="p">,</span><span class="n">res_E</span><span class="p">,</span><span class="n">res_chi</span><span class="p">,</span><span class="n">res_chie</span><span class="p">,</span><span class="n">res_B</span><span class="p">,</span><span class="n">res_Be</span><span class="p">,</span>
+           <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">,</span><span class="s1">&#39;|M|&#39;</span><span class="p">,</span><span class="s1">&#39;|M|_err&#39;</span><span class="p">,</span><span class="s1">&#39;chi&#39;</span><span class="p">,</span><span class="s1">&#39;chi_err&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span><span class="s1">&#39;Be&#39;</span><span class="p">])</span>
+<span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Again, the most useful feature of this example is the <code class="docutils literal notranslate"><span class="pre">Lattice</span></code> class. This wraps a
+lattice that saves an object of arbitrary type at each site, here scalars. You can move
+one site in a direction using <code class="docutils literal notranslate"><span class="pre">march</span></code>. In the Metropolis step, we feature the lattice
+accessors <code class="docutils literal notranslate"><span class="pre">getElement</span></code> and <code class="docutils literal notranslate"><span class="pre">setElement</span></code>. To deal with autocorrelation and propagate
+error, we use the <a class="reference internal" href="dataAnalysis/jackknife.html"><span class="doc std std-doc">jackknife</span></a> class.</p>
 </section>
 <section id="continuum-limit-extrapolation">
 <h2>Continuum-limit extrapolation<a class="headerlink" href="#continuum-limit-extrapolation" title="Permalink to this headline"></a></h2>
@@ -231,6 +417,51 @@ The temperatures calculated in this code implicitly had units of
 MeV, hence we need <span class="math notranslate nohighlight">\(r_0\)</span> in <a class="reference internal" href="physicsAnalysis/referenceScales.html"><span class="doc std std-doc">physical units</span></a>.
 Finally we call <code class="docutils literal notranslate"><span class="pre">gaudif</span></code> to carry out a Gaussian difference test or
 Z-test, which is implemented in our <a class="reference internal" href="dataAnalysis/statistics.html"><span class="doc std std-doc">statistics</span></a> module.</p>
+</section>
+<section id="statistical-bootstrap">
+<h2>Statistical bootstrap<a class="headerlink" href="#statistical-bootstrap" title="Permalink to this headline"></a></h2>
+<p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_bootstrap.py</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.math.spline</span> <span class="kn">import</span> <span class="n">getSpline</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.plotting</span> <span class="kn">import</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">plot_band</span><span class="p">,</span> <span class="n">latexify</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.statistics.bootstr</span> <span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
+<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+
+<span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;example_bootstrap.log&#39;</span><span class="p">)</span>
+
+<span class="n">latexify</span><span class="p">()</span>
+
+<span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span> <span class="o">=</span> <span class="n">readTable</span><span class="p">(</span><span class="s2">&quot;../testing/statistics/wurf.dat&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">plot_dots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span><span class="n">ydata</span><span class="p">,</span><span class="n">edata</span><span class="p">)</span>
+
+<span class="c1"># We will interpolate to these x-values</span>
+<span class="n">xspline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">xdata</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xdata</span><span class="p">),</span><span class="mi">101</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">splineError</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; We assume no errors in the xdata. For the ydata, we will pass the bootstrap</span>
+<span class="sd">    routine ydata along with the errors. The input to this function, data, will then</span>
+<span class="sd">    be generated in each bootstrap bin by drawing normally from ydata with a spread</span>
+<span class="sd">    of edata. In this example we simply get a spline, but you wrap anything you want</span>
+<span class="sd">    inside your bootstrap procedure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ys</span><span class="p">(</span><span class="n">xspline</span><span class="p">)</span>
+
+<span class="n">ybs</span><span class="p">,</span> <span class="n">ybserr</span> <span class="o">=</span> <span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">splineError</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">ydata</span><span class="p">,</span><span class="n">data_std_dev</span><span class="o">=</span><span class="n">edata</span><span class="p">,</span><span class="n">numb_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">plot_band</span><span class="p">(</span><span class="n">xspline</span><span class="p">,</span><span class="n">ybs</span><span class="o">-</span><span class="n">ybserr</span><span class="p">,</span><span class="n">ybs</span><span class="o">+</span><span class="n">ybserr</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;bootstrapped interpolation&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In the above example we created an interpolated band using the data; there are 100 bootstrap
+samples, where each data point is drawn from <code class="docutils literal notranslate"><span class="pre">normal(ydata,edata)</span></code>. The error is taken by
+default to be the 68-percentile bounds, and the central value is given as the median. Like
+the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> from the Ising model example, the bootstrap routine is parallelized by default.</p>
 </section>
 </section>
 

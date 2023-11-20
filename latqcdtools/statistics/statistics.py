@@ -1,7 +1,7 @@
 #
 # statistics.py
 #
-# H. Sandmeyer, D. Clarke
+# D. Clarke, H Sandmeyer 
 #
 # A collection of basic methods for statistical analysis. The following methods have been adapted from software of
 # Bernd Berg, Markov Chain Monte Carlo and their Statistical Analysis, World Scientific, 2004, ISBN=978-981-3106-37-6:
@@ -13,11 +13,11 @@ import numpy as np
 from scipy.linalg import inv
 from scipy.special import betainc, erf
 from latqcdtools.math.num_deriv import diff_jac 
-from latqcdtools.math.math import logDet
+from latqcdtools.math.math import logDet, normalize
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines
-from latqcdtools.base.utilities import isHigherDimensional
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy
 from latqcdtools.base.cleanData import clipRange
-from latqcdtools.base.check import checkType
+from latqcdtools.base.check import checkType, checkEqualLengths
 import latqcdtools.base.logger as logger
 
 
@@ -267,12 +267,35 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
     return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
 
 
+def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1):
+    """ Bayesian Akaike information criterion of 2208.14983.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): fit parameters. Defaults to ().
+        prior (array-like, optional): Bayesian priors. Defaults to None.
+        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        Ncut (int, optional): The number of data trimmed from your fit. Defaults to 0.
+        modelPrior (float, optional): The prior probability of your model. Defaults to 1.
+        
+    Returns:
+        float: Bayesian AIC 
+    """
+    nparams  = countParams(func,params)
+    chi2data = chisquare(xdata, ydata, cov, func, args, params, None, None)
+    return -2*np.log(modelPrior) + chi2data + 2*nparams + 2*Ncut 
+
+
 def pearson(x,y):
     """ Get the Pearson correlation coefficient between the time series x and y.
 
     Args:
-        x (array-like): _description_
-        y (array-like): _description_
+        x (array-like)
+        y (array-like)
 
     Returns:
         float: R 
@@ -438,23 +461,6 @@ def error_prop_func(x, func, params, params_err, grad=None, args=()):
     return error_prop(wrap_func, params, params_err, wrap_grad, args)[1]
 
 
-#def error_budget(x, func, means, errors, grad=None, args=()):
-#    if isHigherDimensional(errors):
-#        logger.TBError('Covariance matrix not yet supported.')
-#    # Strategy is to see separately contribution from each error
-#    sigma_f0 = error_prop_func(x,func,means,errors,grad=grad,args=args)
-#    sigma_fi = []
-#    for i in range(len(errors)):
-#        err_contrib    = np.zeros(len(errors))
-#        err_contrib[i] = errors[i]
-#        sigma_fi.append(error_prop_func(x,func,means,err_contrib,grad=grad,args=args))
-#    sigma_fi = np.array(sigma_fi)
-#    perc_fi = sigma_fi/sigma_f0
-#    print(np.sum(perc_fi))
-#    for i in range(len(errors)):
-#        logger.info('x_'+str(i),':',round(perc_fi[i],4))
-
-
 def gaudif(x1,e1,x2,e2):
     """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
@@ -477,7 +483,7 @@ def gaudif(x1,e1,x2,e2):
 
 
 def studif(x1,e1,ndat1,x2,e2,ndat2):
-    """Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
+    """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
     appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
 
@@ -559,3 +565,40 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
             return plot_lines(ydata, xdata, yedata=None, xedata=None, **kwargs)
         else:
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
+        
+
+
+def getModelWeights(IC):
+    """ Convert information criteria IC to normalized probability weights.
+
+    Args:
+        IC (array-like): Array of information criteria 
+
+    Returns:
+        np.array: Probability weights 
+    """
+    checkType(IC,'array')
+    IC = np.array(IC)
+    return normalize(np.exp(-0.5*IC))
+
+
+def modelAverage(data,err,IC):
+    """ Given some fit results, corresponding error, and information criteria, compute
+    a weighted model average.
+
+    Args:
+        data (array-like): Fit results 
+        err (array-like): Result errors 
+        IC (array-like): Information criteria 
+
+    Returns:
+        float: Model average 
+    """
+    checkEqualLengths(data,err,IC)
+    data, err, IC = toNumpy(data, err, IC)
+    pr = getModelWeights(IC)
+    mean = np.sum(pr*data)
+    var_data = err**2
+    var = np.sum(pr*var_data) + np.sum(pr*data**2) - mean**2
+    return mean, np.sqrt(var)
+

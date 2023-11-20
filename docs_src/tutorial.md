@@ -1,8 +1,9 @@
 # Tutorial
 
-Here we walk through two example calculations found in the `latqcdtools/examples`
-directory. The first shows a simple HRG calculation, while the second showcases
-a continuum limit extrapolation.
+Here we walk through some examples found in the `latqcdtools/examples`
+directory. We try to showcase the flexibility of things like the
+[bootstrap](dataAnalysis/bootstrap.md) routine, some convenience wrappers
+for plotting, and some pre-packaged physics analysis code.
 
 ## Hadron resonance gas calculation
 
@@ -61,6 +62,195 @@ generic conserved charge cumlants like the one computed with `gen_chi`,
 contains many methods for various thermodynamic observables such as the
 pressure and entropy.
 The results are saved in a table `chi2B.txt`.
+
+## Ising model
+
+The AnalysisToolbox is equipped with a `Lattice` class. This class takes care of
+indexing, assumes you have periodic boundary conditions, and has iterators, i.e.
+functions that perform some operation on every site of a subset of the lattice.
+This allows you to write your own statistical mechanical simulations. 
+
+Here is `latqcdtools/examples/main_isingModel.py`
+
+```Python
+
+import numpy as np
+from latqcdtools.physics.lattice import Lattice
+from latqcdtools.base.initialize import initialize, finalize
+from latqcdtools.base.plotting import latexify, plt, plot_dots, set_params, clearPlot
+from latqcdtools.base.printErrorBars import get_err_str
+from latqcdtools.statistics.statistics import std_mean
+from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS
+from latqcdtools.base.readWrite import writeTable
+from latqcdtools.statistics.jackknife import jackknife
+import latqcdtools.base.logger as logger
+
+
+initialize('example_ising.log')
+latexify()
+
+
+#
+# Simulation parameters. 
+#
+Nd    = 2        # number of dimensions
+Tlow  = 1.0      # lowest temperature to sample (kB=1)
+Thi   = 3.0      # highest temperature to sample
+h     = 0.       # external magnetic field
+L     = 8        # spatial extension
+Nequi = 300      # equilibrate with this many MCMC sweeps
+Nmeas = 100      # measure this many MCMC sweeps
+Nskip = 5        # separate measurements by this many MCMC sweeps
+start = 'hot'    # start with all spins up (up), down (down), or random (hot)
+
+
+Tlist = np.linspace(Tlow,Thi,2*DEFAULTTHREADS)
+logger.info()
+logger.info('Starting parameters:')
+logger.info('  Nequi =',Nequi)
+logger.info('  Nmeas =',Nmeas)
+logger.info('  Nskip =',Nskip)
+logger.info('   Latt =',str(L)+'^'+str(Nd))
+logger.info('      h =',h)
+logger.info()
+
+
+#
+# We wrap our simulation inside a function. This allows us to trivially parallelize our run
+# over the temperatures using parallel_function_eval.
+#
+def runIsingModel(T):
+
+    beta  = 1/T
+ 
+    # Initialize the random number generator. When carrying out a statistical physic MCMC, it's
+    # crucially important that you pick a good one. The default_rng() constructor is what
+    # numpy recommends, which at the time of writing utilizes O'Neill's PCG algorithm. 
+    rng = np.random.default_rng()
+
+    # Initialize the lattice object. The first argument says the lattice geometry will be L**Nd,
+    # while the second argument is an example of the kind of object that will be on each site.
+    # Here each site has a scalar, so I just put in the number 1.
+    lat = Lattice( (L,)*Nd, 1 )
+
+    def initialize_site(coord):
+        if start == 'up':
+            lat.setElement(coord,1)
+        elif start == 'down':
+            lat.setElement(coord,-1)
+        elif start == 'hot':
+            lat.setElement(coord,rng.choice([1,-1]))
+        else:
+            logger.TBError('Unknown start option',start)
+
+    # We then initialize all sites. Here interateOverRandom, whose naming convention follows that
+    # of SIMULATeQCD, is an iterator that applies the function initialize_site to each site.
+    # The function should take an array-like coord as argument. Look into the Lattice class to
+    # see what other iterators are possible. 
+    lat.iterateOverRandom(initialize_site)
+    
+
+    def getMagnetization():
+        """ Order parameter is |M|. """
+        return np.abs(np.sum(lat.grid)/lat.vol)
+    
+    
+    def mcLocal(coord):
+        """ The Markov step. 
+
+        Args:
+            coord (array-like): local coordinate 
+        """
+        s0 = lat.getElement(coord)
+        NNsum = 0.
+        for mu in range(Nd):
+            NNsum += lat.getElement(lat.march(coord,mu,1)) + lat.getElement(lat.march(coord,mu,-1))
+        dH = 2*beta*s0*NNsum
+        if dH < 0:
+            lat.setElement(coord,-s0)
+        elif rng.random() < np.exp(-dH):
+            lat.setElement(coord,-s0)
+    
+
+    # Equilibrate the lattice by carrying out Nequi equilibration steps.   
+    for iequi in range(Nequi):
+        lat.iterateOverRandom(mcLocal)
+    
+
+    # With the remaining MCMC steps, we measure the magnetization. We skip every Nskip MCMC 
+    # steps to reduce autocorrelation.    
+    magnetizations = []
+    for imeas in range(Nmeas):
+        for iskip in range(Nskip):
+            lat.iterateOverRandom(mcLocal)
+        magnetizations.append(getMagnetization())
+    magnetizations = np.array(magnetizations) 
+
+
+    def chi_M(M):
+        """ Magnetic susceptibility. """
+        return lat.vol*( std_mean(M**2)-std_mean(M)**2 )
+
+
+    def binder(M):
+        """ Binder cumulant. For the ising model in 2d, this should tend to 2/3 below
+        Tc, while it should tend to 0 above Tc, in the thermodynamic limit. """
+        return 1-np.mean(M**4)/(3*np.mean(M**2)**2)
+
+
+    # We have parallelized over the temperatures, so we're not allowed to parallelize over the jackknife:
+    # that would be nested parallelization!
+    Mm  , Me   = jackknife( std_mean, magnetizations, nproc=1 )
+    chim, chie = jackknife( chi_M   , magnetizations, nproc=1 )
+    Bm  , Be   = jackknife( binder  , magnetizations, nproc=1 )
+    logger.info('T, <|M|>, chi, B =',round(T,2),get_err_str(Mm,Me),get_err_str(chim,chie),get_err_str(Bm,Be))
+    return Mm, Me, chim, chie, Bm, Be
+
+
+# Parallelize over the temperatures. This parallelization strategy is easiest since each temperature
+# amounts to an independent run.
+data = parallel_function_eval(runIsingModel,Tlist)
+
+
+res_M    = []
+res_E    = []
+res_chi  = []
+res_chie = []
+res_B    = []
+res_Be   = []
+for i in range(len(Tlist)):
+    res_M.append(   data[i][0])
+    res_E.append(   data[i][1])
+    res_chi.append( data[i][2])
+    res_chie.append(data[i][3])
+    res_B.append(   data[i][4])
+    res_Be.append(  data[i][5])
+
+
+# Plot the magnetization.
+plot_dots(Tlist,res_M,res_E)
+set_params(xlabel='$T$',ylabel='$\\ev{|M|}$',title='$V='+str(L)+'^'+str(Nd)+'$ Ising model',alpha_xlabel=0)
+plt.show()
+clearPlot()
+
+
+# Plot the magnetic susceptibility.
+plot_dots(Tlist,res_chi,res_chie)
+set_params(xlabel='$T$',ylabel='$\\ev{\\chi}$',title='$V='+str(L)+'^'+str(Nd)+'$ Ising model',alpha_xlabel=0)
+plt.show()
+
+
+# Record the results in a nicely formatted table.
+writeTable('ising_'+str(L)+'_'+str(Nd)+'.d',Tlist,res_M,res_E,res_chi,res_chie,res_B,res_Be,
+           header=['T','|M|','|M|_err','chi','chi_err','B','Be'])
+finalize()
+```
+
+Again, the most useful feature of this example is the `Lattice` class. This wraps a
+lattice that saves an object of arbitrary type at each site, here scalars. You can move
+one site in a direction using `march`. In the Metropolis step, we feature the lattice
+accessors `getElement` and `setElement`. To deal with autocorrelation and propagate
+error, we use the [jackknife](dataAnalysis/jackknife.md) class.
 
 ## Continuum-limit extrapolation
 
@@ -160,3 +350,50 @@ The temperatures calculated in this code implicitly had units of
 MeV, hence we need $r_0$ in [physical units](physicsAnalysis/referenceScales.md). 
 Finally we call `gaudif` to carry out a Gaussian difference test or
 Z-test, which is implemented in our [statistics](dataAnalysis/statistics.md) module.
+
+## Statistical bootstrap
+
+Here is `latqcdtools/examples/main_bootstrap.py`
+
+```Python
+import numpy as np
+from latqcdtools.base.readWrite import readTable
+from latqcdtools.math.spline import getSpline
+from latqcdtools.base.plotting import plt, plot_dots, plot_band, latexify
+from latqcdtools.statistics.bootstr import bootstr_from_gauss
+from latqcdtools.base.initialize import initialize, finalize
+
+initialize('example_bootstrap.log')
+
+latexify()
+
+xdata, ydata, edata = readTable("../testing/statistics/wurf.dat", usecols=(0,2,3))
+
+plot_dots(xdata,ydata,edata)
+
+# We will interpolate to these x-values
+xspline = np.linspace(np.min(xdata),np.max(xdata),101)
+
+def splineError(data):
+    """ We assume no errors in the xdata. For the ydata, we will pass the bootstrap
+    routine ydata along with the errors. The input to this function, data, will then
+    be generated in each bootstrap bin by drawing normally from ydata with a spread
+    of edata. In this example we simply get a spline, but you wrap anything you want
+    inside your bootstrap procedure.
+    """
+    ys = getSpline(xdata,data,3)
+    return ys(xspline)
+
+ybs, ybserr = bootstr_from_gauss(splineError,data=ydata,data_std_dev=edata,numb_samples=100)
+
+plot_band(xspline,ybs-ybserr,ybs+ybserr,label='bootstrapped interpolation')
+
+plt.show()
+
+finalize()
+```
+
+In the above example we created an interpolated band using the data; there are 100 bootstrap
+samples, where each data point is drawn from `normal(ydata,edata)`. The error is taken by
+default to be the 68-percentile bounds, and the central value is given as the median. Like
+the `jackknife` from the Ising model example, the bootstrap routine is parallelized by default.

@@ -101,9 +101,9 @@ class Extrapolator(Fitter):
             self._result, self._result_err, self._chidof = self.try_fit(start_params=coeffs, algorithms=std_algs)
             return self._result, self._result_err, self._chidof
         else:
-            self._result, self._result_err, self._chidof, self._logGBF, _ = self.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err, 
-                                                                                         algorithms=bayes_algs, detailedInfo=True)
-            return self._result, self._result_err, self._chidof, self._logGBF
+            self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err, 
+                                                                                     algorithms=bayes_algs, detailedInfo=True)
+            return self._result, self._result_err, self._chidof, self._stats
 
 
     def plot(self,**kwargs):
@@ -114,6 +114,13 @@ class Extrapolator(Fitter):
         self.plot_data(**kwargs)
         kwargs['label']=None
         self.plot_fit(domain,**kwargs)
+
+
+    def save(self,filename,header):
+        if not self._triedExtrapolation:
+            logger.TBError("Can't save an extrapolation without having extrapolated first...")
+        domain=(1e-8,np.max(self._xdata))
+        self.save_func(filename,domain,header=header)
 
 
     def showResults(self):

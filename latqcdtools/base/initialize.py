@@ -21,11 +21,14 @@ def gitHash():
         str: git hash 
     """
     PYTHONPATH = shell('echo $PYTHONPATH')
-    for entry in PYTHONPATH.split(':'):
-        # The package was called AnalysisToolbox, then LatticeToolbox, then AnalysisToolbox again. 
-        if ('AnalysisToolbox' in entry) or ('LatticeToolbox' in entry):
-            toolboxLocation = entry.strip()
-    hash=shell('git --git-dir="'+toolboxLocation+'/.git" rev-parse HEAD').strip()
+    try:
+        for entry in PYTHONPATH.split(':'):
+            # The package was called AnalysisToolbox, then LatticeToolbox, then AnalysisToolbox again. 
+            if ('AnalysisToolbox' in entry) or ('LatticeToolbox' in entry):
+                toolboxLocation = entry.strip()
+        hash=shell('git --git-dir="'+toolboxLocation+'/.git" rev-parse HEAD').strip()
+    except:
+        hash='GIT_NOT_FOUND'
     return hash 
 
 

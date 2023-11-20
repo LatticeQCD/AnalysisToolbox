@@ -50,9 +50,13 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
 
     logger.details('Trying',algorithm,'with maxiter=',maxiter)
 
-    if algorithm in ["TNC","SLSQP","L-BFGS-B","CG"]:
+    if algorithm in ["SLSQP","L-BFGS-B","CG"]:
         kwargs['jac'] = jack
         kwargs['options'] = {'maxiter': maxiter}
+
+    elif algorithm == "TNC":
+        kwargs['jac'] = jack
+        kwargs['options'] = {'maxfun': maxiter}
 
     elif algorithm in ["COBYLA","Nelder-Mead"]:
         kwargs['options'] = {'maxiter': maxiter}
