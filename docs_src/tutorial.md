@@ -1,8 +1,9 @@
 # Tutorial
 
-Here we walk through two example calculations found in the `latqcdtools/examples`
-directory. The first shows a simple HRG calculation, while the second showcases
-a continuum limit extrapolation.
+Here we walk through some examples found in the `latqcdtools/examples`
+directory. We try to showcase the flexibility of things like the
+[bootstrap](dataAnalysis/bootstrap.md) routine, some convenience wrappers
+for plotting, and some pre-packaged physics analysis code.
 
 ## Hadron resonance gas calculation
 
@@ -349,3 +350,50 @@ The temperatures calculated in this code implicitly had units of
 MeV, hence we need $r_0$ in [physical units](physicsAnalysis/referenceScales.md). 
 Finally we call `gaudif` to carry out a Gaussian difference test or
 Z-test, which is implemented in our [statistics](dataAnalysis/statistics.md) module.
+
+## Statistical bootstrap
+
+Here is `latqcdtools/examples/main_bootstrap.py`
+
+```Python
+import numpy as np
+from latqcdtools.base.readWrite import readTable
+from latqcdtools.math.spline import getSpline
+from latqcdtools.base.plotting import plt, plot_dots, plot_band, latexify
+from latqcdtools.statistics.bootstr import bootstr_from_gauss
+from latqcdtools.base.initialize import initialize, finalize
+
+initialize('example_bootstrap.log')
+
+latexify()
+
+xdata, ydata, edata = readTable("../testing/statistics/wurf.dat", usecols=(0,2,3))
+
+plot_dots(xdata,ydata,edata)
+
+# We will interpolate to these x-values
+xspline = np.linspace(np.min(xdata),np.max(xdata),101)
+
+def splineError(data):
+    """ We assume no errors in the xdata. For the ydata, we will pass the bootstrap
+    routine ydata along with the errors. The input to this function, data, will then
+    be generated in each bootstrap bin by drawing normally from ydata with a spread
+    of edata. In this example we simply get a spline, but you wrap anything you want
+    inside your bootstrap procedure.
+    """
+    ys = getSpline(xdata,data,3)
+    return ys(xspline)
+
+ybs, ybserr = bootstr_from_gauss(splineError,data=ydata,data_std_dev=edata,numb_samples=100)
+
+plot_band(xspline,ybs-ybserr,ybs+ybserr,label='bootstrapped interpolation')
+
+plt.show()
+
+finalize()
+```
+
+In the above example we created an interpolated band using the data; there are 100 bootstrap
+samples, where each data point is drawn from `normal(ydata,edata)`. The error is taken by
+default to be the 68-percentile bounds, and the central value is given as the median. Like
+the `jackknife` from the Ising model example, the bootstrap routine is parallelized by default.
