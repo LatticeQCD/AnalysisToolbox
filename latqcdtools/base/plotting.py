@@ -482,21 +482,21 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         **params: Additional parameters that can be set.
     """
     fill_param_dict(params)
-    data = readTable(filename)
+    data = readTable(filename,dtype=str)
     checkType(xcol,int)
     checkType(ycol,int)
-    xdata  = data[xcol]
-    ydata  = data[ycol]
+    xdata  = data[xcol].astype(float)
+    ydata  = data[ycol].astype(float)
     yedata = None
     xedata = None
 
     if yecol is not None:
-        yedata = data[yecol]
+        yedata = data[yecol].astype(float)
     else:
         if style == "fill":
             logger.TBError("Need error column for filled plotting")
     if xecol is not None:
-        xedata = data[xecol]
+        xedata = data[xecol].astype(float)
 
     checkEqualLengths(xdata,ydata,xedata,yedata)
 
