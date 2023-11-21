@@ -58,6 +58,11 @@ class observablesOfInterest(list):
             logger.TBError('part must be Re or Im. Got', part)
 
 
+def mean_square(vec):
+    """ Unbiased calculation of < vec**2 >. """
+    N = len(vec)
+    return ( np.sum(vec)**2 - np.sum(vec**2) )/( N*(N-1))
+
 
 def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
 
@@ -96,7 +101,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         if len(cID) != len(cID.strip()):
             logger.TBError('confIDs must not have whitespace! This throws off the column indexing.')
 
-        nlVec=np.array(opTable[cID][0])
+        nlVec=np.array(opTable[cID][0]) 
         nsVec=np.array(opTable[cID][1])
         numVec_l=len(nlVec)
         numVec_s=len(nsVec)
@@ -105,7 +110,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             logger.warn("Unexpected numVec for nf, cID = "+cID+"... skipping")
             continue
 
-        nl2Vec=np.array(opTable[cID][2])
+        nl2Vec=np.array(opTable[cID][2])  # tr ( M^-1 d M )^2
         ns2Vec=np.array(opTable[cID][3])
         numVec_l2=len(nl2Vec)
         numVec_s2=len(ns2Vec)
@@ -136,47 +141,15 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             logger.warn("Found zero random vectors for an observable, cID = "+cID+"... skipping")
             continue
 
-        # Any time you see this np.sum subtraction, we are using the unbiased estimators method. I follow the
-        # QCD Thermodynamics section of my researchNotes.
-        if abs(mu) < 1e-12:
-            # At mu=0, the n_f should be pure imaginary configuration by configuration. This introduces a minus sign
-            # on some of the terms.
-            chi2l   = - (1/4)*np.mean(nl2Vec.real) + (1/4)*np.mean(MddMlVec.real) \
-                      - vol4*(1/4)**2*( np.sum(nlVec.imag)**2 - np.sum(nlVec.imag**2) )/( numVec_l*(numVec_l-1) )
-            chi2s   = - (1/4)*np.mean(ns2Vec.real) + (1/4)*np.mean(MddMsVec.real) \
-                      - vol4*(1/4)**2*( np.sum(nsVec.imag)**2 - np.sum(nsVec.imag**2) )/( numVec_s*(numVec_s-1) )
-            chi11ll = - vol4*(1/4)**2*( np.sum(nlVec.imag)**2 - np.sum(nlVec.imag**2) )/( numVec_l*(numVec_l-1) )
-            chi11ls = - vol4*(1/4)**2*( np.sum(nlVec.imag)*np.sum(nsVec.imag) )/( numVec_l*numVec_s )
+        # I follow the QCD Thermodynamics section of my researchNotes.
+        chi2l   = + vol4*( mean_square(nlVec) )/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
+        chi2s   = + vol4*( mean_square(nsVec) )/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
+        chi11ll = + vol4*( mean_square(nlVec) )/16
+        chi11ls = + vol4*( np.mean(nlVec)*np.mean(nsVec) )/16
 
-            # Get n**2. Each n_f is pure imaginary, so we will get an i**2=-1.
-            nl2  = - ( -np.sum(nlVec.imag**2) + np.sum(nlVec.imag)**2 )*vol4/16
-            ns2  = - ( -np.sum(nsVec.imag**2) + np.sum(nsVec.imag)**2 )*vol4/16
-            nlns = - np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16
-
-            # Change type for compatibility with the rest of the module. (Otherwise when initializing my
-            # observablesOfInterest object I have to know which are real and complex ahead of time.
-            chi2l   = complex(chi2l)
-            chi2s   = complex(chi2s)
-            chi11ll = complex(chi11ll)
-            chi11ls = complex(chi11ls)
-            nl2     = complex(nl2)
-            ns2     = complex(ns2)
-            nlns    = complex(nlns)
-
-        else:
-            chi2l   = - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec) \
-                      + vol4*(1/4)**2*( np.sum(nlVec)**2 - np.sum(nlVec**2) )/( numVec_l*(numVec_l-1) ) \
-                      - vol4*(1/4)**2*np.mean(nlVec)**2
-            chi2s   = - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec) \
-                      + vol4*(1/4)**2*( np.sum(nsVec)**2 - np.sum(nsVec**2) )/( numVec_s*(numVec_s-1) ) \
-                      - vol4*(1/4)**2*np.mean(nlVec)**2
-            chi11ll =   vol4*(1/4)**2*( np.sum(nlVec)**2 - np.sum(nlVec**2) )/( numVec_l*(numVec_l-1) ) \
-                      - vol4*(1/4)**2*np.mean(nlVec)**2
-            chi11ls =   vol4*(1/4)**2*( np.sum(nlVec)*np.sum(nsVec) )/( numVec_l*numVec_s ) \
-                      - vol4*(1/4)**2*np.mean(nlVec)*np.mean(nsVec)
-            nl2     = - ( -np.sum(nlVec**2) + np.sum(nlVec)**2 )*vol4/16
-            ns2     = - ( -np.sum(nsVec**2) + np.sum(nsVec)**2 )*vol4/16
-            nlns    = - np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16
+        nl2  = - ( +np.sum(nlVec**2) - np.sum(nlVec)**2 )*vol4/16
+        ns2  = - ( +np.sum(nsVec**2) - np.sum(nsVec)**2 )*vol4/16
+        nlns = + np.mean(nlVec)*np.mean(nsVec)*vol4/16
 
         nl2 /= numVec_l*(numVec_l-1)
         ns2 /= numVec_s*(numVec_s-1)

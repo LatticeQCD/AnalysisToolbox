@@ -67,6 +67,7 @@ _baseUnits = [
              "mi/h",   # mile/hour
              "min",    # minute
              "s",      # second
+             "d",      # day
              "W",      # Watt
              "Wh",     # Watt-hour
              "Wh/y",   # Watt-hour/year
@@ -134,6 +135,10 @@ def convert(x,unit1,unit2):
         result = x/(days_per_year*24)
     elif u1u2==('y','h'):
         result = x*(days_per_year*24)
+    elif u1u2==('d','y'):
+        result = x/days_per_year
+    elif u1u2==('y','d'):
+        result = x*days_per_year
 
     # distance
     elif u1u2==('mi','m'):

@@ -16,6 +16,8 @@ from latqcdtools.math.math import rel_check
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import unvector
+from latqcdtools.base.printErrorBars import get_err_str
+from latqcdtools.statistics.statistics import std_mean, std_err
 
 logger.set_log_level('INFO')
 
@@ -55,6 +57,9 @@ def testDensObs():
     REFdata = readTable('denseObs/n_n2_dn_table_ms40_b6260.d')
     data = np.genfromtxt('denseObs/denseObservables.d', dtype=obs.dtypes, unpack=True)
 
+    # see whether it actually decreases the error to do the imaginary thing.
+    Narr = []
+
     # Compare new class to reference
     lpass = True
     for iconf in range(len(data[0])):
@@ -93,6 +98,8 @@ def testDensObs():
         chi11ls = data[obs.getCol('Re','chi11ls')][iconf]
         chi2B   = data[obs.getCol('Re','chi2B')][iconf]
         chi2Q   = data[obs.getCol('Re','chi2Q')][iconf]
+
+        Narr.append(chi2l) 
 
         if not rel_check(ReN,REFReN,prec=EPSILON):
             lpass = False
@@ -142,6 +149,8 @@ def testDensObs():
         if not rel_check(chi2Q,REFchi2Q):
             lpass = False
             logger.TBFail('chi2Q',chi2Q,'ref',REFchi2Q,'conf',confID)
+
+    print(get_err_str(std_mean(Narr),std_err(Narr))) 
 
     concludeTest(lpass)
 
