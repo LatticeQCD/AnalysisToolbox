@@ -141,18 +141,18 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
             logger.warn("Found zero random vectors for an observable, cID = "+cID+"... skipping")
             continue
 
-        # I follow the QCD Thermodynamics section of my researchNotes.
-        chi2l   = + vol4*( mean_square(nlVec) )/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
-        chi2s   = + vol4*( mean_square(nsVec) )/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
-        chi11ll = + vol4*( mean_square(nlVec) )/16
-        chi11ls = + vol4*( np.mean(nlVec)*np.mean(nsVec) )/16
+        # I follow the QCD Thermodynamics section of my researchNotes. In the dense code, each trace comes
+        # with a 1/vol4. So whenever we have stuff like obs**2, since each factor obs has a trace, we need
+        # to multiply by vol4 to a correct normalization.
+        chi2l   = + vol4*( mean_square(nlVec) )/16 - vol4*np.mean(nlVec)**2/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
+        chi2s   = + vol4*( mean_square(nsVec) )/16 - vol4*np.mean(nsVec)**2/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
+        chi11ll = + vol4*( mean_square(nlVec) )/16 - vol4*np.mean(nlVec)**2/16
+        chi11ls = + vol4*( np.mean(nlVec*nsVec) - np.mean(nlVec)*np.mean(nsVec) )/16
 
-        nl2  = - ( +np.sum(nlVec**2) - np.sum(nlVec)**2 )*vol4/16
-        ns2  = - ( +np.sum(nsVec**2) - np.sum(nsVec)**2 )*vol4/16
-        nlns = + np.mean(nlVec)*np.mean(nsVec)*vol4/16
-
-        nl2 /= numVec_l*(numVec_l-1)
-        ns2 /= numVec_s*(numVec_s-1)
+        # TODO: There seems to be a possibility for reuse of this number above 
+        nl2  = mean_square(nlVec)*vol4/16
+        ns2  = mean_square(nsVec)*vol4/16
+        nlns = np.mean(nlVec)*np.mean(nsVec)*vol4/16
 
         chi2Q = (1/9)*( 5*chi2l + chi2s - 4*chi11ll - 2*chi11ls )
         chi2B = (1/9)*( 2*chi2l + chi2s + 2*chi11ll + 4*chi11ls )
@@ -165,6 +165,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         dnI  =     dnl + dns
         dn   = ( 2*dnl + dns )/9
 
+        # TODO: possiblity for reuse above
         nl   =  np.mean( nlVec )/4
         ns   =  np.mean( nsVec )/4
         n    =  (2*nl + ns)/3

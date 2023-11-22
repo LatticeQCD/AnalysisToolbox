@@ -341,12 +341,15 @@ def set_params(**params):
     if ZOD is None:
         ZOD = globals()['ZOD']
 
-    if params['xlabelpos'] is not None:
-        if params['xlabel'] is None:
-            logger.warn('Set xlabelpos with no xlabel.')
-    if params['ylabelpos'] is not None:
-        if params['ylabel'] is None:
-            logger.warn('Set ylabelpos with no ylabel.')
+    # Check for some contradictory settings.
+    if (params['xlabelpos'] is not None) and (params['xlabel'] is None):
+        logger.warn('Set xlabelpos with no xlabel.')
+    if (params['ylabelpos'] is not None) and (params['ylabel'] is None):
+        logger.warn('Set ylabelpos with no ylabel.')
+    if params['xlogscale'] and params['xtick_freq'] is not None:
+        logger.warn("xtick_freq assumes no log scale.")
+    if params['ylogscale'] and params['ytick_freq'] is not None:
+        logger.warn("ytick_freq assumes no log scale.")
 
     if params['xlabel'] is not None:
         checkType(params['xlabel'],str)
@@ -377,12 +380,6 @@ def set_params(**params):
     if params['title'] is not None:
         checkType(params['title'],str)
         plt.title(params['title'])
-
-    if params['xlogscale'] and params['xtick_freq'] is not None:
-        logger.warn("xtick_freq assumes no log scale.")
-
-    if params['ylogscale'] and params['ytick_freq'] is not None:
-        logger.warn("ytick_freq assumes no log scale.")
 
     if params['xlogscale']:
         ax.set_xscale('log')
@@ -521,6 +518,17 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         logger.TBError("Unknown style",style)
 
 
+def _rescale(scale,data):
+    """ Rescale the data, taking into account there may be no data.
+
+    Args:
+        scale (float)
+        data (array-like or None)
+    """
+    if data is not None:
+        return np.copy(data*scale)
+
+
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     """ Plot ydata vs xdata as dots. 
 
@@ -540,12 +548,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
     ax  = _getAxObject(params)
 
-    xscale = params['xscale']
-    yscale = params['yscale']
-    if xedata is not None:
-        xedata=np.copy(xedata*xscale)
-    if yedata is not None:
-        yedata=np.copy(yedata*yscale)
+    xedata = _rescale(params['xscale'],xedata)
+    yedata = _rescale(params['yscale'],yedata)
 
     ZOD = params['ZOD']
     if ZOD is None:
@@ -555,14 +559,14 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     if marker == "iter":
         marker = next(markers)
     if params['color'] is not None:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], alpha=params['alpha_dots'],  color=params['color'],
+        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+                           linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], color=params['color'],
                            zorder=ZOD, markersize=params['markersize'], capsize=params['capsize'],
                            elinewidth=params['elinewidth'], markeredgewidth=params['elinewidth'],
                            markerfacecolor = params['point_fill_color'], **optional)
     else:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
+        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+                           linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], markerfacecolor = params['point_fill_color'],
                            **optional)
@@ -662,14 +666,10 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     fill_param_dict(params)
     optional = _add_optional(params)
     xdata, ydata, yedata, xedata = _remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
-    xscale=params['xscale']
-    yscale=params['yscale']
     ax  = _getAxObject(params)
 
-    if xedata is not None:
-        xedata=np.copy(xedata*xscale)
-    if yedata is not None:
-        yedata=np.copy(yedata*yscale)
+    xedata = _rescale(params['xscale'],xedata)
+    yedata = _rescale(params['yscale'],yedata)
 
     ZOD = params['ZOD']
     if ZOD is None:
@@ -680,14 +680,14 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
         marker = next(markers)
 
     if params['color'] is not None:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
+        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+                           linestyle='None', linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
                            markerfacecolor = params['point_fill_color'])
     else:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, yerr=yedata, xerr=xedata, marker=marker, linestyle='None',
-                           linewidth=params['linewidth'], zorder=ZOD, markersize=params['markersize'],
+        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+                           linestyle='None', linewidth=params['linewidth'], zorder=ZOD, markersize=params['markersize'],
                            capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
                            markerfacecolor = params['point_fill_color'])
@@ -696,8 +696,8 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 
     col = ebar[0].get_color()
 
-    line = ax.errorbar(xdata*xscale, ydata*yscale, color = col, linewidth=params['linewidth'], zorder = ZOD,
-                       alpha = params["alpha_lines"], **optional)
+    line = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], color = col, linewidth=params['linewidth'], 
+                       zorder = ZOD, alpha = params["alpha_lines"], **optional)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
@@ -733,31 +733,31 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     else:
         ydata, xdata, xedata = _remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
 
-    xscale = params['xscale']
-    yscale = params['yscale']
     ax     = _getAxObject(params)
     ZOD    = params['ZOD']
     if ZOD is None:
         ZOD = globals()['ZOD']
 
     if params['color'] is not None:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
-                           alpha = params['alpha_lines'], **optional)
+        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+                           color=params['color'], zorder=ZOD, alpha = params['alpha_lines'], **optional)
     else:
-        ebar = ax.errorbar(xdata*xscale, ydata*yscale, linewidth=params['linewidth'], zorder=ZOD,
-                           alpha = params['alpha_lines'], **optional)
+        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+                           zorder=ZOD, alpha = params['alpha_lines'], **optional)
 
     globals()['ZOD'] += 1
 
     col = ebar[0].get_color()
     if xedata is None:
-        pl = ax.fill_between(xdata*xscale, (np.asarray(ydata*yscale) - np.asarray(yedata*yscale)),
-                             (np.asarray(ydata*yscale) + np.asarray(yedata*yscale)), facecolor=col, alpha=params['alpha'],
-                             linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
+        pl = ax.fill_between(xdata*params['xscale'], 
+                             (np.asarray(ydata*params['yscale']) - np.asarray(yedata*params['yscale'])),
+                             (np.asarray(ydata*params['yscale']) + np.asarray(yedata*params['yscale'])), 
+                             facecolor=col, alpha=params['alpha'], linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
     else:
-        pl = ax.fill_betweenx(ydata * yscale, (np.asarray(xdata * xscale) - np.asarray(xedata * xscale)),
-                             (np.asarray(xdata * xscale) + np.asarray(xedata * xscale)), facecolor=col,
-                             alpha=params['alpha'],linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
+        pl = ax.fill_betweenx(ydata*params['yscale'], 
+                              (np.asarray(xdata*params['xscale']) - np.asarray(xedata*params['xscale'])),
+                              (np.asarray(xdata*params['xscale']) + np.asarray(xedata*params['xscale'])), 
+                              facecolor=col, alpha=params['alpha'],linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
@@ -786,8 +786,6 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     else:
         xdata, low_lim, up_lim = _remove_points(xdata, low_lim, up_lim, minval=params['xmin'], maxval=params['xmax'])
 
-    xscale=params['xscale']
-    yscale=params['yscale']
     ax  = _getAxObject(params)
 
     ZOD = params['ZOD']
@@ -797,22 +795,22 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     globals()['ZOD'] += 1
 
     if params['color'] is None:
-        pl = ax.fill_between(xdata*xscale, yscale*low_lim, yscale*up_lim, alpha=params['alpha'], linewidth=0, zorder=1)
+        pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, alpha=params['alpha'], linewidth=0, zorder=1)
     else:
-        pl = ax.fill_between(xdata*xscale, yscale*low_lim, yscale*up_lim, facecolor=params['color'],
+        pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, facecolor=params['color'],
                              alpha=params['alpha'], linewidth=0, zorder=1)
 
     col = matplotlib.colors.rgb2hex(pl.get_facecolor()[0])
 
     if params['alpha_lines'] != 0:
-        ax.errorbar(xdata*xscale, yscale*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
+        ax.errorbar(xdata*params['xscale'], params['yscale']*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
                     alpha = params["alpha_fill_edge"])
-        ax.errorbar(xdata*xscale, yscale*up_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
+        ax.errorbar(xdata*params['xscale'], params['yscale']*up_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
                     alpha = params["alpha_fill_edge"])
 
     ebar = None
     if center is not None:
-        ebar = ax.errorbar(xdata*xscale, center*yscale, linewidth=params['linewidth'], color=col, zorder=ZOD,
+        ebar = ax.errorbar(xdata*params['xscale'], center*params['yscale'], linewidth=params['linewidth'], color=col, zorder=ZOD,
                            alpha = params['alpha_lines'], **optional)
 
     if params['label'] is not None:

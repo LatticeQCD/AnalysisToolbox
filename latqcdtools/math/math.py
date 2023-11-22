@@ -21,7 +21,7 @@ ze_3 = np.zeros((3,3), dtype=complex)
 
 
 def normalize(arr):
-    return arr/np.sum(arr)
+    return arr/np.sum(np.abs(arr))
 
 
 def fallFactorial(n,m):
