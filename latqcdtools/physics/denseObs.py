@@ -61,6 +61,7 @@ class observablesOfInterest(list):
 def mean_square(vec):
     """ Unbiased calculation of < vec**2 >. """
     N = len(vec)
+    #                         diagonal terms
     return ( np.sum(vec)**2 - np.sum(vec**2) )/( N*(N-1))
 
 
@@ -143,16 +144,19 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
 
         # I follow the QCD Thermodynamics section of my researchNotes. In the dense code, each trace comes
         # with a 1/vol4. So whenever we have stuff like obs**2, since each factor obs has a trace, we need
-        # to multiply by vol4 to a correct normalization.
-        chi2l   = + vol4*( mean_square(nlVec) )/16 - vol4*np.mean(nlVec)**2/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
-        chi2s   = + vol4*( mean_square(nsVec) )/16 - vol4*np.mean(nsVec)**2/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
-        chi11ll = + vol4*( mean_square(nlVec) )/16 - vol4*np.mean(nlVec)**2/16
-        chi11ls = + vol4*( np.mean(nlVec*nsVec) - np.mean(nlVec)*np.mean(nsVec) )/16
+        # to multiply by vol4 to a correct normalization. Number densities should be pure imaginary
+        # configuration by configuration at mu=0 and for pure imaginary mu, so we extract these pure
+        # imaginary parts to reduce the noise. When this quantity is squared, it introduces a (-) sign.
+        chi2l   = - vol4*( mean_square(nlVec.imag) )/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
+        chi2s   = - vol4*( mean_square(nsVec.imag) )/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
+        chi11ll = - vol4*( mean_square(nlVec.imag) )/16 + 0*1j 
+#        chi11ls = - vol4*( np.mean(nlVec.imag*nsVec.imag) - np.mean(nlVec.imag)*np.mean(nsVec.imag) )/16 + 0*1j
+        chi11ls = - vol4*( np.mean(nlVec.imag)*np.mean(nsVec.imag) )/16 + 0*1j
 
         # TODO: There seems to be a possibility for reuse of this number above 
-        nl2  = mean_square(nlVec)*vol4/16
-        ns2  = mean_square(nsVec)*vol4/16
-        nlns = np.mean(nlVec)*np.mean(nsVec)*vol4/16
+        nl2  = - mean_square(nlVec.imag)*vol4/16 + 0j
+        ns2  = - mean_square(nsVec.imag)*vol4/16 + 0j
+        nlns = np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16 +0j
 
         chi2Q = (1/9)*( 5*chi2l + chi2s - 4*chi11ll - 2*chi11ls )
         chi2B = (1/9)*( 2*chi2l + chi2s + 2*chi11ll + 4*chi11ls )
@@ -165,7 +169,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         dnI  =     dnl + dns
         dn   = ( 2*dnl + dns )/9
 
-        # TODO: possiblity for reuse above
+        # TODO: possiblity for reuse above?
         nl   =  np.mean( nlVec )/4
         ns   =  np.mean( nsVec )/4
         n    =  (2*nl + ns)/3
