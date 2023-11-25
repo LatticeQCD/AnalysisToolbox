@@ -102,7 +102,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         if len(cID) != len(cID.strip()):
             logger.TBError('confIDs must not have whitespace! This throws off the column indexing.')
 
-        nlVec=np.array(opTable[cID][0]) 
+        nlVec=np.array(opTable[cID][0]) # tr M^-1 d M 
         nsVec=np.array(opTable[cID][1])
         numVec_l=len(nlVec)
         numVec_s=len(nsVec)
@@ -147,7 +147,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         # to multiply by vol4 to a correct normalization. Number densities should be pure imaginary
         # configuration by configuration at mu=0 and for pure imaginary mu, so we extract these pure
         # imaginary parts to reduce the noise. When this quantity is squared, it introduces a (-) sign.
-        chi2l   = - vol4*( mean_square(nlVec.imag) )/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
+        chi2l   = - vol4*( mean_square(nlVec.imag) )/16 + vol4*np.mean(nlVec.imag)**2/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
         chi2s   = - vol4*( mean_square(nsVec.imag) )/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
         chi11ll = - vol4*( mean_square(nlVec.imag) )/16 + 0*1j 
 #        chi11ls = - vol4*( np.mean(nlVec.imag*nsVec.imag) - np.mean(nlVec.imag)*np.mean(nsVec.imag) )/16 + 0*1j

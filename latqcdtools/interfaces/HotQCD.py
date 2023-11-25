@@ -273,7 +273,7 @@ def loadDens(densFile,confID,lp,inTable=None):
 
     # In the following light and strange quarks are indexed by l and s, respectively.
     if not confID in outTable:
-        nlVec      = []  # quark number density, n
+        nlVec      = []  # tr M^-1 d M 
         nsVec      = []
         nl2Vec     = []  # tr ( M^-1 d M )^2
         ns2Vec     = []
