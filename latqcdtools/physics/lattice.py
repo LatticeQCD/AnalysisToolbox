@@ -62,6 +62,7 @@ class Lattice():
         return self.grid[tuple(coord)]
 
 
+    # define iterateOverDomain('bulk','random',etc)
     def iterateOverBulk(self,func):
         """ Carry out function func on every site of the lattice. 
 
@@ -69,8 +70,14 @@ class Lattice():
             func (func): Action to be carried out on every site. Must take coord as
                          its only argument.
         """
+        container=[]
         for coord in self.bulk:
-            func(coord)
+            container.append(func(coord))
+        return np.array(container)
+
+
+    def bulkReduce(self,func):
+        return np.sum(self.iterateOverBulk(func))/self.vol
 
 
     def iterateOverRandom(self,func):
@@ -81,8 +88,10 @@ class Lattice():
                          its only argument.
         """
         permutation = np.random.choice(range(self.vol),size=self.vol,replace=False)
+        container=[]
         for i in permutation:
             func(self.bulk[i])
+        return np.array(container)
 
 
 

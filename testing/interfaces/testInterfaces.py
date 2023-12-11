@@ -44,23 +44,31 @@ def testInterfaces():
 
     lpass = True
 
-    test = latexTable() 
-    test.append([1,2,3])
-    test.append([1,2,3])
-    test.append([1,2,3])
-    test.outputTable('testInterface.tex')
+    ref = latexTable() 
+    ref.append(['1','2','3'])
+    ref.append(['1','2','3'])
+    ref.append(['1','2','3'])
+    ref.outputTable('testInterface.tex')
+    test = latexTable()
+    test.readTable('testInterface.tex')
+    lpass *= test==ref
 
-    test = redmineTable() 
-    test.append([1,2,3])
-    test.append([1,2,3])
-    test.append([1,2,3])
-    test.outputTable('testInterface.redmine')
+    ref = redmineTable() 
+    ref.append(['1','2','3'])
+    ref.append(['1','2','3'])
+    ref.append(['1','2','3'])
+    ref.outputTable('testInterface.redmine')
+    test = redmineTable()
+    test.readTable('testInterface.redmine')
+    lpass *= test==ref
 
-    # Test identity operation
     writeYAML(refDict,'test.yaml')
     testDict = readYAML('test.yaml')
     lpass *= testDict==refDict
+
     deleteFile('test.yaml') 
+    deleteFile('testInterface.tex') 
+    deleteFile('testInterface.redmine') 
 
     concludeTest(lpass) 
 

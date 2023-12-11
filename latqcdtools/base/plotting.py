@@ -17,7 +17,7 @@ from latqcdtools.base.utilities import isHigherDimensional, toNumpy
 from latqcdtools.base.readWrite import readTable
 
 
-ZOD        = 1      # Orders different layers 
+ZOD        = 10     # Orders different layers 
 INITIALIZE = True   # A global flag to ensure we only initialize once
 LEGEND     = False  # A global flag to apply legend attributes when we have one
 FOREGROUND = 99999  # zorder = FOREGROUND to put something in plot on top of everything else 
@@ -41,13 +41,14 @@ legend_labels  = { plt : [] }
 
 default_params = {
 
-    'ax': plt,  # Axis object that is used for the plots. Default is matplotlib.pyplot.
+    'ax': plt,    # Axis object that is used for the plots. Default is matplotlib.pyplot.
+    'ZOD': None,  # Controls where in foreground/background data/lines/bands appear.
 
     # Basic options affecting most plots.
     'xlabel': None,
-    'alpha_xlabel' : 1,          # Transparency for x-label
+    'alpha_xlabel': 1,           # Transparency for x-label
     'ylabel': None,
-    'alpha_ylabel' : 1,          # Transparency for y-label
+    'alpha_ylabel': 1,           # Transparency for y-label
     'xmin': None,
     'xmax': None,
     'ymin': None,
@@ -55,9 +56,7 @@ default_params = {
     'title': None,
     'label': None,               # What are the data called? (Will appear in legend.)
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
-    'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
-    'markersize': 8,             # Size of the symbols.
-    'font_size': 16,             # Default font size for text.
+    'font_size': 12,             # Default font size for text.
     'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
     'ticksintoplot': True,       # Put ticks into plotting area.
@@ -71,8 +70,12 @@ default_params = {
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 1.0,           # Linewidth of the error bars of caps af error bars
-    'point_fill_color': "None",  # Fill color of points. Set to None (not as string) to have filled symbols
-    'ZOD': None,                 # Controls where in foreground/background data/lines/bands appear.
+    'grid' : False,              # Do you want to put a grid in the background?
+
+    # Data markers
+    'marker': "iter",            # Symbol used for plotting data. (Set to 'None' if you don't want any.)
+    'markersize': 8,             # Size of the symbols.
+    'markerfill': False,         # If False, markers are hollow
 
     # Options for the legend.
     # legendpos:
@@ -99,6 +102,8 @@ default_params = {
     'yscale': 1.0,
     'xlogscale': False,    # Should we use a log scale for the x-axis?
     'ylogscale': False,
+    'xlogbase': 10,
+    'ylogbase': 10,
 }
 
 
@@ -125,7 +130,7 @@ def clearPlot():
     """ Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. """
     logger.debug('Reset plot defaults.')
     global INITIALIZE, ZOD, LEGEND, legend_labels, legend_handles
-    ZOD        = 1
+    ZOD        = 10
     INITIALIZE = True
     LEGEND     = False
     legend_handles = { plt : [] }
@@ -172,9 +177,11 @@ def set_default_param(**kwargs):
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
-def _initializePlt(size,xmin,xmax,ymin,ymax):
+def _initializePlt(params):
     """ Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
-        so that this only gets called once per plot script. """
+        so that this only gets called once per plot. """
+    checkType(params,dict)
+    fill_param_dict(params)
     global INITIALIZE
     if INITIALIZE:
         logger.debug("Plot initializer called!")
@@ -182,48 +189,16 @@ def _initializePlt(size,xmin,xmax,ymin,ymax):
         logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
         INITIALIZE = False
         plt.rcParams['figure.autolayout'] = True
-        plt.rcParams['axes.titlesize'] = size
-        plt.rcParams['savefig.bbox'] = 'standard'
-        plt.rcParams['font.size'] = size
-        plt.rcParams['ytick.labelsize'] = size
-        plt.rcParams['xtick.labelsize'] = size
-        plt.rcParams['axes.labelsize'] = size
-        plt.rcParams['legend.fontsize'] = size
-        plt.rcParams['font.weight'] = default_params['font_weight']
-        set_xrange(xmin,xmax)
-        set_yrange(ymin,ymax)
-
-
-def _remove_points(data, *args, minval=None, maxval=None):
-    """ Assuming *args are a tuple of arrays of the same length as data, cut data and
-    args so that data fall between minval and maxval, and keep only the corresponding
-    elements of args. 
-
-    Args:
-        data (array-like)
-        minval (float, optional): minimum allowed data. Defaults to -np.inf.
-        maxval (float, optional): maximum allowed data. Defaults to np.inf.
-
-    Returns:
-        tuple: data, *args trimmed according to minval and maxval
-    """
-    checkType(data,"array")
-    data = np.array(data)
-    if minval is None:
-        minval = -np.inf
-    if maxval is None:
-        maxval = np.inf
-    ind = (data>=minval) & (data<=maxval)
-    ret = [data[ind]]
-    for i in args:
-        try:
-            if i is not None:
-                ret.append(i[ind])
-            else:
-                ret.append(None)
-        except (IndexError, TypeError):
-            ret.append(i)
-    return ret
+        plt.rcParams['savefig.bbox']      = 'standard'
+        plt.rcParams['axes.titlesize']    = params['font_size']
+        plt.rcParams['font.size']         = params['font_size']
+        plt.rcParams['ytick.labelsize']   = params['font_size']
+        plt.rcParams['xtick.labelsize']   = params['font_size']
+        plt.rcParams['axes.labelsize']    = params['font_size']
+        plt.rcParams['legend.fontsize']   = params['font_size']
+        plt.rcParams['font.weight']       = params['font_weight']
+        set_xrange(params['xmin'],params['xmax'])
+        set_yrange(params['ymin'],params['ymax'])
 
 
 def _update_labels(ax,label):
@@ -252,26 +227,40 @@ def _getAxObject(params):
 
 def _set_xmin(ax,x_min=None):
     if x_min is not None:
-        x1, x2 = ax.get_xlim()
-        ax.set_xlim([x_min,x2])
+        try:
+            x1, x2 = ax.get_xlim()
+            ax.set_xlim([x_min,x2])
+        except AttributeError:
+            # The issue here is that the get_xlim() won't know what x2
+            # is without having seen the data first.
+            logger.TBError('Must set x/y min/max after plotting data.')
 
 
 def _set_xmax(ax,x_max=None):
     if x_max is not None:
-        x1, x2 = ax.get_xlim()
-        ax.set_xlim([x1,x_max])
+        try:
+            x1, x2 = ax.get_xlim()
+            ax.set_xlim([x1,x_max])
+        except AttributeError:
+            logger.TBError('Must set x/y min/max after plotting data.')
 
 
 def _set_ymin(ax,y_min=None):
     if y_min is not None:
-        y1, y2 = ax.get_ylim()
-        ax.set_ylim([y_min,y2])
+        try:
+            y1, y2 = ax.get_ylim()
+            ax.set_ylim([y_min,y2])
+        except AttributeError:
+            logger.TBError('Must set x/y min/max after plotting data.')
 
 
 def _set_ymax(ax,y_max=None):
     if y_max is not None:
-        y1, y2 = ax.get_ylim()
-        ax.set_ylim([y1,y_max])
+        try:
+            y1, y2 = ax.get_ylim()
+            ax.set_ylim([y1,y_max])
+        except AttributeError:
+            logger.TBError('Must set x/y min/max after plotting data.')
 
 
 def fill_param_dict(params):
@@ -282,7 +271,6 @@ def fill_param_dict(params):
         ----------
         params: dictionary
             Dictionary with all parameters that are already set by the user
-
     """
     global LEGEND
     for key in params:
@@ -302,17 +290,14 @@ def fill_param_dict(params):
         params.setdefault(key,val)
 
 
-def _add_optional(params):
-    """ Optional parameters that are not defined in fill_param_dict are collected by this function.
+def _add_optional(params) -> dict:
+    """ Optional parameters not included in _fill_param_dict.
 
-        Parameters
-        ----------
-        params: dictionary
-            Dictionary with parameters set by the user
+    Args:
+        **params: Additional parameters that can be set.
 
-        Returns
-        -------
-            Dictionary with optional parameters
+    Returns:
+        dict: also optional parameters 
     """
     reference = {}
     fill_param_dict(reference)
@@ -326,15 +311,12 @@ def _add_optional(params):
 def set_params(**params):
     """ Set additional parameters to the plot. For example set a title or label.
 
-        Args:
-            **params: Additional parameters that can be set.
+    Args:
+        **params: Additional parameters that can be set.
     """
     global LEGEND
 
     fill_param_dict(params)
-
-    _initializePlt(params['font_size'],params['xmin'],params['xmax'],params['ymin'],params['ymax'])
-
     ax  = _getAxObject(params)
     ZOD = params['ZOD']
 
@@ -382,16 +364,20 @@ def set_params(**params):
         plt.title(params['title'])
 
     if params['xlogscale']:
-        ax.set_xscale('log')
+        ax.set_xscale('log',base=params['xlogbase'])
 
     if params['ylogscale']:
-        ax.set_yscale('log')
+        ax.set_yscale('log',base=params['ylogbase'])
 
-    if params['ticksintoplot'] is not None:
+    if params['ticksintoplot']:
         ax.tick_params(which='both',direction='in')
 
     if params['surroundWithTicks']:
-        ax.tick_params(top=True,right=True)
+        ax.tick_params(which='minor',left=True,bottom=True,top=True,right=True)
+        ax.tick_params(which='major',left=True,bottom=True,top=True,right=True)
+
+    if params['grid']:
+        ax.grid(True, color='lightgray',linestyle='dotted',zorder=BACKGROUND)
 
     set_xrange(params['xmin'],params['xmax'],ax)
     set_yrange(params['ymin'],params['ymax'],ax)
@@ -457,6 +443,7 @@ def preliminary(x,y,text='PRELIMINARY',**kwargs):
         text (str, optional): Text indicating result is preliminary. Defaults to 'PRELIMINARY'.
     """
     checkType(text,str)
+    _initializePlt(kwargs)
     if 'color' in kwargs: 
         color=kwargs['color']
     else:
@@ -468,7 +455,7 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
     """ Plot data in file. You can set the style with the style argument. Columns indexed from 0.
 
     Args:
-        filename (str): _description_
+        filename (str)
         xcol (int, optional): Which column is xdata. Defaults to 1.
         ycol (int, optional): Which column is ydata. Defaults to 2.
         yecol (int, optional): Which column has y error. Defaults to None.
@@ -478,10 +465,10 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         style (str, optional): Choose from dots, lines, fill, and band. Defaults to 'dots'.
         **params: Additional parameters that can be set.
     """
-    fill_param_dict(params)
-    data = readTable(filename,dtype=str)
     checkType(xcol,int)
     checkType(ycol,int)
+    _initializePlt(params)
+    data   = readTable(filename,dtype=str)
     xdata  = data[xcol].astype(float)
     ydata  = data[ycol].astype(float)
     yedata = None
@@ -507,13 +494,13 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
             xdata, ydata = func(xdata, ydata, *func_args)
 
     if style == "dots":
-        return plot_dots(xdata, ydata, yedata=yedata, xedata=xedata, **params)
+        plot_dots(xdata, ydata, yedata=yedata, xedata=xedata, **params)
     elif style == "lines":
-        return plot_lines(xdata, ydata, yedata=yedata, xedata=xedata, **params)
+        plot_lines(xdata, ydata, yedata=yedata, xedata=xedata, **params)
     elif style == "fill":
-        return plot_fill(xdata, ydata, yedata=yedata, **params)
+        plot_fill(xdata, ydata, yedata=yedata, **params)
     elif style == "band":
-        return plot_band(xdata, ydata, yedata, xedata, **params)
+        plot_band(xdata, ydata, yedata, xedata, **params)
     else:
         logger.TBError("Unknown style",style)
 
@@ -541,10 +528,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     """
     checkEqualLengths(xdata,ydata,xedata,yedata)
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
-    fill_param_dict(params)
+    _initializePlt(params)
     optional = _add_optional(params)
-
-    xdata, ydata, yedata, xedata = _remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
 
     ax  = _getAxObject(params)
 
@@ -558,17 +543,22 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     marker = params['marker']
     if marker == "iter":
         marker = next(markers)
+    if params['markerfill']:
+        markerfill=params['color']
+    else:
+        markerfill="None"
+
     if params['color'] is not None:
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], color=params['color'],
                            zorder=ZOD, markersize=params['markersize'], capsize=params['capsize'],
                            elinewidth=params['elinewidth'], markeredgewidth=params['elinewidth'],
-                           markerfacecolor = params['point_fill_color'], **optional)
+                           markerfacecolor = markerfill, **optional)
     else:
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
-                           markeredgewidth=params['elinewidth'], markerfacecolor = params['point_fill_color'],
+                           markeredgewidth=params['elinewidth'], markerfacecolor = markerfill, 
                            **optional)
 
     if params['label'] is not None:
@@ -576,35 +566,28 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         _update_handles(ax,ebar)
 
     globals()['ZOD'] += 1
-    set_params(**params)
-    
-    return ebar
 
 
-def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#666677',linewidth=0.2, **params):
+def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewidth=0.2, **params):
     """ Plot ydata vs xdata as bars.
 
     Args:
         xdata (array-like)
         ydata (array-like)
-        width (_type_, optional): _description_. Defaults to None.
-        align (str, optional): _description_. Defaults to 'edge'.
-        alpha (float, optional): Transparency. Defaults to 1.0.
+        width (float, optional): Width of bar. Defaults to xdata[1]-xdata[0].
+        align (str, optional): How to align the bars. Defaults to 'edge'.
         edgecolor (str, optional): Color of bar edges. Defaults to '#666677'.
         linewidth (float, optional): Defaults to 0.2.
         **params: Additional parameters that can be set.
     """
     checkEqualLengths(xdata,ydata)
     xdata, ydata = toNumpy(xdata, ydata)
-    fill_param_dict(params)
+    _initializePlt(params) 
     optional = _add_optional(params)
-    ax  = _getAxObject(params)
+    ax       = _getAxObject(params)
 
     if width is None:
         width = xdata[1] - xdata[0]
-
-    if alpha is None:
-        alpha=params['alpha']
 
     ZOD = params['ZOD']
     if ZOD is None:
@@ -612,19 +595,16 @@ def plot_bar(xdata, ydata, width=None, align='edge', alpha=1.0, edgecolor='#6666
 
     if params['color'] is not None:
         bar = ax.bar(xdata, ydata, color=params['color'], zorder=ZOD, width=width, align=align, edgecolor=edgecolor,
-                     linewidth=linewidth, alpha=alpha, **optional)
+                     linewidth=linewidth, alpha=params['alpha'], **optional)
     else:
         bar = ax.bar(xdata, ydata, zorder=ZOD, width=width, align=align, edgecolor=edgecolor,
-                     linewidth=linewidth, alpha=alpha, **optional)
+                     linewidth=linewidth, alpha=params['alpha'], **optional)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,bar)
 
     globals()['ZOD'] += 1
-    set_params(**params)
-
-    return bar
 
 
 def plot_hist(data, bins = None, density=False, label=None, **params):
@@ -636,7 +616,7 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
         bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
         **params: Additional parameters that can be set.
     """
-    fill_param_dict(params)
+    _initializePlt(params) 
     ax = _getAxObject(params)
     if bins is None:
         bins = 'auto'
@@ -648,7 +628,6 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
         ax.set_yticklabels([])
     if label is not None:
         ax.legend()
-    set_params(**params)
 
 
 def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
@@ -663,9 +642,8 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     """
     checkEqualLengths(xdata,ydata,yedata,xedata)
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
-    fill_param_dict(params)
+    _initializePlt(params)
     optional = _add_optional(params)
-    xdata, ydata, yedata, xedata = _remove_points(xdata, ydata, yedata, xedata, minval=params['xmin'], maxval=params['xmax'])
     ax  = _getAxObject(params)
 
     xedata = _rescale(params['xscale'],xedata)
@@ -678,19 +656,23 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     marker = params['marker']
     if marker == "iter":
         marker = next(markers)
+    if params['markerfill']:
+        markerfill=params['color']
+    else:
+        markerfill="None"
 
     if params['color'] is not None:
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
-                           markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
-                           markerfacecolor = params['point_fill_color'])
+                           markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'], 
+                           markerfacecolor = markerfill)
     else:
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], zorder=ZOD, markersize=params['markersize'],
-                           capsize=params['capsize'], elinewidth=params['elinewidth'],
+                           capsize=params['capsize'], elinewidth=params['elinewidth'], 
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
-                           markerfacecolor = params['point_fill_color'])
+                           markerfacecolor = markerfill)
 
     globals()['ZOD'] += 1
 
@@ -702,9 +684,6 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(line,ebar))
-
-    set_params(**params)
-    return ebar
 
 
 def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
@@ -725,13 +704,8 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     checkEqualLengths(xdata,ydata,xedata,yedata)
 
-    fill_param_dict(params)
+    _initializePlt(params) 
     optional = _add_optional(params)
-
-    if xedata is None:
-        xdata, ydata, yedata = _remove_points(xdata, ydata, yedata, minval=params['xmin'], maxval=params['xmax'])
-    else:
-        ydata, xdata, xedata = _remove_points(ydata, xdata, xedata, minval=params['ymin'], maxval=params['ymax'])
 
     ax     = _getAxObject(params)
     ZOD    = params['ZOD']
@@ -763,9 +737,6 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
         _update_labels(ax,params['label'])
         _update_handles(ax,(ebar,pl))
 
-    set_params(**params)
-    return ebar,pl
-
 
 def plot_band(xdata, low_lim, up_lim, center = None, **params):
     """ Plot a horizontal band.
@@ -779,12 +750,8 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     """
     xdata, low_lim, up_lim, center = toNumpy(xdata, low_lim, up_lim, center)
     checkEqualLengths(xdata, low_lim, up_lim, center)
-    fill_param_dict(params)
+    _initializePlt(params) 
     optional = _add_optional(params)
-    if center is not None:
-        xdata, low_lim, up_lim, center = _remove_points(xdata, low_lim, up_lim, center, minval=params['xmin'], maxval=params['xmax'])
-    else:
-        xdata, low_lim, up_lim = _remove_points(xdata, low_lim, up_lim, minval=params['xmin'], maxval=params['xmax'])
 
     ax  = _getAxObject(params)
 
@@ -795,7 +762,8 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     globals()['ZOD'] += 1
 
     if params['color'] is None:
-        pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, alpha=params['alpha'], linewidth=0, zorder=1)
+        pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, alpha=params['alpha'], 
+                             linewidth=0, zorder=1)
     else:
         pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, facecolor=params['color'],
                              alpha=params['alpha'], linewidth=0, zorder=1)
@@ -819,9 +787,3 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
             _update_handles(ax,(ebar, pl))
         else:
             _update_handles(ax, pl)
-
-    set_params(**params)
-    if ebar is not None:
-        return ebar,pl
-    else:
-        return pl

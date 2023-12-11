@@ -87,10 +87,10 @@ def runIsingModel(T):
     def getMagnetization():
         """ Order parameter is |M|. """
         return np.abs(np.sum(lat.grid)/lat.vol)
-    
-    
-    def mcLocal(coord):
-        """ The Markov step. 
+
+
+    def actionLocal(coord):
+        """ Local contribution to action modulo beta.
 
         Args:
             coord (array-like): local coordinate 
@@ -99,7 +99,21 @@ def runIsingModel(T):
         NNsum = 0.
         for mu in range(Nd):
             NNsum += lat.getElement(lat.march(coord,mu,1)) + lat.getElement(lat.march(coord,mu,-1))
-        dH = 2*beta*s0*NNsum
+        return s0*NNsum
+
+
+    def getAction():
+        return lat.bulkReduce(actionLocal)
+        
+
+    def mcLocal(coord):
+        """ The Markov step. 
+
+        Args:
+            coord (array-like): local coordinate 
+        """
+        s0 = lat.getElement(coord)
+        dH = 2*beta*actionLocal(coord)
         if dH < 0:
             lat.setElement(coord,-s0)
         elif rng.random() < np.exp(-dH):
@@ -114,11 +128,14 @@ def runIsingModel(T):
     # With the remaining MCMC steps, we measure the magnetization. We skip every Nskip MCMC 
     # steps to reduce autocorrelation.    
     magnetizations = []
+    actions        = []
     for imeas in range(Nmeas):
         for iskip in range(Nskip):
             lat.iterateOverRandom(mcLocal)
         magnetizations.append(getMagnetization())
+        actions.append(getAction())
     magnetizations = np.array(magnetizations) 
+    actions        = np.array(actions) 
 
 
     def chi_M(M):
@@ -138,6 +155,9 @@ def runIsingModel(T):
     chim, chie = jackknife( chi_M   , magnetizations, nproc=1 )
     Bm  , Be   = jackknife( binder  , magnetizations, nproc=1 )
     logger.info('T, <|M|>, chi, B =',round(T,2),get_err_str(Mm,Me),get_err_str(chim,chie),get_err_str(Bm,Be))
+
+    writeTable('T'+str(T)+'.d',magnetizations,actions)
+
     return Mm, Me, chim, chie, Bm, Be
 
 
@@ -176,7 +196,7 @@ plt.show()
 
 # Record the results in a nicely formatted table.
 writeTable('ising_'+str(L)+'_'+str(Nd)+'.d',Tlist,res_M,res_E,res_chi,res_chie,res_B,res_Be,
-           header=['T','|M|','|M|_err','chi','chi_err','B','Be'])
+           header=['T','|M|','|M|_err','chi','chi_err','B','B_err'])
 finalize()
 
 

@@ -68,7 +68,7 @@ def print_results_iter(res,  res_true, text):
         return False
 
 
-def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, testMode=True):
+def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05):
     """ Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks
         to see whether res and res_true are statistically compatible. """
 
@@ -86,13 +86,11 @@ def gaudif_results(res, res_err, res_true, res_err_true, text = "", qcut=0.05, t
             restruestr = get_err_str(res_true[i],res_err_true[i])
             logger.info("res["+str(i)+"] =",resstr,"!= res_true["+str(i)+"] =",restruestr,'[ q =',round(q,2),']')
 
-    if testMode:
-        if test:
-            logger.TBPass(text)
-        else:
-            logger.TBFail(text)
+    if test:
+        return True 
     else:
-        logger.info(text)
+        logger.TBFail(text)
+        return False
 
 
 def concludeTest(lpass):

@@ -7,7 +7,10 @@
 #
 
 
+import numpy as np
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkType
+from latqcdtools.statistics.statistics import std_mean
 
 
 def _printExponent(prefix, exponent):
@@ -46,16 +49,20 @@ class UniversalityClass:
         _printExponent("    nu =",self.nu)
         logger.info()
 
-    def hyperscalingCheck(self, tol=1e-6):
+    def hyperscalingCheck(self, tol=1e-6) -> bool:
         err1 = 2*self.beta+self.gamma-2+self.alpha
         err2 = 2*self.beta*self.delta-self.gamma-2+self.alpha
         err3 = self.nu*self.d-2+self.alpha
         if err1 > tol:
-            logger.TBError(self.name(),"fails hyperscaling check 1, err =",err1)
+            logger.TBFail(self.name(),"fails hyperscaling check 1, err =",err1)
+            return False
         if err2 > tol:
-            logger.TBError(self.name(),"fails hyperscaling check 2. err =",err2)
+            logger.TBFail(self.name(),"fails hyperscaling check 2. err =",err2)
+            return False
         if err3 > tol:
-            logger.TBError(self.name(),"fails hyperscaling check 3. err =",err3)
+            logger.TBFail(self.name(),"fails hyperscaling check 3. err =",err3)
+            return False
+        return True
 
 
 class O2_3d(UniversalityClass):
@@ -140,3 +147,22 @@ class Z2_2d(UniversalityClass):
     eta   = 1/4
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
+
+
+def reweight(X, pRW, p0, S):
+    """ Reweight an observable X computed at a simulation point p0 to a nearby
+    simulation point pRW. We assume the action depends linearly on the simulation
+    parameter, i.e. S' ~ p S
+
+    Args:
+        X (np.array): Measurements to reweight. 
+        pRW (float): Reweight to this target. 
+        p0 (float): Simulation point.
+        S (np.array): Measurements of the action (extensive) divided by parameter p. 
+    """
+    checkType(X,'array')
+    checkType(S,'array')
+    Z_i = np.exp( (pRW-p0)*(S-std_mean(S)) )
+    Z   = np.sum(Z_i)
+    return np.sum( X*Z_i/Z )
+

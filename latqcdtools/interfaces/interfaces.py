@@ -137,7 +137,11 @@ class genericTable(list):
     def append(self, item):
         checkType(item, list)
         super(genericTable, self).append(item)
-        
+
+    def empty(self):
+        while len(self)>0:
+            self.pop()
+
     def outputTable(self,filename=None):
         """ Lets you output a table.
 
@@ -159,6 +163,27 @@ class genericTable(list):
         if filename is not None:
             outFile.close()
 
+    def readLine(self,line):
+        """ Convert a line of the table to a list. """ 
+        cols=line.strip().rstrip('\\').split(self.delimiter)
+        row = []
+        for col in cols:
+            row.append(col.strip())
+        self.append(row)
+
+    def readTable(self,filename):
+        """ Read a table containing data only. (No headers!)
+
+        Args:
+            filename (str)
+        """
+        checkType(filename,str)
+        self.empty()
+        inFile = open(filename,'r')
+        for line in inFile:
+            self.readLine(line)
+        inFile.close()
+
 
 class latexTable(genericTable):
     def __init__(self):
@@ -172,6 +197,15 @@ class redmineTable(genericTable):
         super().__init__(delimiter='|', pre='|', post='|')
     def __repr__(self) -> str:
         return "redmineTable"
+    def readLine(self,line):
+        """ Convert a line of the table to a list. """ 
+        cols=line.strip().split(self.delimiter)
+        del cols[0]
+        del cols[-1]
+        row = []
+        for col in cols:
+            row.append(col.strip())
+        self.append(row)
 
 
 def convertTable(source,target):
