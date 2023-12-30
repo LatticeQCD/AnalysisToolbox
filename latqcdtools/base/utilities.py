@@ -118,6 +118,52 @@ def toNumpy(*args):
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
 
 
+def append(array,item):
+    """ Generalized append. Works also for numpy arrays and tuples.
+
+    Args:
+        array (array-like)
+        item (any): to-be-appended item 
+
+    Returns:
+        array-like 
+    """
+    if isHigherDimensional(array):
+        logger.TBError('Append for 1-d objects only.')
+    if isinstance(array,np.ndarray):
+        temp = list(array)
+        temp.append(item)
+        return np.array(temp)
+    elif isinstance(array,list):
+        return array.append(item)
+    elif isinstance(array,tuple):
+        return array + (item,) 
+    else:
+        logger.TBError('No append defined for type',type(array))
+
+
+def insert(array,item,idx):
+    """ Generalized insert. Works also for numpy arrays and tuples.
+
+    Args:
+        array (array-like)
+        item (any): to-be-appended item 
+
+    Returns:
+        array-like 
+    """
+    if isHigherDimensional(array):
+        logger.TBError('Insert for 1-d objects only.')
+    if isinstance(array,np.ndarray):
+        temp = list(array)
+        temp.insert(idx,item)
+        return np.array(temp)
+    elif isinstance(array,list):
+        return array.insert(idx,item)
+    else:
+        logger.TBError('No insert defined for type',type(array))
+
+
 def getArgs(parser):
     """ Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. """
     args, invalid_args = parser.parse_known_args()

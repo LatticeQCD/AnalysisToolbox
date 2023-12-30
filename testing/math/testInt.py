@@ -44,19 +44,16 @@ def testInt():
     EPSILON =1e-8
     I_simp  =3.86033230
     I_trap  =5.69923345
-    I_spline=5.49427272
 
     # a result from real lattice data
     lpass *= print_results(integrateData(x,y,method='simpson')  ,I_simp  ,text="simpson"  ,prec=EPSILON)
     lpass *= print_results(integrateData(x,y,method='trapezoid'),I_trap  ,text="trapezoid",prec=EPSILON)
-    lpass *= print_results(integrateData(x,y,method='spline')   ,I_spline,text="spline"   ,prec=EPSILON)
 
     # try a simple integral to compare against the fundamental theorem of calculus
     FTC=(x[-1]**2-x[0]**2)/2
 
     lpass *= print_results(integrateData(x,x,method='simpson')  ,FTC,text="simpson integrate f(x) = x")
     lpass *= print_results(integrateData(x,x,method='trapezoid'),FTC,text="trapezoid integrate f(x) = x")
-    lpass *= print_results(integrateData(x,x,method='spline')   ,FTC,text="spline integrate f(x) = x")
 
     # try some vectorization
     lpass *= print_results(integrateFunction(f,[0,0],[1,2],method='trapezoid'), [0.5,2], text="trapezoid vector function")

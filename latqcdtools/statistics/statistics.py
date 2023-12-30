@@ -140,7 +140,7 @@ def countParams(func,params):
     nparams = len(params)
     if nparams == 0:
         try:
-            # LSQUnivariateSpline
+            # customSpline
             nparams = len(func.get_coeffs())
             # CubicSpline
         except AttributeError:

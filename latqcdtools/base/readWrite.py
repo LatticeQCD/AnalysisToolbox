@@ -85,8 +85,8 @@ def writeTable(filename,*args,**kwargs):
             colno += 2
         elif isinstance(col_arr[0],str):
             data += (col_arr,)
-            form += '  %12s'
-            dtypes.append( (_lab(colno), 'U12' ) ) # 12 characters
+            form += '  %15s'
+            dtypes.append( (_lab(colno), 'U15' ) ) # 15 characters
             colno += 1
         else:
             data += (col_arr,)

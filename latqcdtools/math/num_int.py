@@ -10,9 +10,8 @@
 import numpy as np
 import scipy.integrate as integrate
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import checkEqualLengths
+from latqcdtools.base.check import checkEqualLengths, checkType
 from latqcdtools.base.utilities import envector,unvector
-from latqcdtools.math.spline import getSpline
 
 
 def solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8):
@@ -52,27 +51,20 @@ def integrateData(xdata,ydata,method='trapezoid'):
         method (str, optional): Integration method. Defaults to 'trapezoid'. Possibilities include:
                                 > 'simpson' : Simpson rule.
                                 > 'trapezoid' : Trapezoidal rule.
-                                > 'spline' : Fit data with cubic spline, then apply quadrature.
 
     Returns:
         float: Area under ydata. 
     """
-    try:
-        xdata=np.array(xdata)
-        ydata=np.array(ydata)
-    except:
-        logger.TBError("Must be passed array-like objects.")
+    checkType(xdata,'array')
+    checkType(ydata,'array')
+    xdata=np.array(xdata)
+    ydata=np.array(ydata)
 
     if method=='simpson':
         return integrate.simpson(ydata,xdata)
 
     elif method=='trapezoid':
         return integrate.trapezoid(ydata, xdata)
-
-    elif method=='spline':
-        nknots = int(len(xdata)/3)
-        data_spline = getSpline(xdata, ydata, num_knots=nknots, rand=False)
-        return integrateFunction(data_spline, xdata[0], xdata[-1],method='quad')
 
     else:
         logger.TBError("Unknown integration method",method)

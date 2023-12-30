@@ -8,7 +8,7 @@
 # 
 
 import numpy as np
-from scipy.interpolate import LSQUnivariateSpline, CubicSpline
+from scipy.interpolate import CubicSpline, splrep, splev
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import AICc
 from latqcdtools.base.check import checkType
@@ -42,7 +42,28 @@ def _random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     return _even_knots(sample_xdata, nknots)
 
 
-def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False):
+class customSpline:
+
+    def __init__(self,xdata,ydata,edata=None,knots=None,order=3,smooth=None):
+        if edata is None:
+            weights = None
+        else:
+            weights = 1/edata
+            weights = np.r_[weights[0],weights,weights[-1]]
+        # This is a trick to try to enforce no curvature at the endpoints.
+        xx = np.r_[xdata[0]  ,xdata  ,xdata[-1]]
+        yy = np.r_[ydata[0]  ,ydata  ,ydata[-1]] 
+        self.tck = splrep(xx, yy, t=knots, k=order, w=weights, s=smooth)
+
+    def __call__(self,x):
+        return splev(x,self.tck)
+
+    def get_coeffs(self):
+        return self.tck[1]
+
+
+def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, 
+              getAICc=False, natural=False, smooth=None):
     """ This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
     by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
     since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can't specify
@@ -67,7 +88,7 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
             Try a natural (no change in slope at the endpoints) cubic spline. Defaults to False. 
 
     Returns:
-        spl: Spline object, spl(x). 
+        callable spline object
         AICc (optionally)
     """
 
@@ -89,7 +110,7 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
                 logger.TBError("knots must be specified as a list.")
             nknots -= len(fixedKnots)
             if nknots < 0:
-                logger.TBError("len(fixedKnots) cannot exceed num_knots.")
+                logger.TBError("len(fixedKnots)",len(fixedKnots),"exceeds num_knots",num_knots)
         if nknots>0:
             if rand:
                 knots = _random_knots(xdata,nknots)
@@ -105,7 +126,7 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
             logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
         if knots[-1]>xdata[-1]:
             logger.TBError("You can't put a knot to the right of the x-data. knots, xdata[-1] = ",knots,xdata[-1])
-        spline = LSQUnivariateSpline(xdata, ydata, knots, k=order)
+        spline = customSpline(xdata, ydata, edata=edata, knots=knots, order=order, smooth=smooth)
 
     if getAICc:
         cov = np.diag(edata**2)

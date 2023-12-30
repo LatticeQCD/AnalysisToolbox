@@ -14,10 +14,12 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import isArrayLike 
 
 
+id_2 = np.eye(2,dtype=complex)
 id_3 = np.eye(3,dtype=complex)
 id_4 = np.eye(4,dtype=complex)
-
+ze_2 = np.zeros((3,3), dtype=complex)
 ze_3 = np.zeros((3,3), dtype=complex)
+ze_4 = np.zeros((3,3), dtype=complex)
 
 
 def normalize(arr):

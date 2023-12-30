@@ -10,13 +10,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
-from latqcdtools.base.cleanData import excludeAtCol,restrictAtCol
+from latqcdtools.base.cleanData import excludeAtCol, restrictAtCol
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.plotting import plot_lines,plot_file,set_params,latexify,colors,clearPlot
+from latqcdtools.base.plotting import plot_lines, plot_file, set_params, latexify, colors, clearPlot
 from latqcdtools.base.utilities import timer
 from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS 
 from latqcdtools.math.num_deriv import diff_deriv
-from latqcdtools.physics.HRG import HRG,EVHRG,HRGexact
+from latqcdtools.physics.HRG import HRG, EVHRG, HRGexact
 
 
 def testHRG():

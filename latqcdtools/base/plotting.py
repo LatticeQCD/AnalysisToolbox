@@ -185,10 +185,8 @@ def _initializePlt(params):
     global INITIALIZE
     if INITIALIZE:
         logger.debug("Plot initializer called!")
-        logger.debug("Many of the plotting functions call set_params, which can reset what you pass as argument.")
-        logger.debug("If you have trouble passing options to set_params, try calling it at the end of your script.")
         INITIALIZE = False
-        plt.rcParams['figure.autolayout'] = True
+#        plt.rcParams['figure.autolayout'] = True
         plt.rcParams['savefig.bbox']      = 'standard'
         plt.rcParams['axes.titlesize']    = params['font_size']
         plt.rcParams['font.size']         = params['font_size']
@@ -285,6 +283,8 @@ def fill_param_dict(params):
                 if params[key] != default_params[key]:
                     logger.debug('Found legend trigger',key)
                     LEGEND = True
+
+    logger.debug('LEGEND =',LEGEND)
 
     for key, val in default_params.items():
         params.setdefault(key,val)
@@ -390,7 +390,7 @@ def set_params(**params):
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
         leg.set_zorder(FOREGROUND)
-        plt.tight_layout()
+#        plt.tight_layout()
 
     if params['xtick_freq'] is not None:
         start, end = ax.get_xlim()
@@ -566,6 +566,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         _update_handles(ax,ebar)
 
     globals()['ZOD'] += 1
+    set_params(**params) # Needed to put in labels
 
 
 def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewidth=0.2, **params):
@@ -605,6 +606,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewid
         _update_handles(ax,bar)
 
     globals()['ZOD'] += 1
+    set_params(**params) # Needed to put in labels
 
 
 def plot_hist(data, bins = None, density=False, label=None, **params):
@@ -684,6 +686,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(line,ebar))
+    set_params(**params) # Needed to put in labels
 
 
 def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
@@ -736,6 +739,7 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(ebar,pl))
+    set_params(**params) # Needed to put in labels
 
 
 def plot_band(xdata, low_lim, up_lim, center = None, **params):
@@ -787,3 +791,4 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
             _update_handles(ax,(ebar, pl))
         else:
             _update_handles(ax, pl)
+    set_params(**params) # Needed to put in labels

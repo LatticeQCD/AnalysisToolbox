@@ -45,7 +45,11 @@ Note that these Polyakov loop examples are meant to be instructional. A complete
 measuring Polyakov loop observables is given in `polyakovTools.py`, described in part in the part
 of the documentation for [physics](../physicsAnalysis/physicsAnalysis.md) modules. 
 
-**WARNING:** Although the `jackknife` 
-method is very general, one thing that cannot be done is passing a lambda function. This is because 
-the `jackknife` can be parallelized using `concurrent.futures`, which is not able to pickle 
-lambda functions.
+**WARNING:** Although the `jackknife` method is very general, there are at least a couple kinds of
+functions that may fail when passed to `jackknife`:
+1. Don't pass passing a lambda function. This is because the `jackknife` can be parallelized 
+using `concurrent.futures`, which is not able to pickle lambda functions. 
+We [discourage](../contributions/contributions.md) the use of lambda functions in general.
+2. Don't pass a function that manipulates data indices. You may not be manipulating the
+indices you think, because the jackknife first splits your input data into bins, and
+then the indices of the binned data will get manipulated.
