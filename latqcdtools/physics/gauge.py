@@ -116,11 +116,11 @@ class gaugeField:
 
     def getPlaquette(self):
         """ Calculate <Re tr U_{mu,nu}^[]>. """
-        plaq = parallel_reduce(self.plaq_contrib,range(self.Nt),nproc=self.nproc)
+        plaq = parallel_reduce(self._plaq_contrib,range(self.Nt),nproc=self.nproc)
         return plaq/(self.Ns**3*self.Nt*18)
 
 
-    def plaq_contrib(self,t):
+    def _plaq_contrib(self,t):
         contrib = 0
         for z in range(self.Ns):
             for y in range(self.Ns):
@@ -133,15 +133,18 @@ class gaugeField:
 
     def getLinkTrace(self):
         """ Calculate <tr U>. """
-        linkTrace = 0.
-        for t in range(self.Nt):
-            for z in range(self.Ns):
-                for y in range(self.Ns):
-                    for x in range(self.Ns):
-                        for mu in range(4):
-                            linkTrace += self.getLink(x,y,z,t,mu).trace().real
-        linkTrace /= (self.Ns**3*self.Nt*4*3)
-        return linkTrace
+        linkTrace = parallel_reduce(self._linkTrace_contrib,range(self.Nt),nproc=self.nproc)
+        return linkTrace/(self.Ns**3*self.Nt*4*3)
+
+
+    def _linkTrace_contrib(self,t):
+        contrib = 0
+        for z in range(self.Ns):
+            for y in range(self.Ns):
+                for x in range(self.Ns):
+                    for mu in range(4):
+                        contrib += self.getLink(x,y,z,t,mu).trace().real
+        return contrib
 
 
     def makeCold(self):

@@ -515,7 +515,7 @@ class Fitter:
 
     def _tryAlgorithm(self,algorithm):
         """ Wrapper that collects general fit results. Allows for parallelization. """
-        logger.details("Trying", algorithm, "...")
+        logger.details("Trying", algorithm+"...")
         try:
             params, fit_errors, chi2, pcov = self._general_fit(algorithm) 
             logger.details(algorithm, "successful. Chi^2 = ", chi2)
@@ -523,6 +523,14 @@ class Fitter:
         except Exception as e:
             logger.details(algorithm, "failed with exception", e)
             return None, None, np.inf, None, e
+
+
+    def _autoDomain(self,domain):
+        """ Set domain automatically if domain=None. """
+        if domain is None:
+            domain=(np.min(self._xdata),np.max(self._xdata))
+        checkDomain(domain)
+        return domain
 
 
     def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
@@ -644,9 +652,9 @@ class Fitter:
         return self.try_fit([algorithm], **kwargs)
 
 
-    def save_func(self, filename, domain, no_error=False, header=None, npoints=1000, **kwargs):
+    def save_func(self, filename, domain = None, no_error=False, header=None, npoints=1000, **kwargs):
         """ Save fit data to table. """
-        checkDomain(domain)
+        domain = self._autoDomain(domain)
         params_err = self._saved_pcov
         params = self._saved_params
         def func(x, params):
@@ -660,10 +668,10 @@ class Fitter:
                       header=header, npoints=npoints, **kwargs)
 
 
-    def plot_fit(self, domain, no_error = False, **kwargs):
+    def plot_fit(self, domain = None, no_error = False, **kwargs):
         """ Plot the fit function. """
         logger.debug('Plotting fit.')
-        checkDomain(domain)
+        domain = self._autoDomain(domain)
         if not no_error:
             plot_func(self._func, domain=domain, params=self._saved_params, params_err=self._saved_pcov, 
                       grad=self._grad, args=self._args, **kwargs)

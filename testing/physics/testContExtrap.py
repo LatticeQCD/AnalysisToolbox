@@ -44,7 +44,7 @@ def testContExtrap():
     lam = MeV_to_fminv(500)
     a *= lam
 
-    result, result_err, chidof, stats = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,order=2,
+    result, result_err, chidof, stats = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,order=2,detailedInfo=True,
                                                              prior=prior,prior_err=prior_err,error_strat='hessian')
 
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]

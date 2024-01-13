@@ -102,7 +102,8 @@ def checkType(obj, expectedType):
     """ Check the type of an object. If it thinks the type is wrong, it will tell you what the
     name of obj is (as you named it in your code) along with its type and what was expected.
     Grabbing the name doesn't work if you pass him a dictionary element like myDict['key'];
-    it can only tell the name myDict.
+    it can only tell the name myDict. One could use type hints, but at the time of writing,
+    type hints will not necessarily crash the program, which I want.
 
     Args:
         obj (obj)

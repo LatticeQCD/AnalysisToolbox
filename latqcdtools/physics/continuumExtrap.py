@@ -77,14 +77,15 @@ class Extrapolator(Fitter):
         return "Extrapolator"
 
 
-    def extrapolate(self,start_coeffs=None,prior=None,prior_err=None):
+    def extrapolate(self,start_coeffs=None,prior=None,prior_err=None,detailedInfo=False):
         """ Carry out the extrapolation.
 
         Args:
             start_coeffs (array-like, optional): your guess for starting parameters. Defaults to None.
             prior (array-like, optional): Bayesian priors. Defaults to None.
             prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
-
+            detailedInfo (bool, optional): Do you want information like AIC? Defaults to False.
+            
         Returns:
             (array-like, array-like, float, float): fit result, its error, chi^2/d.o.f., and logGBF if relevant.
         """
@@ -98,12 +99,16 @@ class Extrapolator(Fitter):
             coeffs=start_coeffs
         self._triedExtrapolation = True
         if prior is None:
-            self._result, self._result_err, self._chidof = self.try_fit(start_params=coeffs, algorithms=std_algs)
-            return self._result, self._result_err, self._chidof
+            self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, algorithms=std_algs, 
+                                                                                     detailedInfo=True)
         else:
-            self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, priorval=prior, priorsigma=prior_err, 
+            self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, priorval=prior, 
+                                                                                     priorsigma=prior_err, 
                                                                                      algorithms=bayes_algs, detailedInfo=True)
+        if detailedInfo:
             return self._result, self._result_err, self._chidof, self._stats
+        else:
+            return self._result, self._result_err, self._chidof
 
 
     def plot(self,**kwargs):
@@ -141,10 +146,10 @@ class Extrapolator(Fitter):
 
 
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,prior_err=None,
-                         error_strat='propagation',xtype="a",nproc=DEFAULTTHREADS):
+                         error_strat='propagation',xtype="a",nproc=DEFAULTTHREADS,detailedInfo=False):
     """ A convenience wrapper for the Extrapolator. """
     ext = Extrapolator(x, obs, obs_err, xtype=xtype, order=order, error_strat=error_strat, nproc=nproc)
-    result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, prior_err=prior_err)
+    result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, prior_err=prior_err,detailedInfo=detailedInfo)
     if show_results:
         ext.showResults()
     if plot_results:

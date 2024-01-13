@@ -7,7 +7,7 @@
 # 2 significant digits on an error bar in parentheses: measurement = X.XXXX(YY)
 #
 
-import math
+import numpy as np 
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 
@@ -41,7 +41,11 @@ def getValuesFromErrStr(errStr):
 
 def get_exp(param):
     """ Get the exponent of a number to base 10. """
-    return math.floor( math.log(abs(param))/math.log(10) )
+    result = np.floor( np.log(abs(param))/np.log(10) )
+    if np.isnan(result):
+        return np.nan
+    else:
+        return int(result)
 
 
 def get_err_str(param, param_err, numb_err_dig=2):
@@ -64,12 +68,13 @@ def get_err_str(param, param_err, numb_err_dig=2):
         sign = 1
 
     relnum = get_exp(param_err)
-
+    if np.isnan(relnum):
+        return "%.12e" % param
 
     # index for rounding the error and the parameter
     roundidx = -relnum + numb_err_dig - 1
     paramtmp = param
-    param = round(param, roundidx)
+    param = np.round(param, roundidx)
 
     # exponent of the actual parameter
     if param == 0.0:
@@ -83,12 +88,12 @@ def get_err_str(param, param_err, numb_err_dig=2):
 
     # floor does not support a second index -> we have to multiply and then divide
     param_err *= pow(10, roundidx)
-    param_err = math.ceil(param_err) * pow(10, -roundidx)
+    param_err = np.ceil(param_err) * pow(10, -roundidx)
 
     # as the exponent might have changed through rounding, we have to recalculate it
     relnum = get_exp(param_err)
     roundidx = -relnum + numb_err_dig - 1
-    param = round(paramtmp, roundidx)
+    param = np.round(paramtmp, roundidx)
 
     # Strings that are shortened later on
     err_str = "%.12lf" % param_err

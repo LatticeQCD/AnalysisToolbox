@@ -151,5 +151,5 @@ def parallel_reduce(function, input_array, args=(), nproc=DEFAULTTHREADS, parall
     Returns:
         float-like
     """
-    container = parallel_function_eval(function, input_array, nproc=DEFAULTTHREADS, args=args)
+    container = parallel_function_eval(function, input_array, nproc=nproc, args=args, parallelizer=parallelizer)
     return np.sum(container)

@@ -22,21 +22,23 @@ class confReader:
 
     """ Base class for reading configurations. """
 
-    def __init__(self, Ns, Nt, nproc=1):
+    def __init__(self, Ns, Nt, nproc=None):
         """ Initialize a confReader object.
 
         Args:
             Ns (int): Spatial extension of lattice. 
             Nt (int): Euclidian time extension of lattice. 
             nrows (int): Number of saved rows for compression. 
-            nproc (int, 1): Number of proccesors for parallelization. Defaults to 1.
         """        
         self.Ns = Ns
         self.Nt = Nt
-        self.nproc = nproc
         checkType(Ns,int)
         checkType(Nt,int)
-        checkType(nproc,int)
+        if nproc==None:
+            self.nproc=self.Nt
+        else:
+            checkType(nproc,int)
+            self.nproc=nproc
         self.offset = None     # How many bytes is the header?
         self.endianness = '>'  # Big endian by default
         self.precision = 'f'   # Single precision by default
@@ -167,7 +169,6 @@ class NERSCReader(confReader):
 
         bytesPerLink = 3*self.rows*2*self.getByteSize()
 
-        logger.details('Load conf into gaugeField')
         for t in range(self.Nt):
             for z in range(self.Ns):
                 for y in range(self.Ns):
@@ -179,6 +180,7 @@ class NERSCReader(confReader):
                             link = self.unpack(data)
                             link.su3unitarize()
                             self.gauge.setLink(link,x,y,z,t,mu)
+        logger.details('Loaded conf into gaugeField.')
 
         # Check <tr U>
         if self.linkTrace is not None:
@@ -190,7 +192,7 @@ class NERSCReader(confReader):
         # Check <tr U^[]>
         if self.plaquette is not None:
             plaq = self.gauge.getPlaquette()
-            if not rel_check( plaq, self.plaquette):
+            if not rel_check(plaq, self.plaquette):
                 logger.TBError('<tr U^[]> is wrong. Compare:',plaq,'with',self.plaquette)
             logger.details('Configuration', fileName, 'has correct <tr U_plaq>.')
 

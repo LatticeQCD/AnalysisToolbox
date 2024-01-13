@@ -88,7 +88,7 @@ def readGPL(filename,discardTag=True):
         return np.array(data,dtype=object)
 
 
-def readYAML(filename):
+def readYAML(filename) -> dict:
     """ Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. """
     checkType(filename,str)
     if not filename.endswith('yaml'):
@@ -98,6 +98,51 @@ def readYAML(filename):
             return yaml.safe_load(file)
         except yaml.YAMLError as e:
             logger.TBError('Encountered exception:',e)
+
+
+def readWML(filename) -> list:
+    """ Does its best to read a table from Wikipedia Markup Language. Returns a list of lists,
+    where each row corresponds to either a line of the table or a line of markup code. You
+    will have to do some processing by hand, since so many people edit Wikipedia and have
+    inconsistent styles.
+
+    Args:
+        filename (str): Name of file 
+
+    Returns:
+        list: list of rows and commands in markup table 
+    """
+    checkType(filename,str)
+    wmlFile = open(filename,'r')
+    data = []
+    row = []
+    for line in wmlFile:
+        col=line.split('|')
+        cleanCol = []
+        for item in col:
+            cleanCol.append(item.strip())
+        for item in cleanCol:
+            if item=='':
+                continue
+            if item=='-':
+                cleanRow = []
+                compressing = False
+                cleanItem=''
+                for jtem in row:
+                    cleanItem += jtem
+                    if jtem.startswith('{{') or jtem.startswith('[['):
+                        compressing = True
+                    if jtem.endswith('}}') or jtem.endswith(']]') or jtem.endswith('}}*'):
+                        compressing = False
+                    if not compressing:
+                        cleanRow.append(cleanItem)
+                        cleanItem='' 
+                if len(cleanRow)>0:
+                    data.append(cleanRow)
+                    row=[]
+            else:
+                row.append(item)
+    return data
 
 
 def writeYAML(data,filename):

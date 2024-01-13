@@ -6,7 +6,7 @@
 # Testing of some generic interfacing tools. 
 # 
 
-from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML 
+from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import deleteFile
 import latqcdtools.base.logger as logger

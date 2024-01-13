@@ -448,7 +448,10 @@ def preliminary(x,y,text='PRELIMINARY',**kwargs):
         color=kwargs['color']
     else:
         color='gray'
-    plt.text(x, y, text, color=color)
+    axObj=plt
+    if 'ax' in kwargs:
+        axObj=kwargs['ax']
+    axObj.text(x, y, text, color=color)
 
 
 def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, func_args = (), style='dots', **params):
