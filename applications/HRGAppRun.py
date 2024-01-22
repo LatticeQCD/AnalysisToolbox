@@ -30,7 +30,7 @@ args = parser.parse_args()
 
 r = 0.4
 filepath = "../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt"
-temps = range(120, 165, 5)
+temps = range(120, 135, 5)
 
 
 def main():

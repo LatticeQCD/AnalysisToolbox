@@ -29,7 +29,7 @@ plot_file("wurf.dat", 0, 2, 3, 1, style="dots", label="$\\chi_{\\rm wurf}$", mar
 
 # Sometimes a result is preliminary. You can put a marker that indicates your plot is preliminary
 # using this command. The arguments set the x- and y-coordinates in units of the axes. 
-preliminary(x=1,y=2)
+preliminary(x=1.25,y=2)
 
 # The set_params command should in general be the last thing you do before plotting or saving
 # a figure. This is because some plotting methods may change these parameters behind the scenes.
@@ -49,6 +49,8 @@ set_params(xlabel   ="$T$ [MeV]",
            ymin=1.0
           )
 
+# Sometimes calling this makes the figure look nicer.
+plt.tight_layout()
 plt.show()
 
 # If you would like to use one script to generate multiple independent plots, such as done in this

@@ -306,11 +306,11 @@ class Fitter:
     def calc_chisquare(self, params):
         """ Compute the chisquare, i.e. the chi^2. This is the function that will be minimized. """
         if self._priorsigma is not None:
-            prior, prior_err = self._priorval, self._priorsigma
+            prior, priorsigma = self._priorval, self._priorsigma
         else:
-            prior, prior_err = None, None
+            prior, priorsigma = None, None
         return chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, params, prior=prior,
-                         prior_err=prior_err)
+                         priorsigma=priorsigma)
 
 
     def grad_chisquare(self, params):
@@ -632,12 +632,14 @@ class Fitter:
                      all_fit_errors[min_ind],
                      chidof,
                      { 'logGBF' : logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                                         prior=self._priorval,prior_err=self._priorsigma),
+                                         prior=self._priorval,priorsigma=self._priorsigma),
                         'pcov'  : np.copy(self._saved_pcov),
                         'chi2'  : all_chi2[min_ind],
                         'BAIC'  : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
-                        'AIC'   : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
-                        'AICc'  : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
+                        'AIC'   : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                                      self._priorval, self._priorsigma),
+                        'AICc'  : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                                       self._priorval, self._priorsigma),
                      }
                    )
         else:

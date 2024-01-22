@@ -12,6 +12,8 @@ s_div*
 examples/chi2B.txt
 .vscode/*
 venv/*
+HotQCDEos2022_fixedmuBdivT2.00.txt
+tryApplications.bash
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

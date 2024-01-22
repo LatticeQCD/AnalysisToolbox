@@ -113,12 +113,12 @@ def checkDomain(domain):
         logger.TBError('Must have domain[1]>domain[0].')
 
 
-def checkPrior(prior,prior_err):
-    """ Make sure prior and prior_err status are compatible. """
-    if prior is None and prior_err is not None:
-        logger.TBError('prior = None, prior_err != None')
-    if prior_err is None and prior is not None:
-        logger.TBError('prior != None, prior_err = None')
+def checkPrior(prior,priorsigma):
+    """ Make sure prior and priorsigma status are compatible. """
+    if prior is None and priorsigma is not None:
+        logger.TBError('prior = None, priorsigma != None')
+    if priorsigma is None and prior is not None:
+        logger.TBError('prior != None, priorsigma = None')
 
 
 def checkTS(ts):
@@ -135,35 +135,69 @@ def checkTS(ts):
         logger.TBError('Time series needs at least two measurements.')
 
 
-def countParams(func,params):
-    """ If we have a function, return length of params. Else, we must have a spline. """
-    nparams = len(params)
-    if nparams == 0:
+def countParams(func,params) -> int:
+    """ Count number of model parameters. For a typical function without priors,
+    we count the length of the params array. Otherwise we assume it's a spline.
+
+    Args:
+        func (func)
+        params (array-like): model parameters.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+
+    Returns:
+        int: number of parameters. 
+    """
+    nparam = len(params)
+    if nparam == 0:
         try:
             # customSpline
-            nparams = len(func.get_coeffs())
+            nparam = len(func.get_coeffs())
             # CubicSpline
         except AttributeError:
-            nparams = len(func.c)
-    return nparams
+            nparam = len(func.c)
+    return nparam
 
 
-def DOF(ndat,nparam,priorsigma):
-    """ Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
+def countPriors(priorsigma=None) -> int:
+    """ The number of priors is the number of finite prior error bars.
+
+    Args:
+        priorsigma (array-like, optional): _description_. Defaults to None.
+
+    Returns:
+        int: _description_
+    """
+    nprior = 0
+    if priorsigma is not None:
+        nprior = np.count_nonzero(priorsigma!=np.inf)
+    return nprior
+
+
+def DOF(ndat,nparam,priorsigma=None) -> int:
+    """  Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
     initial guesses for the fit algorithm. If you would like parameter in the prior array to be treated as a 
     starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
-    are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors. """
-    if priorsigma is not None:
-        dof = ndat - np.count_nonzero(priorsigma == np.inf)
-    else:
-        dof = ndat - nparam 
+    are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.
+
+    Args:
+        ndat (int): number of data 
+        nparam (int): number of model parameters 
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+
+    Returns:
+        int: number of degrees of freedom 
+    """
+    checkType(ndat,int)
+    checkType(nparam,int)
+    nprior = countPriors(priorsigma) 
+    dof = ndat + nprior - nparam 
+    logger.debug('dof =',dof,'ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
     if dof < 0:
-        logger.TBError('Fewer data than fit parameters!')
-    logger.debug('Computed d.o.f. =',dof)
+        logger.TBError('ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
     return dof
 
 
-def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None):
+def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,priorsigma=None):
     """ Calculate chi^2.
 
     Args:
@@ -172,24 +206,24 @@ def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,prior_err=None):
         cov (array-like): covariance matrix 
         func (func)
         args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): fit parameters. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
-        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
     Returns:
         float: chi^2 
     """
-    checkPrior(prior,prior_err)
+    checkPrior(prior,priorsigma)
     y    = expandArgs(func,xdata,params,args)
     cor  = norm_cov(cov)
     diff = ( ydata - y )/np.sqrt( np.diag(cov) )
     res  = diff.dot( inv(cor).dot(diff) )
     if prior is not None:
-        res += np.sum((np.array(params) - prior)**2 / prior_err**2)
+        res += np.sum((np.array(params) - prior)**2 / priorsigma**2)
     return res
 
 
-def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None):
+def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None):
     """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
@@ -200,26 +234,27 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=No
         cov (array-like): covariance matrix 
         func (func)
         args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): fit parameters. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
-        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
     Returns:
         float: log( Gaussian Bayes factor ) 
     """
-    chi2    = chisquare(xdata, ydata, cov, func, args, params, prior, prior_err)
-    nparams = countParams(func,params)
-    dof     = DOF(len(ydata),nparams,prior_err)
+    chi2   = chisquare(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    nparam = countParams(func,params)
+    dof    = DOF(len(ydata),nparam,priorsigma)
     logger.debug('chi^2 =',chi2)
-    logger.debug('nparams =',nparams)
+    logger.debug('nparam =',nparam)
     logger.debug('dof =',dof)
+    logger.debug('priorsigma =',priorsigma)
     if prior is None:
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) )
     else:
-        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(prior_err)**2)) )
+        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(priorsigma)**2)) )
 
 
-def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None):
+def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None):
     """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
@@ -231,19 +266,19 @@ def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None)
         cov (array-like): covariance matrix 
         func (func)
         args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): fit parameters. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
-        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
     Returns:
         float: AIC
     """
-    nparams    = countParams(func,params)
-    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, prior_err)
-    return 2*nparams - 2*likelihood
+    nparam     = countParams(func,params)
+    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    return 2*nparam - 2*likelihood
 
 
-def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None):
+def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None):
     """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
     infinity, one recovers the AIC.
@@ -254,17 +289,18 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, prior_err=None
         cov (array-like): covariance matrix 
         func (func)
         args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): fit parameters. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
-        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
     Returns:
         float: corrected AIC 
     """
-    nparams = countParams(func,params)
-    ndat    = len(ydata)
-    aic     = AIC(xdata, ydata, cov, func, args, params, prior, prior_err)
-    return aic + 2*(nparams**2+nparams)/(ndat-nparams+1)
+    nparam  = countParams(func,params)
+    nprior  = countPriors(priorsigma) 
+    ndat    = len(ydata) + nprior
+    aic     = AIC(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    return aic + 2*(nparam**2+nparam)/(ndat-nparam+1)
 
 
 def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1):
@@ -276,21 +312,22 @@ def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1):
         cov (array-like): covariance matrix 
         func (func)
         args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): fit parameters. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
-        prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
         Ncut (int, optional): The number of data trimmed from your fit. Defaults to 0.
         modelPrior (float, optional): The prior probability of your model. Defaults to 1.
         
     Returns:
         float: Bayesian AIC 
     """
-    nparams  = countParams(func,params)
+    nparam   = countParams(func,params)
     chi2data = chisquare(xdata, ydata, cov, func, args, params, None, None)
-    return -2*np.log(modelPrior) + chi2data + 2*nparams + 2*Ncut 
+    logger.debug('chi_data^2 =',chi2data)
+    return -2*np.log(modelPrior) + chi2data + 2*nparam + 2*Ncut 
 
 
-def pearson(x,y):
+def pearson(x,y) -> float:
     """ Get the Pearson correlation coefficient between the time series x and y.
 
     Args:
@@ -305,7 +342,7 @@ def pearson(x,y):
     return np.corrcoef(x,y)[0,1]
 
 
-def weighted_mean(data, err):
+def weighted_mean(data, err) -> float:
     """ Compute the weighted mean. Here the weights are Gaussian error bars.
     See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
 
@@ -321,7 +358,7 @@ def weighted_mean(data, err):
     return np.sum( weights @ data )/np.sum(weights)
 
 
-def weighted_variance(err):
+def weighted_variance(err) -> float:
     """ Get variance of above weighted mean, when the weights are statistical errors. 
 
     Parameters
@@ -334,7 +371,7 @@ def weighted_variance(err):
     return 1/np.sum(weights)
 
 
-def biased_sample_variance(data, err):
+def biased_sample_variance(data, err) -> float:
     """ Compute the biased weighted sample variance, i.e. the biased variance of an individual measurement and not the
     variance of the mean. """
     mean = weighted_mean(data, err)
@@ -343,7 +380,7 @@ def biased_sample_variance(data, err):
     return weights.dot((data - mean)**2) / V1
 
 
-def unbiased_sample_variance(data, err):
+def unbiased_sample_variance(data, err) -> float:
     """ Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
     the variance of the mean. Do not use this function if your weights are frequency weights. """
     weights = 1/np.array(err)**2
@@ -352,7 +389,7 @@ def unbiased_sample_variance(data, err):
     return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
 
 
-def unbiased_mean_variance(data, err):
+def unbiased_mean_variance(data, err) -> float:
     """ Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
     weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
     constructed using the deviations of the individual data points. """
@@ -363,7 +400,7 @@ def unbiased_mean_variance(data, err):
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
 
 
-def norm_cov(cov):
+def norm_cov(cov) -> np.ndarray:
     """ Normalize a covariance matrix to create the correlation matrix. """
     res = np.zeros((len(cov), len(cov[0])))
     for i in range(len(cov)):
@@ -461,7 +498,7 @@ def error_prop_func(x, func, params, params_err, grad=None, args=()):
     return error_prop(wrap_func, params, params_err, wrap_grad, args)[1]
 
 
-def gaudif(x1,e1,x2,e2):
+def gaudif(x1,e1,x2,e2) -> float:
     """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
     appropriate when one estimated x1 and x2 using ~30 or more measurements.
@@ -482,7 +519,7 @@ def gaudif(x1,e1,x2,e2):
     return 1.0 - erf(z)
 
 
-def studif(x1,e1,ndat1,x2,e2,ndat2):
+def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
     """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
     appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
@@ -517,7 +554,7 @@ def studif(x1,e1,ndat1,x2,e2,ndat2):
 
 
 def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
-              grad = None, swapXY=False, npoints=1000, **kwargs ):
+              grad = None, swapXY=False, npoints=1000, **kwargs):
     """ Plot a function along with its error bands.
 
     Args:
@@ -565,7 +602,6 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
             return plot_lines(ydata, xdata, yedata=None, xedata=None, **kwargs)
         else:
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
-        
 
 
 def getModelWeights(IC):
@@ -592,7 +628,7 @@ def modelAverage(data,err,IC):
         IC (array-like): Information criteria 
 
     Returns:
-        float: Model average 
+        tuple: Model average and error
     """
     checkEqualLengths(data,err,IC)
     data, err, IC = toNumpy(data, err, IC)

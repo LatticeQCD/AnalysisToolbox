@@ -26,7 +26,7 @@ def testContExtrap():
     a_mu      = [-3.83725749e-01, -2.50780435e-01, -1.51850559e-01]
     a_mu_err  = [7.05719861e-03, 1.60531523e-02, 9.46881142e-03]
     prior     = [-0.51180259,2,0.0]
-    prior_err = [0.02250462,1,1]
+    priorsigma = [0.02250462,1,1]
 
     result, result_err, chidof = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True)
 
@@ -45,7 +45,7 @@ def testContExtrap():
     a *= lam
 
     result, result_err, chidof, stats = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True,order=2,detailedInfo=True,
-                                                             prior=prior,prior_err=prior_err,error_strat='hessian')
+                                                             prior=prior,priorsigma=priorsigma,error_strat='hessian')
 
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]
     REFresult_err = [0.00930215, 0.1100613,  0.10344893]

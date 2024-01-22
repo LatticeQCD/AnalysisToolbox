@@ -67,6 +67,7 @@ default_params = {
     'alpha_dots': None,          # Transperancy for different dots
     'alpha_lines': 1,            # Transperancy for different lines
     'alpha_fill_edge': 0,        # Transperancy for edges of error bands
+    'hatch': None,               # Fill pattern
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 1.0,           # Linewidth of the error bars of caps af error bars
@@ -534,6 +535,11 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     _initializePlt(params)
     optional = _add_optional(params)
 
+    # If you want lines between your data you should be using plot_lines.
+    if 'linestyle' in optional:
+        logger.warn('Ignoring linestyle',optional['linestyle'])
+        del optional['linestyle']
+
     ax  = _getAxObject(params)
 
     xedata = _rescale(params['xscale'],xedata)
@@ -692,7 +698,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     set_params(**params) # Needed to put in labels
 
 
-def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
+def plot_fill(xdata, ydata, yedata, xedata=None, **params):
     """ Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 
     Args:
@@ -729,15 +735,17 @@ def plot_fill(xdata, ydata, yedata, xedata=None, pattern=None, **params):
 
     col = ebar[0].get_color()
     if xedata is None:
-        pl = ax.fill_between(xdata*params['xscale'], 
+        pl = ax.fill_between(xdata*params['xscale'],
                              (np.asarray(ydata*params['yscale']) - np.asarray(yedata*params['yscale'])),
                              (np.asarray(ydata*params['yscale']) + np.asarray(yedata*params['yscale'])), 
-                             facecolor=col, alpha=params['alpha'], linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
+                             facecolor=col, alpha=params['alpha'], linewidth=params['linewidth'], 
+                             zorder=1, edgecolor=col, hatch=params['hatch'])
     else:
         pl = ax.fill_betweenx(ydata*params['yscale'], 
                               (np.asarray(xdata*params['xscale']) - np.asarray(xedata*params['xscale'])),
                               (np.asarray(xdata*params['xscale']) + np.asarray(xedata*params['xscale'])), 
-                              facecolor=col, alpha=params['alpha'],linewidth=0, zorder=1, hatch=pattern, edgecolor=col)
+                              facecolor=col, alpha=params['alpha'],linewidth=params['linewidth'], 
+                              zorder=1, edgecolor=col, hatch=params['hatch'])
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])

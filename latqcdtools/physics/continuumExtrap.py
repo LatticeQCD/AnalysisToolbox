@@ -77,13 +77,13 @@ class Extrapolator(Fitter):
         return "Extrapolator"
 
 
-    def extrapolate(self,start_coeffs=None,prior=None,prior_err=None,detailedInfo=False):
+    def extrapolate(self,start_coeffs=None,prior=None,priorsigma=None,detailedInfo=False):
         """ Carry out the extrapolation.
 
         Args:
             start_coeffs (array-like, optional): your guess for starting parameters. Defaults to None.
             prior (array-like, optional): Bayesian priors. Defaults to None.
-            prior_err (array-like, optional): Bayesian prior errors. Defaults to None.
+            priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
             detailedInfo (bool, optional): Do you want information like AIC? Defaults to False.
             
         Returns:
@@ -103,7 +103,7 @@ class Extrapolator(Fitter):
                                                                                      detailedInfo=True)
         else:
             self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, priorval=prior, 
-                                                                                     priorsigma=prior_err, 
+                                                                                     priorsigma=priorsigma, 
                                                                                      algorithms=bayes_algs, detailedInfo=True)
         if detailedInfo:
             return self._result, self._result_err, self._chidof, self._stats
@@ -145,11 +145,11 @@ class Extrapolator(Fitter):
         return super().printErrorBudget(1e-8)
 
 
-def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,prior_err=None,
+def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,priorsigma=None,
                          error_strat='propagation',xtype="a",nproc=DEFAULTTHREADS,detailedInfo=False):
     """ A convenience wrapper for the Extrapolator. """
     ext = Extrapolator(x, obs, obs_err, xtype=xtype, order=order, error_strat=error_strat, nproc=nproc)
-    result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, prior_err=prior_err,detailedInfo=detailedInfo)
+    result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, priorsigma=priorsigma,detailedInfo=detailedInfo)
     if show_results:
         ext.showResults()
     if plot_results:
