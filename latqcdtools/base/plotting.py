@@ -542,8 +542,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
     ax  = _getAxObject(params)
 
-    xedata = _rescale(params['xscale'],xedata)
-    yedata = _rescale(params['yscale'],yedata)
+    xedata = _rescale(abs(params['xscale']),xedata)
+    yedata = _rescale(abs(params['yscale']),yedata)
 
     ZOD = params['ZOD']
     if ZOD is None:
