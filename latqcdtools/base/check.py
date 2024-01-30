@@ -52,6 +52,11 @@ def err_handler(err, flag):
             raise UnderflowError(err)
         else:
             pass
+    elif flag == 6:
+        if CATCHOVERFLOW: 
+            raise OverflowError(err)
+        else:
+            pass
     elif flag == 8:
         if CATCHINVALIDVALUE:
             raise InvalidValueError(err)
@@ -60,6 +65,11 @@ def err_handler(err, flag):
     elif flag == 9:
         if CATCHDIVIDEBYZERO:
             raise DivideByZeroError(err)
+        else:
+            pass
+    elif flag == 10:
+        if CATCHOVERFLOW: 
+            raise OverflowError(err)
         else:
             pass
     else:

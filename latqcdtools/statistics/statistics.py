@@ -10,10 +10,9 @@
 
 
 import numpy as np
-from scipy.linalg import inv
-from scipy.special import betainc, erf
+import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
-from latqcdtools.math.math import logDet, normalize
+from latqcdtools.math.math import logDet, normalize, invert, isPositiveSemidefinite, isSymmetric
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy
 from latqcdtools.base.cleanData import clipRange
@@ -197,8 +196,9 @@ def DOF(ndat,nparam,priorsigma=None) -> int:
     return dof
 
 
-def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,priorsigma=None):
-    """ Calculate chi^2.
+def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,priorsigma=None) -> float:
+    """ Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of
+    10.1103/PhysRevD.90.054506. We assume priors are not correlated with data.
 
     Args:
         xdata (array-like)
@@ -215,15 +215,14 @@ def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,priorsigma=None)
     """
     checkPrior(prior,priorsigma)
     y    = expandArgs(func,xdata,params,args)
-    cor  = norm_cov(cov)
-    diff = ( ydata - y )/np.sqrt( np.diag(cov) )
-    res  = diff.dot( inv(cor).dot(diff) )
+    diff = ydata-y
+    res  = diff @ invert(cov) @ diff
     if prior is not None:
         res += np.sum((np.array(params) - prior)**2 / priorsigma**2)
     return res
 
 
-def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None):
+def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
     """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
@@ -244,17 +243,13 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=N
     chi2   = chisquare(xdata, ydata, cov, func, args, params, prior, priorsigma)
     nparam = countParams(func,params)
     dof    = DOF(len(ydata),nparam,priorsigma)
-    logger.debug('chi^2 =',chi2)
-    logger.debug('nparam =',nparam)
-    logger.debug('dof =',dof)
-    logger.debug('priorsigma =',priorsigma)
     if prior is None:
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) )
     else:
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(priorsigma)**2)) )
 
 
-def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None):
+def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
     """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
@@ -278,7 +273,7 @@ def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None
     return 2*nparam - 2*likelihood
 
 
-def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None):
+def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
     """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
     infinity, one recovers the AIC.
@@ -296,14 +291,14 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=Non
     Returns:
         float: corrected AIC 
     """
-    nparam  = countParams(func,params)
-    nprior  = countPriors(priorsigma) 
-    ndat    = len(ydata) + nprior
-    aic     = AIC(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    nparam = countParams(func,params)
+    nprior = countPriors(priorsigma) 
+    ndat   = len(ydata) + nprior
+    aic    = AIC(xdata, ydata, cov, func, args, params, prior, priorsigma)
     return aic + 2*(nparam**2+nparam)/(ndat-nparam+1)
 
 
-def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1):
+def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1) -> float:
     """ Bayesian Akaike information criterion of 2208.14983.
 
     Args:
@@ -361,19 +356,27 @@ def weighted_mean(data, err) -> float:
 def weighted_variance(err) -> float:
     """ Get variance of above weighted mean, when the weights are statistical errors. 
 
-    Parameters
-    ----------
+    Args:
+        err (array-like)
 
-    err: array_like
-        The errors of the data points.
+    Returns:
+        float: weighted variance 
     """
     weights = 1/np.array(err)**2
     return 1/np.sum(weights)
 
 
 def biased_sample_variance(data, err) -> float:
-    """ Compute the biased weighted sample variance, i.e. the biased variance of an individual measurement and not the
-    variance of the mean. """
+    """ Compute the biased weighted sample variance, i.e. the biased variance of an 
+    individual measurement and not the variance of the mean.
+
+    Args:
+        data (array-like)
+        err (array-like)
+
+    Returns:
+        float: sample variance 
+    """
     mean = weighted_mean(data, err)
     weights = 1/np.array(err)**2
     V1 = np.sum(weights)
@@ -400,27 +403,17 @@ def unbiased_mean_variance(data, err) -> float:
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
 
 
-def norm_cov(cov) -> np.ndarray:
-    """ Normalize a covariance matrix to create the correlation matrix. """
-    res = np.zeros((len(cov), len(cov[0])))
-    for i in range(len(cov)):
-        for j in range(len(cov[0])):
-            res[i][j] = cov[i][j] / np.sqrt( cov[j][j] * cov[i][i] )
-    return np.array(res)
+def cov_to_cor(cov) -> np.ndarray:
+    """ Normalize covariance matrix to create correlation matrix.
 
+    Args:
+        cov (np.ndarray)
 
-def cut_eig(corr, threshold):
-    """ Cut eigenvalues of the correlation matrix. If they are smaller than the threshold, replace them with the
-    threshold. When needed, this replaces a small eigenvalue by a larger, small eigenvalue, which has the effect of
-    slightly overestimating the errors. The alternative would be to ignore them, in which case the program would
-    crash because the matrix is singular, or to discard them, which is like setting the variance to infinity.
-    This procedure is more accurate than the latter option. """
-    vals, vecs = np.linalg.eig(corr)
-    for i, value in enumerate(vals):
-        if value < threshold:
-            logger.details('Set small eigenvalue',value,'from correlation matrix to threshold',threshold)
-            vals[i] = threshold
-    return vecs.dot( np.diag(vals).dot( vecs.transpose() ) )
+    Returns:
+        np.ndarray: correlation matrix 
+    """
+    diagonal_sqrt = np.sqrt(np.diag(cov))
+    return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
 
 
 @reduce_tuple
@@ -444,8 +437,8 @@ def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
 def error_prop(func, means, errors, grad=None, args=()):
     """ Use error propagation to propagate some errors through function func. The function should have the form
         func( data ), where data is your array of input variables. """
-    errors = np.asarray(errors)
-    means  = np.asarray(means)
+    errors = np.array(errors)
+    means  = np.array(means)
     mean   = func(means, *args)
 
     # Test if we got a covariance matrix
@@ -458,7 +451,8 @@ def error_prop(func, means, errors, grad=None, args=()):
     if grad is not None:
         grad = grad(means, *args)
     else:
-        grad = diff_jac(means, func, args).transpose()
+        grad = diff_jac(means, func, args).T
+
     error = 0
     try:
         for i in range(len(grad)):
@@ -516,7 +510,7 @@ def gaudif(x1,e1,x2,e2) -> float:
         logger.TBError('Error bars should be non-negative. Got',e1,e2)
     sigma = np.sqrt(e1**2 + e2**2)
     z     = abs(x1-x2)/(sigma * np.sqrt(2.))
-    return 1.0 - erf(z)
+    return 1.0 - sp.special.erf(z)
 
 
 def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
@@ -548,9 +542,9 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
     if t==0:
         return 1
     elif t>0:
-        return betainc(dof/2,1/2,x)
+        return sp.special.betainc(dof/2,1/2,x)
     else:
-        return 2-betainc(dof/2,1/2,x)
+        return 2-sp.special.betainc(dof/2,1/2,x)
 
 
 def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
@@ -568,9 +562,9 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
         swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
         npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
     """
+    checkDomain(domain)
     fill_param_dict(kwargs)
     kwargs['marker'] = None
-    checkDomain(domain)
     xmin = domain[0] 
     xmax = domain[1] 
 
@@ -604,7 +598,7 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
 
 
-def getModelWeights(IC):
+def getModelWeights(IC) -> np.ndarray:
     """ Convert information criteria IC to normalized probability weights.
 
     Args:

@@ -30,9 +30,6 @@ def fit_func(x, p):
 def grad_fit_func(x, p):
     return np.array([x**2, x, np.ones(len(x))])
 
-def hess_fit_func(x, p):
-    return np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
-
 
 ''' Correlator fit. '''
 def one_state(x, p, Nt):
@@ -43,10 +40,6 @@ def grad_one_state(x, p, Nt):
     A, m = p
     return np.array([np.cosh(m * (Nt / 2 - x)), A * np.sinh(m * (Nt / 2 - x)) * (Nt / 2 - x)])
 
-def hess_one_state(x, p, Nt):
-    A, m = p
-    return np.array([ [0, np.sinh(m * (Nt / 2 - x)) * (Nt / 2 - x)],
-                      [np.sinh(m*(Nt/2-x))*(Nt/2-x), A*np.cosh(m*(Nt/2-x)) * (Nt/2-x)**2] ])
 
 def calc_cov_OLD(data):
     data = np.asarray(data)
@@ -124,6 +117,11 @@ def testFit():
     lpass *= print_results(res, res_true, res_err, res_err_true, "Exact TNC",prec=EPSILON)
 
 
+    res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="TNC", grad = grad_fit_func, 
+                             norm_err_chi2=True,error_strat='hessian')
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Exact TNC, hessian error strat",prec=EPSILON)
+
+
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="L-BFGS-B", derive_chisq = True, norm_err_chi2=True)
     lpass *= print_results(res, res_true, res_err, res_err_true,"Numerical L-BFGS-B using built-in derivative",prec=EPSILON)
 
@@ -147,19 +145,18 @@ def testFit():
     res_err_true = [5.042611e-08, 8.380914e-05]
 
 
-    res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state, hess=hess_one_state,
-                                     args=(64,), norm_err_chi2=True, algorithm="curve_fit")
+    res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], grad=grad_one_state,
+                             args=(64,), norm_err_chi2=True, algorithm="curve_fit")
     lpass *= print_results(res, res_true, res_err, res_err_true, "Exact curve_fit",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, np.diag(edata)**2, [1, 1], grad=grad_one_state,
-                                     hess=hess_one_state, args=(64,), norm_err_chi2=True,
-                                     algorithm="curve_fit")
+                             args=(64,), norm_err_chi2=True, algorithm="curve_fit")
     lpass *= print_results(res, res_true, res_err, res_err_true, "Diagonal correlation matrix",prec=EPSILON)
 
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = False,
-                                     norm_err_chi2=True, algorithm="curve_fit")
+                             norm_err_chi2=True, algorithm="curve_fit")
     lpass *= print_results(res, res_true, res_err, res_err_true, "Numerical curve_fit with difference quotient applied on chisquare",
                            prec=EPSILON)
 
@@ -167,7 +164,7 @@ def testFit():
     # Numerical derivative gives a slightly different result
     res_err_true = [5.0425819803e-08, 8.38114689761e-05]
     res, res_err, _ = do_fit(one_state, xdata, ydata, edata, [1, 1], args=(64,), use_diff = True,
-                                     norm_err_chi2=True, algorithm="curve_fit", )
+                             norm_err_chi2=True, algorithm="curve_fit")
     lpass *= print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
 
 
@@ -188,7 +185,7 @@ def testFit():
         lpass = False
 
     res, res_err, _ = do_fit(one_state, xdata, ydata, cov / nconfs, res_true, grad=grad_one_state,
-                             hess=hess_one_state, args=(64,), norm_err_chi2=True,algorithm="curve_fit")
+                             args=(64,), norm_err_chi2=True,algorithm="curve_fit")
     res_true = [4.988713e-05, 2.950030e-01]
     res_err_true = [1.176005e-06, 5.573209e-04]
     lpass *= print_results(res, res_true, res_err, res_err_true, "Exact curve_fit for correlated data",prec=EPSILON)

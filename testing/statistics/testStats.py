@@ -7,7 +7,7 @@
 #
 
 import numpy as np
-from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean
+from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor 
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 
@@ -87,6 +87,43 @@ ts2 = [-0.41765878, -0.2333498 ,  -0.22939907,  -0.27035445,  -0.29163003,  -0.2
         0.5776071 ,  0.6235754 ,   0.67287165,   0.82511437,   0.93292713,   0.84517425,
         0.762654  ,  0.8910726 ,   0.9227938 ,   0.7618559 ,   0.80128413]
 
+# An example taken from P. Lepage's lsqfit tutorial:
+ycov  = np.array(
+       [[ 2.1537808808e-09,   8.8161794696e-10,   3.6237356558e-10,
+          1.4921344875e-10,   6.1492842463e-11,   2.5353714617e-11,
+          4.3137593878e-12,   7.3465498888e-13],
+       [  8.8161794696e-10,   3.6193461816e-10,   1.4921610813e-10,
+          6.1633547703e-11,   2.5481570082e-11,   1.0540958082e-11,
+          1.8059692534e-12,   3.0985581496e-13],
+       [  3.6237356558e-10,   1.4921610813e-10,   6.1710468826e-11,
+          2.5572230776e-11,   1.0608148954e-11,   4.4036448945e-12,
+          7.6008881270e-13,   1.3146405310e-13],
+       [  1.4921344875e-10,   6.1633547703e-11,   2.5572230776e-11,
+          1.0632830128e-11,   4.4264622187e-12,   1.8443245513e-12,
+          3.2087725578e-13,   5.5986403288e-14],
+       [  6.1492842463e-11,   2.5481570082e-11,   1.0608148954e-11,
+          4.4264622187e-12,   1.8496194125e-12,   7.7369196122e-13,
+          1.3576009069e-13,   2.3914810594e-14],
+       [  2.5353714617e-11,   1.0540958082e-11,   4.4036448945e-12,
+          1.8443245513e-12,   7.7369196122e-13,   3.2498644263e-13,
+          5.7551104112e-14,   1.0244738582e-14],
+       [  4.3137593878e-12,   1.8059692534e-12,   7.6008881270e-13,
+          3.2087725578e-13,   1.3576009069e-13,   5.7551104112e-14,
+          1.0403917951e-14,   1.8976295583e-15],
+       [  7.3465498888e-13,   3.0985581496e-13,   1.3146405310e-13,
+          5.5986403288e-14,   2.3914810594e-14,   1.0244738582e-14,
+          1.8976295583e-15,   3.5672355835e-16]]
+       )
+
+
+def norm_cov(cov) -> np.ndarray:
+    """ A more transparent covariance normalizer. """ 
+    res = np.zeros((len(cov), len(cov[0])))
+    for i in range(len(cov)):
+        for j in range(len(cov[0])):
+            res[i][j] = cov[i][j] / np.sqrt( cov[j][j] * cov[i][i] )
+    return np.array(res)
+
 
 def testStats():
 
@@ -126,6 +163,10 @@ def testStats():
     xbar1 = std_mean(ts1)
     xbar2 = std_mean(ts2)
     R = np.sum((ts1-xbar1)*(ts2-xbar2))/np.sqrt(np.sum((ts1-xbar1)**2)*np.sum((ts2-xbar2)**2))
+
+    # Two simple tests of method normalizing a covariance matrix.
+    lpass *= print_results(cov_to_cor(ycov),cov_to_cor(cov_to_cor(ycov)),text='cov_to_cor fixed point')
+    lpass *= print_results(cov_to_cor(ycov),norm_cov(ycov),text='cov_to_cor')
 
     lpass *= print_results(pearson(ts1,ts2),R)
 
