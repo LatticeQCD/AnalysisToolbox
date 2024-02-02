@@ -285,8 +285,8 @@ class Fitter:
         the fit is relatively good. This also ensures non-negative eigenvalues for pcov and saves computational
         time computing the Hessian. See e.g. eq. (A4) in 10.1103/PhysRevD.90.054506. We assume priors are not 
         correlated with data. """
-        jac  = self.jacobian_fit_ansatz_array(params).T
-        res = 2 * ( jac @ self._inv_cov @ jac.T )
+        jac = self.jacobian_fit_ansatz_array(params).T
+        res = 2*( jac @ self._inv_cov @ jac.T )
         if self._priorsigma is not None:
             res += np.sum( 2/self._priorsigma**2 )
         return res

@@ -11,6 +11,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.base.cleanData import clipRange
+from latqcdtools.base.utilities import createFilePath
 
 
 def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwargs):
@@ -96,9 +97,10 @@ def writeTable(filename,*args,**kwargs):
     ab = np.zeros(data[0].size, dtype=dtypes)
     for i in range(colno):
         ab[_lab(i)] = data[i]
+    createFilePath(filename)
     np.savetxt(filename, ab, fmt=form, header=head, **kwargs)
 
 
-def _lab(num):
+def _lab(num) -> str:
     """ Create a short string label for each column of a data table. Needed for writeTable. """
     return 'var' + str(num)

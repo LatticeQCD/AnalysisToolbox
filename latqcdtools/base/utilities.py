@@ -53,7 +53,7 @@ def _alphanum_key(key):
 # ---------------------------------------------------------------------------------- MAKE INTERNAL FUNCTIONS MORE SMOOTH
 
 
-def isArrayLike(obj):
+def isArrayLike(obj) -> bool:
     """ Figure out whether obj is indexable.
 
     Args:
@@ -69,7 +69,7 @@ def isArrayLike(obj):
         return False
 
 
-def isHigherDimensional(obj):
+def isHigherDimensional(obj) -> bool:
     """ Figure out whether obj has at least two indices.
 
     Args:
@@ -272,7 +272,7 @@ def find_nearest_idx(array, value):
     return idx
 
 
-def substringBetween(string,a,b):
+def substringBetween(string,a,b) -> str:
     start_index = string.index(a)+1
     end_index   = string.index(b)
     return string[start_index:end_index]
@@ -290,6 +290,14 @@ def deleteFile(target):
     else:
         pass
     logger.warn('Unable to remove file',target)
+
+
+def createFilePath(fullFileName):
+    """ Create the directory path if it isn't there already. """
+    if '/' in fullFileName:
+        dir_path = os.path.dirname(fullFileName)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path,exist_ok=True)
 
 
 def byteConvert(x,b1,b2):

@@ -51,7 +51,6 @@ class Extrapolator(Fitter):
 
         self._order              = order
         self._triedExtrapolation = False
-        self._logGBF             = None
         self._ansatz             = ansatz
 
         if xtype == "a":
@@ -136,13 +135,8 @@ class Extrapolator(Fitter):
         for i in range(len(self._result)):
             logger.info('        c_'+str(i)+' = '+get_err_str(self._result[i],self._result_err[i]))
         logger.info('chi2/d.o.f. =',round(self._chidof,3))
-        if self._logGBF is not None:
-            logger.info('     logGBF =',round(self._logGBF, 3))
+        logger.info('     logGBF =',round(self._stats['logGBF'], 3))
         logger.info()
-
-
-    def printErrorBudget(self):
-        return super().printErrorBudget(1e-8)
 
 
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,priorsigma=None,

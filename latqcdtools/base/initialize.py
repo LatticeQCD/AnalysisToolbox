@@ -7,7 +7,7 @@
 # 
 
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import shell
+from latqcdtools.base.utilities import shell, createFilePath
 
 
 INITIALIZED = False     # Global flag to check if initialization has already occurred.
@@ -33,7 +33,7 @@ def gitHash():
 
 
 def introduceYourself():
-    """ Corporate branding. """
+    """ Corporate branding. ASCII generated from https://patorjk.com. """
     logger.info()
     logger.info("     _                _           _    _____           _ _                ")
     logger.info("    / \   _ __   __ _| |_   _ ___(_)__|_   _|__   ___ | | |__   _____  __ ")
@@ -49,6 +49,7 @@ def initialize(logFile='Toolbox.log'):
     global INITIALIZED
     INITIALIZED = True
     introduceYourself()
+    createFilePath(logFile)
     logger.createLogFile(logFile)
     logger.info("Current git commit =",gitHash())
     logger.info()
