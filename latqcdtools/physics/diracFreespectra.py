@@ -7,7 +7,6 @@
 #
 
 import numpy as np
-from numpy import ndarray
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import id_4
 import itertools
@@ -23,29 +22,29 @@ class GammaMatrix:
 
     def g(self, i=1):
         if i == 1:
-            gamma: ndarray = np.array([[0.0, 0.0, 0.0, -1.0j],
+            gamma: np.ndarray = np.array([[0.0, 0.0, 0.0, -1.0j],
                                        [0.0, 0.0, -1.0j, 0.0],
                                        [0.0, 1.0j, 0.0, 0.0],
                                        [1.0j, 0.0, 0.0, 0.0]])
         elif i == 2:
-            gamma: ndarray = np.array([[0.0, 0.0, 0.0, -1.0],
+            gamma: np.ndarray = np.array([[0.0, 0.0, 0.0, -1.0],
                                        [0.0, 0.0, 1.0, 0.0],
                                        [0.0, 1.0, 0.0, 0.0],
                                        [-1.0, 0.0, 0.0, 0.0]])
         elif i == 3:
-            gamma: ndarray = np.array([[0.0, 0.0, -1.0j, 0.0],
+            gamma: np.ndarray = np.array([[0.0, 0.0, -1.0j, 0.0],
                                        [0.0, 0.0, 0.0, 1.0j],
                                        [1.0j, 0.0, 0.0, 0.0],
                                        [0.0, -1.0j, 0.0, 0.0]])
         elif i == 4:
-            gamma: ndarray = np.array([[0.0, 0.0, -1.0, 0.0],
+            gamma: np.ndarray = np.array([[0.0, 0.0, -1.0, 0.0],
                                        [0.0, 0.0, 0.0, -1.0],
                                        [-1.0, 0.0, 0.0, 0.0],
                                        [0.0, -1.0, 0.0, 0.0]])
         return gamma
 
     def g5(self):
-        gamma: ndarray = np.array([[1.0, 0.0, 0.0, 0.0],
+        gamma: np.ndarray = np.array([[1.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0],
                                    [0.0, 0.0, -1.0, 0.0],
                                    [0.0, 0.0, 0.0, -1.0]])

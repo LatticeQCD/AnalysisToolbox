@@ -118,52 +118,6 @@ def toNumpy(*args):
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
 
 
-def append(array,item):
-    """ Generalized append. Works also for numpy arrays and tuples.
-
-    Args:
-        array (array-like)
-        item (any): to-be-appended item 
-
-    Returns:
-        array-like 
-    """
-    if isHigherDimensional(array):
-        logger.TBError('Append for 1-d objects only.')
-    if isinstance(array,np.ndarray):
-        temp = list(array)
-        temp.append(item)
-        return np.array(temp)
-    elif isinstance(array,list):
-        return array.append(item)
-    elif isinstance(array,tuple):
-        return array + (item,) 
-    else:
-        logger.TBError('No append defined for type',type(array))
-
-
-def insert(array,item,idx):
-    """ Generalized insert. Works also for numpy arrays and tuples.
-
-    Args:
-        array (array-like)
-        item (any): to-be-appended item 
-
-    Returns:
-        array-like 
-    """
-    if isHigherDimensional(array):
-        logger.TBError('Insert for 1-d objects only.')
-    if isinstance(array,np.ndarray):
-        temp = list(array)
-        temp.insert(idx,item)
-        return np.array(temp)
-    elif isinstance(array,list):
-        return array.insert(idx,item)
-    else:
-        logger.TBError('No insert defined for type',type(array))
-
-
 def getArgs(parser):
     """ Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. """
     args, invalid_args = parser.parse_known_args()
@@ -186,7 +140,7 @@ def printDict(dic):
         logger.info(key,dic[key])
 
 
-def cleanOutput(*args,label=None):
+def cleanOutput(*args,label=None) -> str:
     """ This method takes a bunch of args and formats them automatically for output. The idea is
     that you can use this method to ensure that columns are well lined up.
 
@@ -244,7 +198,7 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
+def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S") -> bool:
     """ Check whether date1 comes before date2.
 
     Args:
@@ -260,12 +214,12 @@ def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
     return date1_converted < date2_converted
 
 
-def naturalSort(l):
+def naturalSort(l) -> list:
     """Sort list of strings so that, e.g. '10' comes after '9' rather than before it."""
     return sorted(l, key=_alphanum_key)
 
 
-def find_nearest_idx(array, value):
+def find_nearest_idx(array, value) -> int:
     """ Find the index of the element of array nearest to value. """
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -311,8 +265,8 @@ def byteConvert(x,b1,b2):
     Returns:
         float: Bytes in target units. 
     """
-    p1=_getPrefix(b1)
-    p2=_getPrefix(b2)
+    p1 =_getPrefix(b1)
+    p2 =_getPrefix(b2)
     num=_bytePrefix[p1]
     den=_bytePrefix[p2]
     return x*num/den

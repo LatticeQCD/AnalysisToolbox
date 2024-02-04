@@ -48,7 +48,7 @@ def get_exp(param):
         return int(result)
 
 
-def get_err_str(param, param_err, numb_err_dig=2):
+def get_err_str(param, param_err, numb_err_dig=2) -> str:
     """ Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). """
 
     checkType(numb_err_dig,int)
@@ -122,7 +122,7 @@ def get_err_str(param, param_err, numb_err_dig=2):
         return "%s(%s)" % (param_str, err_str)
 
 
-def get_err_str_exp(param, param_err, exp, numb_err_dig=1, multicon="x"):
+def get_err_str_exp(param, param_err, exp, numb_err_dig=1, multicon="x") -> str:
     """ Express the number with a exponent. The multiplication icon can be changed. """
     if exp == 0:
         return get_err_str(param, param_err, numb_err_dig)
@@ -131,7 +131,7 @@ def get_err_str_exp(param, param_err, exp, numb_err_dig=1, multicon="x"):
     return "%s%s10^%i" % (get_err_str(param, param_err, numb_err_dig), multicon, exp)
 
 
-def get_err_str_auto(param, param_err, numb_err_dig=1, mulicon="x"):
+def get_err_str_auto(param, param_err, numb_err_dig=1, mulicon="x") -> str:
     """ Automatically express the number with an exponent. The multiplication icon can be changed. """
     exp = get_exp(param)
     exp_err = get_exp(param_err)
@@ -142,11 +142,11 @@ def get_err_str_auto(param, param_err, numb_err_dig=1, mulicon="x"):
     return get_err_str_exp(param, param_err, exp, numb_err_dig, mulicon)
 
 
-def get_err_str_exp_tex(param, param_err, exp, numb_err_dig=1):
+def get_err_str_exp_tex(param, param_err, exp, numb_err_dig=1) -> str:
     """ Express the number with an exponent in LaTeX. """
     return "$%s$" % get_err_str_exp(param, param_err, exp, numb_err_dig, "\\cdot ")
 
 
-def get_err_str_auto_tex(param, param_err, numb_err_dig=1):
+def get_err_str_auto_tex(param, param_err, numb_err_dig=1) -> str:
     """ Automatically express the number with an exponent in LaTeX. """
     return "$%s$" % get_err_str_auto(param, param_err, numb_err_dig, "\\cdot ")

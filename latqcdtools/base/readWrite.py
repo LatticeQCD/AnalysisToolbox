@@ -14,7 +14,7 @@ from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.utilities import createFilePath
 
 
-def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwargs):
+def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwargs) -> np.ndarray:
     """ Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally
     allows the user to restrict the table based on the range of one of the columns.
 

@@ -139,7 +139,7 @@ def clearPlot():
     plt.clf()
 
 
-def getColorGradient(NUM_COLORS,map='viridis'):
+def getColorGradient(NUM_COLORS,map='viridis') -> list:
     """ Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
 
     Args:
@@ -187,7 +187,6 @@ def _initializePlt(params):
     if INITIALIZE:
         logger.debug("Plot initializer called!")
         INITIALIZE = False
-#        plt.rcParams['figure.autolayout'] = True
         plt.rcParams['savefig.bbox']      = 'standard'
         plt.rcParams['axes.titlesize']    = params['font_size']
         plt.rcParams['font.size']         = params['font_size']
@@ -391,7 +390,6 @@ def set_params(**params):
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
         leg.set_zorder(FOREGROUND)
-#        plt.tight_layout()
 
     if params['xtick_freq'] is not None:
         start, end = ax.get_xlim()

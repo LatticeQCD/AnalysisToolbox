@@ -137,13 +137,13 @@ class latticeParams:
             return self.r0/r0_div_a(self.beta,self.year)
 
 
-    # T in [MeV]
-    def getT(self):
+    def getT(self) -> float:
+        """ T in MeV. """
         return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
 
 
-    # L in spacelike direction in [1/MeV]
-    def getLs(self):
+    def getLs(self) -> float:
+        """ L in space-like direction in [1/MeV]. """
         if self.Ns is not None:
             return fm_to_MeVinv(self.Ns*self.geta())
         else:

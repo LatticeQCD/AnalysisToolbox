@@ -96,28 +96,28 @@ def normalize(arr):
     return arr/np.sum(np.abs(arr))
 
 
-def fallFactorial(n,m):
+def fallFactorial(n,m) -> float:
     """ Falling factorial n fall to m. """
     if m>n:
         logger.TBError("m>n.")
     return sp.special.poch(n-m+1,m)
 
 
-def riseFactorial(n,m):
+def riseFactorial(n,m) -> float:
     """ Rising factorial n rise to m. """
     if n>m:
         logger.TBError("n>m.")
     return sp.special.poch(n,m)
 
 
-def logDet(mat):
+def logDet(mat) -> float:
     """ Logarithm of determinant. """
     checkSquare(mat)
     _, ans = np.linalg.slogdet(mat)
     return ans
 
 
-def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14):
+def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
     """ Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
     and b are array-like, we check that they are element-wise equal within the tolerance. 
 

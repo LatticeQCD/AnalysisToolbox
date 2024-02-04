@@ -86,7 +86,7 @@ def _separatePrefix(units):
     return prefix, baseUnit
 
 
-def convert(x,unit1,unit2):
+def convert(x,unit1,unit2) -> float:
     """ General method for doing unit conversions.
 
     Args:
@@ -218,19 +218,19 @@ hcMeVfm = convert( convert(hceVm,"eV","MeV"), "m","fm" )
 hcGeVfm = convert(hcMeVfm,"MeV","GeV")
 
 
-def fm_to_MeVinv(x):
+def fm_to_MeVinv(x) -> float:
     return x/hcMeVfm
-def fm_to_GeVinv(x):
+def fm_to_GeVinv(x) -> float:
     return x/hcGeVfm
 
-def MeV_to_fminv(x):
+def MeV_to_fminv(x) -> float:
     return x/hcMeVfm
-def GeV_to_fminv(x):
+def GeV_to_fminv(x) -> float:
     return x/hcGeVfm
 
-def MeVinv_to_fm(x):
+def MeVinv_to_fm(x) -> float:
     return hcMeVfm*x
-def GeVinv_to_fm(x):
+def GeVinv_to_fm(x) -> float:
     return hcGeVfm*x
 
 

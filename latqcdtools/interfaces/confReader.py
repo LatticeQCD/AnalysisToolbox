@@ -49,7 +49,7 @@ class confReader:
         self.gauge = gaugeField(self.Ns,self.Nt,self.nproc)
 
 
-    def unpack(self, data):
+    def unpack(self, data) -> SU3():
         """ Unpack a string of bytes from file into an SU3 object. """
         numData = int(len(data)/self.getByteSize())
         linkTuple = struct.unpack( self.endianness + str(numData) + self.precision, data )

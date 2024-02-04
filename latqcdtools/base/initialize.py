@@ -14,7 +14,7 @@ INITIALIZED = False     # Global flag to check if initialization has already occ
 DEFAULTSEED = 7271978   # Default seed for reproducibility (needed in testing). Do not Google this date.
 
 
-def gitHash():
+def gitHash() -> str:
     """ Obtain the current git hash. This assumes the Toolbox has been correctly installed.
 
     Returns:

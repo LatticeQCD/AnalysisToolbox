@@ -44,7 +44,7 @@ class observablesOfInterest(list):
         return "observablesOfInterest"
 
 
-    def getCol(self,part,obs):
+    def getCol(self,part,obs) -> int:
         """ op_to_obs will give back complex numbers, which are then output to a table. Given an observable obs with
         real or imaginary part part, getCol returns the column index. """
         checkDomain(obs,_allowed_observables)
