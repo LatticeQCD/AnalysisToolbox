@@ -91,7 +91,6 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
     if obs is None:
         obs = observablesOfInterest()
     vol4     = lp.vol4
-    mu       = lp.mu
     outTable = {}
     for observable in _allowed_observables:
         outTable[observable] = []
@@ -102,43 +101,28 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         if len(cID) != len(cID.strip()):
             logger.TBError('confIDs must not have whitespace! This throws off the column indexing.')
 
-        nlVec=np.array(opTable[cID][0]) # tr M^-1 d M 
-        nsVec=np.array(opTable[cID][1])
-        numVec_l=len(nlVec)
-        numVec_s=len(nsVec)
+        trMdMl=np.array(opTable[cID][0]) # tr M^-1 d M 
+        trMdMs=np.array(opTable[cID][1])
 
-        if not numVec_l==numVec_s:
-            logger.warn("Unexpected numVec for nf, cID = "+cID+"... skipping")
+        if len(trMdMl) != len(trMdMs): 
+            logger.warn("len(trMdMl) != len(trMdMs) cID = "+cID+"... skipping")
             continue
 
-        nl2Vec=np.array(opTable[cID][2])  # tr ( M^-1 d M )^2
-        ns2Vec=np.array(opTable[cID][3])
-        numVec_l2=len(nl2Vec)
-        numVec_s2=len(ns2Vec)
+        trMdMl2=np.array(opTable[cID][2])  # tr ( M^-1 d M )^2
+        trMdMs2=np.array(opTable[cID][3])
 
-        if not numVec_l2==numVec_s2:
-            logger.warn("Unexpected numVec for nf**2, cID = "+cID+"... skipping")
+        if len(trMdMl2) != len(trMdMs2):
+            logger.warn("len(trMdMl2) != len(trMdMs2) cID = "+cID+"... skipping")
             continue
 
-        MddMlVec=np.array(opTable[cID][4])
-        MddMsVec=np.array(opTable[cID][5])
-        numVec_Ml=len(MddMlVec)
-        numVec_Ms=len(MddMsVec)
+        trMd2Ml=np.array(opTable[cID][4]) # tr ( M^-1 dd M )^2
+        trMd2Ms=np.array(opTable[cID][5])
 
-        if not numVec_Ml==numVec_Ms:
-            logger.warn("Unexpected numVec for tr M^-1 dd M, cID = "+cID+"... skipping")
+        if len(trMd2Ml) != len(trMd2Ms): 
+            logger.warn("len(trMd2Ml) != len(trMd2Ms), cID = "+cID+"... skipping")
             continue
 
-        trMinvlVec=np.array(opTable[cID][6])
-        trMinvsVec=np.array(opTable[cID][7])
-        numVec_trMinvl=len(trMinvlVec)
-        numVec_trMinvs=len(trMinvsVec)
-
-        if not numVec_trMinvl==numVec_trMinvs:
-            logger.warn("Unexpected numVec for tr M^-1, cID = "+cID+"... skipping")
-            continue
-
-        if numVec_l==0 or numVec_l2==0 or numVec_Ml==0 or numVec_trMinvl==0:
+        if len(trMdMl)==0 or len(trMdMl2)==0 or len(trMd2Ml)==0:
             logger.warn("Found zero random vectors for an observable, cID = "+cID+"... skipping")
             continue
 
@@ -147,22 +131,22 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         # to multiply by vol4 to a correct normalization. Number densities should be pure imaginary
         # configuration by configuration at mu=0 and for pure imaginary mu, so we extract these pure
         # imaginary parts to reduce the noise. When this quantity is squared, it introduces a (-) sign.
-        chi2l   = - vol4*( mean_square(nlVec.imag) )/16 + vol4*np.mean(nlVec.imag)**2/16 - (1/4)*np.mean(nl2Vec) + (1/4)*np.mean(MddMlVec)
-        chi2s   = - vol4*( mean_square(nsVec.imag) )/16 - (1/4)*np.mean(ns2Vec) + (1/4)*np.mean(MddMsVec)
-        chi11ll = - vol4*( mean_square(nlVec.imag) )/16 + 0*1j 
-#        chi11ls = - vol4*( np.mean(nlVec.imag*nsVec.imag) - np.mean(nlVec.imag)*np.mean(nsVec.imag) )/16 + 0*1j
-        chi11ls = - vol4*( np.mean(nlVec.imag)*np.mean(nsVec.imag) )/16 + 0*1j
+        chi2l   = - vol4*( mean_square(trMdMl.imag) )/16 + vol4*np.mean(trMdMl.imag)**2/16 - np.mean(trMdMl2)/4 + np.mean(trMd2Ml)/4
+        chi2s   = - vol4*( mean_square(trMdMs.imag) )/16 - np.mean(trMdMs2)/4 + np.mean(trMd2Ms)/4
+        chi11ll = - vol4*( mean_square(trMdMl.imag) )/16 + 0*1j 
+#        chi11ls = - vol4*( np.mean(trMdMl.imag*trMdMs.imag) - np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
+        chi11ls = - vol4*( np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
 
         # TODO: There seems to be a possibility for reuse of this number above 
-        nl2  = - mean_square(nlVec.imag)*vol4/16 + 0j
-        ns2  = - mean_square(nsVec.imag)*vol4/16 + 0j
-        nlns = np.mean(nlVec.imag)*np.mean(nsVec.imag)*vol4/16 +0j
+        nl2  = - mean_square(trMdMl.imag)*vol4/16 + 0j
+        ns2  = - mean_square(trMdMs.imag)*vol4/16 + 0j
+        nlns = np.mean(trMdMl.imag)*np.mean(trMdMs.imag)*vol4/16 +0j
 
         chi2Q = (1/9)*( 5*chi2l + chi2s - 4*chi11ll - 2*chi11ls )
         chi2B = (1/9)*( 2*chi2l + chi2s + 2*chi11ll + 4*chi11ls )
 
-        dnl  = -( np.mean(nl2Vec) - np.mean(MddMlVec) )/4
-        dns  = -( np.mean(ns2Vec) - np.mean(MddMsVec) )/4
+        dnl  = -( np.mean(trMdMl2) - np.mean(trMd2Ml) )/4
+        dns  = -( np.mean(trMdMs2) - np.mean(trMd2Ms) )/4
 
         dnS  =           dns
         dnQ  = ( 5*dnl + dns )/9
@@ -170,8 +154,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         dn   = ( 2*dnl + dns )/9
 
         # TODO: possiblity for reuse above?
-        nl   =  np.mean( nlVec )/4
-        ns   =  np.mean( nsVec )/4
+        nl   =  np.mean( trMdMl )/4
+        ns   =  np.mean( trMdMs )/4
         n    =  (2*nl + ns)/3
         nS   = -        ns
         nQ   =  (  nl - ns)/3
