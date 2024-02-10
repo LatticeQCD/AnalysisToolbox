@@ -7,9 +7,11 @@
 #
 
 import numpy as np
-from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor 
+from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse 
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
+from latqcdtools.base.plotting import plt
+from latqcdtools.base.initialize import DEFAULTSEED
 
 logger.set_log_level('INFO')
 
@@ -169,6 +171,19 @@ def testStats():
     lpass *= print_results(cov_to_cor(ycov),norm_cov(ycov),text='cov_to_cor')
 
     lpass *= print_results(pearson(ts1,ts2),R)
+
+    # Test of the confidence ellipse method.
+    Ndraws = 1001
+    rng = np.random.default_rng(seed=DEFAULTSEED)
+    _,ax = plt.subplots()
+    x = rng.normal(0,3,Ndraws)
+    y = rng.normal(0,1,Ndraws)
+    a,b,_ = confidence_ellipse(x,y,ax=ax,CI=0.5)
+    Ninside=0
+    for i in range(len(x)):
+        if x[i]**2/a**2 + y[i]**2/b**2 < 1:
+            Ninside+=1
+    lpass *=  print_results(Ninside/Ndraws,0.5004995004995005)
 
     concludeTest(lpass)
 

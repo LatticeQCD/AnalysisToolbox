@@ -12,12 +12,13 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
-from latqcdtools.math.math import logDet, normalize, invert, isPositiveSemidefinite, isSymmetric
-from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines
+from latqcdtools.math.math import logDet, normalize, invert
+from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
 import latqcdtools.base.logger as logger
+from matplotlib.patches import Ellipse
 
 
 def reduce_tuple(func):
@@ -414,6 +415,41 @@ def cov_to_cor(cov) -> np.ndarray:
     """
     diagonal_sqrt = np.sqrt(np.diag(cov))
     return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
+
+
+def confidence_ellipse(x,y,ax,color='r',CI=None):
+    """ Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
+    assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures
+    roughly 39% of the data.
+
+    Args:
+        x (array-like)
+        y (array-like)
+        ax (matplotlib ax object)
+        color (str, optional): Color of the ellipse edge. Defaults to 'r'.
+        C (float, optional): Desired confidence. Defaults to ~0.39.
+
+    Returns:
+        float, float: semi-major and semi-minor lengths of drawn ellipse 
+    """
+    checkEqualLengths(x,y)
+    if CI is None:
+        s = 1
+    else:
+        if CI<0 or CI>1:
+            logger.TBError('Confidence limits are between 0 and 1.') 
+        s = np.sqrt(-2*np.log(1-CI))
+    data = np.vstack((x, y))
+    cov  = np.cov(data)
+    eigvals, eigvecs = np.linalg.eig(cov)
+    maj_eigvec = eigvecs[:,np.argmax(eigvals)]
+    theta = np.rad2deg( np.arctan2(maj_eigvec[1],maj_eigvec[0]) )
+    a = s*np.sqrt(np.max(eigvals))
+    b = s*np.sqrt(np.min(eigvals))
+    ellipse = Ellipse((std_mean(x), std_mean(y)), width = 2*a, height = 2*b, angle = theta,
+                      edgecolor=color, fc='None', zorder=FOREGROUND)
+    ax.add_patch(ellipse)
+    return a, b, theta 
 
 
 @reduce_tuple

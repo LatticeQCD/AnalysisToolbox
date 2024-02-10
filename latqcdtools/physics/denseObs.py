@@ -131,6 +131,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         # to multiply by vol4 to a correct normalization. Number densities should be pure imaginary
         # configuration by configuration at mu=0 and for pure imaginary mu, so we extract these pure
         # imaginary parts to reduce the noise. When this quantity is squared, it introduces a (-) sign.
+                                                                                            # these should be pure real
         chi2l   = - vol4*( mean_square(trMdMl.imag) )/16 + vol4*np.mean(trMdMl.imag)**2/16 - np.mean(trMdMl2)/4 + np.mean(trMd2Ml)/4
         chi2s   = - vol4*( mean_square(trMdMs.imag) )/16 - np.mean(trMdMs2)/4 + np.mean(trMd2Ms)/4
         chi11ll = - vol4*( mean_square(trMdMl.imag) )/16 + 0*1j 
