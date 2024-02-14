@@ -583,6 +583,21 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
         return 2-sp.special.betainc(dof/2,1/2,x)
 
 
+def goodnessOfFit(dof, chi2) -> float:
+    """ The q-value or goodness of fit.
+
+    Args:
+        dof (int): number of degrees of freedom 
+        chi2 (float): the chi2 
+
+    Returns:
+        float: Q 
+    """
+    checkType(dof,int)
+    return sp.special.gammaincc(dof/2,chi2/2)
+
+
+
 def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
               grad = None, swapXY=False, npoints=1000, **kwargs):
     """ Plot a function along with its error bands.

@@ -20,7 +20,7 @@ from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, is
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, cov_to_cor, chisquare, logGBF, DOF, \
-    expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior
+    expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior, goodnessOfFit
 
 
 # Allowed keys for the constructor
@@ -563,16 +563,17 @@ class Fitter:
             return ( np.copy(self._saved_params),
                      all_fit_errors[min_ind],
                      chidof,
-                     { 'logGBF' : logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                     {  'logGBF' : logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
                                          prior=self._priorval,priorsigma=self._priorsigma),
-                        'pcov'  : np.copy(self._saved_pcov),
-                        'chi2'  : all_chi2[min_ind],
-                        'BAIC'  : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
-                        'AIC'   : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                                      self._priorval, self._priorsigma),
-                        'AICc'  : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                        'pcov'   : np.copy(self._saved_pcov),
+                        'chi2'   : all_chi2[min_ind],
+                        'BAIC'   : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
+                        'AIC'    : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
                                        self._priorval, self._priorsigma),
-                        'DOF'   : dof,
+                        'AICc'   : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
+                                        self._priorval, self._priorsigma),
+                        'DOF'    : dof,
+                        'Q'      : goodnessOfFit(dof,all_chi2[min_ind])
                      }
                    )
         else:

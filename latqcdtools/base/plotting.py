@@ -105,6 +105,7 @@ default_params = {
     'ylogscale': False,
     'xlogbase': 10,
     'ylogbase': 10,
+    'orientation' : 'vertical',
 }
 
 
@@ -271,9 +272,6 @@ def fill_param_dict(params):
             Dictionary with all parameters that are already set by the user
     """
     global LEGEND
-    for key in params:
-        if not key in allowed_params:
-            logger.warn("Encountered unexpected plotting parameter",key)
 
     if not LEGEND:
         # When filling params, check if we show the legend. This is triggered by one of these keys
@@ -559,13 +557,13 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], color=params['color'],
                            zorder=ZOD, markersize=params['markersize'], capsize=params['capsize'],
-                           elinewidth=params['elinewidth'], markeredgewidth=params['elinewidth'],
+                           elinewidth=params['elinewidth'],
                            markerfacecolor = markerfill, **optional)
     else:
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
-                           markeredgewidth=params['elinewidth'], markerfacecolor = markerfill, 
+                           markerfacecolor = markerfill, 
                            **optional)
 
     if params['label'] is not None:
@@ -630,9 +628,10 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
     if bins is None:
         bins = 'auto'
     if isHigherDimensional(data):
-        ax.hist(data, bins=bins, density=density,label=label)
+        ax.hist(data, bins=bins, density=density, label=label, orientation=params['orientation'], alpha=params['alpha'])
     else:
-        ax.hist(data, bins=bins, density=density,label=label,color=params['color'])
+        ax.hist(data, bins=bins, density=density, label=label,color=params['color'], orientation=params['orientation'],
+                alpha=params['alpha'])
     if density:
         ax.set_yticklabels([])
     if label is not None:

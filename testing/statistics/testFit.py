@@ -202,14 +202,17 @@ def testFit():
     prior        = [5e-05,3e-01]
     priorsigma   = [5e-05,3e-01]
     res_err_true = [1.148967933055725e-06, 0.0005445077355994696]
-    res, res_err, _, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = priorsigma, args=(64,),
-                                 norm_err_chi2=True, detailedInfo=True,
-                                 algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
+    res, res_err, _, stats = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = priorsigma, 
+                                     args=(64,), norm_err_chi2=True, detailedInfo=True,
+                                     algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
     lpass *= print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
 
-
-
-
+    lpass *= print_results(stats['logGBF'], 542.3120190935467     , text='logGBF')
+    lpass *= print_results(stats['chi2']  , 95.21248701567058     , text='chi2')
+    lpass *= print_results(stats['BAIC']  , 99.21220447790006     , text='BAIC')
+    lpass *= print_results(stats['AIC']   , -1080.6240381870934   , text='AIC')
+    lpass *= print_results(stats['AICc']  , -1080.3573715204268   , text='AICc')
+    lpass *= print_results(stats['Q']     , 1.2269138243695367e-05, text='Q')
 
     timey.printTiming()
 
