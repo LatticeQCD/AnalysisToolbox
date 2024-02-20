@@ -7,7 +7,9 @@
 #
 
 import numpy as np
-from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse 
+import scipy as sp
+from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse,\
+    KSTest_1side, KSTest_2side
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.plotting import plt
@@ -183,7 +185,16 @@ def testStats():
     for i in range(len(x)):
         if x[i]**2/a**2 + y[i]**2/b**2 < 1:
             Ninside+=1
-    lpass *=  print_results(Ninside/Ndraws,0.5004995004995005)
+    lpass *= print_results(Ninside/Ndraws,0.5004995004995005,text='ellipse')
+
+    data1 = rng.normal(0,1,Ndraws)
+    data2 = rng.normal(0,1,Ndraws)
+    lpass *= print_results( KSTest_2side(data1,data2), 0.7359984219245113, text='KS 2 side')
+
+    normalCDF = sp.stats.norm(loc=0,scale=1).cdf
+
+    lpass *= print_results(KSTest_1side(data1,normalCDF),0.4937205464565033, text='KS 1 side 1')
+    lpass *= print_results(KSTest_1side(data2,normalCDF),0.656583347109468 , text='KS 1 side 2')
 
     concludeTest(lpass)
 

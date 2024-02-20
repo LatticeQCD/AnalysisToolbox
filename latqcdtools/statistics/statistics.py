@@ -108,17 +108,17 @@ def checkDomain(domain):
     """
     checkType(domain,tuple)
     if len(domain) != 2:
-        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].')
+        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].',frame=3)
     if domain[0]>=domain[1]:
-        logger.TBError('Must have domain[1]>domain[0].')
+        logger.TBError('Must have domain[1]>domain[0].',frame=3)
 
 
 def checkPrior(prior,priorsigma):
     """ Make sure prior and priorsigma status are compatible. """
     if prior is None and priorsigma is not None:
-        logger.TBError('prior = None, priorsigma != None')
+        logger.TBError('prior = None, priorsigma != None',frame=3)
     if priorsigma is None and prior is not None:
-        logger.TBError('prior != None, priorsigma = None')
+        logger.TBError('prior != None, priorsigma = None',frame=3)
 
 
 def checkTS(ts):
@@ -130,9 +130,14 @@ def checkTS(ts):
     """
     checkType(ts,'array')
     if isHigherDimensional(ts):
-        logger.TBError('Expected 1-d time series.')
+        logger.TBError('Expected 1-d time series.',frame=3)
     if len(ts) < 2:
-        logger.TBError('Time series needs at least two measurements.')
+        logger.TBError('Time series needs at least two measurements.',frame=3)
+
+
+def checkProb(p):
+    if not 0 <= p <= 1:
+        logger.TBError('Probabilities must be between 0 and 1.',frame=3)
 
 
 def countParams(func,params) -> int:
@@ -597,7 +602,6 @@ def goodnessOfFit(dof, chi2) -> float:
     return sp.special.gammaincc(dof/2,chi2/2)
 
 
-
 def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
               grad = None, swapXY=False, npoints=1000, **kwargs):
     """ Plot a function along with its error bands.
@@ -683,3 +687,48 @@ def modelAverage(data,err,IC):
     var = np.sum(pr*var_data) + np.sum(pr*data**2) - mean**2
     return mean, np.sqrt(var)
 
+
+def empiricalCDF(data):
+    """ Create the x and y coordinates needed to plot the empirical CDF
+    of a 1-d set of data.
+
+    Args:
+        data (array-like): measurements 
+
+    Returns:
+        func: CDF 
+    """
+    checkTS(data)
+    return sp.stats.ecdf(data).cdf.evaluate
+
+
+def KSTest_2side(data1,data2) -> float:
+    """ 2-sided Kolmogorov test. Gives back the likelihood that the observed difference between
+    data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.
+
+    Args:
+        data1 (array-like)
+        data2 (array-like)
+
+    Returns:
+        float: 1-p 
+    """
+    checkType(data1,'array')
+    checkType(data2,'array')
+    data1,data2 = toNumpy(data1,data2)
+    return 1 - sp.stats.kstest(data1, data2).pvalue 
+
+
+def KSTest_1side(data,cdf) -> float:
+    """ 1-sided Kolmogorov test. Gives back the likelihood that the observed difference between
+    data and cdf are at least as extreme as suggested by the Kolmogorov statistic.
+
+    Args:
+        data (array-like)
+        cdf (function)
+
+    Returns:
+        float: 1-p 
+    """
+    checkType(data,'array')
+    return 1 - sp.stats.kstest(data, cdf).pvalue

@@ -144,7 +144,7 @@ def checkDomain(obj, expectedDomain):
     for var_name, _ in locals_dict.items():
         objName = var_name  
     if not obj in expectedDomain:
-        logger.TBError('Expected',objName,'to be one of',expectedDomain)
+        logger.TBError('Expected',objName,'to be one of',expectedDomain,frame=3)
 
 
 def checkEqualLengths(*args):

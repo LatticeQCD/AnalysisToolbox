@@ -221,7 +221,7 @@ def naturalSort(l) -> list:
 
 def find_nearest_idx(array, value) -> int:
     """ Find the index of the element of array nearest to value. """
-    array = np.asarray(array)
+    array = np.array(array)
     idx = (np.abs(array - value)).argmin()
     return idx
 
