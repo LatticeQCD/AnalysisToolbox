@@ -1,14 +1,14 @@
 #
 # jackknife.py
 #
-# H. Sandmeyer, D. Clarke
+# H. Dick, D. Clarke, H. Sandmeyer
 #
 # A parallelized jackknife routine that can handle arbitrary return values of functions.
 #
 
 import numpy as np
 import math
-from latqcdtools.statistics.statistics import std_mean, std_err, meanArgWrapper
+from latqcdtools.statistics.statistics import std_mean, std_err, meanArgWrapper, reduce_tuple
 import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.utilities import isHigherDimensional
@@ -159,5 +159,3 @@ def jackknife(func, data, numb_blocks=20, conf_axis=1, return_sample=False, args
     """
     jk = nimbleJack(func, data, numb_blocks, conf_axis, return_sample, args, nproc)
     return jk.getResults()
-
-

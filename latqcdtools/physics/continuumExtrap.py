@@ -38,7 +38,7 @@ class Extrapolator(Fitter):
         """ A framework for doing continuum limit extrapolations.
 
         Args:
-            x (array-like): a data or Nt data 
+            x (array-like): a^2 data or 1/Nt^2 data 
             obs (array-like)
             obs_err (array-like)
             ansatz (func, optional): continuum-limit fit ansatz. Power series in a^2 by default.

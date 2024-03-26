@@ -77,6 +77,7 @@ runTestRoutine testDenseObs.py
 runTestRoutine testGauge.py
 runTestRoutine testHotQCDEos.py
 runTestRoutine testHRG.py
+runTestRoutine testIdeal.py
 runTestRoutine testLatticeParams.py
 runTestRoutine testPolyakovTools.py
 runTestRoutine testRunningCoupling.py

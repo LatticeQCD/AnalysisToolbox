@@ -9,7 +9,7 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse,\
-    KSTest_1side, KSTest_2side
+    KSTest_1side, KSTest_2side, covariance, std_var
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.plotting import plt
@@ -172,7 +172,10 @@ def testStats():
     lpass *= print_results(cov_to_cor(ycov),cov_to_cor(cov_to_cor(ycov)),text='cov_to_cor fixed point')
     lpass *= print_results(cov_to_cor(ycov),norm_cov(ycov),text='cov_to_cor')
 
-    lpass *= print_results(pearson(ts1,ts2),R)
+    lpass *= print_results(pearson(ts1,ts2),R,text='pearson explicit')
+
+    # This will work whatever ddof is, since this factor cancels in the ratio.
+    lpass *= print_results(cov_to_cor(np.cov(ts1,ts2))[0,1], pearson(ts1,ts2), text='pearson numpy')
 
     # Test of the confidence ellipse method.
     Ndraws = 1001
@@ -195,6 +198,8 @@ def testStats():
 
     lpass *= print_results(KSTest_1side(data1,normalCDF),0.4937205464565033, text='KS 1 side 1')
     lpass *= print_results(KSTest_1side(data2,normalCDF),0.656583347109468 , text='KS 1 side 2')
+
+    lpass *= print_results(covariance(ts1,ts1),std_var(ts1), text='diagonal cov')
 
     concludeTest(lpass)
 

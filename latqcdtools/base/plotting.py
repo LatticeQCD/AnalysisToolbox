@@ -46,9 +46,9 @@ default_params = {
 
     # Basic options affecting most plots.
     'xlabel': None,
-    'alpha_xlabel': 1,           # Transparency for x-label
+    'alpha_xlabel': 0,           # Transparency for x-label
     'ylabel': None,
-    'alpha_ylabel': 1,           # Transparency for y-label
+    'alpha_ylabel': 0,           # Transparency for y-label
     'xmin': None,
     'xmax': None,
     'ymin': None,
@@ -175,6 +175,23 @@ def set_default_param(**kwargs):
     for key, val in kwargs.items():
         default_params[key] = val
 
+
+def getSubplots(x,y):
+    """ Get fig and axs objects when you want x figures across and y figures vertically.
+    I wrapped this because matplotlib's convention for x and y is the opposite as their
+    convention for figsize, which is so incredibly confusing. 
+    
+    Args:
+        x (int): number of panels in x-direction 
+        y (int): number of panels in y-direction 
+
+    Returns:
+        fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
+    """
+    checkType(x,int)
+    checkType(y,int)
+    fig, axs = plt.subplots(y,x,figsize=(4*x,4*y))
+    return fig, axs
 
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 

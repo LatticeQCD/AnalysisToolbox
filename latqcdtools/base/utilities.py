@@ -227,8 +227,19 @@ def find_nearest_idx(array, value) -> int:
 
 
 def substringBetween(string,a,b) -> str:
-    start_index = string.index(a)+1
-    end_index   = string.index(b)
+    """ Find the substring of string between a and b. If a==b, it looks between the
+    first and second occurences of a. 
+
+    Args:
+        string (str)
+        a (str): starting delimiter 
+        b (str): ending delimiter
+
+    Returns:
+        str: substring
+    """
+    start_index = string.index(a) + len(a)
+    end_index   = string[start_index:].index(b) + start_index
     return string[start_index:end_index]
 
 

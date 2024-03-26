@@ -117,7 +117,7 @@ def checkType(obj, expectedType):
 
     Args:
         obj (obj)
-        expectedType (type): what type do you expect? Also accepts "array". 
+        expectedType (type): what type do you expect? Also accepts "array" and "scalar".
     """
     calling_frame = inspect.currentframe().f_back
     locals_dict = calling_frame.f_locals
@@ -127,6 +127,9 @@ def checkType(obj, expectedType):
     if expectedType=="array":
         if not isArrayLike(obj):
             logger.TBError('Expected array-like object for',objName,'but received',type(obj),frame=3)
+    elif expectedType=="scalar":
+        if isArrayLike(obj):
+            logger.TBError('Expected scalar-like object for',objName,'but received',type(obj),frame=3)
     else:
         if not isinstance(obj,expectedType):
             logger.TBError('Expected type',expectedType,'for',objName,'but received',type(obj),frame=3)

@@ -57,12 +57,13 @@ def paramFrom_HotQCD_MILC(ensemble):
     return int(Ns), int(Nt), Nf, cbeta, cm1, cm2 
 
 
-def readGPL(filename,discardTag=True):
+def readGPL(filename,discardTag=True,raggedWarn=True):
     """ Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
     tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
     rather than using genfromtxt to allow the possibility of ragged tables. """
     checkType(filename,str)
     checkType(discardTag,bool)
+    checkType(raggedWarn,bool)
     gplFile = open(filename,'r')
     minIndex = 0
     data = []
@@ -76,7 +77,7 @@ def readGPL(filename,discardTag=True):
     gplFile = open(filename,'r')
     minLength = min(colLengths)
     maxLength = max(colLengths)
-    if minLength != maxLength:
+    if (minLength != maxLength) and raggedWarn:
         logger.warn('Loaded ragged table. Using minLength =',minLength,'and truncating the rest.')
     for line in gplFile:
         parse = line.split()

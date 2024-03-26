@@ -21,6 +21,9 @@ import latqcdtools.base.logger as logger
 from matplotlib.patches import Ellipse
 
 
+# Suppose the wrapped function is `sum` and `data` is `((1, 2, 3), (4, 5, 6), (7, 8, 9))`. 
+# Then reduce_tuple will pass `(1, 4, 7)`, `(2, 5, 8)`, `(3, 6, 9)` to the `sum` function 
+# respectively and return `(sum(1, 4, 7), sum(2, 5, 8), sum(3, 6, 9))`.
 def reduce_tuple(func):
     def func_wrapper(data, *args, **kwargs):
         if type(data[0]) is tuple:
@@ -340,7 +343,24 @@ def pearson(x,y) -> float:
     """
     checkTS(x)
     checkTS(y)
+    checkEqualLengths(x,y)
     return np.corrcoef(x,y)[0,1]
+
+
+def covariance(x,y) -> float:
+    """ Unbiased estimator of the covariance between the time series x and y.
+
+    Args:
+        x (array-like)
+        y (array-like)
+
+    Returns:
+        float: cov 
+    """
+    checkTS(x)
+    checkTS(y)
+    checkEqualLengths(x,y)
+    return np.cov(x,y,ddof=1)[0,1]
 
 
 def weighted_mean(data, err) -> float:
@@ -618,6 +638,7 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
         npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
     """
     checkDomain(domain)
+    checkType(npoints,int)
     fill_param_dict(kwargs)
     kwargs['marker'] = None
     xmin = domain[0] 

@@ -15,7 +15,7 @@ from latqcdtools.base.check import checkEqualLengths
 from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy
+from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy, createFilePath
 from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, isPositiveSemidefinite
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_grad
@@ -683,6 +683,8 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
 
     xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
     ydata = func(xdata, args)
+
+    createFilePath(filename)
 
     if func_err is not None:
         ydata_err = func_err(xdata, args_err)
