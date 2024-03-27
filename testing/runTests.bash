@@ -73,7 +73,7 @@ cd ..
 
 cd physics
 runTestRoutine testContExtrap.py
-runTestRoutine testDenseObs.py
+#runTestRoutine testDenseObs.py
 runTestRoutine testGauge.py
 runTestRoutine testHotQCDEos.py
 runTestRoutine testHRG.py
@@ -86,6 +86,9 @@ runTestRoutine testStaticPotential.py
 runTestRoutine testStatPhys.py
 runTestRoutine testUnits.py
 cd ..
+
+
+runTestRoutine testLegacy.py
 
 
 echo

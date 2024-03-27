@@ -255,6 +255,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
     if len(confID) != len(confID.strip()):
         logger.TBError('confID must not contain whitespace.')
 
+    logger.warn('This may be wrong. Do not use for now.')
 
     if inTable is None:
         outTable  = {}

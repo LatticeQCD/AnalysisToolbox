@@ -144,6 +144,7 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 
 [D. A. Clarke](https://github.com/clarkedavida), 
 [L. Altenkort](https://github.com/luhuhis), 
+[H. Dick](https://github.com/redweasel),
 [J. Goswami](https://github.com/jishnuxx),
 [O. Kaczmarek](https://github.com/olaf-kaczmarek),
 [L. Mazur](https://github.com/lukas-mazur),

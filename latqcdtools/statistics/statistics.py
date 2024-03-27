@@ -21,24 +21,6 @@ import latqcdtools.base.logger as logger
 from matplotlib.patches import Ellipse
 
 
-# Suppose the wrapped function is `sum` and `data` is `((1, 2, 3), (4, 5, 6), (7, 8, 9))`. 
-# Then reduce_tuple will pass `(1, 4, 7)`, `(2, 5, 8)`, `(3, 6, 9)` to the `sum` function 
-# respectively and return `(sum(1, 4, 7), sum(2, 5, 8), sum(3, 6, 9))`.
-def reduce_tuple(func):
-    def func_wrapper(data, *args, **kwargs):
-        if type(data[0]) is tuple:
-            retvalue = ()
-            for i in range(len(data[0])):
-                obj_array = []
-                for k in range(len(data)):
-                    obj_array.append(data[k][i])
-                retvalue += (func(obj_array, *args, **kwargs),)
-            return retvalue
-        else:
-            return func(data, *args, **kwargs)
-    return func_wrapper
-
-
 def meanArgWrapper(func,used_data,args):
     if isinstance(args, dict):
         return func(used_data, **args)
@@ -46,7 +28,6 @@ def meanArgWrapper(func,used_data,args):
         return func(used_data, *args)
 
 
-@reduce_tuple
 def std_median(data, axis = 0):
     """ Compute the median. The default behavior of numpy is to flatten the data, flagged by axis=None. This can be
     inconvenient, for example in the bootstrap and jackknife routines. It is also inconvenient if you have e.g. an
@@ -54,27 +35,23 @@ def std_median(data, axis = 0):
     return np.median(data, axis)
 
 
-@reduce_tuple
 def std_mean(data, axis = 0):
     """ Compute the mean. """
     return np.mean(data, axis)
 
 
-@reduce_tuple
 def std_var(data, axis = 0):
     """ Calculate unbiased (ddof = 1) estimator for the variance. """
     data = np.asarray(data)
     return np.var(data, axis = axis, ddof = 1)
 
 
-@reduce_tuple
 def std_dev(data, axis = 0):
     """ Calculate unbiased (ddof = 1) estimator for the standard deviation. """
     data = np.asarray(data)
     return np.std(data, axis = axis, ddof = 1)
 
 
-@reduce_tuple
 def std_err(data, axis = 0):
     """ Standard deviation of the sample mean, according the the CLT. """
     data = np.asarray(data)
@@ -477,7 +454,6 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
     return a, b, theta 
 
 
-@reduce_tuple
 def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
     """ Calculate the distance between the median and 68% quantiles. Returns the larger of the two distances. This
     method is used sometimes to estimate error, for example in the bootstrap. """

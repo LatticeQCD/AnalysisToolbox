@@ -87,6 +87,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         Name for output table.
     """
 
+    logger.warn('This may be wrong. Do not use for now.')
+
     # Initialize
     if obs is None:
         obs = observablesOfInterest()
