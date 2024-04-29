@@ -29,7 +29,7 @@ def recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for
     rng = np.random.default_rng(my_seed+i)
     if axis + 1 == conf_axis:
         numb_observe = len(data)
-        if sample_size == 0:
+        if sample_size is None:
             sample_sizes = [ len(j) for j in data ]
         else:
             sample_sizes = [sample_size]*len(data)
@@ -54,9 +54,16 @@ class nimbleBoot:
     def __init__(self, func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed,
                  err_by_dist, args, nproc):
 
+        checkType(numb_samples,int)
+        checkType(same_rand_for_obs,bool)
+        checkType(return_sample,bool)
+        checkType(err_by_dist,bool)
+        checkType(nproc,int)
         self._func=func
         self._data=np.array(data)
         self._numb_samples=numb_samples
+        if sample_size is not None:
+            checkType(sample_size,int)
         self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._conf_axis=conf_axis
@@ -67,7 +74,7 @@ class nimbleBoot:
         self._args=args
         self._nproc = nproc 
 
-        if  self._data.ndim == 1:
+        if self._data.ndim == 1:
             self._conf_axis = 0
 
         self._sampleval = parallel_function_eval(self.getBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(self._seed,))
@@ -86,7 +93,7 @@ class nimbleBoot:
         sample_data = []
         if self._conf_axis == 0: # Case of one dimensional array is special
             rng = np.random.default_rng(my_seed+i)
-            if self._sample_size == 0:
+            if self._sample_size is None:
                 sample_size_tmp = len(self._data)
             else:
                 sample_size_tmp = self._sample_size
@@ -108,7 +115,7 @@ class nimbleBoot:
             return self._mean, self._error
 
 
-def bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
+def bootstr(func, data, numb_samples, sample_size = None, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
             seed = None, err_by_dist = False, args=(), nproc=DEFAULTTHREADS):
     """Bootstrap for arbitrary functions. This routine resamples the data and passes them to the function in the same
     format as in the input. So the idea is to write a function that computes an observable from a given data set. This

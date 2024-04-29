@@ -28,17 +28,18 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
     try:
         logger.debug("Trying newton_krylov.")
         return newton_krylov(LHS, guess, f_tol=tol, inner_maxiter=maxiter)
-    except opt_exceptions:
+    except opt_exceptions as e1:
         try:
-            logger.debug("Trying fsolve.")
+            logger.debug("Hit exception",e1,"; Trying fsolve.")
             return fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
-        except opt_exceptions:
+        except opt_exceptions as e2:
             try:
-                logger.debug("Trying root.")
+                logger.debug("Hit exception",e2,"; Trying root.")
                 for method in root_methods:
                     try:  
                         return root(LHS, guess, tol=tol, method=method).x
-                    except:
+                    except Exception as e3:
+                        logger.debug("Hit exception",e3,"; Terminating.")
                         continue
             except:
                 raise NoConvergence

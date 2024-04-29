@@ -1,7 +1,7 @@
 # 
 # legacy.py                                                               
 # 
-# D. Clarke 
+# D. Clarke, H. Sandmeyer 
 # 
 # Here we collect "legacy code". This is code that has to meet some requirements:
 #   1. It is hard for David to read,
@@ -12,6 +12,7 @@
 # functionality. Before making something legacy code, please put some kind of
 # warning or error somewhere.
 # 
+
 
 import numpy as np
 import math

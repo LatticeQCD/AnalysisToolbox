@@ -141,9 +141,9 @@ class Fitter:
             self._max_fev = {
                 "curve_fit"  : 50000,
                 "L-BFGS-B"   : 15000,
-                "TNC"        : 15000,
-                "Powell"     : 30000,
-                "Nelder-Mead": 15000,
+                "TNC"        : 5000 ,
+                "Powell"     : 10000,
+                "Nelder-Mead": 5000 ,
                 "COBYLA"     : 15000,
                 "SLSQP"      : 15000,
                 "CG"         : 15000,

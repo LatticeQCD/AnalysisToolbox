@@ -132,14 +132,6 @@ def printArg(message,param):
         logger.info(message,param)
 
 
-def printDict(dic):
-    """ Prints key, value pairs line by line. """
-    if not isinstance(dic,dict):
-        logger.TBError('Expected type', dict, 'but received', type(dic))
-    for key in dic:
-        logger.info(key,dic[key])
-
-
 def cleanOutput(*args,label=None) -> str:
     """ This method takes a bunch of args and formats them automatically for output. The idea is
     that you can use this method to ensure that columns are well lined up.
@@ -178,7 +170,25 @@ def cleanOutput(*args,label=None) -> str:
 
 
 def printClean(*args,label=None):
+    """ Wrapper for cleanOutput that prints to screen.
+
+    Args:
+        *args: The numbers you want to output, separated by commas. 
+        label (str, optional): Put label to the left of your output. Defaults to None.
+    """
     logger.info(cleanOutput(*args,label))
+
+
+def printDict(dic):
+    """ Prints key, value pairs line by line. """
+    if not isinstance(dic,dict):
+        logger.TBError('Expected type', dict, 'but received', type(dic))
+    for key in dic:
+        if type(dic[key])==dict:
+            logger.info(key)
+            printDict(dic[key])
+        else:
+            printClean(key,dic[key])
 
 
 def shell(*args):
