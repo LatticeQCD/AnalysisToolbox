@@ -13,7 +13,7 @@ import matplotlib.colors
 import matplotlib.ticker as ticker
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector
 from latqcdtools.base.readWrite import readTable
 
 
@@ -530,7 +530,17 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         xedata (array-like, optional): x error. Defaults to None.
         **params: Additional parameters that can be set.
     """
-    checkEqualLengths(xdata,ydata,xedata,yedata)
+
+    if len(envector(yedata)) == 2:
+        checkEqualLengths(xdata,ydata,yedata.T)
+    else:
+        checkEqualLengths(xdata,ydata,yedata)
+
+    if len(envector(xedata)) == 2:
+        checkEqualLengths(xdata,ydata,xedata.T)
+    else:
+        checkEqualLengths(xdata,ydata,xedata)
+
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     _initializePlt(params)
     optional = _add_optional(params)
@@ -698,7 +708,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     set_params(**params) # Needed to put in labels
 
 
-def plot_fill(xdata, ydata, yedata, xedata=None, **params):
+def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
     """ Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 
     Args:
@@ -714,7 +724,11 @@ def plot_fill(xdata, ydata, yedata, xedata=None, **params):
     if (yedata is not None) and (xedata is not None):
         logger.TBError("Please pass either x-error or y-error, not both.")
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
-    checkEqualLengths(xdata,ydata,xedata,yedata)
+
+    if len(envector(yedata)) == 2:
+        checkEqualLengths(xdata,ydata,xedata,yedata.T)
+    else:
+        checkEqualLengths(xdata,ydata,xedata,yedata)
 
     _initializePlt(params) 
     optional = _add_optional(params)
@@ -724,28 +738,38 @@ def plot_fill(xdata, ydata, yedata, xedata=None, **params):
     if ZOD is None:
         ZOD = globals()['ZOD']
 
-    if params['color'] is not None:
-        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
-                           color=params['color'], zorder=ZOD, alpha = params['alpha_lines'], **optional)
+    if center :
+        if params['color'] is not None:
+            ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+                               color=params['color'], zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
+        else:
+            ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+                               zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
+
+
+        col = ebar[0].get_color()
     else:
-        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
-                           zorder=ZOD, alpha = params['alpha_lines'], **optional)
-
-    globals()['ZOD'] += 1
-
-    col = ebar[0].get_color()
+        col = params['color']
     if xedata is None:
-        pl = ax.fill_between(xdata*params['xscale'],
-                             (np.asarray(ydata*params['yscale']) - np.asarray(yedata*params['yscale'])),
-                             (np.asarray(ydata*params['yscale']) + np.asarray(yedata*params['yscale'])), 
-                             facecolor=col, alpha=params['alpha'], linewidth=params['linewidth'], 
-                             zorder=1, edgecolor=col, hatch=params['hatch'])
+        if len(yedata) == 2:
+            pl = ax.fill_between(xdata*params['xscale'],
+                                 (np.asarray(ydata*params['yscale']) - np.asarray(yedata[0]*params['yscale'])),
+                                 (np.asarray(ydata*params['yscale']) + np.asarray(yedata[1]*params['yscale'])), 
+                                 facecolor=col, alpha=params['alpha'], linewidth=params['linewidth'], 
+                                 zorder=ZOD, edgecolor=col, hatch=params['hatch'])
+        else:    
+            pl = ax.fill_between(xdata*params['xscale'],
+                                 (np.asarray(ydata*params['yscale']) - np.asarray(yedata*params['yscale'])),
+                                 (np.asarray(ydata*params['yscale']) + np.asarray(yedata*params['yscale'])), 
+                                 facecolor=col, alpha=params['alpha'], linewidth=params['linewidth'], 
+                                 zorder=ZOD, edgecolor=col, hatch=params['hatch'])
     else:
         pl = ax.fill_betweenx(ydata*params['yscale'], 
                               (np.asarray(xdata*params['xscale']) - np.asarray(xedata*params['xscale'])),
                               (np.asarray(xdata*params['xscale']) + np.asarray(xedata*params['xscale'])), 
                               facecolor=col, alpha=params['alpha'],linewidth=params['linewidth'], 
-                              zorder=1, edgecolor=col, hatch=params['hatch'])
+                              zorder=ZOD, edgecolor=col, hatch=params['hatch'])
+    globals()['ZOD'] += 2
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
@@ -774,28 +798,28 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
     if ZOD is None:
         ZOD = globals()['ZOD']
 
-    globals()['ZOD'] += 1
 
     if params['color'] is None:
         pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, alpha=params['alpha'], 
-                             linewidth=0, zorder=1)
+                             linewidth=0, zorder=ZOD)
     else:
         pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, facecolor=params['color'],
-                             alpha=params['alpha'], linewidth=0, zorder=1)
+                             alpha=params['alpha'], linewidth=0, zorder=ZOD)
 
     col = matplotlib.colors.rgb2hex(pl.get_facecolor()[0])
 
     if params['alpha_lines'] != 0:
-        ax.errorbar(xdata*params['xscale'], params['yscale']*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
+        ax.errorbar(xdata*params['xscale'], params['yscale']*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD+1,
                     alpha = params["alpha_fill_edge"])
-        ax.errorbar(xdata*params['xscale'], params['yscale']*up_lim, color = col, linewidth=params['linewidth'], zorder = ZOD,
+        ax.errorbar(xdata*params['xscale'], params['yscale']*up_lim, color = col, linewidth=params['linewidth'], zorder = ZOD+1,
                     alpha = params["alpha_fill_edge"])
 
     ebar = None
     if center is not None:
-        ebar = ax.errorbar(xdata*params['xscale'], center*params['yscale'], linewidth=params['linewidth'], color=col, zorder=ZOD,
+        ebar = ax.errorbar(xdata*params['xscale'], center*params['yscale'], linewidth=params['linewidth'], color=col, zorder=ZOD+1,
                            alpha = params['alpha_lines'], **optional)
 
+    globals()['ZOD'] += 3
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         if ebar is not None:
