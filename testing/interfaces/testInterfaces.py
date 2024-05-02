@@ -6,7 +6,8 @@
 # Testing of some generic interfacing tools. 
 # 
 
-from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML
+from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML, \
+    writeJSON, readJSON
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import deleteFile
 import latqcdtools.base.logger as logger
@@ -66,7 +67,12 @@ def testInterfaces():
     testDict = readYAML('test.yaml')
     lpass *= testDict==refDict
 
+    writeJSON(refDict,'test.json')
+    testDict = readJSON('test.json')
+    lpass *= testDict==refDict
+
     deleteFile('test.yaml') 
+    deleteFile('test.json') 
     deleteFile('testInterface.tex') 
     deleteFile('testInterface.redmine') 
 

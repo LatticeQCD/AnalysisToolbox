@@ -6,10 +6,10 @@
 # Some common classes and functions that may be shared among multiple interfaces modules.
 #
 
-import yaml
+import yaml, json
 import numpy as np
 from latqcdtools.physics.lattice_params import latticeParams
-from latqcdtools.base.check import checkType
+from latqcdtools.base.check import checkType, checkExtension
 from latqcdtools.base.utilities import substringBetween
 import latqcdtools.base.logger as logger
 
@@ -89,16 +89,23 @@ def readGPL(filename,discardTag=True,raggedWarn=True):
         return np.array(data,dtype=object)
 
 
-def readYAML(filename) -> dict:
+def readYAML(filename,ignoreExtension=False) -> dict:
     """ Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. """
     checkType(filename,str)
-    if not filename.endswith('yaml'):
-        logger.TBError('Expected a yaml file.')
+    checkExtension(filename,'yaml',ignoreExtension)
     with open(filename, 'r') as file:
         try:
             return yaml.safe_load(file)
         except yaml.YAMLError as e:
             logger.TBError('Encountered exception:',e)
+
+
+def readJSON(filename,ignoreExtension=False) -> dict:
+    """ Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. """
+    checkType(filename,str)
+    checkExtension(filename,'json',ignoreExtension)
+    with open(filename, 'r') as file:
+        return json.load(file)
 
 
 def readWML(filename) -> list:
@@ -147,7 +154,12 @@ def readWML(filename) -> list:
 
 
 def writeYAML(data,filename):
-    """ Write dictionary to YAML file. """ 
+    """ Write dictionary to YAML file.
+
+    Args:
+        data (dict)
+        filename (str)
+    """
     checkType(data,dict)
     checkType(filename,str)
     with open(filename, 'w') as file:
@@ -155,6 +167,19 @@ def writeYAML(data,filename):
             yaml.safe_dump(data, file) 
         except yaml.YAMLError as e:
             logger.TBError('Encountered exception:',e)
+
+
+def writeJSON(data,filename):
+    """ Write dictionary to JSON file.
+
+    Args:
+        data (dict)
+        filename (str)
+    """
+    checkType(data,dict)
+    checkType(filename,str)
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=4)
 
 
 class genericTable(list):

@@ -23,7 +23,7 @@ root_methods = ['hybr','lm','broyden1','broyden2','anderson','diagbroyden','kryl
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
     """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
-    checkType(tol,float)
+    checkType(tol,"real")
     checkType(maxiter,int)
     try:
         logger.debug("Trying newton_krylov.")
@@ -45,18 +45,36 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
                 raise NoConvergence
 
 
-def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
+def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
+    """ Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.
+
+    Args:
+        func: to-be-minimized function 
+        jac (func, optional): Explicit Jacobian. Defaults to None.
+        hess (func, optional): Explicit Hessian. Defaults to None.
+        start_params (array-like, optional): Starting guess. Defaults to None.
+        tol (float, optional): Solve tolerance. Defaults to 1e-12.
+        maxiter (int, optional): Maximum number of solve iterations. Defaults to 10000.
+        algorithm (str, optional): Solve algorithm. Defaults to Scipy default, usually BFGS.
+
+    Raises:
+        e: scipy.optimize exception 
+        ValueError: minimizer fails to converge
+
+    Returns:
+        array-like: solution vector 
+    """
 
     kwargs = {'method': algorithm, 'tol': tol}
 
     logger.details('Trying',algorithm,'with maxiter=',maxiter)
 
     if algorithm in ["SLSQP","L-BFGS-B","CG"]:
-        kwargs['jac'] = jack
+        kwargs['jac'] = jac
         kwargs['options'] = {'maxiter': maxiter}
 
     elif algorithm == "TNC":
-        kwargs['jac'] = jack
+        kwargs['jac'] = jac
         kwargs['options'] = {'maxfun': maxiter}
 
     elif algorithm in ["COBYLA","Nelder-Mead"]:
@@ -66,7 +84,7 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
         kwargs['options'] = {'xtol': tol, 'ftol': tol, 'maxfev': maxiter}
 
     else:
-        kwargs['jac'] = jack
+        kwargs['jac'] = jac
         kwargs['hess'] = hess
         kwargs['options'] = {'maxiter': maxiter}
 
@@ -82,6 +100,4 @@ def minimize(func, jack=None, hess=None, start_params=None, tol=1e-12, maxiter=1
         logger.details(algorithm, res.message)
         raise ValueError('Minimizer failed.')
 
-    params = envector(params)
-
-    return params
+    return envector(params)

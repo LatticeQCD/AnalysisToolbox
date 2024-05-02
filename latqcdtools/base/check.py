@@ -117,10 +117,12 @@ def checkType(obj, expectedType):
 
     Args:
         obj (obj)
-        expectedType (type): what type do you expect? Also accepts "array" and "scalar".
+        expectedType (type): what type do you expect? Also accepts "array", "real", and "scalar".
     """
     calling_frame = inspect.currentframe().f_back
     locals_dict = calling_frame.f_locals
+    if len(locals_dict)==0:
+        objName = 'OBJECT LITERAL'
     for var_name in locals_dict.keys():
         objName = var_name
         break 
@@ -128,8 +130,13 @@ def checkType(obj, expectedType):
         if not isArrayLike(obj):
             logger.TBError('Expected array-like object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="scalar":
-        if isArrayLike(obj):
+        if isArrayLike(obj) or obj is None:
             logger.TBError('Expected scalar-like object for',objName,'but received',type(obj),frame=3)
+    elif expectedType=="real":
+        if isArrayLike(obj) or obj is None:
+            logger.TBError('Expected real scalar object for',objName,'but received',type(obj),frame=3)
+        elif obj.imag>0:
+            logger.TBError('Expected real scalar object',objName,'has nonzero imaginary part',frame=3)
     else:
         if not isinstance(obj,expectedType):
             logger.TBError('Expected type',expectedType,'for',objName,'but received',type(obj),frame=3)
@@ -158,3 +165,15 @@ def checkEqualLengths(*args):
             if len(envector(args[i])) != length:
                 logger.info(length, len(envector(args[i])))
                 logger.TBError('Array length mismatch detected on array',i,frame=3)
+
+
+def checkExtension(filename,extension,ignoreExtension=False):
+    """ Check the extension of a file
+
+    Args:
+        filename (str)
+        extension (str)
+        ignoreExtension (bool, optional): Defaults to False.
+    """
+    if not filename.endswith(extension) and not ignoreExtension:
+        logger.TBError('Expected a',extension,'file.')

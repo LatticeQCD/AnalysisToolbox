@@ -9,6 +9,7 @@ s_div*
 *.d
 *.redmine
 *.tex
+*.ipynb
 examples/chi2B.txt
 .vscode/*
 venv/*

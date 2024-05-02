@@ -162,6 +162,8 @@ def cleanOutput(*args,label=None) -> str:
             data += (col.real,)
             data += (col.imag,)
             form += spacing+'%15.8e  %15.8e'
+        elif isinstance(col,list):
+            logger.TBError('Expected list of scalars rather than list of lists.')
         else:
             data += (col,)
             form += spacing+'%15.8e'
