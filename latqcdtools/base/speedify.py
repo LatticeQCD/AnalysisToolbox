@@ -140,7 +140,7 @@ def parallel_function_eval(function, input_array, args=(), nproc=DEFAULTTHREADS,
     return computer.getResult()
 
 
-def parallel_reduce(function, input_array, args=(), nproc=DEFAULTTHREADS, parallelizer=DEFAULTPARALLELIZER):
+def parallel_reduce(function, input_array, args=(), nproc=DEFAULTTHREADS, parallelizer=DEFAULTPARALLELIZER) -> float:
     """ Parallelize a function over an input_array, then sum over the input_array elements. 
 
     Args:
@@ -149,7 +149,7 @@ def parallel_reduce(function, input_array, args=(), nproc=DEFAULTTHREADS, parall
         nproc (int): number of processes 
 
     Returns:
-        float-like
+        float
     """
     container = parallel_function_eval(function, input_array, nproc=nproc, args=args, parallelizer=parallelizer)
     return np.sum(container)

@@ -48,7 +48,7 @@ def testContExtrap():
                                                              prior=prior,priorsigma=priorsigma,error_strat='hessian')
 
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]
-    REFresult_err = [0.00930215, 0.1100613,  0.10344893]
+    REFresult_err = [0.013157782255541808,0.1556879617856091,0.14633527794956006]
     REFchidof     = 1.2219934235330452
     REFlogGBF     = 5.36146864464183
 

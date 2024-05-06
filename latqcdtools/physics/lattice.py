@@ -38,7 +38,7 @@ class Lattice():
         logger.details('  grid shape = ', self.grid.shape)
 
 
-    def march(self,coord,mu,step):
+    def march(self,coord,mu,step) -> np.ndarray:
         """ Move forward from coordinate coord in direction mu a distance step.
 
         Args:
@@ -63,7 +63,7 @@ class Lattice():
 
 
     # define iterateOverDomain('bulk','random',etc)
-    def iterateOverBulk(self,func):
+    def iterateOverBulk(self,func) -> np.ndarray:
         """ Carry out function func on every site of the lattice. 
 
         Args:
@@ -76,11 +76,11 @@ class Lattice():
         return np.array(container)
 
 
-    def bulkReduce(self,func):
+    def bulkReduce(self,func) -> float:
         return np.sum(self.iterateOverBulk(func))/self.vol
 
 
-    def iterateOverRandom(self,func):
+    def iterateOverRandom(self,func) -> np.ndarray:
         """ Carry out function func on every site of the lattice. 
 
         Args:
@@ -92,6 +92,4 @@ class Lattice():
         for i in permutation:
             func(self.bulk[i])
         return np.array(container)
-
-
 

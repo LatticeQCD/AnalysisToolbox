@@ -6,6 +6,7 @@
 # Collection of convenience tools for plotting using matplotlib.
 #
 
+
 import itertools
 import numpy as np
 import matplotlib.pyplot as plt
@@ -46,9 +47,9 @@ default_params = {
 
     # Basic options affecting most plots.
     'xlabel': None,
-    'alpha_xlabel': 1,           # Transparency for x-label
+    'alpha_xlabel': 0,           # Transparency for x-label
     'ylabel': None,
-    'alpha_ylabel': 1,           # Transparency for y-label
+    'alpha_ylabel': 0,           # Transparency for y-label
     'xmin': None,
     'xmax': None,
     'ymin': None,
@@ -105,6 +106,7 @@ default_params = {
     'ylogscale': False,
     'xlogbase': 10,
     'ylogbase': 10,
+    'orientation' : 'vertical',
 }
 
 
@@ -139,7 +141,7 @@ def clearPlot():
     plt.clf()
 
 
-def getColorGradient(NUM_COLORS,map='viridis'):
+def getColorGradient(NUM_COLORS,map='viridis') -> list:
     """ Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
 
     Args:
@@ -175,6 +177,23 @@ def set_default_param(**kwargs):
         default_params[key] = val
 
 
+def getSubplots(x,y):
+    """ Get fig and axs objects when you want x figures across and y figures vertically.
+    I wrapped this because matplotlib's convention for x and y is the opposite as their
+    convention for figsize, which is so incredibly confusing. 
+    
+    Args:
+        x (int): number of panels in x-direction 
+        y (int): number of panels in y-direction 
+
+    Returns:
+        fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
+    """
+    checkType(x,int)
+    checkType(y,int)
+    fig, axs = plt.subplots(y,x,figsize=(4*x,4*y))
+    return fig, axs
+
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
@@ -187,7 +206,6 @@ def _initializePlt(params):
     if INITIALIZE:
         logger.debug("Plot initializer called!")
         INITIALIZE = False
-#        plt.rcParams['figure.autolayout'] = True
         plt.rcParams['savefig.bbox']      = 'standard'
         plt.rcParams['axes.titlesize']    = params['font_size']
         plt.rcParams['font.size']         = params['font_size']
@@ -272,9 +290,6 @@ def fill_param_dict(params):
             Dictionary with all parameters that are already set by the user
     """
     global LEGEND
-    for key in params:
-        if not key in allowed_params:
-            logger.warn("Encountered unexpected plotting parameter",key)
 
     if not LEGEND:
         # When filling params, check if we show the legend. This is triggered by one of these keys
@@ -391,7 +406,6 @@ def set_params(**params):
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
         leg.get_frame().set_alpha(params['alpha_legend'])
         leg.set_zorder(FOREGROUND)
-#        plt.tight_layout()
 
     if params['xtick_freq'] is not None:
         start, end = ax.get_xlim()
@@ -552,8 +566,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
     ax  = _getAxObject(params)
 
-    xedata = _rescale(params['xscale'],xedata)
-    yedata = _rescale(params['yscale'],yedata)
+    xedata = _rescale(abs(params['xscale']),xedata)
+    yedata = _rescale(abs(params['yscale']),yedata)
 
     ZOD = params['ZOD']
     if ZOD is None:
@@ -571,13 +585,13 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], color=params['color'],
                            zorder=ZOD, markersize=params['markersize'], capsize=params['capsize'],
-                           elinewidth=params['elinewidth'], markeredgewidth=params['elinewidth'],
+                           elinewidth=params['elinewidth'],
                            markerfacecolor = markerfill, **optional)
     else:
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
-                           markeredgewidth=params['elinewidth'], markerfacecolor = markerfill, 
+                           markerfacecolor = markerfill, 
                            **optional)
 
     if params['label'] is not None:
@@ -642,9 +656,10 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
     if bins is None:
         bins = 'auto'
     if isHigherDimensional(data):
-        ax.hist(data, bins=bins, density=density,label=label)
+        ax.hist(data, bins=bins, density=density, label=label, orientation=params['orientation'], alpha=params['alpha'])
     else:
-        ax.hist(data, bins=bins, density=density,label=label,color=params['color'])
+        ax.hist(data, bins=bins, density=density, label=label,color=params['color'], orientation=params['orientation'],
+                alpha=params['alpha'])
     if density:
         ax.set_yticklabels([])
     if label is not None:

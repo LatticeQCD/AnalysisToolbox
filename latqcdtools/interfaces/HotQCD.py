@@ -16,7 +16,7 @@ class HotQCDParams(HotQCD_MILC_Params):
     def __repr__(self) -> str:
         return "HotQCDParams"
 
-    def getcGradFlowPureGauge(self):
+    def getcGradFlowPureGauge(self) -> str:
         return 's'+str(self.Ns).zfill(3)+'t'+str(self.Nt).zfill(2)+'_b0'+self.cbeta+'00'
 
 
@@ -56,7 +56,7 @@ def _badNf(Nf):
     logger.TBError("No entries for Nf =",Nf)
 
 
-def quarkMassTableHISQ(Nf, Nt, msml):
+def quarkMassTableHISQ(Nf, Nt, msml) -> dict:
     """Lookup tables for HotQCD HISQ runs."""
     Table = None
 
@@ -220,7 +220,7 @@ def quarkMassTableHISQ(Nf, Nt, msml):
     return Table
 
 
-def makeConfTag(conf,stream):
+def makeConfTag(conf,stream) -> str:
     """ This takes a configuration number conf and stream label stream to make a tag labelling a configuration.
     Implementing this as a function makes sure everyone using the Toolbox as the same convention and, more importantly,
     ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in
@@ -228,7 +228,7 @@ def makeConfTag(conf,stream):
     return str(stream)+':'+str(conf)
 
 
-def loadDens(densFile,confID,lp,inTable=None):
+def loadDens(densFile,confID,lp,inTable=None) -> dict:
     """ Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
     relevant calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
     conveniently combine data when there are multiple dense files per configuration. Here we update the table
@@ -255,6 +255,7 @@ def loadDens(densFile,confID,lp,inTable=None):
     if len(confID) != len(confID.strip()):
         logger.TBError('confID must not contain whitespace.')
 
+    logger.warn('This may be wrong. Do not use for now.')
 
     if inTable is None:
         outTable  = {}

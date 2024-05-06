@@ -14,10 +14,12 @@ We advertise briefly here some features of the AnalysisToolbox:
 - **General mathematics:** Numerical differentiation, convenience wrappers for
 SciPy numerical integration and solving IVPs.
 - **General statistics:** Jackknife, bootstrap, Gaussian bootstrap, error propagation,
-estimate integrated autocorrelation time, and curve fitting with and without Bayesian priors.
+various information criteria, estimation of integrated autocorrelation time,
+error ellipses, Kolmogorov-Smirnov tests, 
+and curve fitting with and without Bayesian priors.
 We stress that our math and statistics methods are generally useful, independent of physics contexts.
 - **General physics:** Unit conversions, critical exponents for various universality
-classes, physical constants, Ising model in arbitrary dimensions.
+classes, physical constants, framework for spin models. 
 - **QCD physics:** Hadron resonance gas model, HotQCD equation of state, and the QCD beta function. 
 These methods are useful for QCD phenomenology, independent of lattice contexts.
 - **Lattice QCD:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
@@ -30,7 +32,7 @@ its features in your own Python scripts like any other library.
 Some simple examples are in the [tutorial](https://latticeqcd.github.io/AnalysisToolbox/tutorial.html).
 A realistic use-case that weaves the AnalysisToolbox into a lattice
 QCD workflow can be found in [this data publication](https://pub.uni-bielefeld.de/record/2979080).
-
+More information can be found in [the documentation](https://latticeqcd.github.io/AnalysisToolbox).
 
 ## Setting up the AnalysisToolbox
 
@@ -143,6 +145,7 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 
 [D. A. Clarke](https://github.com/clarkedavida), 
 [L. Altenkort](https://github.com/luhuhis), 
+[H. Dick](https://github.com/redweasel),
 [J. Goswami](https://github.com/jishnuxx),
 [O. Kaczmarek](https://github.com/olaf-kaczmarek),
 [L. Mazur](https://github.com/lukas-mazur),
@@ -172,4 +175,6 @@ us out by citing
 
 - We acknowledge support by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) through the CRC-TR 211 'Strong-interaction matter under extreme conditions'– project number 315477589 – TRR 211.
 - This work was partly performed in the framework of the PUNCH4NFDI consortium supported by DFG fund "NFDI 39/1", Proj.No. 460248186 (PUNCH4NFDI).
+- DAC acknowledges helpful discussions with [C. DeTar](https://github.com/detar), S. Lahert, 
+and [G. P. LePage](https://github.com/gplepage).
 

@@ -43,7 +43,7 @@ def diff_deriv(x, func, args = (), h = None):
     return (func(up, *args) - func(down, *args)) / (2*h)
 
 
-def diff_grad(params, func, args = (), h = None):
+def diff_grad(params, func, args = (), h = None) -> np.ndarray:
     """ Gradient using difference quotient. """
     ret = [0.0]*len(params)
     up = np.array(params, dtype = float)
@@ -59,7 +59,7 @@ def diff_grad(params, func, args = (), h = None):
     return np.array(ret)
 
 
-def diff_hess(params, func, args = (), h = None):
+def diff_hess(params, func, args = (), h = None) -> np.ndarray:
     """ Hessian using difference quotient. """
 
     # This has to be a list, as we might put in arrays, if params is higher dimensional
@@ -130,5 +130,5 @@ def diff_fit_hess(x, params, func, args = (), h = None):
     return diff_hess(params, f, h = h)
 
 
-def diff_jac(params, func, args = (), h = None):
+def diff_jac(params, func, args = (), h = None) -> np.ndarray:
     return diff_grad(params, func, args, h).transpose()

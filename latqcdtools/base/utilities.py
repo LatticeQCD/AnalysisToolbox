@@ -53,7 +53,7 @@ def _alphanum_key(key):
 # ---------------------------------------------------------------------------------- MAKE INTERNAL FUNCTIONS MORE SMOOTH
 
 
-def isArrayLike(obj):
+def isArrayLike(obj) -> bool:
     """ Figure out whether obj is indexable.
 
     Args:
@@ -69,7 +69,7 @@ def isArrayLike(obj):
         return False
 
 
-def isHigherDimensional(obj):
+def isHigherDimensional(obj) -> bool:
     """ Figure out whether obj has at least two indices.
 
     Args:
@@ -118,52 +118,6 @@ def toNumpy(*args):
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
 
 
-def append(array,item):
-    """ Generalized append. Works also for numpy arrays and tuples.
-
-    Args:
-        array (array-like)
-        item (any): to-be-appended item 
-
-    Returns:
-        array-like 
-    """
-    if isHigherDimensional(array):
-        logger.TBError('Append for 1-d objects only.')
-    if isinstance(array,np.ndarray):
-        temp = list(array)
-        temp.append(item)
-        return np.array(temp)
-    elif isinstance(array,list):
-        return array.append(item)
-    elif isinstance(array,tuple):
-        return array + (item,) 
-    else:
-        logger.TBError('No append defined for type',type(array))
-
-
-def insert(array,item,idx):
-    """ Generalized insert. Works also for numpy arrays and tuples.
-
-    Args:
-        array (array-like)
-        item (any): to-be-appended item 
-
-    Returns:
-        array-like 
-    """
-    if isHigherDimensional(array):
-        logger.TBError('Insert for 1-d objects only.')
-    if isinstance(array,np.ndarray):
-        temp = list(array)
-        temp.insert(idx,item)
-        return np.array(temp)
-    elif isinstance(array,list):
-        return array.insert(idx,item)
-    else:
-        logger.TBError('No insert defined for type',type(array))
-
-
 def getArgs(parser):
     """ Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. """
     args, invalid_args = parser.parse_known_args()
@@ -178,15 +132,7 @@ def printArg(message,param):
         logger.info(message,param)
 
 
-def printDict(dic):
-    """ Prints key, value pairs line by line. """
-    if not isinstance(dic,dict):
-        logger.TBError('Expected type', dict, 'but received', type(dic))
-    for key in dic:
-        logger.info(key,dic[key])
-
-
-def cleanOutput(*args,label=None):
+def cleanOutput(*args,label=None) -> str:
     """ This method takes a bunch of args and formats them automatically for output. The idea is
     that you can use this method to ensure that columns are well lined up.
 
@@ -216,6 +162,8 @@ def cleanOutput(*args,label=None):
             data += (col.real,)
             data += (col.imag,)
             form += spacing+'%15.8e  %15.8e'
+        elif isinstance(col,list):
+            logger.TBError('Expected list of scalars rather than list of lists.')
         else:
             data += (col,)
             form += spacing+'%15.8e'
@@ -224,7 +172,25 @@ def cleanOutput(*args,label=None):
 
 
 def printClean(*args,label=None):
+    """ Wrapper for cleanOutput that prints to screen.
+
+    Args:
+        *args: The numbers you want to output, separated by commas. 
+        label (str, optional): Put label to the left of your output. Defaults to None.
+    """
     logger.info(cleanOutput(*args,label))
+
+
+def printDict(dic):
+    """ Prints key, value pairs line by line. """
+    if not isinstance(dic,dict):
+        logger.TBError('Expected type', dict, 'but received', type(dic))
+    for key in dic:
+        if type(dic[key])==dict:
+            logger.info(key)
+            printDict(dic[key])
+        else:
+            printClean(key,dic[key])
 
 
 def shell(*args):
@@ -244,7 +210,7 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
+def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S") -> bool:
     """ Check whether date1 comes before date2.
 
     Args:
@@ -260,21 +226,32 @@ def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S"):
     return date1_converted < date2_converted
 
 
-def naturalSort(l):
+def naturalSort(l) -> list:
     """Sort list of strings so that, e.g. '10' comes after '9' rather than before it."""
     return sorted(l, key=_alphanum_key)
 
 
-def find_nearest_idx(array, value):
+def find_nearest_idx(array, value) -> int:
     """ Find the index of the element of array nearest to value. """
-    array = np.asarray(array)
+    array = np.array(array)
     idx = (np.abs(array - value)).argmin()
     return idx
 
 
-def substringBetween(string,a,b):
-    start_index = string.index(a)+1
-    end_index   = string.index(b)
+def substringBetween(string,a,b) -> str:
+    """ Find the substring of string between a and b. If a==b, it looks between the
+    first and second occurences of a. 
+
+    Args:
+        string (str)
+        a (str): starting delimiter 
+        b (str): ending delimiter
+
+    Returns:
+        str: substring
+    """
+    start_index = string.index(a) + len(a)
+    end_index   = string[start_index:].index(b) + start_index
     return string[start_index:end_index]
 
 
@@ -292,6 +269,14 @@ def deleteFile(target):
     logger.warn('Unable to remove file',target)
 
 
+def createFilePath(fullFileName):
+    """ Create the directory path if it isn't there already. """
+    if '/' in fullFileName:
+        dir_path = os.path.dirname(fullFileName)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path,exist_ok=True)
+
+
 def byteConvert(x,b1,b2):
     """ Convert between bytes given scientific prefixes.
 
@@ -303,8 +288,8 @@ def byteConvert(x,b1,b2):
     Returns:
         float: Bytes in target units. 
     """
-    p1=_getPrefix(b1)
-    p2=_getPrefix(b2)
+    p1 =_getPrefix(b1)
+    p2 =_getPrefix(b2)
     num=_bytePrefix[p1]
     den=_bytePrefix[p2]
     return x*num/den

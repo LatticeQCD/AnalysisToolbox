@@ -20,6 +20,11 @@ def testCheck():
     checkType([1,'two',3],'array')
     checkType(np.array([1,'two',3]),'array')
     checkType((None,None,1),'array')
+    checkType(1,'scalar')
+    checkType(1.,'scalar')
+    checkType(3+1j,'scalar')
+    checkType(3,'real')
+    checkType(np.complex128(3),'real')
 
     checkEqualLengths([1,1,1],[2,2,2],[3,3,3],[4,4,4])
 

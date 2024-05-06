@@ -164,5 +164,5 @@ def reweight(X, pRW, p0, S):
     checkType(S,'array')
     Z_i = np.exp( (pRW-p0)*(S-std_mean(S)) )
     Z   = np.sum(Z_i)
-    return np.sum( X*Z_i/Z )
+    return np.sum(X*Z_i/Z)
 

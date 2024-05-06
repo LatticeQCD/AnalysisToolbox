@@ -91,7 +91,7 @@ class SU3(np.matrix):
         return "SU(3)"
 
 
-    def trace(self, **kwargs):
+    def trace(self, **kwargs) -> complex:
         """ Trace. In np.matrix, this returns a 2d object for some reason. """
         return complex( super().trace(**kwargs) )
 
@@ -106,7 +106,7 @@ class SU3(np.matrix):
         return det(self)
 
 
-    def isSU3(self):
+    def isSU3(self) -> bool:
         """ Check that I have det=1 and am unitary. """
         special = rel_check(self.det(), 1.)
         UdaggU  = self.dagger()*self

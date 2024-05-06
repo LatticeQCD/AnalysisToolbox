@@ -12,10 +12,10 @@ import latqcdtools.base.logger as logger
 from numba import jit
 
 
-def V_Teq0(r):
-    """Zero temperature quark potential in [MeV], takes r in [fm]. The parameters a, b, and c come from
+def V_Teq0(r) -> float:
+    """ Zero temperature quark potential in [MeV], takes r in [fm]. The parameters a, b, and c come from
      a Levenberg-Marquardt fit of the data in Fig 14 of Phys. Rev. D90 (2014) 094503. These numbers can
-     be obtained again by running analysistoolbox/hisq_potential/fit_hisq_pot.py."""
+     be obtained again by running analysistoolbox/hisq_potential/fit_hisq_pot.py. """
     #    result:  [ -91.30436191 1022.25286821  106.70659264]
     #     error:  [0.53809612 2.51598869 2.58370288]
     #  chi2/dof:  0.8083127937775374
@@ -25,18 +25,18 @@ def V_Teq0(r):
     return a/r + b*r + c
 
 
-def fitV_Teq0(r, a, b, c):
+def fitV_Teq0(r, a, b, c) -> float:
     """ Fit form of standard Cornell potential. Fit to be done in lattice units."""
     return a + b/r + c*r
 
 
-def fitV_Teq0_oneloop(r,a,b,c,d):
+def fitV_Teq0_oneloop(r,a,b,c,d) -> float:
     """ Including one-loop corrections to Coulomb. See Nucl. Phys. B 129 (1977) and Phys. Lett B 92 (1980).
         Fit to be done in lattice units."""
     return a + ( b + d*np.log(r) )/r + c*r
 
 
-def fitV_Teq0_twoloop(r,a,b,c,d,e):
+def fitV_Teq0_twoloop(r,a,b,c,d,e) -> float:
     """ Including two-loop corrections to Coulomb. See Nucl. Phys. B 501 (1997). Fit to be done in lattice units."""
     return a + ( b + d*np.log(r) + e*np.log(np.log(r)) )/r + c*r
 

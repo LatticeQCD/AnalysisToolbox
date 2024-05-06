@@ -6,15 +6,14 @@ import latqcdtools.statistics.jackknife
 ```
 The central method of this file is the `jackknife` method. A call to
 ```Python
-jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), nproc=DEFAULTTHREADS)
+jackknife(func, data, numb_blocks = 20, conf_axis = 1, return_sample = False, args = (), nproc=1)
 ```
 returns a jackknife average, error, and (if desired) the covariance, in that order. Here `data` is 
 a time series of raw data you are interested in, and `func` is some function of that data. 
 `numb_blocks` is the number of jackknife blocks, `args` are the arguments to pass to `func`.
 The `conf_axis` is needed when one wants to pass a 
 2D array as `data`, which can happen, for instance, if `func` depends on multiple observables. 
-An example will be given below. By default the jackknife is [parallelized](../base/speedify.md) 
-with `DEFAULTTHREADS` processes. Set `nproc=1` if you want to turn off parallelization.
+An example will be given below. 
 
 This jackknife is quite general. Something easy one might do with the jackknife is calculate the 
 Polyakov loop susceptibility from Polyakov loops. A rule of thumb to use when using the jackknife 
@@ -47,7 +46,7 @@ of the documentation for [physics](../physicsAnalysis/physicsAnalysis.md) module
 
 **WARNING:** Although the `jackknife` method is very general, there are at least a couple kinds of
 functions that may fail when passed to `jackknife`:
-1. Don't pass passing a lambda function. This is because the `jackknife` can be parallelized 
+1. Don't pass a lambda function. This is because the `jackknife` can be parallelized 
 using `concurrent.futures`, which is not able to pickle lambda functions. 
 We [discourage](../contributions/contributions.md) the use of lambda functions in general.
 2. Don't pass a function that manipulates data indices. You may not be manipulating the
