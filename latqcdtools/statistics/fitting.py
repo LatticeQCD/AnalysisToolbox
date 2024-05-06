@@ -112,7 +112,7 @@ class Fitter:
         self._args          = kwargs.get('args', ())
         self._grad_args     = kwargs.get('grad_args', None)
         self._errorAlg      = kwargs.get('error_strat', 'propagation')
-        self._nproc         = kwargs.get('nproc', DEFAULTTHREADS)
+        self._nproc         = kwargs.get('nproc', 1)
         logger.debug('Initialize fitter with:')
         logger.debug('  use_diff:',self._use_diff) 
         logger.debug('  derive_chisq:',self._derive_chisq)
