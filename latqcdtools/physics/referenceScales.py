@@ -48,9 +48,10 @@ def _betaRangeWarn(beta, beta_range):
         beta_range (array-like): min and max beta of range, in that order 
     """
     global CHECKBETARANGE
-    if type(beta) is float :
+    if  isinstance(beta , (float,np.floating)) :
         beta    = np.array([ beta , beta ]) 
     if CHECKBETARANGE:
+        print(beta)
         if np.sort(beta)[0] < beta_range[0] or np.sort(beta)[-1] > beta_range[1]:
             logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
 
