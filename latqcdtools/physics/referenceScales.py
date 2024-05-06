@@ -44,12 +44,14 @@ def _betaRangeWarn(beta, beta_range):
     is less likely be to reliable.
 
     Args:
-        beta (float)
+        beta (float) or numpy array
         beta_range (array-like): min and max beta of range, in that order 
     """
     global CHECKBETARANGE
+    if type(beta) is float :
+        beta    = np.array([ beta , beta ]) 
     if CHECKBETARANGE:
-        if beta < beta_range[0] or beta > beta_range[1]:
+        if np.sort(beta)[0] < beta_range[0] or np.sort(beta)[-1] > beta_range[1]:
             logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
 
 
