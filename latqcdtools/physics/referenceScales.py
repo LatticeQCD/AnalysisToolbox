@@ -104,7 +104,7 @@ def a_times_fk(beta: float, year):
         c2fk = 46049.0
         d2fk = 3671.0
 
-    # TODO add source
+    # https://arxiv.org/pdf/1111.1710 , 10.1103/PhysRevD.85.054503 
     elif str(year) == "2012":
         beta_range = [6., 6.8]
         _betaRangeWarn(beta, beta_range)
