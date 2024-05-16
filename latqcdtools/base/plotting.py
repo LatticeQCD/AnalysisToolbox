@@ -127,6 +127,8 @@ def latexify(bold=False):
     else:
         plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
     plt.rcParams['text.usetex'] = True
+    plt.rcParams['font.family'] = 'cmr10'
+    plt.rcParams['axes.formatter.use_mathtext'] = True
 
 
 def clearPlot():

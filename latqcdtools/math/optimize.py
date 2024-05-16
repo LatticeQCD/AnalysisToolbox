@@ -8,7 +8,7 @@
 
 import scipy.optimize as opt
 from scipy.optimize import newton_krylov, fsolve, root
-from scipy.optimize.nonlin import NoConvergence
+from scipy.optimize._nonlin import NoConvergence
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import DivideByZeroError, InvalidValueError, checkType
 from latqcdtools.base.utilities import envector 
@@ -17,8 +17,46 @@ from latqcdtools.base.utilities import envector
 # This is the base list of exceptions. If encountered, we treat the solve as unreliable.
 opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
 
-# This order is not necessarily optimal.
-root_methods = ['hybr','lm','broyden1','broyden2','anderson','diagbroyden','krylov']
+
+# These orders are not necessarily optimal.
+_root_methods  = ['krylov','hybr','broyden1','broyden2','anderson','diagbroyden']
+_solve_methods = ['newton_krylov','fsolve','root']
+
+
+def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
+    """ Wrapper for various methods to solve LHS==0. This is to simplify the interface.
+
+    Args:
+        LHS (func)
+        guess: initial guess for solution 
+        tol (real, optional): Solve tolerance. Defaults to 1e-8.
+        maxiter (int, optional): Maximum iterations. Defaults to 300.
+        method (str, optional): Defaults to 'newton_krylov'.
+
+    """
+    checkType(tol,"real")
+    checkType(maxiter,int)
+    if method=='newton_krylov':
+        return newton_krylov(LHS, guess, f_tol=tol, maxiter=maxiter)
+    elif method=='fsolve':
+        return fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
+    elif method=='root':
+        for root_method in _root_methods:
+            try:  
+                logger.debug("Trying",root_method)
+                if root_method in ['hybr']:
+                    res = root(LHS, guess, tol=tol, method=root_method, options={'maxfev':maxiter})
+                else:
+                    res = root(LHS, guess, tol=tol, method=root_method, options={'maxiter':maxiter})
+                if res.success == True:
+                    return res.x
+                else:
+                    raise RuntimeError(root_method+' did not converge') 
+            except Exception as e:
+                logger.debug("Hit exception:",str(e)+"; Terminating.")
+                continue
+    else:
+        logger.TBError('Unrecognized method',method)
 
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
@@ -26,23 +64,13 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
     checkType(tol,"real")
     checkType(maxiter,int)
     try:
-        logger.debug("Trying newton_krylov.")
-        return newton_krylov(LHS, guess, f_tol=tol, inner_maxiter=maxiter)
-    except opt_exceptions as e1:
-        try:
-            logger.debug("Hit exception",e1,"; Trying fsolve.")
-            return fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
-        except opt_exceptions as e2:
+        for method in _solve_methods:
             try:
-                logger.debug("Hit exception",e2,"; Trying root.")
-                for method in root_methods:
-                    try:  
-                        return root(LHS, guess, tol=tol, method=method).x
-                    except Exception as e3:
-                        logger.debug("Hit exception",e3,"; Terminating.")
-                        continue
-            except:
-                raise NoConvergence
+                return solve(LHS,guess,tol=tol,maxiter=maxiter,method=method)
+            except opt_exceptions as e:
+                logger.debug("Hit exception:",e)
+    except opt_exceptions as e:
+        raise RuntimeError('No method converged!') 
 
 
 def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):

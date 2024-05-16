@@ -128,7 +128,10 @@ def checkType(obj, expectedType):
         break 
     if expectedType=="array":
         if not isArrayLike(obj):
-            logger.TBError('Expected array-like object for',objName,'but received',type(obj),frame=3)
+            if type(obj)==list or type(obj)==np.ndarray:
+                logger.TBError('Received empty',type(obj),'for',objName,frame=3)
+            else:
+                logger.TBError('Expected array-like object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="scalar":
         if isArrayLike(obj) or obj is None:
             logger.TBError('Expected scalar-like object for',objName,'but received',type(obj),frame=3)
