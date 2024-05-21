@@ -8,6 +8,8 @@
 
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import shell, createFilePath
+import warnings
+warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
 INITIALIZED = False     # Global flag to check if initialization has already occurred.
