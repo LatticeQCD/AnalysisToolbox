@@ -43,7 +43,7 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
     elif method=='root':
         for root_method in _root_methods:
             try:  
-                logger.debug("Trying",root_method)
+                logger.debug("Trying root:",root_method)
                 if root_method in ['hybr']:
                     res = root(LHS, guess, tol=tol, method=root_method, options={'maxfev':maxiter})
                 else:
@@ -51,26 +51,34 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
                 if res.success == True:
                     return res.x
                 else:
-                    raise RuntimeError(root_method+' did not converge') 
+                    raise NoConvergence(root_method+' did not converge') 
             except Exception as e:
                 logger.debug("Hit exception:",str(e)+"; Terminating.")
                 continue
+        raise NoConvergence('No root method converged.')
     else:
         logger.TBError('Unrecognized method',method)
 
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
-    """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root. """
+    """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root.
+
+        Args:
+        LHS (func)
+        guess: initial guess for solution 
+        tol (real, optional): Solve tolerance. Defaults to 1e-8.
+        maxiter (int, optional): Maximum iterations. Defaults to 300.
+    """
     checkType(tol,"real")
     checkType(maxiter,int)
-    try:
-        for method in _solve_methods:
-            try:
-                return solve(LHS,guess,tol=tol,maxiter=maxiter,method=method)
-            except opt_exceptions as e:
-                logger.debug("Hit exception:",e)
-    except opt_exceptions as e:
-        raise RuntimeError('No method converged!') 
+    for method in _solve_methods:
+        try:
+            return solve(LHS,guess,tol=tol,maxiter=maxiter,method=method)
+        except opt_exceptions as e:
+            logger.debug("Hit exception:",e)
+        except Exception as e:
+            raise e
+    raise NoConvergence('No method converged!') 
 
 
 def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
