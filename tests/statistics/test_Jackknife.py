@@ -21,9 +21,10 @@ def simple_mean(a):
 
 A = np.array(range(1000))
 
-testdata =  np.random.default_rng(234).normal(0, 1, 200)
 
 def testJackknife():
+
+    testdata = np.random.default_rng(234).normal(0, 1, 200)
 
     lpass = True
 

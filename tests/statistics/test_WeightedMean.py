@@ -17,10 +17,11 @@ import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')
 PREC=1e-15
-np.random.seed(DEFAULTSEED)
 
 
 def testWeightedMean():
+
+    np.random.seed(DEFAULTSEED)
 
     lpass = True
 

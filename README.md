@@ -47,7 +47,8 @@ In order to use these scripts, please ensure that you have the following:
 8. pyyaml
 9. scipy
 10. sympy
-11. LaTeX (Probably best if you install TeXLive-Full)
+11. pytest
+12. LaTeX (Probably best if you install TeXLive-Full)
 
 You can set up the AnalysisToolbox using either a [Python virtual environment](https://realpython.com/python-virtual-environments-a-primer/)
 or by modifying the Python on your local machine. You can set up the former or the latter by adjusting the user preferences
@@ -67,7 +68,7 @@ STRATEGY = "VENV"
 ```
 then run
 ```Bash
-./configureToolbox.bash
+./configureToolbox.py
 ```
 This will create a `venv` folder containing all the information about your virtual environment. Every time you open a new
 terminal, if you want to use the AnalysisToolbox, you will need to 
@@ -105,17 +106,15 @@ packages (2-10) can be installed via
 pip3 install -r requirements.txt
 ```
 There are some further packages required if you would like to make contributions to the AnalysisToolbox; in particular
-there are many packages needed to compile the documentation. If you are interested in helping develop, you should
+there are many packages needed to compile the documentation. If you are interested in writing documentation, you should also 
 instead
 ```shell
-pip3 install -r developerRequirements.txt
+pip3 install -r docRequirements.txt
 ```
 
-Once this has all been settled,
-try running the tests. You can do this by going to the `testing` folder
-and calling
+Once this has all been settled, try running the tests using
 ```shell
-bash runTests.bash
+pytest
 ```
 
 

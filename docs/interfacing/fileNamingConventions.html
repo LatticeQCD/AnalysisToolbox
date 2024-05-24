@@ -94,6 +94,7 @@ heterogeneous field is an important part of interoperability.</p>
 <li><p>HotQCD configuration naming schemes</p></li>
 <li><p>Reading <code class="docutils literal notranslate"><span class="pre">gpl</span></code> files</p></li>
 <li><p>Reading <code class="docutils literal notranslate"><span class="pre">yaml</span></code> files</p></li>
+<li><p>Reading <code class="docutils literal notranslate"><span class="pre">json</span></code> files</p></li>
 </ul>
 <p>For the first two, we have <code class="docutils literal notranslate"><span class="pre">HotQCDParams</span></code> and <code class="docutils literal notranslate"><span class="pre">MILCParams</span></code> objects, which inherit from the <code class="docutils literal notranslate"><span class="pre">latticeParams</span></code>
 object described <a class="reference internal" href="../physicsAnalysis/latticeParameters.html"><span class="doc std std-doc">here</span></a>. To quickly extract run parameters
@@ -101,8 +102,8 @@ from a MILC or HotQCD-type string, one finds inside</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">interfaces</span>
 </pre></div>
 </div>
-<p>the method <code class="docutils literal notranslate"><span class="pre">paramFrom_HotQCD_MILC</span></code>. The <code class="docutils literal notranslate"><span class="pre">gpl</span></code> and <code class="docutils literal notranslate"><span class="pre">yaml</span></code> reading methods <code class="docutils literal notranslate"><span class="pre">loadGPL</span></code> and <code class="docutils literal notranslate"><span class="pre">loadYAML</span></code>
-are also inside this module.</p>
+<p>the method <code class="docutils literal notranslate"><span class="pre">paramFrom_HotQCD_MILC</span></code>. The <code class="docutils literal notranslate"><span class="pre">gpl</span></code>, <code class="docutils literal notranslate"><span class="pre">yaml</span></code>, and <code class="docutils literal notranslate"><span class="pre">json</span></code> reading methods
+<code class="docutils literal notranslate"><span class="pre">loadGPL</span></code>, <code class="docutils literal notranslate"><span class="pre">loadYAML</span></code>, and <code class="docutils literal notranslate"><span class="pre">loadJSON</span></code> are also inside this module.</p>
 </section>
 
 

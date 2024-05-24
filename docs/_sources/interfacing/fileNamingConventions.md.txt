@@ -11,6 +11,7 @@ To this end, the AnalysisToolbox has some methods specifically for this purpose.
 - HotQCD configuration naming schemes
 - Reading `gpl` files
 - Reading `yaml` files
+- Reading `json` files
 
 For the first two, we have `HotQCDParams` and `MILCParams` objects, which inherit from the `latticeParams`
 object described [here](../physicsAnalysis/latticeParameters.md). To quickly extract run parameters
@@ -18,5 +19,5 @@ from a MILC or HotQCD-type string, one finds inside
 ```Python
 latqcdtools.interfaces.interfaces
 ```
-the method `paramFrom_HotQCD_MILC`. The `gpl` and `yaml` reading methods `loadGPL` and `loadYAML`
-are also inside this module.
+the method `paramFrom_HotQCD_MILC`. The `gpl`, `yaml`, and `json` reading methods 
+`loadGPL`, `loadYAML`, and `loadJSON` are also inside this module.

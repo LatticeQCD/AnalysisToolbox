@@ -1,12 +1,12 @@
 # Writing Tests
 
 With each new module you write, please add a test. All the tests for the AnalysisToolbox can be found in the
-`testing` folder. Once you have written your test, add a line for it to `testing/runTests.bash`.
+`tests` folder.
 If you make any changes to the code, call
 ```shell
-bash runTests.bash
+pytest
 ```
-from the `testing` folder to make sure nothing is broken.
+from the top level. 
 
 There are a couple modules that assist with testing. The module
 ```Python

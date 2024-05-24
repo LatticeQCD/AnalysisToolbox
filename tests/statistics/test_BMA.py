@@ -21,8 +21,6 @@ from latqcdtools.testing import concludeTest, print_results
 
 logger.set_log_level('INFO')
 
-rng = np.random.default_rng(DEFAULTSEED)
-
 def F(x):
     """ Model truth """
     return 1.8-0.53*(x/16)+0.31*(x/16)**2
@@ -44,6 +42,8 @@ BAICCONTROL = [29.21641305840999, 19.229646697947416, 20.126005931878353,
 
 
 def testBMA():
+
+    rng = np.random.default_rng(DEFAULTSEED)
 
     Nt       = 15
     Nmodels  = 6

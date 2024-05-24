@@ -23,8 +23,11 @@ class testClass:
     def __repr__(self) -> str:
         return "testClass"
 
-def testLogger(i):
+def makeLogger(i):
     test = testClass()
 
+def testLogger():
+    parallel_function_eval(makeLogger,range(2),nproc=2)
+
 if __name__ == '__main__':
-    parallel_function_eval(testLogger,range(2),nproc=2)
+    testLogger()

@@ -583,8 +583,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
-                           markerfacecolor = markerfill, 
-                           **optional)
+                           markerfacecolor = markerfill, **optional)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
