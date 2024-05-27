@@ -12,7 +12,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.cleanData import excludeAtCol, restrictAtCol
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.plotting import plot_lines, plot_file, set_params, latexify, colors, clearPlot
+from latqcdtools.base.plotting import plot_lines, plot_file, set_params, colors, clearPlot
 from latqcdtools.base.utilities import timer
 from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS 
 from latqcdtools.math.num_deriv import diff_deriv
@@ -27,9 +27,6 @@ def testHRG():
     
     EPSILON = 1e-6
     SHOW_PLOTS = False # In case you want a visual to see how comparisons with older results look.
-    
-    if SHOW_PLOTS:
-        latexify()
     
     T = np.linspace(130, 179.5, 100)
     

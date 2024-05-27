@@ -8,9 +8,8 @@
 
 import pytest
 from latqcdtools.physics.diracFreespectra import DiracOp
-from latqcdtools.base.plotting import latexify, set_params, plot_dots, plt
+from latqcdtools.base.plotting import set_params, plot_dots, plt
 
-latexify()
 
 N = 16
 Lx, Ly, Lz, Lt = N, N, N, 8

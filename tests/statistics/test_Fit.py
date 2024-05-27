@@ -14,7 +14,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import timer
 from latqcdtools.statistics.statistics import std_mean
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.plotting import clearPlot, latexify, plt
+from latqcdtools.base.plotting import clearPlot, plt
 from latqcdtools.base.readWrite import readTable
 
 
@@ -220,7 +220,6 @@ def testFit():
     if TESTPLOTS:
 
         logger.info("Testing fit plots...")
-        latexify()
 
         xdata, ydata, edata = readTable("wurf.dat", usecols=(0,2,3))
 
