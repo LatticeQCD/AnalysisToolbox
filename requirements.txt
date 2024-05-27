@@ -1,7 +1,4 @@
-# Run pip3 install -r requirements.txt to install these packages.
-
 colorama
-cycler
 matplotlib
 numba
 numpy
@@ -9,3 +6,4 @@ pathos
 pyyaml
 scipy
 sympy
+pytest
