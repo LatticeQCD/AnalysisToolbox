@@ -14,7 +14,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="LatticeToolbox",
-    version="1.2.0",
+    version="1.2.1",
     author="D. A. Clarke",
     author_email="clarke.davida@gmail.com",
     description="A set of Python tools for statistically analyzing correlated data. This includes aspects of lattice QCD applications related to QCD phenomenology.",
