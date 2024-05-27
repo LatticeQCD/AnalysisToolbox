@@ -44,12 +44,15 @@ def _betaRangeWarn(beta, beta_range):
     is less likely be to reliable.
 
     Args:
-        beta (float)
+        beta (float) or numpy array
         beta_range (array-like): min and max beta of range, in that order 
     """
     global CHECKBETARANGE
+    print(beta)
+    if  isinstance(beta , (float,np.floating)) :
+        beta    = np.array([ beta , beta ]) 
     if CHECKBETARANGE:
-        if beta < beta_range[0] or beta > beta_range[1]:
+        if np.sort(beta)[0] < beta_range[0] or np.sort(beta)[-1] > beta_range[1]:
             logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
 
 
@@ -95,12 +98,16 @@ def a_times_fk(beta: float, year):
 
     # 10.1103/PhysRevD.100.094510
     elif str(year) == "2014":
+        beta_range = [6., 7.373]
+        _betaRangeWarn(beta, beta_range)
         c0fk = 7.49415
         c2fk = 46049.0
         d2fk = 3671.0
 
-    # TODO add source
+    # https://arxiv.org/pdf/1111.1710 , 10.1103/PhysRevD.85.054503 
     elif str(year) == "2012":
+        beta_range = [6., 6.8]
+        _betaRangeWarn(beta, beta_range)
         c0fk = 7.65667
         c2fk = 32911.0
         d2fk = 2388.0
