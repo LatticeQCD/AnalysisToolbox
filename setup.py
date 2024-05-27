@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 
 setup(
-    name="AnalysisToolbox",
+    name="LatticeToolbox",
     version="1.2.0",
     author="D. A. Clarke",
     author_email="clarke.davida@gmail.com",
@@ -27,6 +27,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.10',
+    python_requires='>=3.9',
     install_requires=read_requirements(),
 )
