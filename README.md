@@ -34,88 +34,15 @@ A realistic use-case that weaves the AnalysisToolbox into a lattice
 QCD workflow can be found in [this data publication](https://pub.uni-bielefeld.de/record/2979080).
 More information can be found in [the documentation](https://latticeqcd.github.io/AnalysisToolbox).
 
-## Setting up the AnalysisToolbox
 
-In order to use these scripts, please ensure that you have the following:
-1. Python 3.9+
-2. colorama
-3. cycler
-4. matplotlib
-5. numba
-6. numpy
-7. pathos
-8. pyyaml
-9. scipy
-10. sympy
-11. pytest
-12. LaTeX (Probably best if you install TeXLive-Full)
-
-You can set up the AnalysisToolbox using either a [Python virtual environment](https://realpython.com/python-virtual-environments-a-primer/)
-or by modifying the Python on your local machine. You can set up the former or the latter by adjusting the user preferences
-in `configureToolbox.py`.
-
-### Configuring for a virtual environment
-
-The recommended way to proceed is to create a Python virtual environment 
-in which you install all the required packages. This is what the Python people seem to prefer, which you can
-read about in their [PEP 668](https://peps.python.org/pep-0668/). It is also more convenient for use on
-supercomputers, since you don't need superuser privileges to install any missing packages.
-On the other hand, virtual environments can be slower.
-
-In `configureToolbox.py` set
-```Python
-STRATEGY = "VENV" 
+To use the AnalysisToolbox, make sure you have Python 3.9+. You should then be able to
+conveniently install it using
+```bash
+pip install latqcdtools
 ```
-then run
-```Bash
-./configureToolbox.py
-```
-This will create a `venv` folder containing all the information about your virtual environment. Every time you open a new
-terminal, if you want to use the AnalysisToolbox, you will need to 
-```Bash
-cd scripts
-source startVENV.bash
-```
-You can terminate your virtual environment any time using
-```Bash
-deactivate
-```
-
-### Configuring using your OS Python directly 
-
-If you're old-fashioned like David is, you can also just directly `pip3 install` on your machine,
-modifying your OS Python.
-
-In `configureToolbox.py` set
-```Python
-STRATEGY = "BASIC" 
-```
-then run
-```Bash
-./configureToolbox.bash
-```
-
-### Installing the required packages
-
-Either strategy will make sure your `PYTHONPATH` environment variable points
-to the correct place. You will need to close your terminal and open a new one.
-
-Once you carried out one of the above two strategies,
-packages (2-10) can be installed via
-```shell
-pip3 install -r requirements.txt
-```
-There are some further packages required if you would like to make contributions to the AnalysisToolbox; in particular
-there are many packages needed to compile the documentation. If you are interested in writing documentation, you should also 
-instead
-```shell
-pip3 install -r docRequirements.txt
-```
-
-Once this has all been settled, try running the tests using
-```shell
-pytest
-```
+Besides this, there is a `latexify()` command you can use when plotting to make your
+plot font match typical LaTeX documents. In order for this command to work, you need
+to have LaTeX installed on your system. We recommend installing TeXLive-Full.
 
 
 ## Getting started and documentation

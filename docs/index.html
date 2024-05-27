@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AnalysisToolbox &mdash; AnalysisToolbox 1.1.0 documentation</title>
+  <title>AnalysisToolbox &mdash; AnalysisToolbox 1.2.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
@@ -104,6 +104,82 @@ how to use the AnalysisToolbox. Finally there is a <code class="docutils literal
 unit tests for the AnalysisToolbox methods.</p>
 <p>We would love it if you are interested in helping develop the AnalysisToolbox! Please have a look to the
 <a class="reference internal" href="contributions/contributions.html"><span class="doc std std-doc">contributions</span></a> section to learn how to do this in a nice way.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="setting-up-the-analysistoolbox">
+<h1>Setting up the AnalysisToolbox<a class="headerlink" href="#setting-up-the-analysistoolbox" title="Permalink to this headline"></a></h1>
+<p>To use the AnalysisToolbox, make sure you have Python 3.9+. You should then be able to
+conveniently install it using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>latqcdtools
+</pre></div>
+</div>
+<p>Besides this, there is a <code class="docutils literal notranslate"><span class="pre">latexify()</span></code> command you can use when plotting to make your
+plot font match typical LaTeX documents. In order for this command to work, you need
+to have LaTeX installed on your system. We recommend installing TeXLive-Full.</p>
+<section id="what-if-pip-install-fails">
+<h2>What if pip install fails?<a class="headerlink" href="#what-if-pip-install-fails" title="Permalink to this headline"></a></h2>
+<p>If the <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> doesn’t work for you, for example because you don’t have access to Python 3.9,
+you should be able to get something to work by cloning the AnalysisToolbox git.
+You can set up the AnalysisToolbox using either a <a class="reference external" href="https://realpython.com/python-virtual-environments-a-primer/">Python virtual environment</a>
+or by modifying the Python on your local machine. You can set up the former or the latter by adjusting the user preferences
+in <code class="docutils literal notranslate"><span class="pre">configureToolbox.py</span></code>.</p>
+<section id="configuring-for-a-virtual-environment">
+<h3>Configuring for a virtual environment<a class="headerlink" href="#configuring-for-a-virtual-environment" title="Permalink to this headline"></a></h3>
+<p>The recommended way to proceed is to create a Python virtual environment
+in which you install all the required packages. This is what the Python people seem to prefer, which you can
+read about in their <a class="reference external" href="https://peps.python.org/pep-0668/">PEP 668</a>. It is also more convenient for use on
+supercomputers, since you don’t need superuser privileges to install any missing packages.
+On the other hand, virtual environments can be slower.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">configureToolbox.py</span></code> set</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STRATEGY</span> <span class="o">=</span> <span class="s2">&quot;VENV&quot;</span> 
+</pre></div>
+</div>
+<p>then run</p>
+<div class="highlight-Bash notranslate"><div class="highlight"><pre><span></span>./configureToolbox.py
+</pre></div>
+</div>
+<p>This will create a <code class="docutils literal notranslate"><span class="pre">venv</span></code> folder containing all the information about your virtual environment. Every time you open a new
+terminal, if you want to use the AnalysisToolbox, you will need to</p>
+<div class="highlight-Bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>scripts
+<span class="nb">source</span><span class="w"> </span>startVENV.bash
+</pre></div>
+</div>
+<p>You can terminate your virtual environment any time using</p>
+<div class="highlight-Bash notranslate"><div class="highlight"><pre><span></span>deactivate
+</pre></div>
+</div>
+</section>
+<section id="configuring-using-your-os-python-directly">
+<h3>Configuring using your OS Python directly<a class="headerlink" href="#configuring-using-your-os-python-directly" title="Permalink to this headline"></a></h3>
+<p>If you’re old-fashioned like David is, you can also just directly <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span></code> on your machine,
+modifying your OS Python.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">configureToolbox.py</span></code> set</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">STRATEGY</span> <span class="o">=</span> <span class="s2">&quot;BASIC&quot;</span> 
+</pre></div>
+</div>
+<p>then run</p>
+<div class="highlight-Bash notranslate"><div class="highlight"><pre><span></span>./configureToolbox.bash
+</pre></div>
+</div>
+</section>
+<section id="installing-the-required-packages">
+<h3>Installing the required packages<a class="headerlink" href="#installing-the-required-packages" title="Permalink to this headline"></a></h3>
+<p>Either strategy will make sure your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable points
+to the correct place. You will need to close your terminal and open a new one.</p>
+<p>Once you carried out one of the above two strategies,
+packages (2-10) can be installed via</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<p>There are some further packages required if you would like to make contributions to the AnalysisToolbox; in particular
+there are many packages needed to compile the documentation. If you are interested in writing documentation, you should also
+instead</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>docRequirements.txt
+</pre></div>
+</div>
+<p>Once this has all been settled, try running the tests using</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pytest
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -117,6 +193,8 @@ unit tests for the AnalysisToolbox methods.</p>
 </ul>
 </div>
 </section>
+</section>
+</section>
 
 
            </div>
@@ -126,7 +204,7 @@ unit tests for the AnalysisToolbox methods.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, LatticeQCD.</p>
+    <p>&#169; Copyright 2024, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

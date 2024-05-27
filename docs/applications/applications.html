@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Applications &mdash; AnalysisToolbox 1.1.0 documentation</title>
+  <title>Applications &mdash; AnalysisToolbox 1.2.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -85,7 +85,7 @@ please make sure it starts with <code class="docutils literal notranslate"><span
 <h2>main_getBeta.py<a class="headerlink" href="#main-getbeta-py" title="Permalink to this headline"></a></h2>
 <p>Given a reference scale, <span class="math notranslate nohighlight">\(N_\tau\)</span>, and <span class="math notranslate nohighlight">\(T\)</span> in [MeV], this script calculates the corresponding <span class="math notranslate nohighlight">\(\beta\)</span>. An
 example calling is</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py --Nt <span class="m">8</span> --scale r0 --T <span class="m">300</span> 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py<span class="w"> </span>--Nt<span class="w"> </span><span class="m">8</span><span class="w"> </span>--scale<span class="w"> </span>r0<span class="w"> </span>--T<span class="w"> </span><span class="m">300</span><span class="w"> </span>
 </pre></div>
 </div>
 </section>
@@ -93,7 +93,7 @@ example calling is</p>
 <h2>main_getTempAndSpacing.py<a class="headerlink" href="#main-gettempandspacing-py" title="Permalink to this headline"></a></h2>
 <p>Given a reference scale, <span class="math notranslate nohighlight">\(N_\tau\)</span>, and <span class="math notranslate nohighlight">\(\beta\)</span> value, this script calculates <span class="math notranslate nohighlight">\(T\)</span> in [MeV] and <span class="math notranslate nohighlight">\(a\)</span> in [fm]. An
 example calling is</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py --Nt <span class="m">8</span> --beta <span class="m">6</span>.285 --scale fk
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py<span class="w"> </span>--Nt<span class="w"> </span><span class="m">8</span><span class="w"> </span>--beta<span class="w"> </span><span class="m">6</span>.285<span class="w"> </span>--scale<span class="w"> </span>fk
 </pre></div>
 </div>
 <p>For more details about the scale setting, please look into the
@@ -116,7 +116,7 @@ the only possibilities are the typical HRG <code class="docutils literal notrans
 the argument <code class="docutils literal notranslate"><span class="pre">--model</span></code>. Finally you need to specify your observable <code class="docutils literal notranslate"><span class="pre">--obs</span></code>. If you specify a generalized
 susceptibility <code class="docutils literal notranslate"><span class="pre">chi</span></code>, you must also pass the <span class="math notranslate nohighlight">\(B\)</span>, <span class="math notranslate nohighlight">\(Q\)</span>, <span class="math notranslate nohighlight">\(S\)</span>, and <span class="math notranslate nohighlight">\(C\)</span> chemical potential derivative orders.
 A straightforward usage of this script is, for instance,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_measure.py --obs chi --bqsc <span class="m">1100</span> --temperature_range <span class="m">130</span>:180:0.5 --muB <span class="m">0</span>.0
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_measure.py<span class="w"> </span>--obs<span class="w"> </span>chi<span class="w"> </span>--bqsc<span class="w"> </span><span class="m">1100</span><span class="w"> </span>--temperature_range<span class="w"> </span><span class="m">130</span>:180:0.5<span class="w"> </span>--muB<span class="w"> </span><span class="m">0</span>.0
 </pre></div>
 </div>
 </section>
@@ -128,12 +128,12 @@ of constant physics (LCPs). The HotQCD collaboration has focused on strangeness-
 This script creates tables of <span class="math notranslate nohighlight">\(\mu_B/T\)</span>, <span class="math notranslate nohighlight">\(\mu_Q/T\)</span>, and <span class="math notranslate nohighlight">\(\mu_S/T\)</span> (<span class="math notranslate nohighlight">\(\mu_C=0\)</span>) that lie on <span class="math notranslate nohighlight">\(n_S=0\)</span> LCPs like the ones
 mentioned above.
 A straightforward usage of this script is, for instance,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_LCP.py --r <span class="m">0</span>.4 --models QM --T <span class="m">150</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_LCP.py<span class="w"> </span>--r<span class="w"> </span><span class="m">0</span>.4<span class="w"> </span>--models<span class="w"> </span>QM<span class="w"> </span>--T<span class="w"> </span><span class="m">150</span>
 </pre></div>
 </div>
 <p>Once you have generated some LCP files, you can also use <code class="docutils literal notranslate"><span class="pre">main_HRG_measure.py</span></code> from above to carry out measurements
 on them. In such a case, you must pass the LCP file as argument. For instance,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_measure.py --obs chi --bqsc <span class="m">1100</span> --LCP_file HRG_LCP_T150.0_r0.5QM
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_measure.py<span class="w"> </span>--obs<span class="w"> </span>chi<span class="w"> </span>--bqsc<span class="w"> </span><span class="m">1100</span><span class="w"> </span>--LCP_file<span class="w"> </span>HRG_LCP_T150.0_r0.5QM
 </pre></div>
 </div>
 </section>
@@ -142,7 +142,7 @@ on them. In such a case, you must pass the LCP file as argument. For instance,</
 <p>The RHMC of <a class="reference external" href="https://github.com/LatticeQCD/SIMULATeQCD">SIMULATeQCD</a> relies on a rational approximation to the fermion
 determinant. It is useful to see how well this approximation compares with the exact function. This can be checked
 visually with, for example</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_plotRatApprox.py <span class="k">in</span>.rational <span class="m">0</span>.001 <span class="m">0</span>.01
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_plotRatApprox.py<span class="w"> </span><span class="k">in</span>.rational<span class="w"> </span><span class="m">0</span>.001<span class="w"> </span><span class="m">0</span>.01
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">in.rational</span></code> is the rational approximation file, and we use a light quark mass of 0.001 in lattice units
@@ -151,7 +151,7 @@ and a strange quark mass of 0.01.</p>
 <section id="main-hotqcdeos-py">
 <h2>main_HotQCDEoS.py<a class="headerlink" href="#main-hotqcdeos-py" title="Permalink to this headline"></a></h2>
 <p>The paramterization for HotQCD equation of state at  <span class="math notranslate nohighlight">\(\mu_B/T = 0\)</span>, <span class="math notranslate nohighlight">\(\mu_Q/T = 0\)</span>, and <span class="math notranslate nohighlight">\(\mu_S/T = 0\)</span> are given in “Equation of state in ( 2+1 )-flavor QCD, Phys.Rev.D 90 (2014) 094503, (HotQCD Collaboration) A. Bazavov et al.”. The pressure (<span class="math notranslate nohighlight">\(P\)</span>), energy density (<span class="math notranslate nohighlight">\(\epsilon\)</span>) and entropy density (<span class="math notranslate nohighlight">\(s\)</span>) can be obtained from the thermodynamic relations.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HotQCDEoS.py --EosType <span class="s2">&quot;fixedmuB&quot;</span> --muBdivT <span class="m">0</span>.0
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HotQCDEoS.py<span class="w"> </span>--EosType<span class="w"> </span><span class="s2">&quot;fixedmuB&quot;</span><span class="w"> </span>--muBdivT<span class="w"> </span><span class="m">0</span>.0
 </pre></div>
 </div>
 </section>
@@ -165,7 +165,7 @@ and a strange quark mass of 0.01.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, LatticeQCD.</p>
+    <p>&#169; Copyright 2024, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

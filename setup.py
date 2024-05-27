@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-import os
 
 
 def read_requirements():
@@ -14,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="latqcdtools",
-    version="1.2.0",
+    version="1.2.2",
     author="D. A. Clarke",
     author_email="clarke.davida@gmail.com",
     description="A set of Python tools for statistically analyzing correlated data. This includes aspects of lattice QCD applications related to QCD phenomenology.",
