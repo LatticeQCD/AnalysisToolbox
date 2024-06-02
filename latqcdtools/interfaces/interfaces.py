@@ -13,7 +13,6 @@ from latqcdtools.base.check import checkType, checkExtension
 from latqcdtools.base.utilities import substringBetween
 import latqcdtools.base.logger as logger
 
-
 class HotQCD_MILC_Params(latticeParams):
     """ A class to handle and check the input parameters of a lattice run using conventions common to both the
         HotQCD and MILC collaborations. """
@@ -194,7 +193,7 @@ class genericTable(list):
             post (str, optional): String to appear at end of every line of table. Defaults to ''.
         """
         if delimiter is None:
-            logger.TBError('Please set a delimiter.')
+            logger.TBError("Please set a delimiter. Use delimiter='' for generic whitespace.")
         checkType(delimiter,str)
         checkType(pre,str)
         checkType(post,str)
@@ -256,6 +255,13 @@ class genericTable(list):
         inFile.close()
 
 
+class csvTable(genericTable):
+    def __init__(self,delimiter):
+        super().__init__(delimiter=delimiter)
+    def __repr__(self) -> str:
+        return "csvTable"
+
+
 class latexTable(genericTable):
     def __init__(self):
         super().__init__(delimiter='&', pre='', post='\\\\')
@@ -263,11 +269,11 @@ class latexTable(genericTable):
         return "latexTable"
 
 
-class redmineTable(genericTable):
+class markdownTable(genericTable):
     def __init__(self):
         super().__init__(delimiter='|', pre='|', post='|')
     def __repr__(self) -> str:
-        return "redmineTable"
+        return "markdownTable"
     def readLine(self,line):
         """ Convert a line of the table to a list. """ 
         cols=line.strip().split(self.delimiter)
@@ -279,8 +285,15 @@ class redmineTable(genericTable):
         self.append(row)
 
 
-def convertTable(source,target):
-    """ Convert a source table into a target table. The assumption for the source file is that
+# I didn't realize at first that Redmine is using Markdown, and now I want to
+# maintain backwards compatibility.
+class redmineTable(markdownTable):
+    def __repr__(self) -> str:
+        return "redmineTable"
+
+
+def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
+    r""" Convert a source table into a target table. The assumption for the source file is that
     is that the only lines are table lines, i.e. there's no intervening \hline or something like that.
     The table type is determined by the file extensions of source and target.
 
@@ -297,12 +310,20 @@ def convertTable(source,target):
         sourceTable = latexTable()
     elif sourceType == 'redmine':
         sourceTable = redmineTable()
+    elif sourceType == 'md':
+        sourceTable = markdownTable()
+    elif sourceType == 'csv':
+        sourceTable = csvTable(delimiter=sourceDelimiter)
     else: 
         logger.TBError('Unknown source file type',sourceType)
     if targetType == 'tex':
         targetTable = latexTable()
     elif targetType == 'redmine':
         targetTable = redmineTable()
+    elif targetType == 'md':
+        targetTable = markdownTable()
+    elif targetType == 'csv':
+        targetTable = csvTable(delimiter=targetDelimiter)
     else: 
         logger.TBError('Unknown target file type',targetType)
     for row in inFile:
@@ -310,8 +331,14 @@ def convertTable(source,target):
         end = len(sourceTable.post)
         if end==2: # This is for LaTeX
             end=3
-        items = row[start:-end]
-        items = items.split(sourceTable.delimiter)
+        if start==end==0:
+            items = row
+        else:
+            items = row[start:-end]
+        if sourceTable.delimiter=='':
+            items = items.split()
+        else:
+            items = items.split(sourceTable.delimiter)
         targetTable.append(items)
     targetTable.outputTable(target)
     inFile.close()

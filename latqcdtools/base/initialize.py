@@ -8,8 +8,6 @@
 
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import shell, createFilePath
-import warnings
-warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
 INITIALIZED = False     # Global flag to check if initialization has already occurred.
@@ -37,12 +35,12 @@ def gitHash() -> str:
 def introduceYourself():
     """ Corporate branding. ASCII generated from https://patorjk.com. """
     logger.info()
-    logger.info("     _                _           _    _____           _ _                ")
-    logger.info("    / \   _ __   __ _| |_   _ ___(_)__|_   _|__   ___ | | |__   _____  __ ")
-    logger.info("   / _ \ | '_ \ / _` | | | | / __| / __|| |/ _ \ / _ \| | '_ \ / _ \ \/ / ")
-    logger.info("  / ___ \| | | | (_| | | |_| \__ \ \__ \| | (_) | (_) | | |_) | (_) >  <  ")
-    logger.info(" /_/   \_\_| |_|\__,_|_|\__, |___/_|___/|_|\___/ \___/|_|_.__/ \___/_/\_\ ")
-    logger.info("                        |___/                                             ")
+    logger.info(r"     _                _           _    _____           _ _                ")
+    logger.info(r"    / \   _ __   __ _| |_   _ ___(_)__|_   _|__   ___ | | |__   _____  __ ")
+    logger.info(r"   / _ \ | '_ \ / _` | | | | / __| / __|| |/ _ \ / _ \| | '_ \ / _ \ \/ / ")
+    logger.info(r"  / ___ \| | | | (_| | | |_| \__ \ \__ \| | (_) | (_) | | |_) | (_) >  <  ")
+    logger.info(r" /_/   \_\_| |_|\__,_|_|\__, |___/_|___/|_|\___/ \___/|_|_.__/ \___/_/\_\ ")
+    logger.info(r"                        |___/                                             ")
     logger.info()
 
 

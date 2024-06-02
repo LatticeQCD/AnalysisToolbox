@@ -7,7 +7,7 @@
 # 
 
 from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML, \
-    writeJSON, readJSON
+    writeJSON, readJSON, convertTable, csvTable
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import deleteFile
 import latqcdtools.base.logger as logger
@@ -63,6 +63,11 @@ def testInterfaces():
     test.readTable('testInterface.redmine')
     lpass *= test==ref
 
+    convertTable('testInterface.tex','testInterface.csv',targetDelimiter=',')
+    test = csvTable(delimiter=',')
+    test.readTable('testInterface.csv')
+    lpass *= test==ref
+
     writeYAML(refDict,'test.yaml')
     testDict = readYAML('test.yaml')
     lpass *= testDict==refDict
@@ -75,6 +80,7 @@ def testInterfaces():
     deleteFile('test.json') 
     deleteFile('testInterface.tex') 
     deleteFile('testInterface.redmine') 
+    deleteFile('testInterface.csv') 
 
     concludeTest(lpass) 
 
