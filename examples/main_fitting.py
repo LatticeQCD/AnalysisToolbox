@@ -27,7 +27,7 @@ def fit_func(x, params):
     return a*x**2 + b*x + c
 
 
-xdata, ydata = readTable("../testing/statistics/wurf.dat", usecols=(0,2)) 
+xdata, ydata = readTable("../tests/statistics/wurf.dat", usecols=(0,2)) 
 
 # We initialize our Fitter object. The function has to look like
 #            func(x, params, *args).

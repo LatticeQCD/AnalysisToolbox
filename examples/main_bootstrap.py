@@ -19,7 +19,7 @@ initialize('example_bootstrap.log')
 
 latexify()
 
-xdata, ydata, edata = readTable("../testing/statistics/wurf.dat", usecols=(0,2,3))
+xdata, ydata, edata = readTable("../tests/statistics/wurf.dat", usecols=(0,2,3))
 
 plot_dots(xdata,ydata,edata)
 

@@ -10,12 +10,16 @@
 import itertools
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.colors
-import matplotlib.ticker as ticker
+import matplotlib
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector
 from latqcdtools.base.readWrite import readTable
+
+
+# This is to avoid possible problems with colors and themes. As far as I can tell,
+# everything works with PyQt5. 
+matplotlib.use('Qt5Agg') 
 
 
 ZOD        = 10     # Orders different layers 

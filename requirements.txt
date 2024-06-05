@@ -3,7 +3,8 @@ matplotlib
 numba
 numpy
 pathos
+PyQt5
+pytest
 pyyaml
 scipy
 sympy
-pytest
