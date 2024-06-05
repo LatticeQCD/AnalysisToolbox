@@ -7,7 +7,7 @@
 #
 
 
-import itertools
+import itertools, os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -17,9 +17,13 @@ from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector
 from latqcdtools.base.readWrite import readTable
 
 
-# This is to avoid possible problems with colors and themes. As far as I can tell,
-# everything works with PyQt5. 
-matplotlib.use('Qt5Agg') 
+if 'DISPLAY' not in os.environ:
+    # Check if there's no display (headless environment)
+    matplotlib.use('Agg')
+else:
+    # This is to avoid possible problems with colors and themes. As far as I can tell,
+    # everything works with PyQt5. 
+    matplotlib.use('Qt5Agg') 
 
 
 ZOD        = 10     # Orders different layers 
