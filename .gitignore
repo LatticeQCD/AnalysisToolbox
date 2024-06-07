@@ -15,6 +15,7 @@ examples/chi2B.txt
 venv/*
 HotQCDEos2022_fixedmuBdivT2.00.txt
 tryApplications.bash
+tests/statistics/acor.d
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

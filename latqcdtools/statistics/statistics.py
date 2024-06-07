@@ -729,3 +729,22 @@ def KSTest_1side(data,cdf) -> float:
     """
     checkType(data,'array')
     return 1 - sp.stats.kstest(data, cdf).pvalue
+
+
+def binSeries(data,nbins) -> np.ndarray:
+    """ Take a time series and bin it. Bin 0 is the average over the first binsize elements,
+    and so on and so on.
+
+    Args:
+        data (array-like)
+        nbins (int)
+
+    Returns:
+        np.ndarray: Binned data
+    """
+    checkTS(data)
+    checkType(nbins,int)
+    ndat=len(data)
+    binsize=int(ndat/nbins)
+    reshaped_data = data[:binsize * nbins].reshape(nbins, binsize)
+    return np.apply_along_axis(std_mean, 1, reshaped_data)

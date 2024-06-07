@@ -12,9 +12,11 @@ import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import std_mean, std_err, checkTS
 from latqcdtools.base.plotting import plt, clearPlot, plot_file
 from latqcdtools.statistics.jackknife import jackknife 
+from latqcdtools.base.readWrite import writeTable
+from latqcdtools.base.check import checkType
 
 
-def remove1Jackknife(ts):
+def remove1Jackknife(ts) -> np.ndarray:
     """ Create remove-1 jackknife list from 1-d series.
 
     Args:
@@ -27,7 +29,7 @@ def remove1Jackknife(ts):
     return jackknife(np.mean,ts,numb_blocks=len(ts),return_sample=True,conf_axis=0)[0]
 
 
-def tauint(nt,ts,xhat = None):
+def tauint(nt,ts,xhat = None) -> np.ndarray:
     """ Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
 
     INPUT:
@@ -64,10 +66,10 @@ def tauint(nt,ts,xhat = None):
     acint=[1.]
     for it in range(1,nt+1):
         acint.append( acint[it-1] + 2.*acov[it]/acov[0] )
-    return acint
+    return np.array( acint )
 
 
-def tauintj(nt,nbins,ts,xhat = None):
+def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
     """ Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
 
     INPUT:
@@ -79,12 +81,12 @@ def tauintj(nt,nbins,ts,xhat = None):
 
     OUTPUT:
       acintj--2D list indexed by time, then bin number acintj[it][ibin] """
+    checkType(nt,int)
+    checkType(nbins,int)
     checkTS(ts)
     ndat=len(ts)
-    if nbins<2:
-        logger.TBError("Need nbins>1.")
-    if nbins>=ndat:
-        logger.TBError("Need nbins<ndat.")
+    if not 1<nbins<ndat:
+        logger.TBError("Need 1<nbins<ndat. nbins, ndat =",nbins,ndat)
     if xhat is not None:
         x=xhat
     else:
@@ -95,7 +97,7 @@ def tauintj(nt,nbins,ts,xhat = None):
     for it in range(nt+1):
         numt=ndat-it
         binsize=int(numt/nbins)
-        acor=[0.]*nbins
+        acor=np.zeros(nbins)
         # This is a check that we can't spill into the last bin
         itmax=nbins*binsize-binsize
         if it>=itmax:
@@ -103,20 +105,22 @@ def tauintj(nt,nbins,ts,xhat = None):
         for ibin in range(nbins):
             i1=ibin*binsize
             i2=(ibin+1)*binsize-1
-            for i in range(i1,i2+1):
-                acor[ibin]=acor[ibin]+(ts[i]-x)*(ts[i+it]-x)
-            acor[ibin]=acor[ibin]/binsize
-            # Bias correction
-            if xhat is None:
-                acor[ibin]=acor[ibin]*ndat/(ndat-1.)
+            acor[ibin] = np.sum( (ts[i1:i2+1] - x)*(ts[i1+it:i2+1+it] - x) )/binsize
+        # Bias correction
+        if xhat is None:
+            acor=acor*ndat/(ndat-1.)
         acorj.append(remove1Jackknife(acor))
-    # Now make acintj
-    acintj=[[1.]*nbins]
-    for it in range(1,nt+1):
-        tauintbins=[]
-        for ibin in range(nbins):
-            tauintbins.append(acintj[it-1][ibin]+2.*acorj[it][ibin]/acorj[0][ibin])
-        acintj.append(tauintbins)
+    acorj = np.array(acorj)
+    # The following code is equivlent to this (but faster since it uses numpy)
+    #    acintj=[[1.]*nbins]
+    #    for it in range(1,nt+1):
+    #        tauintbins=[]
+    #        for ibin in range(nbins):
+    #            tauintbins.append(acintj[it-1][ibin]+2.*acorj[it][ibin]/acorj[0][ibin])
+    #        acintj.append(tauintbins)
+    acintj = np.ones((nt+1,nbins))
+    increments = 2.*acorj[1:]/acorj[0]
+    acintj[1:] = np.cumsum(increments, axis=0) + 1
     return acintj
 
 
@@ -134,11 +138,10 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
          tau_inte--Its (jackknife) error bar.
            itpick--The Monte Carlo separation at which this method found its estimate for tau_int. """
     checkTS(ts)
-    acoutfile=open(acoutfileName,'w')
 
     # Get integrated autocorrelation time list and corresponding jackknife list.
-    acint  = np.array( tauint (tpickMax,ts,) )
-    acintj = np.array( tauintj(tpickMax,nbins,ts) )
+    acint  = tauint (tpickMax,ts,)
+    acintj = tauintj(tpickMax,nbins,ts)
 
     # This block outputs time, tau_int and tau_int error, then gives an estimate of tau_int. When tau_int
     # decreases for the first time, we call that our estimate. This is because we know tau_int should be a 
@@ -147,17 +150,18 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     tau_int=0.
     tau_inte=-1
     itpick=-1
-    for it in range(tpickMax+1):
-        ace = std_err(acintj[it])
-        acoutfile.write(str(it)+'\t'+str(acint[it])+'\t'+str(ace)+'\n')
+    its = np.arange(tpickMax+1)
+    ace = std_err(acintj,axis=1)
+    for it in its:
         if lmonoton:
             if not acint[it]<tau_int:
                 tau_int=acint[it]
-                tau_inte=ace
+                tau_inte=ace[it]
                 itpick=it
             else:  # acint[it] < tau_int ==> tau_int decreased
                 lmonoton=False
-    acoutfile.close()
+
+    writeTable(acoutfileName,its,acint,ace,header=['t','tau(t)','tau_err(t)'])
 
     if showPlot:
         clearPlot()
