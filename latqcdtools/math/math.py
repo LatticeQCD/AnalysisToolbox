@@ -135,6 +135,8 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
             logger.TBError('a and b must have the same shape. Received a, b shapes =',np.shape(a),np.shape(b))
         return np.allclose( a, b, rtol = prec, atol = abs_prec)
     else:
+        checkType(a,"scalar")
+        checkType(b,"scalar")
         try:
             return np.isclose( a, b, rtol = prec, atol = abs_prec)
         except TypeError:

@@ -115,6 +115,23 @@ def toNumpy(*args):
     return result
 
 
+def appendToDocstring(string=None,args=None,returns=None):
+    def decorator(func):
+        appendand=''
+        if string is not None:
+            appendand += string
+        if args is not None:
+            appendand += """\n    Args:""" + args
+        if returns is not None:
+            appendand += """\n    Returns:""" + returns
+        if func.__doc__ is None:
+            func.__doc__ = appendand 
+        else:
+            func.__doc__ = func.__doc__ + appendand 
+        return func
+    return decorator
+
+
 # ------------------------------------------------------------------------------------------------- CONVENIENCE FOR USER
 
 

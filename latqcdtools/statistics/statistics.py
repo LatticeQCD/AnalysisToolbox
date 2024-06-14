@@ -14,11 +14,29 @@ import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet, normalize, invert
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
 import latqcdtools.base.logger as logger
 from matplotlib.patches import Ellipse
+
+
+NUMPYCOMMENT = """ 
+    The default behavior of numpy is to flatten the data, flagged by axis=None. This is
+    something that is never needed in our context. Changing the default to axis=0 means
+    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
+    """
+
+ICARGCOMMENTS = """
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
+        prior (array-like, optional): Bayesian priors. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+    """
 
 
 def meanArgWrapper(func,used_data,args):
@@ -28,38 +46,52 @@ def meanArgWrapper(func,used_data,args):
         return func(used_data, *args)
 
 
+@appendToDocstring(NUMPYCOMMENT)
 def std_median(data, axis = 0):
-    """ Compute the median. The default behavior of numpy is to flatten the data, flagged by axis=None. This can be
-    inconvenient, for example in the bootstrap and jackknife routines. It is also inconvenient if you have e.g. an
-    array of matrices, and you want the median matrix rather than the median element. """
+    """ 
+    Compute the median. 
+    """
     return np.median(data, axis)
 
 
+@appendToDocstring(NUMPYCOMMENT)
 def std_mean(data, axis = 0):
-    """ Compute the mean. """
+    """ 
+    Compute the mean. 
+    """
     return np.mean(data, axis)
 
 
+@appendToDocstring(NUMPYCOMMENT)
 def std_var(data, axis = 0):
-    """ Calculate unbiased (ddof = 1) estimator for the variance. """
+    """ 
+    Calculate unbiased (ddof = 1) estimator for the variance. 
+    """
     data = np.asarray(data)
     return np.var(data, axis = axis, ddof = 1)
 
 
+@appendToDocstring(NUMPYCOMMENT)
 def std_dev(data, axis = 0):
-    """ Calculate unbiased (ddof = 1) estimator for the standard deviation. """
+    """ 
+    Calculate unbiased (ddof = 1) estimator for the standard deviation. 
+    """
     data = np.asarray(data)
     return np.std(data, axis = axis, ddof = 1)
 
 
+@appendToDocstring(NUMPYCOMMENT)
 def std_err(data, axis = 0):
-    """ Standard deviation of the sample mean, according the the CLT. """
+    """ 
+    Standard deviation of the sample mean according the the CLT. 
+    """
     data = np.asarray(data)
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
 
 
 def expandArgs(func, x, params=(), args=()):
-    """ In general we distinguish between parameters and arguments. Parameters should be passed
+    """ 
+    In general we distinguish between parameters and arguments. Parameters should be passed
     together as a collection, e.g. as a tuple, list, or np.array. Other function arguments can
     be passed how you like and will be expanded here.
 
@@ -80,7 +112,8 @@ def expandArgs(func, x, params=(), args=()):
 
 
 def checkDomain(domain):
-    """ Some methods require that you do something over an interval, which we refer to in this module as
+    """ 
+    Some methods require that you do something over an interval, which we refer to in this module as
     a 'domain'. This checks the domain makes sense.
 
     Args:
@@ -94,7 +127,9 @@ def checkDomain(domain):
 
 
 def checkPrior(prior,priorsigma):
-    """ Make sure prior and priorsigma status are compatible. """
+    """ 
+    Make sure prior and priorsigma status are compatible. 
+    """
     if prior is None and priorsigma is not None:
         logger.TBError('prior = None, priorsigma != None',frame=3)
     if priorsigma is None and prior is not None:
@@ -102,7 +137,8 @@ def checkPrior(prior,priorsigma):
 
 
 def checkTS(ts):
-    """ Some methods require 1-d time series. This checks that the type, dimensionality,
+    """ 
+    Some methods require 1-d time series. This checks that the type, dimensionality,
     and length are appropriate.
 
     Args:
@@ -121,7 +157,8 @@ def checkProb(p):
 
 
 def countParams(func,params) -> int:
-    """ Count number of model parameters. For a typical function without priors,
+    """ 
+    Count number of model parameters. For a typical function without priors,
     we count the length of the params array. Otherwise we assume it's a spline.
 
     Args:
@@ -144,13 +181,14 @@ def countParams(func,params) -> int:
 
 
 def countPriors(priorsigma=None) -> int:
-    """ The number of priors is the number of finite prior error bars.
+    """ 
+    The number of priors is the number of finite prior error bars.
 
     Args:
-        priorsigma (array-like, optional): _description_. Defaults to None.
+        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
     Returns:
-        int: _description_
+        int: Number of priors 
     """
     nprior = 0
     if priorsigma is not None:
@@ -159,7 +197,8 @@ def countPriors(priorsigma=None) -> int:
 
 
 def DOF(ndat,nparam,priorsigma=None) -> int:
-    """  Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
+    """  
+    Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
     initial guesses for the fit algorithm. If you would like parameter in the prior array to be treated as a 
     starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
     are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.
@@ -182,22 +221,11 @@ def DOF(ndat,nparam,priorsigma=None) -> int:
     return dof
 
 
-def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,priorsigma=None) -> float:
-    """ Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of
+@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: chi^2\n')
+def chisquare(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+    """ 
+    Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of
     10.1103/PhysRevD.90.054506. We assume priors are not correlated with data.
-
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-    Returns:
-        float: chi^2 
     """
     checkPrior(prior,priorsigma)
     y    = expandArgs(func,xdata,params,args)
@@ -208,23 +236,12 @@ def chisquare(xdata,ydata,cov,func,args=(),params=(),prior=None,priorsigma=None)
     return res
 
 
+@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: log( Gaussian Bayes factor )\n' ) 
 def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
-    """ log P(data|model). This quantity is useful for comparing fits of the same data to different models that
+    """ 
+    log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
-
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-    Returns:
-        float: log( Gaussian Bayes factor ) 
     """
     chi2   = chisquare(xdata, ydata, cov, func, args, params, prior, priorsigma)
     nparam = countParams(func,params)
@@ -235,47 +252,25 @@ def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=N
         return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(priorsigma)**2)) )
 
 
+@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: AIC\n')
 def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
-    """ The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
+    """ 
+    The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
     overfitting. The preferred model minimizes the AIC.
-
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-    Returns:
-        float: AIC
     """
     nparam     = countParams(func,params)
     likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, priorsigma)
     return 2*nparam - 2*likelihood
 
 
+@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: corrected AIC\n')
 def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
-    """ Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
+    """ 
+    Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
     infinity, one recovers the AIC.
-
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-    Returns:
-        float: corrected AIC 
     """
     nparam = countParams(func,params)
     nprior = countPriors(priorsigma) 
@@ -285,7 +280,8 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=Non
 
 
 def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1) -> float:
-    """ Bayesian Akaike information criterion of 2208.14983.
+    """ 
+    Bayesian Akaike information criterion of 2208.14983.
 
     Args:
         xdata (array-like)
@@ -309,7 +305,8 @@ def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1) -> f
 
 
 def pearson(x,y) -> float:
-    """ Get the Pearson correlation coefficient between the time series x and y.
+    """ 
+    Get the Pearson correlation coefficient between the time series x and y.
 
     Args:
         x (array-like)
@@ -325,7 +322,8 @@ def pearson(x,y) -> float:
 
 
 def covariance(x,y) -> float:
-    """ Unbiased estimator of the covariance between the time series x and y.
+    """ 
+    Unbiased estimator of the covariance between the time series x and y.
 
     Args:
         x (array-like)
@@ -341,7 +339,8 @@ def covariance(x,y) -> float:
 
 
 def weighted_mean(data, err) -> float:
-    """ Compute the weighted mean. Here the weights are Gaussian error bars.
+    """ 
+    Compute the weighted mean. Here the weights are Gaussian error bars.
     See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
 
     Args:
@@ -357,7 +356,8 @@ def weighted_mean(data, err) -> float:
 
 
 def weighted_variance(err) -> float:
-    """ Get variance of above weighted mean, when the weights are statistical errors. 
+    """ 
+    Get variance of above weighted mean, when the weights are statistical errors. 
 
     Args:
         err (array-like)
@@ -370,7 +370,8 @@ def weighted_variance(err) -> float:
 
 
 def biased_sample_variance(data, err) -> float:
-    """ Compute the biased weighted sample variance, i.e. the biased variance of an 
+    """ 
+    Compute the biased weighted sample variance, i.e. the biased variance of an 
     individual measurement and not the variance of the mean.
 
     Args:
@@ -387,8 +388,10 @@ def biased_sample_variance(data, err) -> float:
 
 
 def unbiased_sample_variance(data, err) -> float:
-    """ Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
-    the variance of the mean. Do not use this function if your weights are frequency weights. """
+    """ 
+    Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
+    the variance of the mean. Do not use this function if your weights are frequency weights. 
+    """
     weights = 1/np.array(err)**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
@@ -396,9 +399,11 @@ def unbiased_sample_variance(data, err) -> float:
 
 
 def unbiased_mean_variance(data, err) -> float:
-    """ Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
+    """ 
+    Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
     weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
-    constructed using the deviations of the individual data points. """
+    constructed using the deviations of the individual data points. 
+    """
     data    = np.asarray(data)
     weights = 1/np.array(err)**2
     V1 = np.sum(weights)
@@ -407,7 +412,8 @@ def unbiased_mean_variance(data, err) -> float:
 
 
 def cov_to_cor(cov) -> np.ndarray:
-    """ Normalize covariance matrix to create correlation matrix.
+    """ 
+    Normalize covariance matrix to create correlation matrix.
 
     Args:
         cov (np.ndarray)
@@ -420,7 +426,8 @@ def cov_to_cor(cov) -> np.ndarray:
 
 
 def confidence_ellipse(x,y,ax,color='r',CI=None):
-    """ Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
+    """ 
+    Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
     assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures
     roughly 39% of the data.
 
@@ -455,8 +462,10 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
 
 
 def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
-    """ Calculate the distance between the median and 68% quantiles. Returns the larger of the two distances. This
-    method is used sometimes to estimate error, for example in the bootstrap. """
+    """ 
+    Calculate the distance between the median and 68% quantiles. Returns the larger of the two 
+    distances. This method is used sometimes to estimate error, for example in the bootstrap. 
+    """
     data = np.asarray(data)
     median = np.nanmedian(data, axis)
     numb_data = data.shape[axis]
@@ -472,8 +481,11 @@ def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
 
 
 def error_prop(func, means, errors, grad=None, args=()):
-    """ Use error propagation to propagate some errors through function func. The function should have the form
-        func( data ), where data is your array of input variables. """
+    """ 
+    Use error propagation to propagate some errors through function func. The function should have the form
+        func( data ), 
+    where data is your array of input variables. 
+    """
     errors = np.array(errors)
     means  = np.array(means)
     mean   = func(means, *args)
@@ -502,7 +514,8 @@ def error_prop(func, means, errors, grad=None, args=()):
 
 
 def error_prop_func(x, func, params, params_err, grad=None, args=()):
-    """ Propagate error in f(x;params,params_err). This needs its own special treatment, since
+    """ 
+    Propagate error in f(x;params,params_err). This needs its own special treatment, since
     the error propagation method on its own only propagates params_err to f(params,params_err).
 
     Args:
@@ -530,7 +543,8 @@ def error_prop_func(x, func, params, params_err, grad=None, args=()):
 
 
 def gaudif(x1,e1,x2,e2) -> float:
-    """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
+    """ 
+    Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
     appropriate when one estimated x1 and x2 using ~30 or more measurements.
 
@@ -551,7 +565,8 @@ def gaudif(x1,e1,x2,e2) -> float:
 
 
 def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
-    """ Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
+    """ 
+    Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
     appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
 
@@ -585,7 +600,8 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
 
 
 def goodnessOfFit(dof, chi2) -> float:
-    """ The q-value or goodness of fit.
+    """ 
+    The q-value or goodness of fit.
 
     Args:
         dof (int): number of degrees of freedom 
@@ -600,7 +616,8 @@ def goodnessOfFit(dof, chi2) -> float:
 
 def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
               grad = None, swapXY=False, npoints=1000, **kwargs):
-    """ Plot a function along with its error bands.
+    """ 
+    Plot a function along with its error bands.
 
     Args:
         func (func)
@@ -651,7 +668,8 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
 
 
 def getModelWeights(IC) -> np.ndarray:
-    """ Convert information criteria IC to normalized probability weights.
+    """ 
+    Convert information criteria IC to normalized probability weights.
 
     Args:
         IC (array-like): Array of information criteria 
@@ -665,7 +683,8 @@ def getModelWeights(IC) -> np.ndarray:
 
 
 def modelAverage(data,err,IC):
-    """ Given some fit results, corresponding error, and information criteria, compute
+    """ 
+    Given some fit results, corresponding error, and information criteria, compute
     a weighted model average.
 
     Args:
@@ -686,7 +705,8 @@ def modelAverage(data,err,IC):
 
 
 def empiricalCDF(data):
-    """ Create the x and y coordinates needed to plot the empirical CDF
+    """ 
+    Create the x and y coordinates needed to plot the empirical CDF
     of a 1-d set of data.
 
     Args:
@@ -700,7 +720,8 @@ def empiricalCDF(data):
 
 
 def KSTest_2side(data1,data2) -> float:
-    """ 2-sided Kolmogorov test. Gives back the likelihood that the observed difference between
+    """ 
+    2-sided Kolmogorov test. Gives back the likelihood that the observed difference between
     data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.
 
     Args:
@@ -717,7 +738,8 @@ def KSTest_2side(data1,data2) -> float:
 
 
 def KSTest_1side(data,cdf) -> float:
-    """ 1-sided Kolmogorov test. Gives back the likelihood that the observed difference between
+    """ 
+    1-sided Kolmogorov test. Gives back the likelihood that the observed difference between
     data and cdf are at least as extreme as suggested by the Kolmogorov statistic.
 
     Args:
@@ -732,8 +754,9 @@ def KSTest_1side(data,cdf) -> float:
 
 
 def binSeries(data,nbins) -> np.ndarray:
-    """ Take a time series and bin it. Bin 0 is the average over the first binsize elements,
-    and so on and so on.
+    """ 
+    Take a time series and bin it. Bin 0 is the average over the first binsize elements,
+    bin 1 the average over the next binsize elements, and so on.
 
     Args:
         data (array-like)
