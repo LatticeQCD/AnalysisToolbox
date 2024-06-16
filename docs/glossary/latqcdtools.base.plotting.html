@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>latqcdtools.base.plotting &mdash; AnalysisToolbox 1.2.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="latqcdtools.base.printErrorBars" href="latqcdtools.base.printErrorBars.html" />
+    <link rel="prev" title="latqcdtools.base.logger" href="latqcdtools.base.logger.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="glossary.html">Glossary</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.check.html">latqcdtools.base.check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.cleanData.html">latqcdtools.base.cleanData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.initialize.html">latqcdtools.base.initialize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.base.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.printErrorBars.html">latqcdtools.base.printErrorBars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.readWrite.html">latqcdtools.base.readWrite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.speedify.html">latqcdtools.base.speedify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.utilities.html">latqcdtools.base.utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.HotQCD.html">latqcdtools.interfaces.HotQCD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HotQCDEOS.html">latqcdtools.physics.HotQCDEOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.constants.html">latqcdtools.physics.constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.continuumExtrap.html">latqcdtools.physics.continuumExtrap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.denseObs.html">latqcdtools.physics.denseObs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.diracFreespectra.html">latqcdtools.physics.diracFreespectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.gauge.html">latqcdtools.physics.gauge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice_params.html">latqcdtools.physics.lattice_params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.polyakovTools.html">latqcdtools.physics.polyakovTools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.statisticalPhysics.html">latqcdtools.physics.statisticalPhysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.autocorrelation.html">latqcdtools.statistics.autocorrelation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.bootstr.html">latqcdtools.statistics.bootstr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.fitting.html">latqcdtools.statistics.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.jackknife.html">latqcdtools.statistics.jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.statistics.html">latqcdtools.statistics.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.testing.html">latqcdtools.testing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="glossary.html">Glossary</a> &raquo;</li>
+      <li>latqcdtools.base.plotting</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/glossary/latqcdtools.base.plotting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-plotting">
+<h1>latqcdtools.base.plotting<a class="headerlink" href="#latqcdtools-base-plotting" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">_add_optional(params)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Optional parameters not included in _fill_param_dict.
+
+Args:
+    **params: Additional parameters that can be set.
+
+Returns:
+    dict: also optional parameters 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_getAxObject(params)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_initializePlt(params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
+so that this only gets called once per plot. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_rescale(scale,</span> <span class="pre">data)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Rescale the data, taking into account there may be no data.
+
+Args:
+    scale (float)
+    data (array-like or None)
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_set_xmax(ax,</span> <span class="pre">x_max=None)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_set_xmin(ax,</span> <span class="pre">x_min=None)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_set_ymax(ax,</span> <span class="pre">y_max=None)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_set_ymin(ax,</span> <span class="pre">y_min=None)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_update_handles(ax,</span> <span class="pre">handle)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_update_labels(ax,</span> <span class="pre">label)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">clearPlot()</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">fill_param_dict(params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with
+a default value.
+
+Args:
+    params (dict): All parameters that are already set by the user
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">getColorGradient(NUM_COLORS,</span> <span class="pre">map='viridis')</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
+
+Args:
+    NUM_COLORS (int): number of colors you need 
+    map (str, optional): use custom colormap. Defaults to &#39;viridis&#39;.
+
+Returns:
+    list: colors 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">getSubplots(x,</span> <span class="pre">y)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get fig and axs objects when you want x figures across and y figures vertically.
+I wrapped this because matplotlib&#39;s convention for x and y is the opposite as their
+convention for figsize, which is so incredibly confusing. 
+
+Args:
+    x (int): number of panels in x-direction 
+    y (int): number of panels in y-direction 
+
+Returns:
+    fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">latexify(bold=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
+convenient functions like ev. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_band(xdata,</span> <span class="pre">low_lim,</span> <span class="pre">up_lim,</span> <span class="pre">center=None,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a horizontal band.
+
+Args:
+    xdata (array-like)
+    low_lim (float): _description_
+    up_lim (float): _description_
+    center (_type_, optional): _description_. Defaults to None.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_bar(xdata,</span> <span class="pre">ydata,</span> <span class="pre">width=None,</span> <span class="pre">align='edge',</span> <span class="pre">edgecolor='#666677',</span> <span class="pre">linewidth=0.2,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata as bars.
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    width (float, optional): Width of bar. Defaults to xdata[1]-xdata[0].
+    align (str, optional): How to align the bars. Defaults to &#39;edge&#39;.
+    edgecolor (str, optional): Color of bar edges. Defaults to &#39;#666677&#39;.
+    linewidth (float, optional): Defaults to 0.2.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_dots(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata=None,</span> <span class="pre">xedata=None,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata as dots. 
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    yedata (array-like, optional): y error. Defaults to None.
+    xedata (array-like, optional): x error. Defaults to None.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_file(filename,</span> <span class="pre">xcol=0,</span> <span class="pre">ycol=1,</span> <span class="pre">yecol=None,</span> <span class="pre">xecol=None,</span> <span class="pre">func=None,</span> <span class="pre">func_args=(),</span> <span class="pre">style='dots',</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot data in file. You can set the style with the style argument. Columns indexed from 0.
+
+Args:
+    filename (str)
+    xcol (int, optional): Which column is xdata. Defaults to 1.
+    ycol (int, optional): Which column is ydata. Defaults to 2.
+    yecol (int, optional): Which column has y error. Defaults to None.
+    xecol (int, optional): Which column has x error. Defaults to None.
+    func (function, optional): Apply this function to the data. Defaults to None.
+    func_args (tuple, optional): Arguments to func. Defaults to ().
+    style (str, optional): Choose from dots, lines, fill, and band. Defaults to &#39;dots&#39;.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_fill(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata,</span> <span class="pre">xedata=None,</span> <span class="pre">center=True,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    yedata (array-like): y error 
+    xedata (array-like, optional): x error. Defaults to None.
+    pattern (_type_, optional): _description_. Defaults to None.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_hist(data,</span> <span class="pre">bins=None,</span> <span class="pre">density=False,</span> <span class="pre">label=None,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
+simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
+
+Args:
+    data (array-like)
+    bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_lines(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata=None,</span> <span class="pre">xedata=None,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata using lines.
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    yedata (array-like, optional): y error. Defaults to None.
+    xedata (array-like, optional): x error. Defaults to None.
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">preliminary(x,</span> <span class="pre">y,</span> <span class="pre">text='PRELIMINARY',</span> <span class="pre">**kwargs)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Generate a PRELIMINARY tag on the plot.
+
+Args:
+    x (float): x-position of bottom-left corner (in units of x-axis) 
+    y (float): y-position of bottom-left corner (in units of y-axis) 
+    text (str, optional): Text indicating result is preliminary. Defaults to &#39;PRELIMINARY&#39;.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">set_default_param(**kwargs)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Lets the user adjust the default parameter settings. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">set_params(**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Set additional parameters to the plot. For example set a title or label.
+
+Args:
+    **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">set_xrange(xmin=None,</span> <span class="pre">xmax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/.local/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">set_yrange(ymin=None,</span> <span class="pre">ymax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/.local/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

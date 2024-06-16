@@ -20,7 +20,9 @@ def _printExponent(prefix, exponent):
 
 class UniversalityClass:
 
-    """ Skeleton universality class from which all others inherit."""
+    """ 
+    Skeleton universality class from which all others inherit.
+    """
 
     symm  = None
     d     = None
@@ -66,7 +68,9 @@ class UniversalityClass:
 
 
 class O2_3d(UniversalityClass):
-    """ 3d O(2) critical exponents from Phys. Lett. B 492, 219 (2000). """
+    """ 
+    3d O(2) critical exponents from Phys. Lett. B 492, 219 (2000). 
+    """
     symm  = "O(2)"
     d     = 3
     beta  = 0.3490
@@ -79,7 +83,9 @@ class O2_3d(UniversalityClass):
         return super().__repr__()+':'+self.name
 
 class O3_3d(UniversalityClass):
-    """ 3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class. """
+    """ 
+    3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class. 
+    """
     symm  = "O(3)"
     d     = 3
     beta  = 0.366
@@ -92,7 +98,9 @@ class O3_3d(UniversalityClass):
 
 
 class O4_3d(UniversalityClass):
-    """ 3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). """
+    """ 
+    3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). 
+    """
     symm  = "O(4)"
     d     = 3
     beta  = 0.380
@@ -106,7 +114,9 @@ class O4_3d(UniversalityClass):
 
 # 4d Ising model
 class Z2_4d(UniversalityClass):
-    """ Exact solution for 2d Z_2 class. """
+    """ 
+    Exact solution for 2d Z_2 class. 
+    """
     symm  = "Z_2"
     d     = 4
     alpha = 0
@@ -121,7 +131,9 @@ class Z2_4d(UniversalityClass):
 
 # 3d Ising model
 class Z2_3d(UniversalityClass):
-    """ 3d Z_2 critical exponents from J. Stat. Phys. 157. 869-914 (2014). """
+    """ 
+    3d Z_2 critical exponents from J. Stat. Phys. 157. 869-914 (2014). 
+    """
     symm  = "Z_2"
     d     = 3
     nu    = 0.62999
@@ -136,7 +148,9 @@ class Z2_3d(UniversalityClass):
 
 # 2d Ising model
 class Z2_2d(UniversalityClass):
-    """ Exact solution for 2d Z_2 class. """
+    """ 
+    Exact solution for 2d Z_2 class. 
+    """
     symm  = "Z_2"
     d     = 2
     alpha = 0
@@ -150,7 +164,8 @@ class Z2_2d(UniversalityClass):
 
 
 def reweight(X, pRW, p0, S):
-    """ Reweight an observable X computed at a simulation point p0 to a nearby
+    """ 
+    Reweight an observable X computed at a simulation point p0 to a nearby
     simulation point pRW. We assume the action depends linearly on the simulation
     parameter, i.e. S' ~ p S
 

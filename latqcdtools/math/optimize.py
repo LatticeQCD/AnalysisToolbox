@@ -24,7 +24,8 @@ _solve_methods = ['newton_krylov','fsolve','root']
 
 
 def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
-    """ Wrapper for various methods to solve LHS==0. This is to simplify the interface.
+    """ 
+    Wrapper for various methods to solve LHS==0. This is to simplify the interface.
 
     Args:
         LHS (func)
@@ -32,7 +33,6 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
         tol (real, optional): Solve tolerance. Defaults to 1e-8.
         maxiter (int, optional): Maximum iterations. Defaults to 300.
         method (str, optional): Defaults to 'newton_krylov'.
-
     """
     checkType(tol,"real")
     checkType(maxiter,int)
@@ -61,9 +61,10 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
 
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
-    """ Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root.
+    """ 
+    Attempt to solve LHS==0 using, in this order, SciPy's newton_krylov, fsolve, and root.
 
-        Args:
+    Args:
         LHS (func)
         guess: initial guess for solution 
         tol (real, optional): Solve tolerance. Defaults to 1e-8.
@@ -82,7 +83,8 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
 
 
 def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
-    """ Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.
+    """ 
+    Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.
 
     Args:
         func: to-be-minimized function 

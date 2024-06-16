@@ -15,7 +15,8 @@ from latqcdtools.base.utilities import createFilePath
 
 
 def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwargs) -> np.ndarray:
-    """ Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally
+    """ 
+    Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally
     allows the user to restrict the table based on the range of one of the columns.
 
     Args:
@@ -44,7 +45,8 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
 
 
 def writeTable(filename,*args,**kwargs):
-    """ Wrapper for np.savetxt. The idea is that you can use it like this:
+    """ 
+    Wrapper for np.savetxt. The idea is that you can use it like this:
     
     writeTable('file.txt',col1,col2,header=['header1','header2])
     
@@ -102,5 +104,7 @@ def writeTable(filename,*args,**kwargs):
 
 
 def _lab(num) -> str:
-    """ Create a short string label for each column of a data table. Needed for writeTable. """
+    """ 
+    Create a short string label for each column of a data table. Needed for writeTable. 
+    """
     return 'var' + str(num)

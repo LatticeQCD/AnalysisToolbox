@@ -15,7 +15,8 @@ from latqcdtools.base.check import checkType
 class idealGas:
 
     def __init__(self,nf): 
-        """ The idealGas class. Analytic derivatives are implemented with sympy.
+        """ 
+        The idealGas class. Analytic derivatives are implemented with sympy.
 
         Args:
             nf (int): Number of fermion flavors. 
@@ -34,7 +35,9 @@ class idealGas:
         return "idealGas"
 
     def P(self, T, muB=0., muS=0., muQ=0., muC=0.):
-        """ Unitful pressure. """
+        """ 
+        Unitful pressure. 
+        """
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
         return float(self.Psym.subs(values).evalf())
 
@@ -46,7 +49,9 @@ class idealGas:
         return float(chi.subs(values).evalf())
 
     def S(self, T, muB=0., muS=0., muQ=0., muC=0.):
-        """ Unitful entropy. """
+        """ 
+        Unitful entropy. 
+        """
         entropy = sympy.diff(self.Psym, self.T, 1)
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
         return float(entropy.subs(values).evalf())

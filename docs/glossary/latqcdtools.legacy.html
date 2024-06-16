@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>latqcdtools.legacy &mdash; AnalysisToolbox 1.2.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="latqcdtools.math.SU3" href="latqcdtools.math.SU3.html" />
+    <link rel="prev" title="latqcdtools.interfaces.interfaces" href="latqcdtools.interfaces.interfaces.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+            <a href="../index.html" class="icon icon-home"> AnalysisToolbox
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributions/contributions.html">Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../base/base.html">Basic Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../math/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dataAnalysis/dataAnalysis.html">Data Analysis Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html">Physics Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="glossary.html">Glossary</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.check.html">latqcdtools.base.check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.cleanData.html">latqcdtools.base.cleanData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.initialize.html">latqcdtools.base.initialize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.plotting.html">latqcdtools.base.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.printErrorBars.html">latqcdtools.base.printErrorBars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.readWrite.html">latqcdtools.base.readWrite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.speedify.html">latqcdtools.base.speedify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.utilities.html">latqcdtools.base.utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.HotQCD.html">latqcdtools.interfaces.HotQCD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HotQCDEOS.html">latqcdtools.physics.HotQCDEOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.constants.html">latqcdtools.physics.constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.continuumExtrap.html">latqcdtools.physics.continuumExtrap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.denseObs.html">latqcdtools.physics.denseObs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.diracFreespectra.html">latqcdtools.physics.diracFreespectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.gauge.html">latqcdtools.physics.gauge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice_params.html">latqcdtools.physics.lattice_params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.polyakovTools.html">latqcdtools.physics.polyakovTools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.statisticalPhysics.html">latqcdtools.physics.statisticalPhysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.autocorrelation.html">latqcdtools.statistics.autocorrelation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.bootstr.html">latqcdtools.statistics.bootstr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.fitting.html">latqcdtools.statistics.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.jackknife.html">latqcdtools.statistics.jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.statistics.html">latqcdtools.statistics.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.testing.html">latqcdtools.testing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AnalysisToolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="glossary.html">Glossary</a> &raquo;</li>
+      <li>latqcdtools.legacy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/glossary/latqcdtools.legacy.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-legacy">
+<h1>latqcdtools.legacy<a class="headerlink" href="#latqcdtools-legacy" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">_autoSeed(seed)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>We use seed=None to flag the seed should be automatically chosen. The problem is that we need
+seed to be an integer when enforcing that different bootstrap samples use different seeds. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_getBlocksize(ndat,</span> <span class="pre">nblocks)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_pseudo(mean,</span> <span class="pre">mean_i,</span> <span class="pre">numb_blocks)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_pseudo_val(mean,</span> <span class="pre">mean_i,</span> <span class="pre">numb_blocks)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">bootstr(func,</span> <span class="pre">data,</span> <span class="pre">numb_samples,</span> <span class="pre">sample_size=0,</span> <span class="pre">same_rand_for_obs=False,</span> <span class="pre">conf_axis=1,</span> <span class="pre">return_sample=False,</span> <span class="pre">seed=None,</span> <span class="pre">err_by_dist=False,</span> <span class="pre">args=(),</span> <span class="pre">nproc=6)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bootstrap for arbitrary functions. This routine resamples the data and passes them to the function in the same
+format as in the input. So the idea is to write a function that computes an observable from a given data set. This
+function can be put into this bootstrap routine and will get bootstrap samples as input. Based on the output of the
+function, the bootstrap mean and error are computed. The function may return multiple observables that are either
+scalars or numpy objects. You can pass a multidimensional object as data, but the bootstrap function has to know
+which axis should be resampled which is controlled by conf_axis (default = 0 for one dimensional arrays and
+default = 1 for higher order arrays.)
+
+    Parameters
+    ----------
+    func : callable
+        The function that calculates the observable
+
+    data : array_like
+        Input data
+
+    numb_samples : integer
+        Number of bootstrap samples
+
+    sample_size : integer, optional, default = 0
+        Size of sample
+
+    same_rand_for_obs : boolean, optional, default = False
+        Use the same random numbers for each observable accessed by index conf_axis - 1. Please note:
+            - Objects that are accessed by an axis &gt;= conf_axis + 1 do always have the same random numbers.
+            - Objects that are accessed by axis conf_axis &lt; conf_axis - 1 never share the same random numbers.
+
+    conf_axis : integer, optional, default = 0 for dim(data) = 1 or default = 1 for dim(data) &gt;= 2
+        Axis that should be resampled
+
+    return_sample : boolean, optional, default = False
+        Along with the mean and the error also return the results from the individual samples
+
+    seed: integer, optional, default = None
+        seed for the random generator. If None, the default seed from numpy is used (probably from time)
+
+    same_rand_for_obs : boolean, optional, default = False
+        same random numbers per observable
+
+    err_by_dist : boolean, optional, default = False
+        Compute the error from the distribution using the median and the 68% quantile
+
+    args : array_like or dict, default = ()
+        optional arguments to be passed to func. If a dictionary the are passed as **args.
+
+    nproc : integer
+        Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">bootstr_from_gauss(func,</span> <span class="pre">data,</span> <span class="pre">data_std_dev,</span> <span class="pre">numb_samples,</span> <span class="pre">sample_size=1,</span> <span class="pre">same_rand_for_obs=False,</span> <span class="pre">return_sample=False,</span> <span class="pre">seed=None,</span> <span class="pre">err_by_dist=True,</span> <span class="pre">useCovariance=False,</span> <span class="pre">Covariance=None,</span> <span class="pre">args=(),</span> <span class="pre">nproc=6,</span> <span class="pre">asym_err=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Same as standard bootstrap routine, but the data are generated by gaussian noise around the mean values in data.
+The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.
+This means that data_std_dev should always be the standard deviation of a single measurement and not the standard
+deviation of a mean.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dev_by_dist(data,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">jackknife(func,</span> <span class="pre">data,</span> <span class="pre">numb_blocks=20,</span> <span class="pre">conf_axis=1,</span> <span class="pre">return_sample=False,</span> <span class="pre">args=(),</span> <span class="pre">nproc=6)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Jackknife routine for arbitrary functions. This routine creates the jackknife like blocked subsets of data and
+passes them to the function in the same format as in the input data. So the idea is to write a function that
+computes an observable from a given data set. This function can be put into this jackkife routine and will get the
+jackknifed blocked data as input. Based on the output of the function, the jackkife mean and error are computed.
+The function may return multiple observables that are either scalars or numpy objects. You can pass a
+multidimensional object as data, but the jackknife function has to know from which axis blocks should be removed.
+This is controlled by conf_axis (default = 0 for one dimensional arrays and default = 1 for higher order arrays).
+Look into the __init__ function of the nimbleJack class to see in detail how this is implemented.
+
+    Parameters
+    ----------
+    func : callable
+        The function that calculates the observable
+
+    data : array_like
+        Input data
+
+    numb_blocks : integer
+        Number of jackknife blocks
+
+    conf_axis : integer, optional, default = 0 for dim(data) = 1 and default = 1 for dim(data) &gt;= 2
+        Axis that should be resampled.
+
+    return_sample : boolean, optional, default = False                                           
+        Along with the mean and the error also return the results from the individual samples
+
+    args : array_like or dict, default = ()
+        optional arguments to be passed to func. If a dictionary they are passed as **args.
+
+    nproc : integer
+        Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">recurs_append(data,</span> <span class="pre">sample_data,</span> <span class="pre">axis,</span> <span class="pre">conf_axis,</span> <span class="pre">sample_size,</span> <span class="pre">same_rand_for_obs,</span> <span class="pre">i,</span> <span class="pre">my_seed)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Recursive function to fill the sample. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">reduce_tuple(func)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">std_dev(data,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">std_err(data,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">std_mean(data,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">std_median(data,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">std_var(data,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">nimbleBoot(func,</span> <span class="pre">data,</span> <span class="pre">numb_samples,</span> <span class="pre">sample_size,</span> <span class="pre">same_rand_for_obs,</span> <span class="pre">conf_axis,</span> <span class="pre">return_sample,</span> <span class="pre">seed,</span> <span class="pre">err_by_dist,</span> <span class="pre">args,</span> <span class="pre">nproc)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">nimbleGaussianBoot(func,</span> <span class="pre">data,</span> <span class="pre">data_std_dev,</span> <span class="pre">numb_samples,</span> <span class="pre">sample_size,</span> <span class="pre">same_rand_for_obs,</span> <span class="pre">return_sample,</span> <span class="pre">seed,</span> <span class="pre">err_by_dist,</span> <span class="pre">useCovariance,</span> <span class="pre">Covariance,</span> <span class="pre">args,</span> <span class="pre">nproc,</span> <span class="pre">asym_err)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">nimbleJack(func,</span> <span class="pre">data,</span> <span class="pre">nblocks,</span> <span class="pre">confAxis,</span> <span class="pre">return_sample,</span> <span class="pre">args,</span> <span class="pre">nproc)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Class allowing for parallelization of the jackknife function. 
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, LatticeQCD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

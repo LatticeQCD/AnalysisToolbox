@@ -28,8 +28,10 @@ def deleteCol(array, col) -> np.ndarray:
 
 
 def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf) -> np.ndarray:
-    """ Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this
-    renders arrays finite. """
+    """ 
+    Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this
+    renders arrays finite. 
+    """
     checkType(array, np.ndarray)
     if col is None:
         mask = np.logical_and( array[:]>minVal, array[:]<maxVal )
@@ -40,7 +42,9 @@ def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf) -> np.ndarray:
 
 
 def intersectAtCol(table1, table2, col) -> np.ndarray:
-    """ Return only those rows of table1 and table2 that have identical elements in column col. """
+    """ 
+    Return only those rows of table1 and table2 that have identical elements in column col. 
+    """
     checkType(table1, np.ndarray)
     checkType(table2, np.ndarray)
     checkType(col, int)
@@ -50,9 +54,11 @@ def intersectAtCol(table1, table2, col) -> np.ndarray:
 
 
 def spliceAtCol(table1, table2, col, atVal) -> np.ndarray:
-    """ Assuming two tables table1 and table2 have common values in column col, create a new
-        table, where table1 has corresponding entries less than atVal in col, and table 2
-        has corresponding entries greater than atVal. """
+    """ 
+    Assuming two tables table1 and table2 have common values in column col, create a new
+    table, where table1 has corresponding entries less than atVal in col, and table 2
+    has corresponding entries greater than atVal. 
+    """
     checkType(table1, np.ndarray)
     checkType(table2, np.ndarray)
     checkType(col, int)
@@ -62,7 +68,9 @@ def spliceAtCol(table1, table2, col, atVal) -> np.ndarray:
 
 
 def restrictAtCol(table, col, atVal) -> np.ndarray:
-    """ Return only those rows of table where col has exactly the value atVal. """
+    """ 
+    Return only those rows of table where col has exactly the value atVal. 
+    """
     checkType(table, np.ndarray)
     checkType(col, int)
     mask = np.equal(table[col,:],atVal)
@@ -70,7 +78,9 @@ def restrictAtCol(table, col, atVal) -> np.ndarray:
 
 
 def excludeAtCol(table, col, atVal) -> np.ndarray:
-    """ Return everything except those rows of table where col has exactly the value atVal. """
+    """ 
+    Return everything except those rows of table where col has exactly the value atVal. 
+    """
     checkType(table, np.ndarray)
     checkType(col, int)
     mask = np.not_equal(table[col,:],atVal)

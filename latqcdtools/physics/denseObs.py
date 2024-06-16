@@ -21,9 +21,11 @@ _allowed_observables = ["confID",
 
 class observablesOfInterest(list):
 
-    """ A class to specify the dense observables you want to look at. It contains some consistency checks, like making
+    """ 
+    A class to specify the dense observables you want to look at. It contains some consistency checks, like making
     sure that you don't add an observable that is not yet computable. It also has some attributes that help streamline
-    using methods like np.genfromtxt. """
+    using methods like np.genfromtxt. 
+    """
 
 
     def __init__(self,iterable=None):
@@ -45,8 +47,10 @@ class observablesOfInterest(list):
 
 
     def getCol(self,part,obs) -> int:
-        """ op_to_obs will give back complex numbers, which are then output to a table. Given an observable obs with
-        real or imaginary part part, getCol returns the column index. """
+        """ 
+        op_to_obs will give back complex numbers, which are then output to a table. Given an observable obs with
+        real or imaginary part part, getCol returns the column index. 
+        """
         checkDomain(obs,_allowed_observables)
         if obs=="confID":
             return 0
@@ -67,7 +71,8 @@ def mean_square(vec):
 
 def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
 
-    """ Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:
+    """ 
+    Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:
         l--light
         s--strange
         B--baryon number

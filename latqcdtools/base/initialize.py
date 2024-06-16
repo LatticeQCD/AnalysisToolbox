@@ -15,7 +15,8 @@ DEFAULTSEED = 7271978   # Default seed for reproducibility (needed in testing). 
 
 
 def gitHash() -> str:
-    """ Obtain the current git hash. This assumes the Toolbox has been correctly installed.
+    """ 
+    Obtain the current git hash. This assumes the Toolbox has been correctly installed.
 
     Returns:
         str: git hash 
@@ -33,7 +34,9 @@ def gitHash() -> str:
 
 
 def introduceYourself():
-    """ Corporate branding. ASCII generated from https://patorjk.com. """
+    """ 
+    Corporate branding. ASCII generated from https://patorjk.com. 
+    """
     logger.info()
     logger.info(r"     _                _           _    _____           _ _                ")
     logger.info(r"    / \   _ __   __ _| |_   _ ___(_)__|_   _|__   ___ | | |__   _____  __ ")
@@ -45,7 +48,9 @@ def introduceYourself():
 
 
 def initialize(logFile='Toolbox.log'):
-    """ Some common tasks to do at the start of a run where you want to keep track of things. """
+    """ 
+    Some common tasks to do at the start of a run where you want to keep track of things. 
+    """
     global INITIALIZED
     INITIALIZED = True
     introduceYourself()
@@ -56,7 +61,9 @@ def initialize(logFile='Toolbox.log'):
 
 
 def finalize():
-    """ Some common tasks to do when you're done. """
+    """ 
+    Some common tasks to do when you're done. 
+    """
     global INITIALIZED
     if not INITIALIZED:
         logger.warn('Called without having initialized first!')

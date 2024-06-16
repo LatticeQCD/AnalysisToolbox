@@ -29,16 +29,20 @@ DEFAULTTHREADS      = MAXTHREADS - 2
 
 
 def numbaON():
-    """ Use numba wherever possible. By default it is turned off, since compilation takes some time,
+    """ 
+    Use numba wherever possible. By default it is turned off, since compilation takes some time,
     and hence you will only see a performance boost for particularly long-running functions. Must be
-    called at the beginning of your code. """
+    called at the beginning of your code. 
+    """
     global COMPILENUMBA
     COMPILENUMBA = True
     logger.info('Using numba to speed things up.')
 
 
 def numbaOFF():
-    """ Turn off numba compilation for small functions. """ 
+    """ 
+    Turn off numba compilation for small functions. 
+    """ 
     global COMPILENUMBA
     COMPILENUMBA = False 
     logger.info('No longer using numba.')
@@ -54,7 +58,9 @@ def compile(func):
 
 
 def numbaList(inList):
-    """ Turn a list into List that numba can parse. """ 
+    """ 
+    Turn a list into List that numba can parse. 
+    """ 
     global COMPILENUMBA
     if COMPILENUMBA:
         nList = List()
@@ -67,7 +73,8 @@ def numbaList(inList):
 class ComputationClass:
 
     def __init__(self, function, input_array, args, nproc, parallelizer):
-        """ This class contains everything needed to parallelize a function. It allows for you to
+        """ 
+        This class contains everything needed to parallelize a function. It allows for you to
         use your favorite parallelization library and pass arguments to the function.
 
         Args:
@@ -123,7 +130,8 @@ class ComputationClass:
 
 
 def parallel_function_eval(function, input_array, args=(), nproc=DEFAULTTHREADS, parallelizer=DEFAULTPARALLELIZER):
-    """ Parallelize a function over an input_array. Effectively this can replace a loop over an array and should
+    """ 
+    Parallelize a function over an input_array. Effectively this can replace a loop over an array and should
     lead to a performance boost.
 
     Args:
@@ -141,7 +149,8 @@ def parallel_function_eval(function, input_array, args=(), nproc=DEFAULTTHREADS,
 
 
 def parallel_reduce(function, input_array, args=(), nproc=DEFAULTTHREADS, parallelizer=DEFAULTPARALLELIZER) -> float:
-    """ Parallelize a function over an input_array, then sum over the input_array elements. 
+    """ 
+    Parallelize a function over an input_array, then sum over the input_array elements. 
 
     Args:
         function (func): to-be-parallelized function 

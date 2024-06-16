@@ -30,8 +30,10 @@ log_levels    = {
 
 
 def createLogFile(filename="Toolbox.log"):
-    """ Have output sent also to a log file filename. If this file already exists, it will get deleted. We use the
-    logging module because it knows how to handle multiple processes writing to the same file. """
+    """ 
+    Have output sent also to a log file filename. If this file already exists, it will get deleted. We use the
+    logging module because it knows how to handle multiple processes writing to the same file. 
+    """
     global RECORDLOG
     RECORDLOG = True
     # I recommend against changing the log level here. Other modules, such as Numba, also use this logger, and
@@ -48,7 +50,9 @@ def _log(outString):
 
 
 def _getCallerName(frame):
-    """ Gets the name of the function that calls the present function. """
+    """ 
+    Gets the name of the function that calls the present function. 
+    """
     # The way the frame works: Each nested function is labelled by the first index. 0 is the current function, i.e.
     # getCallerName. 1 is the function that called this function, and so on. Second index = 3 retrieves the name.
     currframe  = inspect.currentframe()
@@ -67,7 +71,9 @@ def _getCallerName(frame):
 
 
 def _getTimeStamp():
-    """ Get HH:MM:SS """
+    """ 
+    Get HH:MM:SS 
+    """
     return ' ['+datetime.datetime.now().strftime("%H:%M:%S")+']'
 
 

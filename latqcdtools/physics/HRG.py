@@ -40,7 +40,9 @@ def RMS_mass(Nt, T):
 
 
 def LCP_init_NS0(muB):
-    """ Give a good initial guess for NS=0 LCP. """
+    """ 
+    Give a good initial guess for NS=0 LCP. 
+    """
     dS = 0.214
     eS = 0.161
     dQ = 0.0211
@@ -51,7 +53,9 @@ def LCP_init_NS0(muB):
 
 
 def dmuh(order, muh):
-    """ d^order/dmuh^order derivative of muh """
+    """ 
+    d^order/dmuh^order derivative of muh 
+    """
     if order == 0:
         return muh
     elif order == 1:
@@ -62,9 +66,11 @@ def dmuh(order, muh):
 
 class HRGbase:
 
-    """ Hadron resonance gas base class. Here we collect methods and attributes that all HRG-type classes should have
-        in common. Mass=mass of the Hadron/resonance , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
-        B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. """
+    """ 
+    Hadron resonance gas base class. Here we collect methods and attributes that all HRG-type classes should have
+    in common. Mass=mass of the Hadron/resonance , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
+    B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. 
+    """
 
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         self.Mass = Mass
@@ -82,27 +88,33 @@ class HRGbase:
         return "HRGbase"
 
     def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
-        """ mu_X * N_X, X = (B,Q,S,C) """
+        """ 
+        mu_X * N_X, X = (B,Q,S,C) 
+        """
         return self.B[k]*muB_div_T + self.Q[k]*muQ_div_T + self.S[k]*muS_div_T + self.C[k]*muC_div_T
 
     def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
-        """ e^(mu_X*N_X/T) , X = (B,Q,S,C) """
+        """ 
+        e^(mu_X*N_X/T) , X = (B,Q,S,C) 
+        """
         return np.exp(self.muN_div_T(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T))
 
 
 class HRG(HRGbase):
-    """ HRG implemented through Taylor expasion of logarithm. For more information please see, e.g.
-        Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
-        You can optionally adjust NMAX_light and NMAX_heavy, which control the number of terms to keep in the
-        Taylor expansion for species that are respectively lighter and heavier than the Kaon.
-        Our pressure is given in terms of a Taylor series involving modified Bessel functions of the second kind, which
-        needs to be truncated at some order. These functions get strongly suppressed when their argument is large.
-        In our case, this argument is proportional to the mass. Hence we will sometimes take the Boltzmann
-        approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
-        expansion need to be kept. Doing so boosts performance.
+    """ 
+    HRG implemented through Taylor expasion of logarithm. For more information please see, e.g.
+    Physics Letters B 695 (2011) 136–142 or especially arXiv:2011.02812.
+    You can optionally adjust NMAX_light and NMAX_heavy, which control the number of terms to keep in the
+    Taylor expansion for species that are respectively lighter and heavier than the Kaon.
+    Our pressure is given in terms of a Taylor series involving modified Bessel functions of the second kind, which
+    needs to be truncated at some order. These functions get strongly suppressed when their argument is large.
+    In our case, this argument is proportional to the mass. Hence we will sometimes take the Boltzmann
+    approximation, i.e. that the mass is large compared to the temperature. In this limit, even fewer terms of the
+    expansion need to be kept. Doing so boosts performance.
 
-        We work in the grand canonical ensemble, i.e. we consider P(V,T,mu_i/T). Hence in this class, derivatives w.r.t.
-        one of those N_chemical_potentials + 2 variables assume all others are held fixed. """
+    We work in the grand canonical ensemble, i.e. we consider P(V,T,mu_i/T). Hence in this class, derivatives w.r.t.
+    one of those N_chemical_potentials + 2 variables assume all others are held fixed. 
+    """
 
     def __init__(self, Mass, g, w, B, S, Q, C=None, NMAX_light=21, NMAX_heavy=2):
         HRGbase.__init__(self, Mass, g, w, B, S, Q, C)
@@ -124,7 +136,9 @@ class HRG(HRGbase):
     # n=1 is Boltzmann approximation
 
     def factor(self, k, n, T):
-        """ (m/T)^2 g eta^(n+1) / 2pi^2 n^2 """
+        """ 
+        (m/T)^2 g eta^(n+1) / 2pi^2 n^2 
+        """
         return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
@@ -147,7 +161,9 @@ class HRG(HRGbase):
         return eps
 
     def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ s = e + p - mu_i n_i """
+        """ 
+        s = e + p - mu_i n_i 
+        """
         NB = self.gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
         NS = self.gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
         NQ = self.gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
@@ -157,7 +173,9 @@ class HRG(HRGbase):
                 + self.P_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T,muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) - muxN_div_T
 
     def ddT_E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ d(E/T^4)/dT at fixed mu/T """
+        """ 
+        d(E/T^4)/dT at fixed mu/T 
+        """
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -169,7 +187,9 @@ class HRG(HRGbase):
         return eps
 
     def ddT_P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ d(P/T^4)/dT at fixed mu/T """
+        """ 
+        d(P/T^4)/dT at fixed mu/T 
+        """
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -181,11 +201,15 @@ class HRG(HRGbase):
         return P
 
     def CV_div_T3_mu0(self, T):
-        """ C_V/T^3 at mu=0. """
+        """ 
+        C_V/T^3 at mu=0. 
+        """
         return 4*self.E_div_T4(T, 0, 0, 0, 0) + T*self.ddT_E_div_T4(T, 0, 0, 0, 0)
 
     def ddT_S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ d(s/T^3)/dT at fixed mu/T """
+        """ 
+        d(s/T^3)/dT at fixed mu/T 
+        """
         ddTNB = self.ddT_gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0,
                                  muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
         ddTNS = self.ddT_gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0,
@@ -199,7 +223,9 @@ class HRG(HRGbase):
                 + self.ddT_P_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) - muxddTN_div_T
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
-        """ chi_BQSC """
+        """ 
+        chi_BQSC 
+        """
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -208,7 +234,9 @@ class HRG(HRGbase):
         return chi
 
     def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
-        """ d(chi_BQSC)/dT at fixed mu/T """
+        """ 
+        d(chi_BQSC)/dT at fixed mu/T 
+        """
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -221,7 +249,9 @@ class HRG(HRGbase):
         return chi
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
-        """ d^2(chi_BQSC)/dT^2 at fixed mu/T """
+        """ 
+        d^2(chi_BQSC)/dT^2 at fixed mu/T 
+        """
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -234,7 +264,9 @@ class HRG(HRGbase):
         return chi
 
     def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ Arbitrary mu/T derivatives of E/T^4 at fixed T """
+        """ 
+        Arbitrary mu/T derivatives of E/T^4 at fixed T 
+        """
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -246,7 +278,9 @@ class HRG(HRGbase):
         return eps
 
     def gen_ddmuh_P_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ Arbitrary mu/T derivatives of P/T^4 at fixed T """
+        """ 
+        Arbitrary mu/T derivatives of P/T^4 at fixed T 
+        """
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
@@ -257,7 +291,9 @@ class HRG(HRGbase):
         return P
 
     def gen_ddmuh_S_div_T3(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ s = e + p - mu_i n_i """
+        """ 
+        s = e + p - mu_i n_i 
+        """
         NB = self.gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, muB_div_T=muB_div_T,
                           muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
         NS = self.gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, muB_div_T=muB_div_T,
@@ -313,7 +349,9 @@ class HRG(HRGbase):
         return chi
 
     def genChiFlavor(self, T, u_order=0, d_order=0, s_order=0, c_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
-        """ chi_udsc """
+        """ 
+        chi_udsc 
+        """
         logger.warn('HRGFlavor basis is not yet tested for finite mu...')
         chi = 0.0
         for k in range(len(self.Mass)):
@@ -332,7 +370,9 @@ class HRG(HRGbase):
 class HRGexact(HRGbase):
 # TODO: maybe just delete this eventually, it seems to be crap
 
-    """ HRG implemented through numerical integration. """
+    """ 
+    HRG implemented through numerical integration. 
+    """
 
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         logger.warn('ExactHRG numerical integration is not yet reliable...')
@@ -401,7 +441,9 @@ class HRGexact(HRGbase):
         return unvector(np.asarray(int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)))
 
     def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ s = e + p - mu_i n_i """
+        """ 
+        s = e + p - mu_i n_i 
+        """
         T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
 
         def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
@@ -426,7 +468,9 @@ class HRGexact(HRGbase):
 
 class EVHRG(HRGbase):
 
-    """ Excluded volume hadron resonance gas. b is excluded volume parameter. """
+    """ 
+    Excluded volume hadron resonance gas. b is excluded volume parameter. 
+    """
 
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         HRGbase.__init__(self, Mass, g, w, B, S, Q, C)

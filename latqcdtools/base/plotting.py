@@ -127,8 +127,10 @@ allowed_params = allowed_params | {'linestyle','ha','va'}
 
 
 def latexify(bold=False):
-    """ Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
-        convenient functions like ev. """
+    """ 
+    Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
+    convenient functions like ev. 
+    """
     logger.info("Using LaTeX to make pretty plots.")
     if bold:
         plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
@@ -140,7 +142,9 @@ def latexify(bold=False):
 
 
 def clearPlot():
-    """ Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. """
+    """ 
+    Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. 
+    """
     logger.debug('Reset plot defaults.')
     global INITIALIZE, ZOD, LEGEND, legend_labels, legend_handles
     ZOD        = 10
@@ -152,7 +156,8 @@ def clearPlot():
 
 
 def getColorGradient(NUM_COLORS,map='viridis') -> list:
-    """ Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
+    """ 
+    Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
 
     Args:
         NUM_COLORS (int): number of colors you need 
@@ -182,13 +187,16 @@ def set_yrange(ymin=None, ymax=None, ax=plt):
 
 
 def set_default_param(**kwargs):
-    """ Lets the user adjust the default parameter settings. """
+    """ 
+    Lets the user adjust the default parameter settings. 
+    """
     for key, val in kwargs.items():
         default_params[key] = val
 
 
 def getSubplots(x,y):
-    """ Get fig and axs objects when you want x figures across and y figures vertically.
+    """ 
+    Get fig and axs objects when you want x figures across and y figures vertically.
     I wrapped this because matplotlib's convention for x and y is the opposite as their
     convention for figsize, which is so incredibly confusing. 
     
@@ -208,8 +216,10 @@ def getSubplots(x,y):
 
 
 def _initializePlt(params):
-    """ Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
-        so that this only gets called once per plot. """
+    """ 
+    Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
+    so that this only gets called once per plot. 
+    """
     checkType(params,dict)
     fill_param_dict(params)
     global INITIALIZE
@@ -291,13 +301,12 @@ def _set_ymax(ax,y_max=None):
 
 
 def fill_param_dict(params):
-    """ Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with
+    """ 
+    Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with
     a default value.
     
-        Parameters
-        ----------
-        params: dictionary
-            Dictionary with all parameters that are already set by the user
+    Args:
+        params (dict): All parameters that are already set by the user
     """
     global LEGEND
 
@@ -317,7 +326,8 @@ def fill_param_dict(params):
 
 
 def _add_optional(params) -> dict:
-    """ Optional parameters not included in _fill_param_dict.
+    """ 
+    Optional parameters not included in _fill_param_dict.
 
     Args:
         **params: Additional parameters that can be set.
@@ -335,7 +345,8 @@ def _add_optional(params) -> dict:
 
 
 def set_params(**params):
-    """ Set additional parameters to the plot. For example set a title or label.
+    """ 
+    Set additional parameters to the plot. For example set a title or label.
 
     Args:
         **params: Additional parameters that can be set.
@@ -460,7 +471,8 @@ def set_params(**params):
 
 
 def preliminary(x,y,text='PRELIMINARY',**kwargs):
-    """ Generate a PRELIMINARY tag on the plot.
+    """ 
+    Generate a PRELIMINARY tag on the plot.
 
     Args:
         x (float): x-position of bottom-left corner (in units of x-axis) 
@@ -480,7 +492,8 @@ def preliminary(x,y,text='PRELIMINARY',**kwargs):
 
 
 def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, func_args = (), style='dots', **params):
-    """ Plot data in file. You can set the style with the style argument. Columns indexed from 0.
+    """ 
+    Plot data in file. You can set the style with the style argument. Columns indexed from 0.
 
     Args:
         filename (str)
@@ -534,7 +547,8 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
 
 
 def _rescale(scale,data):
-    """ Rescale the data, taking into account there may be no data.
+    """ 
+    Rescale the data, taking into account there may be no data.
 
     Args:
         scale (float)
@@ -545,7 +559,8 @@ def _rescale(scale,data):
 
 
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
-    """ Plot ydata vs xdata as dots. 
+    """ 
+    Plot ydata vs xdata as dots. 
 
     Args:
         xdata (array-like)
@@ -612,7 +627,8 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
 
 
 def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewidth=0.2, **params):
-    """ Plot ydata vs xdata as bars.
+    """ 
+    Plot ydata vs xdata as bars.
 
     Args:
         xdata (array-like)
@@ -652,7 +668,8 @@ def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewid
 
 
 def plot_hist(data, bins = None, density=False, label=None, **params):
-    """ Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
+    """ 
+    Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
     simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
 
     Args:
@@ -676,7 +693,8 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
 
 
 def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
-    """ Plot ydata vs xdata using lines.
+    """ 
+    Plot ydata vs xdata using lines.
 
     Args:
         xdata (array-like)
@@ -733,7 +751,8 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 
 
 def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
-    """ Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
+    """ 
+    Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 
     Args:
         xdata (array-like)
@@ -802,7 +821,8 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
 
 
 def plot_band(xdata, low_lim, up_lim, center = None, **params):
-    """ Plot a horizontal band.
+    """ 
+    Plot a horizontal band.
 
     Args:
         xdata (array-like)

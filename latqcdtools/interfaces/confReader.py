@@ -20,10 +20,13 @@ from latqcdtools.physics.gauge import gaugeField
 
 class confReader:
 
-    """ Base class for reading configurations. """
+    """ 
+    Base class for reading configurations. 
+    """
 
     def __init__(self, Ns, Nt, nproc=None):
-        """ Initialize a confReader object.
+        """ 
+        Initialize a confReader object.
 
         Args:
             Ns (int): Spatial extension of lattice. 
@@ -49,8 +52,10 @@ class confReader:
         self.gauge = gaugeField(self.Ns,self.Nt,self.nproc)
 
 
-    def unpack(self, data) -> SU3():
-        """ Unpack a string of bytes from file into an SU3 object. """
+    def unpack(self, data) -> SU3:
+        """ 
+        Unpack a string of bytes from file into an SU3 object. 
+        """
         numData = int(len(data)/self.getByteSize())
         linkTuple = struct.unpack( self.endianness + str(numData) + self.precision, data )
         link = SU3()
@@ -65,7 +70,9 @@ class confReader:
 
 
     def pack(self, items):
-        """ Packs an SU3 object into a string of bytes. """
+        """ 
+        Packs an SU3 object into a string of bytes. 
+        """
         numData = len(items)
         return struct.pack(self.endianness + str(numData) + self.precision, *items)
 
@@ -84,7 +91,8 @@ class NERSCReader(confReader):
 
     def readHeader(self,fileName):
 
-        """ Extract metadata from the header. Do a few checks to make sure the read-in went smoothly. This method
+        """ 
+        Extract metadata from the header. Do a few checks to make sure the read-in went smoothly. This method
         assumes all NERSC headers have the minimal entries
             BEGIN_HEADER
             DATATYPE
@@ -163,7 +171,9 @@ class NERSCReader(confReader):
 
 
     def readConf(self,fileName):
-        """ Read in the configuration. Check what you find in the binary against its metadata. """
+        """ 
+        Read in the configuration. Check what you find in the binary against its metadata. 
+        """
 
         self.readHeader(fileName)
 

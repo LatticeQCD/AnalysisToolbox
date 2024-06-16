@@ -65,7 +65,8 @@ def fastRandomize(self):
 
 class SU3(np.matrix):
 
-    """ A member of the Lie group SU(3). Implemented as a subclass of the np.matrix class. This gives us access already
+    """ 
+    A member of the Lie group SU(3). Implemented as a subclass of the np.matrix class. This gives us access already
     to all the nice features of np.matrix and lets us leverage the speed of numpy.
         g.trace()
         g.det()
@@ -92,22 +93,30 @@ class SU3(np.matrix):
 
 
     def trace(self, **kwargs) -> complex:
-        """ Trace. In np.matrix, this returns a 2d object for some reason. """
+        """ 
+        Trace. In np.matrix, this returns a 2d object for some reason. 
+        """
         return complex( super().trace(**kwargs) )
 
 
     def dagger(self):
-        """ Conjugate transpose. """
+        """ 
+        Conjugate transpose. 
+        """
         return self.getH()
 
 
     def det(self):
-        """ Determinant. """
+        """ 
+        Determinant. 
+        """
         return det(self)
 
 
     def isSU3(self) -> bool:
-        """ Check that I have det=1 and am unitary. """
+        """ 
+        Check that I have det=1 and am unitary. 
+        """
         special = rel_check(self.det(), 1.)
         UdaggU  = self.dagger()*self
         unitary = rel_check(UdaggU,id_3)
@@ -117,26 +126,36 @@ class SU3(np.matrix):
 
 
     def su3unitarize(self):
-        """ Project to SU(3) using information from the first two rows. """
+        """ 
+        Project to SU(3) using information from the first two rows. 
+        """
         fastUnitarize(self)
 
 
     def setToMatrix(self,other):
-        """ Turn into RHS link. """
+        """ 
+        Turn into RHS link. 
+        """
         np.copyto(self,np.asarray(other,dtype=complex))
 
 
     def setToZero(self):
-        """ Turn into zero matrix. """
+        """ 
+        Turn into zero matrix. 
+        """
         self.setToMatrix(ze_3)
 
 
     def setToIdentity(self):
-        """ Turn into identity matrix. """
+        """ 
+        Turn into identity matrix. 
+        """
         self.setToMatrix(id_3) 
 
 
     def setToRandom(self):
-        """ Turn into a randomly chosen SU(3) matrix. """
+        """ 
+        Turn into a randomly chosen SU(3) matrix. 
+        """
         fastRandomize(self)
         self.su3unitarize()

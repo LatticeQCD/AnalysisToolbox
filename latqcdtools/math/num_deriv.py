@@ -11,7 +11,8 @@ import numpy as np
 
 
 def _best_h(x):
-    """ This routine attempts to automatically determine the best possible step size h when calculating numerical
+    """ 
+    This routine attempts to automatically determine the best possible step size h when calculating numerical
     derivatives. One does not like the step size to be too large, since one pays a ~h^2 penalty. On the other hand,
     if the step size is too small, the function may not change within machine precision eps, and hence the derivative
     will be incorrectly estimated.
@@ -27,7 +28,8 @@ def _best_h(x):
         h ~ x eps^(1/3).
 
     We choose eps = 1.1e-16, which is roughly the difference between 1.0 and the next-smallest representable float less
-    than 1.0 in 64-bit. The difference between 1.0 and the next-largest float is slightly bigger. """
+    than 1.0 in 64-bit. The difference between 1.0 and the next-largest float is slightly bigger. 
+    """
     eps   = 1.1e-16
     small = pow(eps,1/3)
     h     = small*(abs(x) + small) # Want something meaningful also when x = 0.
@@ -35,7 +37,9 @@ def _best_h(x):
 
 
 def diff_deriv(x, func, args = (), h = None):
-    """ Numerical derivative using central difference. """
+    """ 
+    Numerical derivative using central difference. 
+    """
     if h is None:
         h = _best_h(x)
     up   = x + h
@@ -44,7 +48,9 @@ def diff_deriv(x, func, args = (), h = None):
 
 
 def diff_grad(params, func, args = (), h = None) -> np.ndarray:
-    """ Gradient using difference quotient. """
+    """ 
+    Gradient using difference quotient. 
+    """
     ret = [0.0]*len(params)
     up = np.array(params, dtype = float)
     down = np.array(params, dtype = float)
@@ -60,7 +66,9 @@ def diff_grad(params, func, args = (), h = None) -> np.ndarray:
 
 
 def diff_hess(params, func, args = (), h = None) -> np.ndarray:
-    """ Hessian using difference quotient. """
+    """ 
+    Hessian using difference quotient. 
+    """
 
     # This has to be a list, as we might put in arrays, if params is higher dimensional
     ret = [ [0.0]*len(params) for _ in range(len(params)) ]
@@ -115,16 +123,20 @@ def diff_hess(params, func, args = (), h = None) -> np.ndarray:
 
 
 def diff_fit_grad(x, params, func, args = (), h = None):
-    """ When fitting we're trying to optimize params, and hence we want to think of func as a function of
-    its parameters rather than x. """ 
+    """ 
+    When fitting we're trying to optimize params, and hence we want to think of func as a function of
+    its parameters rather than x. 
+    """ 
     def f(p):
         return func(x, p, *args)
     return diff_grad(params, f, h = h)
 
 
 def diff_fit_hess(x, params, func, args = (), h = None):
-    """ When fitting we're trying to optimize params, and hence we want to think of func as a function of
-    its parameters rather than x. """ 
+    """ 
+    When fitting we're trying to optimize params, and hence we want to think of func as a function of
+    its parameters rather than x. 
+    """ 
     def f(p):
         return func(x, p, *args)
     return diff_hess(params, f, h = h)

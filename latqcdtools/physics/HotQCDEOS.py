@@ -37,7 +37,6 @@ class EOS:
     def pressure(self):
         """
         calculation of pressure from the parametrization of 1407.6387
-        
         """
         T = self.temp / T0
         i, ai, bi, x = sy.symbols('i, ai, bi, x')

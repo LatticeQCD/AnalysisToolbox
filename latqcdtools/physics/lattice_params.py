@@ -20,13 +20,16 @@ def _massStringToFloat(string):
 
 
 class latticeParams:
-    """A class to handle and check the input parameters of a lattice run."""
+    """
+    A class to handle and check the input parameters of a lattice run.
+    """
 
     # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
     # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
     def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None,
                  Nf='21', scaleYear=None, mu=0):
-        """ Based on some input, determine all parameters relevant to the ensemble.
+        """ 
+        Based on some input, determine all parameters relevant to the ensemble.
 
         Parameters
         ----------
@@ -138,12 +141,16 @@ class latticeParams:
 
 
     def getT(self) -> float:
-        """ T in MeV. """
+        """ 
+        T in MeV. 
+        """
         return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
 
 
     def getLs(self) -> float:
-        """ L in space-like direction in [1/MeV]. """
+        """ 
+        L in space-like direction in [1/MeV]. 
+        """
         if self.Ns is not None:
             return fm_to_MeVinv(self.Ns*self.geta())
         else:

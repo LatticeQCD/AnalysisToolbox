@@ -15,7 +15,8 @@ from latqcdtools.base.utilities import envector,unvector
 
 
 def solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8) -> np.ndarray:
-    """ Wrapper to solve an initial value problem of the form
+    """ 
+    Wrapper to solve an initial value problem of the form
 
     dy/dt = dydt(t, y)
     y(t0) = y0
@@ -43,7 +44,8 @@ def solveIVP(dydt,t0,tf,y0,method='RK45',args=(),epsrel=1.49e-8,epsabs=1.49e-8) 
 
 
 def integrateData(xdata,ydata,method='trapezoid'):
-    """ Wrapper to integrate data. 
+    """ 
+    Wrapper to integrate data. 
 
     Args:
         xdata (array-like)
@@ -74,8 +76,9 @@ persistentMethods = ['quad', 'trapezoid', 'romberg']
 
 
 def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,epsabs=1.49e-8):
-    """ Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, and
-        scipy.romberg, which otherwise do not like to handle numpy arrays.
+    """ 
+    Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, and
+    scipy.romberg, which otherwise do not like to handle numpy arrays.
 
     Args:
         func (func): Integrand. 

@@ -1,0 +1,71 @@
+latqcdtools.math.math
+=============
+
+`checkSquare(mat)`
+ 
+    Make sure mat is a square np.ndarray object. 
+
+    Args:
+        mat (np.ndarray)
+    
+`fallFactorial(n, m) -> float`
+ 
+    Falling factorial n fall to m. 
+    
+`invert(mat, method='scipy') -> numpy.ndarray`
+ 
+    Invert matrix.
+
+    Args:
+        mat (np.ndarray): to-be-inverted matrix 
+        method (str): algorithm for inverting the matrix
+        
+    Returns:
+        np.ndarray: mat^{-1} 
+    
+`isPositiveSemidefinite(mat) -> bool`
+
+
+`isSymmetric(mat) -> bool`
+
+
+`logDet(mat) -> float`
+ 
+    Logarithm of determinant. 
+    
+`normalize(arr)`
+
+
+`regulate(mat, svdcut=1e-12) -> numpy.ndarray`
+ 
+    If a matrix's singular values are too small, it will be ill-conditioned,
+    making it difficult to invert and hence reducing numerical stability. This method
+    extracts its singular values using SVD, then doctors the singular values to reduce
+    the condition number. In the context of applying an SVD cut to a covariance 
+    matrix, see e.g. Appendix D of 10.1103/PhysRevD.100.094508.
+
+    Args:
+        mat (np.ndarray)
+        svdcut (float, optional): condition number threshold. Defaults to 1e-12.
+
+    Returns:
+        np.ndarray: regulated matrix 
+    
+`rel_check(a, b, prec=1e-06, abs_prec=1e-14) -> bool`
+ 
+    Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
+    and b are array-like, we check that they are element-wise equal within the tolerance. 
+
+    Args:
+        a (obj)
+        b (obj)
+        prec (float, optional): Relative precision. Defaults to 1e-6.
+        abs_prec (float, optional): Absolute precision. Defaults to 1e-14.
+
+    Returns:
+        bool: True if a and b are equal. 
+    
+`riseFactorial(n, m) -> float`
+ 
+    Rising factorial n rise to m. 
+    

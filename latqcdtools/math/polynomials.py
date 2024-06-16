@@ -3,15 +3,18 @@
 # 
 # J. Goswami
 # 
-# A simple class for constructing polynomial-type and ratioal-type functions. You can construct a polynomial of only
-# even powers up to fourth order using, for example,
-#   p = Polynomial([A0, 0., A2, 0. A4])
-#   p(x)
 #
 
 from latqcdtools.base.check import checkType
 
 class Polynomial:
+
+    """
+    A simple class for constructing polynomial-type functions. You can construct
+    then call a polynomial of only even powers up to fourth order using, for example,
+        p = Polynomial([A0, 0., A2, 0. A4])
+        p(x)
+    """
 
     def __init__(self, coeffs=None):
         checkType(coeffs,"array")
@@ -29,6 +32,10 @@ class Polynomial:
 
 
 class Rational:
+
+    """
+    A simple class for constructing rational-type functions. 
+    """
 
     def __init__(self, num_coeffs, den_coeffs):
         checkType(num_coeffs,"array")

@@ -38,7 +38,8 @@ bayes_algs = ["TNC", "Powell", "Nelder-Mead"]
 
 
 class Fitter:
-    """ The :class:`Fitter`, contains all information necessary for fitting: The data, the function to be fitted, and
+    """ 
+    The :class:`Fitter`, contains all information necessary for fitting: The data, the function to be fitted, and
     optional the data for the errors. There are different minimization algorithms available. Many of them need the
     gradient or hessian of the chisquare. One way is to set the derivatives of the fitting function from outside.
     The derivatives of the actual chisquare are then computed via error propagation. Another way is to use numerical
@@ -46,7 +47,8 @@ class Fitter:
 
     There are two ways to compute the derivatives of the chisqare numerically. Either compute the
     numerical derivative of the whole chisquare (error_strat='hessian') or compute the derivatives of the fitting
-    function and use error propagation (error_strat='propagation'). The latter is the default case."""
+    function and use error propagation (error_strat='propagation'). The latter is the default case.
+    """
 
     def __init__(self, func, xdata, ydata, edata = None, **kwargs):
         """
@@ -196,7 +198,8 @@ class Fitter:
 
 
     def set_func(self, func, grad = None, args = None, grad_args = None, hess_args = None):
-        """ Set fitting function, gradient, and their arguments. Also initialize self.func,
+        """ 
+        Set fitting function, gradient, and their arguments. Also initialize self.func,
         and self.grad. These point to the actual wrappers which are used in the fit. In
         case of provided gradient, this will be wrap_grad. In case of numerical derivatives, 
         this will be num_grad.
@@ -251,27 +254,35 @@ class Fitter:
 
 
     def fit_ansatz_array(self, params):
-        """ Return the array of the fit ansatz values at each position in self._xdata. """
+        """ 
+        Return the array of the fit ansatz values at each position in self._xdata. 
+        """
         params = np.array(params)
         return self.wrap_func(self._xdata, params)
 
 
     def jacobian_fit_ansatz_array(self, params):
-        """ If f is the fit function, return the array df / dp_i evaluated at each _fit_xdata. """
+        """ 
+        If f is the fit function, return the array df / dp_i evaluated at each _fit_xdata. 
+        """
         params = np.array(params)
         # Note that the function is passed in secret here.
         return self.grad(self._xdata, params).T
 
 
     def calc_chisquare(self, params):
-        """ Compute chi^2. This is the function that will be minimized. """
+        """ 
+        Compute chi^2. This is the function that will be minimized. 
+        """
         return chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, params, 
                          prior=self._priorval,priorsigma=self._priorsigma)
 
 
     def grad_chisquare(self, params):
-        """ Compute the gradient of the chisquare, see e.g. eq. (A3) in 10.1103/PhysRevD.90.054506. 
-        We assume priors are not correlated with data. """
+        """ 
+        Compute the gradient of the chisquare, see e.g. eq. (A3) in 10.1103/PhysRevD.90.054506. 
+        We assume priors are not correlated with data. 
+        """
         jac  = self.jacobian_fit_ansatz_array(params).T     # df/dp
         diff = self.fit_ansatz_array(params) - self._ydata  # Dy
         res  = 2 * jac @ self._inv_cov @ diff
@@ -281,10 +292,12 @@ class Fitter:
 
 
     def hess_chisquare(self, params):
-        """ Compute the Hessian of the chisquare. Terms of O(f(p)-y) are discarded, which is reasonable when
+        """ 
+        Compute the Hessian of the chisquare. Terms of O(f(p)-y) are discarded, which is reasonable when
         the fit is relatively good. This also ensures non-negative eigenvalues for pcov and saves computational
         time computing the Hessian. See e.g. eq. (A4) in 10.1103/PhysRevD.90.054506. We assume priors are not 
-        correlated with data. """
+        correlated with data. 
+        """
         jac = self.jacobian_fit_ansatz_array(params).T
         res = 2*( jac @ self._inv_cov @ jac.T )
         if self._priorsigma is not None:
@@ -293,13 +306,16 @@ class Fitter:
 
 
     def _num_func_jacobian(self, params):
-        """ For the error computation we need the Jacobian of the array of function values. If self._derive_chisq is True,
-        we cannot use self.grad_fit_ansatz_array. In that case, the Jacobian is calculated using this function. """
+        """ 
+        For the error computation we need the Jacobian of the array of function values. If self._derive_chisq is True,
+        we cannot use self.grad_fit_ansatz_array. In that case, the Jacobian is calculated using this function. 
+        """
         return diff_jac(params, self.fit_ansatz_array)
 
 
     def minimize_chi2(self, start_params, algorithm):
-        """ Minimize the chi^2 using the scipy minimize routine is used.
+        """ 
+        Minimize the chi^2 using the scipy minimize routine is used.
 
         Parameters
         ----------
@@ -359,7 +375,8 @@ class Fitter:
 
 
     def compute_err(self, params, chi2, algorithm):
-        """ Compute the covariance matrix of the fit parameters. If no errors have been provided, they are assumed to
+        """ 
+        Compute the covariance matrix of the fit parameters. If no errors have been provided, they are assumed to
         be one. We get the fit variances from the diagonal elements of the covariance matrix.
 
         Parameters
@@ -406,8 +423,10 @@ class Fitter:
 
 
     def pcov_error_prop(self, params, algorithm):
-        """ Compute the parameter's covariance matrix through error propagation, i.e. pcov = (J^t * C^-1 * J)^-1, where
-        J is the Jacobian of the fit function and C is the covariance matrix of the data points. """
+        """ 
+        Compute the parameter's covariance matrix through error propagation, i.e. pcov = (J^t * C^-1 * J)^-1, where
+        J is the Jacobian of the fit function and C is the covariance matrix of the data points. 
+        """
         if self.grad is None:
             jac = self._num_func_jacobian(params)
         else:
@@ -435,7 +454,9 @@ class Fitter:
 
 
     def pcov_hessian(self, params, algorithm):
-        """ Obtain the parameter's covariance matrix by inverting the hessian of the chi^2. """
+        """ 
+        Obtain the parameter's covariance matrix by inverting the hessian of the chi^2. 
+        """
         pcov = invert(self.hess_chisquare(params)/2.)
         if np.min(np.diag(pcov)) < 0:
             logger.TBFail(algorithm + ": Negative entries for the variance!")
@@ -444,14 +465,18 @@ class Fitter:
 
 
     def _general_fit(self, algorithm="curve_fit"): 
-        """ Perform fit. No new fit data are generated. """
+        """ 
+        Perform fit. No new fit data are generated. 
+        """
         params, chi2 = self.minimize_chi2(self._saved_params, algorithm)
         pcov, fit_errors = self.compute_err(params, chi2, algorithm)
         return params, fit_errors, chi2, pcov
 
 
     def _tryAlgorithm(self,algorithm):
-        """ Wrapper that collects general fit results. Allows for parallelization. """
+        """ 
+        Wrapper that collects general fit results. Allows for parallelization. 
+        """
         try:
             params, fit_errors, chi2, pcov = self._general_fit(algorithm) 
             logger.details(algorithm, "successful. Chi^2 = ", chi2)
@@ -462,7 +487,9 @@ class Fitter:
 
 
     def _autoDomain(self,domain):
-        """ Set domain automatically if domain=None. """
+        """ 
+        Set domain automatically if domain=None. 
+        """
         if domain is None:
             domain=(np.min(self._xdata),np.max(self._xdata))
         checkDomain(domain)
@@ -470,7 +497,8 @@ class Fitter:
 
 
     def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
-        """ Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
+        """ 
+        Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
         smallest chi^2. By default this method does a standard statistical fit. One can also include priors to obtain
         posteriors using Bayesian statistics. A well known summary of the latter strategy in the context of lattice QCD
         is given here: https://arxiv.org/abs/hep-lat/0110175. If there are priors, calculate logGBF and return that too.
@@ -586,12 +614,16 @@ class Fitter:
 
 
     def do_fit(self, algorithm="curve_fit", **kwargs):
-        """ Same as try_fit but with only one algorithm. """
+        """ 
+        Same as try_fit but with only one algorithm. 
+        """
         return self.try_fit([algorithm], **kwargs)
 
 
     def save_func(self, filename, domain = None, no_error=False, header=None, npoints=1000, **kwargs):
-        """ Save fit data to table. """
+        """ 
+        Save fit data to table. 
+        """
         domain = self._autoDomain(domain)
         params_err = self._saved_pcov
         params = self._saved_params
@@ -607,7 +639,9 @@ class Fitter:
 
 
     def plot_fit(self, domain = None, no_error = False, **kwargs):
-        """ Plot the fit function. """
+        """ 
+        Plot the fit function. 
+        """
         logger.debug('Plotting fit.')
         domain = self._autoDomain(domain)
         if not no_error:
@@ -618,7 +652,9 @@ class Fitter:
 
 
     def plot_data(self, **kwargs):
-        """ Plot the fit data. """
+        """ 
+        Plot the fit data. 
+        """
         logger.debug('Plotting fit data.')
         if self._cov is not None:
             sigma = np.sqrt( np.diag(self._cov) )
@@ -628,7 +664,9 @@ class Fitter:
 
 
     def plot_cor(self, title = 'Data correlation matrix', xlabel='$x_j$', ylabel='$x_i$'):
-        """ Plot the correlation matrix of the input data. """
+        """ 
+        Plot the correlation matrix of the input data. 
+        """
 
         ncov = self._fit_cor
 
@@ -710,7 +748,9 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
 
 def do_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None,
            algorithm="curve_fit", detailedInfo=False, **kwargs):
-    """ Wrapper to fitter initialization and the fit in one step. See above for arguments. """
+    """ 
+    Wrapper to fitter initialization and the fit in one step. See above for arguments. 
+    """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.do_fit(start_params=start_params, priorval=priorval, priorsigma=priorsigma, algorithm=algorithm,
                       detailedInfo=detailedInfo)
@@ -718,9 +758,9 @@ def do_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, pri
 
 def try_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None,
             algorithms=std_algs, detailedInfo=False, **kwargs):
-    """ Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
-    algorithms has no default values here. """
+    """ 
+    Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
+    algorithms has no default values here. 
+    """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.try_fit(algorithms, start_params, priorval, priorsigma, detailedInfo=detailedInfo)
-
-

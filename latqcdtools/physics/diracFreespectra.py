@@ -14,7 +14,9 @@ import itertools
 
 class GammaMatrix:
     
-    """ The 4x4 gamma matrices used in Euclidean quantum field theory. """
+    """ 
+    The 4x4 gamma matrices used in Euclidean quantum field theory. 
+    """
     
     @property
     def __repr__(self) -> str:
@@ -58,7 +60,8 @@ class DiracOp(GammaMatrix):
         return "DiracOp"
 
     def __init__(self, Lx, Ly, Lz, Lt, fermion="Wilson"):
-        """ Represent Dirac operator on a Euclidean spacetime lattice.
+        """ 
+        Represent Dirac operator on a Euclidean spacetime lattice.
 
         Args:
             Lx (int)
@@ -74,7 +77,9 @@ class DiracOp(GammaMatrix):
         self.fermion = fermion
 
     def p(self):
-        """  Computes the momentum values px, py, pz, pt based on the provided lattice extents. """
+        """  
+        Computes the momentum values px, py, pz, pt based on the provided lattice extents. 
+        """
         if self.Lt == self.Lx:
             px = 2 * np.pi * np.arange(-self.Lx / 2 + 1, self.Lx / 2 + 1, 1) / self.Lx
             py = 2 * np.pi * np.arange(-self.Ly / 2 + 1, self.Ly / 2 + 1, 1) / self.Ly
@@ -88,7 +93,8 @@ class DiracOp(GammaMatrix):
         return px, py, pz, pt
 
     def WilsonOp(self, p, mass):
-        """ Compute the Wilson operator
+        """ 
+        Compute the Wilson operator
 
         Args:
             p (array-like): momentum vector
@@ -104,8 +110,7 @@ class DiracOp(GammaMatrix):
         return term + massterm
 
     def DWMobius4D(self, p, mass, M=1, b=1.5, c=0.5, Ls=12):
-        """_summary_
-
+        """
         Args:
             p (array-like): momentum vector
             mass (float): scalar mass 
@@ -127,8 +132,7 @@ class DiracOp(GammaMatrix):
         return Ddw
 
     def eigvalues(self, mass, M=1, b=1.5, c=0.5, Ls=12):
-        """_summary_
-
+        """
         Args:
             mass (float): scalar mass 
             M (float, optional): domain wall parameter. Defaults to 1.

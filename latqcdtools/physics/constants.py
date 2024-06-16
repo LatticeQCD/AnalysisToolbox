@@ -87,7 +87,8 @@ def _separatePrefix(units):
 
 
 def convert(x,unit1,unit2) -> float:
-    """ General method for doing unit conversions.
+    """ 
+    General method for doing unit conversions.
 
     Args:
         x (float): measurement in [unit1]. 
@@ -238,7 +239,9 @@ def GeVinv_to_fm(x) -> float:
 
 
 def M_mu_phys(year=2020,units="MeV",returnErr=False):
-    """ Physical value of the muon mass. """
+    """ 
+    Physical value of the muon mass. 
+    """
     if year==2020:
         # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
         m_mu_MeV, m_mu_MeV_err = 105.6583745, 0.0000024
@@ -251,7 +254,9 @@ def M_mu_phys(year=2020,units="MeV",returnErr=False):
 
 
 def M_pi0_phys(year=2022,units="MeV",returnErr=False):
-    """ Physical value of the pi0 mass. """
+    """ 
+    Physical value of the pi0 mass. 
+    """
     if year==2022:
         # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
         m_pi0_MeV, m_pi0_MeV_err = 134.9768, 0.0005
@@ -267,7 +272,9 @@ def M_pi0_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_pipm_phys(year=2022,units="MeV",returnErr=False):
-    """ Physical value of the pi+/- mass. """
+    """ 
+    Physical value of the pi+/- mass. 
+    """
     if year==2022:
         # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
         m_pipm_MeV, m_pipm_MeV_err = 139.57039, 0.00018
@@ -283,7 +290,9 @@ def M_pipm_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_rho_phys(year=2022,units="MeV",returnErr=False):
-    """ Physical value of the rho mass. """
+    """ 
+    Physical value of the rho mass. 
+    """
     if year==2022:
         # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
         m_rho_MeV, m_rho_MeV_err = 775.26, 0.23
@@ -302,7 +311,9 @@ def M_rho_phys(year=2022,units="MeV",returnErr=False):
 
 
 def fk_phys(year=2019,units="MeV"):
-    """ Physical value of Kaon decay constant. """
+    """ 
+    Physical value of Kaon decay constant. 
+    """
     if year==2019:
         # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6.
         fkMeV = 155.7
@@ -318,7 +329,9 @@ def fk_phys(year=2019,units="MeV"):
 
 
 def frho_phys(year=2017,units="GeV",returnErr=False):
-    """ Physical value of the rho decay constant. """
+    """ 
+    Physical value of the rho decay constant. 
+    """
     if year==2017:
         # HPQCD 2017. DOI: https://doi.org/10.1103/PhysRevD.93.014503. Figure 6.
         frhoGeV, frhoGeV_err = 0.21, 0.01
@@ -334,7 +347,9 @@ def frho_phys(year=2017,units="GeV",returnErr=False):
 
 
 def alpha_e(year=2018,returnErr=False):
-    """ Fine structure constant. """
+    """ 
+    Fine structure constant. 
+    """
     # NIST 2018 CODATA recommended value.
     if year==2018:
         alpha, alpha_err  = 7.2973525693e-3, 0.0000000011e-3
@@ -347,7 +362,9 @@ def alpha_e(year=2018,returnErr=False):
 
 
 def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
-    """ Physical value of MS-bar lambda parameter. """
+    """ 
+    Physical value of MS-bar lambda parameter. 
+    """
     if year==2021:
         # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
         LMS, LMSerr = 339, 12
@@ -360,7 +377,9 @@ def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
 
 
 def Rproton_phys(year=2018,units="fm",returnErr=False):
-    """ Physical value of proton charge radius. """
+    """ 
+    Physical value of proton charge radius. 
+    """
     if year==2018:
         # From NIST 2018. 
         R, Rerr =  0.8414, 0.0019
@@ -373,7 +392,9 @@ def Rproton_phys(year=2018,units="fm",returnErr=False):
 
 
 def r1_phys(year=2010,units="fm",returnErr=False):
-    """ Physical value of Sommer scale r1. """    
+    """ 
+    Physical value of Sommer scale r1. 
+    """    
     if year==2010:
         # r1 taken from MILC 2010. arXiv:1012.0868. 
         r1fm, r1fm_err = 0.3106, np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
@@ -386,7 +407,9 @@ def r1_phys(year=2010,units="fm",returnErr=False):
 
 
 def r0_phys(year=2014,units="fm",returnErr=False):
-    """ Physical value of Sommer scale r0. """    
+    """ 
+    Physical value of Sommer scale r0. 
+    """    
     if year==2014:
         # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
         r1, r1_err = r1_phys(year=2010,units=units,returnErr=True)
@@ -400,7 +423,9 @@ def r0_phys(year=2014,units="fm",returnErr=False):
 
 
 def sqrt_t0_phys(year=2015,units="fm",returnErr=False):
-    """ Gradient flow scale t0^(1/2). """
+    """ 
+    Gradient flow scale t0^(1/2). 
+    """
     if year==2015:
         # TODO: Where did this come from? Is the year correct? 
         sqrtt0_div_r0 = 0.334

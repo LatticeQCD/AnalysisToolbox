@@ -5,13 +5,16 @@
 # 
 # Some parameter combinations and naming conventions special to projects of the HotQCD collaboration.
 #
+
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import rel_check
 from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params
 
 
 class HotQCDParams(HotQCD_MILC_Params):
-    """A class to handle and check the input parameters of a lattice run, especially for HotQCD."""
+    """
+    A class to handle and check the input parameters of a lattice run, especially for HotQCD.
+    """
 
     def __repr__(self) -> str:
         return "HotQCDParams"
@@ -21,8 +24,9 @@ class HotQCDParams(HotQCD_MILC_Params):
 
 
 def massRatioToMasses(msml, Nt, cbeta, Nf='21'):
-    """ This is a way to get either the light+strange masses or quark+preconditioner masses
-        given the ratio ms/ml or mpre/mf. This uses HotQCD ensembles, listed in tables below.
+    """ 
+    This is a way to get either the light+strange masses or quark+preconditioner masses
+    given the ratio ms/ml or mpre/mf. This uses HotQCD ensembles, listed in tables below.
 
     Args:
         msml (int)
@@ -57,7 +61,9 @@ def _badNf(Nf):
 
 
 def quarkMassTableHISQ(Nf, Nt, msml) -> dict:
-    """Lookup tables for HotQCD HISQ runs."""
+    """
+    Lookup tables for HotQCD HISQ runs.
+    """
     Table = None
 
     if Nf=='21':
@@ -221,15 +227,18 @@ def quarkMassTableHISQ(Nf, Nt, msml) -> dict:
 
 
 def makeConfTag(conf,stream) -> str:
-    """ This takes a configuration number conf and stream label stream to make a tag labelling a configuration.
+    """ 
+    This takes a configuration number conf and stream label stream to make a tag labelling a configuration.
     Implementing this as a function makes sure everyone using the Toolbox as the same convention and, more importantly,
     ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in
-    the denseObs module. """
+    the denseObs module. 
+    """
     return str(stream)+':'+str(conf)
 
 
 def loadDens(densFile,confID,lp,inTable=None) -> dict:
-    """ Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
+    """ 
+    Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
     relevant calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
     conveniently combine data when there are multiple dense files per configuration. Here we update the table
     inTable for the new read-in, which yields outTable. Only supports Nf=2+1 configurations for the time being.

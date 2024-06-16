@@ -39,7 +39,8 @@ class Lattice():
 
 
     def march(self,coord,mu,step) -> np.ndarray:
-        """ Move forward from coordinate coord in direction mu a distance step.
+        """ 
+        Move forward from coordinate coord in direction mu a distance step.
 
         Args:
             coord (np.array)
@@ -64,7 +65,8 @@ class Lattice():
 
     # define iterateOverDomain('bulk','random',etc)
     def iterateOverBulk(self,func) -> np.ndarray:
-        """ Carry out function func on every site of the lattice. 
+        """ 
+        Carry out function func on every site of the lattice. 
 
         Args:
             func (func): Action to be carried out on every site. Must take coord as
@@ -81,7 +83,8 @@ class Lattice():
 
 
     def iterateOverRandom(self,func) -> np.ndarray:
-        """ Carry out function func on every site of the lattice. 
+        """ 
+        Carry out function func on every site of the lattice. 
 
         Args:
             func (func): Action to be carried out on every site. Must take coord as

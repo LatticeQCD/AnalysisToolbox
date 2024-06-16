@@ -105,8 +105,10 @@ cT={
 
 class polyakovTools:
 
-    """Methods for Polyakov loop observables. The methods all take as input measurements of the real and imaginary
-       parts of the Polyakov loop as numpy arrays, polReIm."""
+    """
+    Methods for Polyakov loop observables. The methods all take as input measurements of the real and imaginary
+    parts of the Polyakov loop as numpy arrays, polReIm.
+    """
 
     def __init__(self, Nsigma, Ntau):
         checkType(Nsigma,int)
@@ -122,7 +124,9 @@ class polyakovTools:
     # Absolute value of Polyakov loop
 
     def absPLoop(self, polReIm):
-        """ <|P|> """
+        """ 
+        <|P|> 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         # Calculate |P|_ij on each configuration i belonging to the jackknife sample j, then
@@ -131,7 +135,9 @@ class polyakovTools:
 
 
     def absPLoop2(self, polReIm):
-        """ <|P|>^2 """
+        """ 
+        <|P|>^2 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return np.mean( np.sqrt(ReP**2+ImP**2) )**2
@@ -140,64 +146,84 @@ class polyakovTools:
     # Susceptibility and susceptibility-like observables
 
     def Suscept(self, polReIm):
-        """ chi_|P| """
+        """ 
+        chi_|P| 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return self.Ns**3*( np.mean(ReP**2+ImP**2)-np.mean(np.sqrt(ReP**2+ImP**2))**2 )
 
 
     def T3Suscept(self, polReIm):
-        """ T^3 chi_|P| """
+        """ 
+        T^3 chi_|P| 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return (self.Ns/self.Nt)**3*( np.mean(ReP**2+ImP**2)-np.mean(np.sqrt(ReP**2+ImP**2))**2 )
 
 
     def ReSuscept(self, polReIm):
-        """ chi_ReP """
+        """ 
+        chi_ReP 
+        """
         ReP=polReIm[0]
         return self.Ns**3*( np.mean(ReP**2)-np.mean(ReP)**2 )
 
 
     def ImSuscept(self, polReIm):
-        """ chi_ImP """
+        """ 
+        chi_ImP 
+        """
         ImP=polReIm[1]
         return self.Ns**3*( np.mean(ImP**2)-np.mean(ImP)**2 )
 
 
     def T3ReSuscept(self, polReIm):
-        """ T^3 chi_ReP """
+        """ 
+        T^3 chi_ReP 
+        """
         ReP=polReIm[0]
         return (self.Ns/self.Nt)**3*( np.mean(ReP**2)-np.mean(ReP)**2 )
 
 
     def T3ImSuscept(self, polReIm):
-        """ T^3 chi_ImP """
+        """ 
+        T^3 chi_ImP 
+        """
         ImP=polReIm[1]
         return (self.Ns/self.Nt)**3*( np.mean(ImP**2)-np.mean(ImP)**2 )
 
 
     def ReTimesIm(self, polReIm):
-        """ V <ReP ImP> """
+        """ 
+        V <ReP ImP> 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return self.Ns**3*( np.mean(ReP*ImP) )
 
 
     def ReP2(self, polReIm):
-        """ V <ReP^2> """
+        """ 
+        V <ReP^2> 
+        """
         ReP=polReIm[0]
         return self.Ns**3*( np.mean(ReP**2) )
 
 
     def ImP2(self, polReIm):
-        """ V <ImP^2> """
+        """ 
+        V <ImP^2> 
+        """
         ImP=polReIm[1]
         return self.Ns**3*( np.mean(ImP**2) )
 
 
     def P2minReP2(self,polReIm):
-        """ V ( <|P|>^2 - <ReP>^2 ) """
+        """ 
+        V ( <|P|>^2 - <ReP>^2 ) 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return self.Ns**3*( np.mean(np.sqrt(ReP**2+ImP**2))**2-np.mean(ReP)**2 )
@@ -207,14 +233,18 @@ class polyakovTools:
 
 
     def RatSuscFunction(self, polReIm):
-        """ R_T = chi_ImP / chi_ReP """
+        """ 
+        R_T = chi_ImP / chi_ReP 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return (np.mean(ImP**2) - np.mean(ImP)**2) / (np.mean(ReP**2) - np.mean(ReP)**2)
 
 
     def RatSuscFunctionA(self, polReIm):
-        """ R_A = chi_|P| / chi_ReP """
+        """ 
+        R_A = chi_|P| / chi_ReP 
+        """
         ReP=polReIm[0]
         ImP=polReIm[1]
         return ( (np.mean(ReP**2+ImP**2)-np.mean(np.sqrt(ReP**2+ImP**2))**2) /

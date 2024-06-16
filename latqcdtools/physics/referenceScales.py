@@ -32,14 +32,17 @@ CY_param = {
 
 
 def ignoreBetaRange():
-    """ Turn off the beta range warnings. """
+    """ 
+    Turn off the beta range warnings. 
+    """
     global CHECKBETARANGE
     CHECKBETARANGE = False
     logger.warn('Squelching beta range warnings.')
 
 
 def _betaRangeWarn(beta, beta_range):
-    """ Many of these ansätze a(beta) have coefficients that were determined by performing a fit within a certain
+    """ 
+    Many of these ansätze a(beta) have coefficients that were determined by performing a fit within a certain
     beta range. This warning flashes whenever you are using information outside of that range, where the ansatz
     is less likely be to reliable.
 
@@ -79,7 +82,8 @@ def allton_type_ansatz(beta, c0, c2, d2):
 
 
 def a_times_fk(beta: float, year):
-    """ Get a*f_k(beta).
+    """ 
+    Get a*f_k(beta).
 
     Args:
         beta (float)
@@ -122,7 +126,8 @@ def a_times_fk(beta: float, year):
 
 
 def a_div_r1(beta, year):
-    """ Get a/r_1(beta).
+    """ 
+    Get a/r_1(beta).
 
     Args:
         beta (float)
@@ -193,7 +198,8 @@ def wuppertal_type_ansatz(beta,c1,c2,c3,c4):
 
 
 def r0_div_a(beta,year):
-    """ Get r0/a(beta).
+    """ 
+    Get r0/a(beta).
 
     Args:
         beta (float)
@@ -227,7 +233,8 @@ def r0_div_a(beta,year):
 # Based on https://arxiv.org/pdf/1503.05652.pdf
 # Latest update at 2017/01/11 by Lukas Mazur
 def sqrtt0_div_a(beta):
-    """ Get sqrt(t0/a)(beta)
+    """ 
+    Get sqrt(t0/a)(beta)
 
     Args:
         beta (float)

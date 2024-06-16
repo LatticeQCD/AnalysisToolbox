@@ -16,7 +16,8 @@ from latqcdtools.base.check import checkType
 
 
 def _powerSeries(x,coeffs):
-    """ The default fit form for a continuum extrapolation is a power series in a^2.
+    """ 
+    The default fit form for a continuum extrapolation is a power series in a^2.
 
     Args:
         x (array-like): a^2 or 1/Nt^2 
@@ -35,7 +36,8 @@ class Extrapolator(Fitter):
 
 
     def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', ansatz=None, nproc=DEFAULTTHREADS):
-        """ A framework for doing continuum limit extrapolations.
+        """ 
+        A framework for doing continuum limit extrapolations.
 
         Args:
             x (array-like): a^2 data or 1/Nt^2 data 
@@ -77,7 +79,8 @@ class Extrapolator(Fitter):
 
 
     def extrapolate(self,start_coeffs=None,prior=None,priorsigma=None,detailedInfo=False):
-        """ Carry out the extrapolation.
+        """ 
+        Carry out the extrapolation.
 
         Args:
             start_coeffs (array-like, optional): your guess for starting parameters. Defaults to None.
@@ -111,7 +114,9 @@ class Extrapolator(Fitter):
 
 
     def plot(self,**kwargs):
-        """ Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. """
+        """ 
+        Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. 
+        """
         if not self._triedExtrapolation:
             logger.TBError("Can't plot an extrapolation without having extrapolated first...")
         domain=(1e-8,np.max(self._xdata))
@@ -128,7 +133,9 @@ class Extrapolator(Fitter):
 
 
     def showResults(self):
-        """ Print extrapolation results to screen. """
+        """ 
+        Print extrapolation results to screen. 
+        """
         if not self._triedExtrapolation:
             logger.TBError("Can't show extrapolation results without having extrapolated first...")
         logger.info()
@@ -141,7 +148,9 @@ class Extrapolator(Fitter):
 
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,priorsigma=None,
                          error_strat='propagation',xtype="a",nproc=DEFAULTTHREADS,detailedInfo=False):
-    """ A convenience wrapper for the Extrapolator. """
+    """ 
+    A convenience wrapper for the Extrapolator. 
+    """
     ext = Extrapolator(x, obs, obs_err, xtype=xtype, order=order, error_strat=error_strat, nproc=nproc)
     result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, priorsigma=priorsigma,detailedInfo=detailedInfo)
     if show_results:

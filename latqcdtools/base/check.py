@@ -32,7 +32,9 @@ CATCHINVALIDVALUE = True
 
 
 def err_handler(err, flag):
-    """ This method lets us control in detail how different types of errors are treated. """
+    """ 
+    This method lets us control in detail how different types of errors are treated. 
+    """
     global CATCHUNDERFLOW
     global CATCHOVERFLOW
     global CATCHDIVIDEBYZERO
@@ -81,35 +83,44 @@ np.seterr(all='call')
 
 
 def ignoreUnderflow():
-    """ Turn off underflow crashes. """
+    """ 
+    Turn off underflow crashes. 
+    """
     global CATCHUNDERFLOW
     CATCHUNDERFLOW = False
     logger.warn("Underflow behavior set to pass.")
 
 
 def ignoreOverflow():
-    """ Turn off overflow crashes. """
+    """ 
+    Turn off overflow crashes. 
+    """
     global CATCHOVERFLOW
     CATCHOVERFLOW = False
     logger.warn("Overflow behavior set to pass.")
 
 
 def ignoreDivideByZero():
-    """ Turn off zero division crashes. """
+    """ 
+    Turn off zero division crashes. 
+    """
     global CATCHDIVIDEBYZERO
     CATCHDIVIDEBYZERO = False
     logger.warn("Zero division behavior set to pass.")
 
 
 def ignoreInvalidValue():
-    """ Turn off invalid value crashes. """
+    """ 
+    Turn off invalid value crashes. 
+    """
     global CATCHINVALIDVALUE
     CATCHINVALIDVALUE = False
     logger.warn("Invalid value behavior set to pass.")
 
 
 def checkType(obj, expectedType):
-    """ Check the type of an object. If it thinks the type is wrong, it will tell you what the
+    """ 
+    Check the type of an object. If it thinks the type is wrong, it will tell you what the
     name of obj is (as you named it in your code) along with its type and what was expected.
     Grabbing the name doesn't work if you pass him a dictionary element like myDict['key'];
     it can only tell the name myDict. One could use type hints, but at the time of writing,
@@ -146,7 +157,8 @@ def checkType(obj, expectedType):
 
 
 def checkDomain(obj, expectedDomain):
-    """ Check that obj lies in expectedDomain.
+    """ 
+    Check that obj lies in expectedDomain.
 
     Args:
         obj (obj)
@@ -161,7 +173,9 @@ def checkDomain(obj, expectedDomain):
 
 
 def checkEqualLengths(*args):
-    """ Check that all array-like objects passed have the same length. """
+    """ 
+    Check that all array-like objects passed have the same length. 
+    """
     length = len(envector(args[0]))
     for i in range(len(args)):
         if args[i] is not None:
@@ -171,7 +185,8 @@ def checkEqualLengths(*args):
 
 
 def checkExtension(filename,extension,ignoreExtension=False):
-    """ Check the extension of a file
+    """ 
+    Check the extension of a file
 
     Args:
         filename (str)

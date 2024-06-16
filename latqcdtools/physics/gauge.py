@@ -17,7 +17,9 @@ from latqcdtools.base.check import checkType
 
 @compile
 def respectBCs(x,y,z,t,Ns,Nt):
-    """ Assume periodic BCs. This also seems to work for negative numbers, e.g. -1 % 8 = 7. """
+    """ 
+    Assume periodic BCs. This also seems to work for negative numbers, e.g. -1 % 8 = 7. 
+    """
     return x%Ns, y%Ns, z%Ns, t%Nt
 
 
@@ -56,10 +58,13 @@ def ReTrABCD(A,B,C,D):
 
 class gaugeField:
 
-    """ A class for SU3 gauge fields. """
+    """ 
+    A class for SU3 gauge fields. 
+    """
 
     def __init__(self, Ns, Nt, nproc=1):
-        """ Initialize an SU3 gaugeField.
+        """ 
+        Initialize an SU3 gaugeField.
 
         Args:
             Ns (int): Spatial extension of lattice. 
@@ -88,19 +93,25 @@ class gaugeField:
 
 
     def getLink(self,x,y,z,t,mu):
-        """ Link accessor. """
+        """ 
+        Link accessor. 
+        """
         X, Y, Z, T = respectBCs(x,y,z,t,self.Ns,self.Nt)
         return self.field[T][Z][Y][X][mu]
 
 
     def setLink(self, other, x, y, z, t, mu):
-        """ Link setter. """
+        """ 
+        Link setter. 
+        """
         X, Y, Z, T = respectBCs(x,y,z,t,self.Ns,self.Nt)
         self.field[T][Z][Y][X][mu] = other
 
 
     def getLocalPlaquette(self,x,y,z,t,mu,nu):
-        """ Get Re tr U_{mu,nu}^[](x,y,z,t). """
+        """ 
+        Get Re tr U_{mu,nu}^[](x,y,z,t). 
+        """
         U_mu_x     = SU3()
         U_nu_xpamu = SU3()
         U_mu_xpanu = SU3()
@@ -115,7 +126,9 @@ class gaugeField:
 
 
     def getPlaquette(self):
-        """ Calculate <Re tr U_{mu,nu}^[]>. """
+        """ 
+        Calculate <Re tr U_{mu,nu}^[]>. 
+        """
         plaq = parallel_reduce(self._plaq_contrib,range(self.Nt),nproc=self.nproc)
         return plaq/(self.Ns**3*self.Nt*18)
 
@@ -132,7 +145,9 @@ class gaugeField:
 
 
     def getLinkTrace(self):
-        """ Calculate <tr U>. """
+        """ 
+        Calculate <tr U>. 
+        """
         linkTrace = parallel_reduce(self._linkTrace_contrib,range(self.Nt),nproc=self.nproc)
         return linkTrace/(self.Ns**3*self.Nt*4*3)
 
@@ -148,7 +163,9 @@ class gaugeField:
 
 
     def makeCold(self):
-        """ Cold start, i.e. every link is set to the identity. """
+        """ 
+        Cold start, i.e. every link is set to the identity. 
+        """
         for t in range(self.Nt):
             for z in range(self.Ns):
                 for y in range(self.Ns):

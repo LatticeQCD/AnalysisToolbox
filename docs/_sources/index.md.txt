@@ -25,7 +25,7 @@ The source code is inside the `latqcdtools` folder. It is organized into several
 
 Also at the highest level is a `scripts` directory, containing Bash scripts that help write comments for 
 AnalysisToolbox code, or to help repair it. The `examples` directory contains some pedagogical examples
-how to use the AnalysisToolbox. Finally there is a `testing` folder, which has 
+how to use the AnalysisToolbox. Finally there is a `tests` folder, which has 
 unit tests for the AnalysisToolbox methods. 
 
 We would love it if you are interested in helping develop the AnalysisToolbox! Please have a look to the
@@ -127,4 +127,5 @@ dataAnalysis/dataAnalysis.md
 physicsAnalysis/physicsAnalysis.md
 interfacing/interfacing.md
 applications/applications.md
+glossary/glossary.md
 ```

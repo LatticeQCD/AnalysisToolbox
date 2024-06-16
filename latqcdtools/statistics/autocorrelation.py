@@ -17,7 +17,8 @@ from latqcdtools.base.check import checkType
 
 
 def remove1Jackknife(ts) -> np.ndarray:
-    """ Create remove-1 jackknife list from 1-d series.
+    """ 
+    Create remove-1 jackknife list from 1-d series.
 
     Args:
         ts (array-like): time series 
@@ -30,7 +31,8 @@ def remove1Jackknife(ts) -> np.ndarray:
 
 
 def tauint(nt,ts,xhat = None) -> np.ndarray:
-    """ Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
+    """ 
+    Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
 
     INPUT:
          nt--The largest you think tau_int could be.
@@ -39,7 +41,8 @@ def tauint(nt,ts,xhat = None) -> np.ndarray:
        xhat--True mean of time series (if you know it).
 
     OUTPUT:
-      acint--List of integrated autocorrelation times. """
+      acint--List of integrated autocorrelation times. 
+      """
     checkTS(ts)
     ndat=len(ts)
     if nt>=ndat:
@@ -70,7 +73,8 @@ def tauint(nt,ts,xhat = None) -> np.ndarray:
 
 
 def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
-    """ Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
+    """ 
+    Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
 
     INPUT:
           nt--The largest nt at which you think your estimate for tau_int could lie.
@@ -80,7 +84,8 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
         xhat--True mean of time series (if you know it).
 
     OUTPUT:
-      acintj--2D list indexed by time, then bin number acintj[it][ibin] """
+      acintj--2D list indexed by time, then bin number acintj[it][ibin] 
+      """
     checkType(nt,int)
     checkType(nbins,int)
     checkTS(ts)
@@ -125,7 +130,8 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
 
 
 def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
-    """ Given a time series, return estimates for the integrated autocorrelation time and its error.
+    """ 
+    Given a time series, return estimates for the integrated autocorrelation time and its error.
 
     INPUT:
          tpickMax--The largest nt where you think your estimate might become unreliable.
@@ -136,7 +142,8 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
     OUTPUT:
           tau_int--Estimate for integrated autocorrelation time.
          tau_inte--Its (jackknife) error bar.
-           itpick--The Monte Carlo separation at which this method found its estimate for tau_int. """
+           itpick--The Monte Carlo separation at which this method found its estimate for tau_int. 
+    """
     checkTS(ts)
 
     # Get integrated autocorrelation time list and corresponding jackknife list.

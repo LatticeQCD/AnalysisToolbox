@@ -15,7 +15,9 @@ from latqcdtools.base.check import checkType
 
 
 def _even_knots(xdata, nknots):
-    """ Return a list of nknots evenly spaced knots. """
+    """ 
+    Return a list of nknots evenly spaced knots. 
+    """
     if len(xdata)<nknots:
         logger.TBError('number of data < number of knots')
     flat_xdata = np.sort(np.asarray(xdata))
@@ -31,7 +33,9 @@ def _even_knots(xdata, nknots):
 
 
 def _random_knots(xdata, nknots, randomization_factor=1, SEED=None):
-    """ Return a list of nknots randomly spaced knots. """
+    """ 
+    Return a list of nknots randomly spaced knots. 
+    """
     rng = np.random.default_rng(SEED)
     flat_xdata = np.sort(np.asarray(xdata))
     sample_xdata = rng.choice(flat_xdata,int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots)),
@@ -64,7 +68,8 @@ class customSpline:
 
 def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, 
               getAICc=False, natural=False, smooth=None):
-    """ This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
+    """ 
+    This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
     by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
     since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can't specify
     the knots, so you can't both pick knots and smooth.
@@ -136,7 +141,9 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
 
 
 def getSplineErr(xdata, xspline, ydata, ydatae, num_knots=None, order=3, rand=False, fixedKnots=None, natural=False):
-    """ Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. """
+    """ 
+    Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. 
+    """
     spline_lower = getSpline(xdata, ydata - ydatae, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
     spline_upper = getSpline(xdata, ydata + ydatae, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
     spline_center = getSpline(xdata, ydata, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)

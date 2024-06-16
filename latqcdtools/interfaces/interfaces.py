@@ -14,8 +14,10 @@ from latqcdtools.base.utilities import substringBetween
 import latqcdtools.base.logger as logger
 
 class HotQCD_MILC_Params(latticeParams):
-    """ A class to handle and check the input parameters of a lattice run using conventions common to both the
-        HotQCD and MILC collaborations. """
+    """ 
+    A class to handle and check the input parameters of a lattice run using conventions common to both the
+    HotQCD and MILC collaborations. 
+    """
 
     def __repr__(self) -> str:
         return "HotQCD_MILC_Params"
@@ -31,7 +33,8 @@ class HotQCD_MILC_Params(latticeParams):
 
 
 def paramFrom_HotQCD_MILC(ensemble):
-    """ Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.
+    """ 
+    Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.
 
     Args:
         ensemble (str): ensemble label of the form l3216f3b6050m00394m1064
@@ -57,9 +60,11 @@ def paramFrom_HotQCD_MILC(ensemble):
 
 
 def readGPL(filename,discardTag=True,raggedWarn=True):
-    """ Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
+    """ 
+    Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
     tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
-    rather than using genfromtxt to allow the possibility of ragged tables. """
+    rather than using genfromtxt to allow the possibility of ragged tables. 
+    """
     checkType(filename,str)
     checkType(discardTag,bool)
     checkType(raggedWarn,bool)
@@ -89,7 +94,9 @@ def readGPL(filename,discardTag=True,raggedWarn=True):
 
 
 def readYAML(filename,ignoreExtension=False) -> dict:
-    """ Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. """
+    """ 
+    Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. 
+    """
     checkType(filename,str)
     checkExtension(filename,'yaml',ignoreExtension)
     with open(filename, 'r') as file:
@@ -100,7 +107,9 @@ def readYAML(filename,ignoreExtension=False) -> dict:
 
 
 def readJSON(filename,ignoreExtension=False) -> dict:
-    """ Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. """
+    """ 
+    Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. 
+    """
     checkType(filename,str)
     checkExtension(filename,'json',ignoreExtension)
     with open(filename, 'r') as file:
@@ -108,7 +117,8 @@ def readJSON(filename,ignoreExtension=False) -> dict:
 
 
 def readWML(filename) -> list:
-    """ Does its best to read a table from Wikipedia Markup Language. Returns a list of lists,
+    """ 
+    Does its best to read a table from Wikipedia Markup Language. Returns a list of lists,
     where each row corresponds to either a line of the table or a line of markup code. You
     will have to do some processing by hand, since so many people edit Wikipedia and have
     inconsistent styles.
@@ -153,7 +163,8 @@ def readWML(filename) -> list:
 
 
 def writeYAML(data,filename):
-    """ Write dictionary to YAML file.
+    """ 
+    Write dictionary to YAML file.
 
     Args:
         data (dict)
@@ -169,7 +180,8 @@ def writeYAML(data,filename):
 
 
 def writeJSON(data,filename):
-    """ Write dictionary to JSON file.
+    """ 
+    Write dictionary to JSON file.
 
     Args:
         data (dict)
@@ -184,7 +196,8 @@ def writeJSON(data,filename):
 class genericTable(list):
     
     def __init__(self,delimiter=None,pre='',post=''):
-        """ genericTable objects are to streamline output tables in an arbitrary format. A genericTable
+        """ 
+        genericTable objects are to streamline output tables in an arbitrary format. A genericTable
         is implemented as a list of lists.
 
         Args:
@@ -213,7 +226,8 @@ class genericTable(list):
             self.pop()
 
     def outputTable(self,filename=None):
-        """ Lets you output a table.
+        """ 
+        Lets you output a table.
 
         Args:
             filename (str, optional): If set, will output to file. Otherwise output to screen. 
@@ -234,7 +248,9 @@ class genericTable(list):
             outFile.close()
 
     def readLine(self,line):
-        """ Convert a line of the table to a list. """ 
+        """ 
+        Convert a line of the table to a list. 
+        """ 
         cols=line.strip().rstrip('\\').split(self.delimiter)
         row = []
         for col in cols:
@@ -242,7 +258,8 @@ class genericTable(list):
         self.append(row)
 
     def readTable(self,filename):
-        """ Read a table containing data only. (No headers!)
+        """ 
+        Read a table containing data only. (No headers!)
 
         Args:
             filename (str)
@@ -293,7 +310,8 @@ class redmineTable(markdownTable):
 
 
 def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
-    r""" Convert a source table into a target table. The assumption for the source file is that
+    r""" 
+    Convert a source table into a target table. The assumption for the source file is that
     is that the only lines are table lines, i.e. there's no intervening \hline or something like that.
     The table type is determined by the file extensions of source and target.
 

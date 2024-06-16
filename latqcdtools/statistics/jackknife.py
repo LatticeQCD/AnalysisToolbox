@@ -14,15 +14,19 @@ from latqcdtools.base.utilities import isHigherDimensional
 
 
 def _pseudobins(jackknifeBins,avg):
-    """ Calculate the 'pseudovalue' from the ith jackknife estimator. The pseudovalue is unbiased
-    up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. """ 
+    """ 
+    Calculate the 'pseudovalue' from the ith jackknife estimator. The pseudovalue is unbiased
+    up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. 
+    """ 
     nblocks=len(jackknifeBins)
     return nblocks*np.array(avg) - (nblocks-1)*jackknifeBins
 
 
 def _pareAxis(data,axis,nblocks):
-    """ In order to ensure that all jackknife blocks have the same length, we pare the data along
-    the conf_axis, so that nblocks divides the length of data along conf_axis."""
+    """ 
+    In order to ensure that all jackknife blocks have the same length, we pare the data along
+    the conf_axis, so that nblocks divides the length of data along conf_axis.
+    """
     data=np.array(data)
     length = data.shape[axis]
     new_length = length - (length % nblocks)
@@ -32,7 +36,8 @@ def _pareAxis(data,axis,nblocks):
 
 
 def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False, args=()):
-    """ Carry out a jackknife of an arbitrary function f of some data.
+    """ 
+    Carry out a jackknife of an arbitrary function f of some data.
 
     Args:
         f (func)
