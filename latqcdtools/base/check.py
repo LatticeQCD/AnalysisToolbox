@@ -14,7 +14,11 @@ from latqcdtools.base.utilities import envector, isArrayLike
 
 # This warning is on by default, which worries that we may lose precision when using complex numbers. But
 # I think in the instances I use complex numbers, they cannot really be avoided.
-warnings.filterwarnings("ignore", category=np.ComplexWarning)
+try:
+    warnings.filterwarnings("ignore", category=np.ComplexWarning)
+except AttributeError:
+    pass
+
 
 # I want solvers to try other strategies when they hit RuntimeWarnings.
 warnings.filterwarnings("error", category=RuntimeWarning)
