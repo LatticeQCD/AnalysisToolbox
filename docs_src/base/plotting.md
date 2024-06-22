@@ -7,8 +7,9 @@ plots easily using python. All of them can be found in
 ```Python
 import latqcdtools.base.plotting
 ```
-It is recommended to use this module because you can add all the power and flexibility of python 
-to your plotting routines.
+We tried to write this module such that you can pass Matplotlib arguments to our custom wrappers
+like `plot_file`, so hopefully you can comfortably weave in your own stylistic choices.
+Be sure to also check out the example in `examples/main_plotting.py`.
 
 ## The basics
 
@@ -36,8 +37,8 @@ command in your plots. The command
 set_params()
 ```
 lets you specify things needed for every plot such as titles and axis labels. The `set_params` 
-command should always come _after_ your `plot_file` calls and _before_ your `plt.savefig` and 
-`plt.show` calls. Somehow the `plot_file` seems to overwrite the `set_params`. For a full list 
+works best _after_ your `plot_file` calls and _before_ your `plt.savefig` and 
+`plt.show` calls. For a full list 
 of parameters have a look at this module. The command
 ```Python
 plot_file(filename, xcol, ycol, xecol, yecol=None)
@@ -78,18 +79,10 @@ to get you ready for your next figure.
 ### Changing axis ranges
 
 The ranges of plots are chosen automatically, but this automatic choice may not always suit your 
-purposes. In this can you can use the commands
+purposes. To do some custom choice, use 
 ```Python
-set_xmin(-1)
-set_xmax(1)
-set_ymin(-2)
-set_ymax(2)
+set_params(xmin=0,xmax=1,ymin=0,ymax=1)
 ```
-to set the x-range to lie in the interval [-1,1] and the y-range to lie in the interval [-2,2]. 
-Please note that the axis ranges are NOT controlled by `set_params`. `set_params` does have, for 
-example, the parameter `xmin`, but the parameter `xmin` contained in `set_params` controls only 
-what data is used for the plot, and does not control the plot range directly. Please also put 
-these commands after `plot_file` but before `plt.savefig` and `plt.show`.
 
 ### Changing the location of the legend
 

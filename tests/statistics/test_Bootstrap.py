@@ -7,9 +7,12 @@
 # 
 
 from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss
+from latqcdtools.statistics.statistics import KSTest_1side
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.initialize import DEFAULTSEED
+import latqcdtools.base.logger as logger
 import numpy as np
+import scipy as sp
 
 EPSILON = 1e-16 # test precision
 
@@ -26,10 +29,18 @@ def Test_Bootstrap():
 
     lpass = True
 
+    # Test that nothing changes
     REFm =  500.3124500000001
     REFe =  9.202595107612115
-    TESTm, TESTe = bootstr(np.mean, A, numb_samples=100, seed=DEFAULTSEED, nproc=1)
+    samp, TESTm, TESTe = bootstr(np.mean, A, numb_samples=100, seed=DEFAULTSEED, nproc=1, return_sample=True)
     lpass *= print_results(TESTm, REFm, TESTe, REFe, "single proc simple mean test", EPSILON)
+
+    # Test that the bootstrap distribution is reasonable
+    normalCDF = sp.stats.norm(loc=REFm,scale=REFe).cdf
+    if KSTest_1side(samp,normalCDF) < 0.05:
+        lpass = False
+        logger.TBFail('Significant KS tension')
+
     TESTm, TESTe = bootstr(np.mean, A, 100, seed=DEFAULTSEED)
     lpass *= print_results(TESTm, REFm, TESTe, REFe, "simple mean test", EPSILON)
 

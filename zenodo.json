@@ -1,0 +1,37 @@
+{
+
+    "title": "AnalysisToolbox",
+    "description": "A set of Python tools for statistically analyzing data. This includes aspects of lattice QCD applications related to QCD phenomenology.",
+
+    "creators": [
+        {"name": "Clarke, David A.",   "orcid":  "0000-0002-5570-0894",  "affiliation": "Department of Physics and Astronomy, University of Utah"},
+        {"name": "Altenkort, Luis",    "orcid":  "0000-0001-9382-0208",  "affiliation": "Fakultät für Physik, Universität Bielefeld"},
+        {"name": "Dick, Henrik",                                         "affiliation": "Fakultät für Physik, Universität Bielefeld"},
+        {"name": "Goswami, Jishnu",    "orcid":  "0000-0002-7877-3033",  "affiliation": "RIKEN Center for Computational Science"},
+        {"name": "Kaczmarek, Olaf",    "orcid":  "0000-0002-6986-2341",  "affiliation": "Fakultät für Physik, Universität Bielefeld"},
+        {"name": "Mazur, Lukas",       "orcid":  "0000-0001-6304-7082",  "affiliation": "Paderborn Center for Parallel Computing, Paderborn University" },
+        {"name": "Sandmeyer, Hauke",                                     "affiliation": "Fakultät für Physik, Universität Bielefeld"},
+        {"name": "Sarkar, Mugdha",     "orcid":  "0000-0002-3494-7249",  "affiliation": "National Taiwan University"},
+        {"name": "Schmidt, Christian", "orcid":  "0000-0002-9071-4757",  "affiliation": "Fakultät für Physik, Universität Bielefeld"},
+        {"name": "Shu, Hai-Tao",       "orcid":  "0000-0001-7197-4281",  "affiliation": "Brookhaven National Laboratory"},
+        {"name": "Ueding, Tristan",    "orcid":  "0000-0002-2440-1787",  "affiliation": "Brookhaven National Laboratory"}
+    ],
+
+
+    "license": "MIT",
+
+    "related_identifiers": [
+        {
+            "resource_type": "publication-preprint",
+            "relation": "isDocumentedBy",
+            "identifier": "https://arxiv.org/abs/2308.06652"
+        }
+    ],
+
+    "keywords": ["python", "physics", "statistical-physics", "qcd", "lattice-qcd"],
+
+    "communities": [
+        {"identifier": "PUNCH4NFDI"}
+    ]
+
+}

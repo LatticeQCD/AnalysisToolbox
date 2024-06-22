@@ -871,3 +871,25 @@ def plot_band(xdata, low_lim, up_lim, center = None, **params):
         else:
             _update_handles(ax, pl)
     set_params(**params) # Needed to put in labels
+
+
+def plot_hline(y,**params):
+    """ 
+    Plot a horizontal line at y. Has the same arguments as matplotlib's axhline.
+    """
+    _initializePlt(params)
+    optional = _add_optional(params)
+    ax  = _getAxObject(params)
+
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+
+    handle = ax.axhline(y=y,xmin=params['xmin'],xmax=params['xmax'],color=params['color'], **optional) 
+
+    globals()['ZOD'] += 1
+
+    if params['label'] is not None:
+        _update_labels(ax,params['label'])
+        _update_handles(ax,handle)
+    set_params(**params)

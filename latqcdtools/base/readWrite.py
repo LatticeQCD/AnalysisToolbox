@@ -50,13 +50,15 @@ def writeTable(filename,*args,**kwargs):
     
     writeTable('file.txt',col1,col2,header=['header1','header2])
     
-    This works for an arbitrary number of columns col. It seems much more intuitive to me 
+    This works for an arbitrary number of 1-d columns col. It seems much more intuitive to me 
     that you pass columns as arguments than whatever np.savetxt is doing.
 
     Args:
         filename (str): output file name
     """
     npkwargs=kwargs
+    if len(args)==0:
+        logger.TBError('No data passed to writeTable.')
     if 'header' in kwargs:
         head = kwargs['header']
         del npkwargs['header']
@@ -77,8 +79,11 @@ def writeTable(filename,*args,**kwargs):
     dtypes = []
     form = ''
     colno = 0
+    ndat = len(args[0])
     for col in args:
         col_arr = np.array(col)
+        if len(col_arr) != ndat:
+            logger.TBError('Expected length',ndat,'for col',colno,'but found',len(col_arr))
         if isinstance(col_arr[0],complex):
             data += (col_arr.real,)
             data += (col_arr.imag,)

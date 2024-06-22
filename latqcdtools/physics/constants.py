@@ -238,11 +238,14 @@ def GeVinv_to_fm(x) -> float:
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
 
 
-def M_mu_phys(year=2020,units="MeV",returnErr=False):
+def M_mu_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of the muon mass. 
     """
-    if year==2020:
+    if year==2022:
+        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        m_mu_MeV, m_mu_MeV_err = 105.6583755, 0.0000023
+    elif year==2020:
         # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
         m_mu_MeV, m_mu_MeV_err = 105.6583745, 0.0000024
     else:

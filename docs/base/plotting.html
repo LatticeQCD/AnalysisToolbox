@@ -95,8 +95,9 @@ plots easily using python. All of them can be found in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.plotting</span>
 </pre></div>
 </div>
-<p>It is recommended to use this module because you can add all the power and flexibility of python
-to your plotting routines.</p>
+<p>We tried to write this module such that you can pass Matplotlib arguments to our custom wrappers
+like <code class="docutils literal notranslate"><span class="pre">plot_file</span></code>, so hopefully you can comfortably weave in your own stylistic choices.
+Be sure to also check out the example in <code class="docutils literal notranslate"><span class="pre">examples/main_plotting.py</span></code>.</p>
 </section>
 <section id="the-basics">
 <h2>The basics<a class="headerlink" href="#the-basics" title="Permalink to this headline"></a></h2>
@@ -124,8 +125,8 @@ command in your plots. The command</p>
 </pre></div>
 </div>
 <p>lets you specify things needed for every plot such as titles and axis labels. The <code class="docutils literal notranslate"><span class="pre">set_params</span></code>
-command should always come <em>after</em> your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> calls and <em>before</em> your <code class="docutils literal notranslate"><span class="pre">plt.savefig</span></code> and
-<code class="docutils literal notranslate"><span class="pre">plt.show</span></code> calls. Somehow the <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> seems to overwrite the <code class="docutils literal notranslate"><span class="pre">set_params</span></code>. For a full list
+works best <em>after</em> your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> calls and <em>before</em> your <code class="docutils literal notranslate"><span class="pre">plt.savefig</span></code> and
+<code class="docutils literal notranslate"><span class="pre">plt.show</span></code> calls. For a full list
 of parameters have a look at this module. The command</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">xcol</span><span class="p">,</span> <span class="n">ycol</span><span class="p">,</span> <span class="n">xecol</span><span class="p">,</span> <span class="n">yecol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
@@ -164,18 +165,10 @@ to get you ready for your next figure.</p>
 <section id="changing-axis-ranges">
 <h3>Changing axis ranges<a class="headerlink" href="#changing-axis-ranges" title="Permalink to this headline"></a></h3>
 <p>The ranges of plots are chosen automatically, but this automatic choice may not always suit your
-purposes. In this can you can use the commands</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_xmin</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">set_xmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">set_ymin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">set_ymax</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+purposes. To do some custom choice, use</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_params</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>to set the x-range to lie in the interval [-1,1] and the y-range to lie in the interval [-2,2].
-Please note that the axis ranges are NOT controlled by <code class="docutils literal notranslate"><span class="pre">set_params</span></code>. <code class="docutils literal notranslate"><span class="pre">set_params</span></code> does have, for
-example, the parameter <code class="docutils literal notranslate"><span class="pre">xmin</span></code>, but the parameter <code class="docutils literal notranslate"><span class="pre">xmin</span></code> contained in <code class="docutils literal notranslate"><span class="pre">set_params</span></code> controls only
-what data is used for the plot, and does not control the plot range directly. Please also put
-these commands after <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> but before <code class="docutils literal notranslate"><span class="pre">plt.savefig</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.show</span></code>.</p>
 </section>
 <section id="changing-the-location-of-the-legend">
 <h3>Changing the location of the legend<a class="headerlink" href="#changing-the-location-of-the-legend" title="Permalink to this headline"></a></h3>

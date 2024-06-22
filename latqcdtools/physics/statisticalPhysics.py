@@ -169,6 +169,10 @@ def reweight(X, pRW, p0, S):
     simulation point pRW. We assume the action depends linearly on the simulation
     parameter, i.e. S' ~ p S
 
+    By the way, if you are going to pair this with a jackknife to estimate e.g.
+    where a response function is maximized, make sure you pick enough reweighting
+    points to properly resolve where the maximum is.
+
     Args:
         X (np.array): Measurements to reweight. 
         pRW (float): Reweight to this target. 
