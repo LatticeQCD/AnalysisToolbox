@@ -9,7 +9,8 @@
 import numpy as np
 from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import parallel_function_eval, parallel_reduce, compile, numbaON
+from latqcdtools.base.speedify import parallel_function_eval, parallel_reduce, compile, numbaON, \
+    DEFAULTTHREADS
 
 logger.set_log_level('INFO')
 
@@ -19,13 +20,16 @@ numbaON()
 def square(x):
     return x**2
 
-testArray = range(10)
+def power(x,i):
+    return x**i
+
+testArray = np.array(range(10))
 
 def testSpeedify():
 
     lpass = True
 
-    temp = parallel_function_eval(square,testArray)
+    temp = parallel_function_eval(square,testArray,nproc=DEFAULTTHREADS)
 
     sum1 = 0.
     for i in testArray:
@@ -34,10 +38,17 @@ def testSpeedify():
 
     lpass *= print_results(sum1,sum2,text='parallel square')
 
-    sum3 = parallel_reduce(square,testArray)
+    sum3 = parallel_reduce(square,testArray,nproc=DEFAULTTHREADS)
     lpass *= print_results(sum2,sum3,text='parallel square reduction')
 
-    temp = parallel_function_eval(square,testArray,nproc=1)
+    temp = parallel_function_eval(power,testArray,args=(3,),nproc=DEFAULTTHREADS)
+
+    sum1 = 0.
+    for i in testArray:
+        sum1 += power(i,3)
+    sum2 = np.sum(temp)
+
+    lpass *= print_results(sum1,sum2,text='parallel power')
 
     concludeTest(lpass)
 

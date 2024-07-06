@@ -432,7 +432,7 @@ class Fitter:
         else:
             jac = self.jacobian_fit_ansatz_array(params)
 
-        jej = np.matrix( jac.T @ self._inv_cov @ jac )
+        jej = jac.T @ self._inv_cov @ jac
 
         try:
             pcov = invert(jej,'scipy')

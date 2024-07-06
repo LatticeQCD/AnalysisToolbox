@@ -67,13 +67,21 @@ def spliceAtCol(table1, table2, col, atVal) -> np.ndarray:
     return np.column_stack( (table1[:,mask1], table2[:,mask2]) )
 
 
-def restrictAtCol(table, col, atVal) -> np.ndarray:
+def restrictAtCol(table, col, atVal, rtol=None, atol=None) -> np.ndarray:
     """ 
     Return only those rows of table where col has exactly the value atVal. 
     """
     checkType(table, np.ndarray)
     checkType(col, int)
-    mask = np.equal(table[col,:],atVal)
+    checkType(atVal,'scalar')
+    if (rtol is None) and (atol is None):
+        mask = np.equal(table[col,:],atVal)
+    else:
+        if rtol is None: # numpy defaults
+            rtol=1e-5
+        if atol is None:
+            atol=1e-8
+        mask = np.isclose(table[col,:],atVal,rtol=rtol,atol=atol)
     return table[:,mask]
 
 

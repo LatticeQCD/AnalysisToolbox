@@ -19,6 +19,7 @@ try:
 except AttributeError:
     pass
 
+_intTypes = [ int, np.int8, np.int16, np.int32, np.int64 ]
 
 # I want solvers to try other strategies when they hit RuntimeWarnings.
 warnings.filterwarnings("error", category=RuntimeWarning)
@@ -132,7 +133,7 @@ def checkType(obj, expectedType):
 
     Args:
         obj (obj)
-        expectedType (type): what type do you expect? Also accepts "array", "real", and "scalar".
+        expectedType (type): what type do you expect? Also accepts "array", "real", "int", and "scalar".
     """
     calling_frame = inspect.currentframe().f_back
     locals_dict = calling_frame.f_locals
@@ -155,6 +156,13 @@ def checkType(obj, expectedType):
             logger.TBError('Expected real scalar object for',objName,'but received',type(obj),frame=3)
         elif obj.imag>0:
             logger.TBError('Expected real scalar object',objName,'has nonzero imaginary part',frame=3)
+    elif expectedType=="int":
+        isInt = False
+        for intType in _intTypes:
+            if isinstance(obj,intType):
+                isInt = True
+        if not isInt:
+            logger.TBError('Expected int object for',objName,'but received',type(obj),frame=3)
     else:
         if not isinstance(obj,expectedType):
             logger.TBError('Expected type',expectedType,'for',objName,'but received',type(obj),frame=3)

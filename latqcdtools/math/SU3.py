@@ -103,7 +103,7 @@ class SU3(np.matrix):
         """ 
         Conjugate transpose. 
         """
-        return self.getH()
+        return self.T.conj()
 
 
     def det(self):
@@ -120,6 +120,8 @@ class SU3(np.matrix):
         special = rel_check(self.det(), 1.)
         UdaggU  = self.dagger()*self
         unitary = rel_check(UdaggU,id_3)
+        logger.debug('\ndet(U) =',self.det())
+        logger.debug('\nU^t U =',UdaggU)
         if not (special and unitary):
             return False
         return True

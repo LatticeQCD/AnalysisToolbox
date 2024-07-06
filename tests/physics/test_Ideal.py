@@ -11,6 +11,7 @@ from latqcdtools.testing import print_results, concludeTest
 
 
 def testIdeal():
+
     iGas = idealGas(nf=3)
     
     lpass = True
@@ -22,9 +23,13 @@ def testIdeal():
                            text='Q5')
     lpass *= print_results(0,iGas.gen_chi(T=1,B_order=0,Q_order=0,S_order=5,C_order=0,muB=0,muQ=0,muS=1,muC=0),
                            text='S5')
-    
-    mu0      = 2
-    T0       = 3
+
+    # nB at muB=0 should be zero.
+    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=1,Q_order=0,S_order=0,C_order=0,muB=0,muQ=0,muS=0,muC=0),
+                           text='nB at muB=0')
+
+    mu0      = 867.5309
+    T0       = 436.9174
     chi11BS  = iGas.gen_chi(T=T0,B_order=1,Q_order=0,S_order=1,C_order=0,muB=mu0,muQ=0,muS=0,muC=0)
     chi11BQ  = iGas.gen_chi(T=T0,B_order=1,Q_order=1,S_order=0,C_order=0,muB=mu0,muQ=0,muS=0,muC=0)
     chi11QS  = iGas.gen_chi(T=T0,B_order=0,Q_order=1,S_order=1,C_order=0,muB=mu0,muQ=0,muS=0,muC=0)

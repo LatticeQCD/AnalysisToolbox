@@ -87,11 +87,11 @@ default_params = {
     'markersize': 8,             # Size of the symbols.
     'markerfill': False,         # If False, markers are hollow
 
-    # Options for the legend.
+    # Options for the legend. 
     # legendpos:
-    #   2     9     1
-    #   6     10    7
-    #   3     8     4
+    #   2     9     1           'upper left'    'upper center'  'upper right'
+    #   6     10    7           'center left'   'center'        'center right'
+    #   3     8     4           'lower left'    'lower center'  'lower right'
     'legendpos': 'best',
     'bbox_to_anchor': None,      # Manual position of the legend. The very bottom-left is (0,0), and the very 
                                  #   top-right is (1,1). If you set this, legendpos appears to get ignored.
@@ -153,6 +153,11 @@ def clearPlot():
     legend_handles = { plt : [] }
     legend_labels  = { plt : [] }
     plt.clf()
+
+
+def resetLEGEND():
+    global LEGEND
+    LEGEND = False
 
 
 def getColorGradient(NUM_COLORS,map='viridis') -> list:

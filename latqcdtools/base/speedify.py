@@ -95,6 +95,7 @@ class ComputationClass:
         logger.debug('Initializing')
         logger.debug('input_array =',self._input_array)
         logger.debug('args =',self._args)
+        logger.debug('parallelizer =',self._parallelizer)
         if nproc > MAXTHREADS:
             logger.warn('We recommend using fewer processes than',MAXTHREADS) 
         self._result = self.parallelization_wrapper() # compute the result when class is initialized

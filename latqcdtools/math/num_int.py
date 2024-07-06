@@ -63,22 +63,22 @@ def integrateData(xdata,ydata,method='trapezoid'):
     ydata=np.array(ydata)
 
     if method=='simpson':
-        return integrate.simpson(ydata,xdata)
+        return integrate.simpson(y=ydata,x=xdata)
 
     elif method=='trapezoid':
-        return integrate.trapezoid(ydata, xdata)
+        return integrate.trapezoid(y=ydata, x=xdata)
 
     else:
         logger.TBError("Unknown integration method",method)
 
 
-persistentMethods = ['quad', 'trapezoid', 'romberg']
+persistentMethods = ['quad', 'trapezoid']
 
 
 def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,epsabs=1.49e-8):
     """ 
-    Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, and
-    scipy.romberg, which otherwise do not like to handle numpy arrays.
+    Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
+    which otherwise does not like to handle numpy arrays.
 
     Args:
         func (func): Integrand. 
@@ -87,7 +87,6 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
         method (str,optional): Integration method. Defaults to 'persistent_quad_trap'. Possibilities are:
                                 > 'persistent' : Try various methods until something works. 
                                 > 'quad' : Gaussian quadrature.
-                                > 'romberg' : Romberg method. 
                                 > 'trapezoid' : Trapezoidal rule.
         args (tuple, optional): Arguments to func. Defaults to ().
         stepsize (float, optional): _description_. Defaults to None.
@@ -118,23 +117,11 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
         h = np.vectorize(g)
         return np.asarray(h(a,b))
 
-    elif method=='vec_romberg':
-        def g(A,B):
-            return integrate.romberg(func, A, B, args=args, rtol=epsrel, tol=epsabs)
-        h = np.vectorize(g)
-        return np.asarray(h(a,b))
-
     elif method=='quad':
         if isVec:
             return integrateFunction(func,a,b,args=args,method='vec_quad',limit=limit,epsrel=epsrel,epsabs=epsabs)
         else:
             return integrate.quad(func, a, b, args=args, limit=limit, epsrel=epsrel, epsabs=epsabs)[0]
-
-    elif method=='romberg':
-        if isVec:
-            return integrateFunction(func,a,b,args=args,method='vec_romberg',limit=limit,epsrel=epsrel,epsabs=epsabs)
-        else:
-            return integrate.romberg(func, a, b, args=args, tol=epsabs, rtol=epsrel) 
 
     elif method=='trapezoid':
         for i in range(len(b)):
@@ -149,6 +136,9 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
             return integrateData(x, y, method='trapezoid')[0]
         else:
             return integrateData(x, y, method='trapezoid')
+
+    elif method=='romberg':
+        logger.TBError('Scipy is deprecating Romberg.')
 
     else:
         logger.TBError('Unrecognized integration method',method)

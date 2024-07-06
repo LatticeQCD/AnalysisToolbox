@@ -64,7 +64,7 @@ def testDataCleaner():
                        [0,1,2,3,4,6,7,8,9,0,1,2,3,4,6,7,8,9,0,1,3,4,5,6,7,8,9]])
     table2 = np.array([[0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2],
                        [1,2,3,4,5,6,7,8,9,0,2,3,4,5,6,7,8,9,0,1,3,4,5,6,7,8,9]])
-    for stream in [0,1,2]:
+    for stream in [0.0e0, 1.0e0, 2.0e0]:
         temp1 = restrictAtCol(table1,0,stream)
         temp2 = restrictAtCol(table2,0,stream)
         res1, res2 = intersectAtCol(temp1,temp2,1) 

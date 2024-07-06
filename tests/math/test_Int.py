@@ -60,8 +60,6 @@ def testInt():
     lpass *= print_results(integrateFunction(f,0,1,method='trapezoid'), 0.5, text="trapezoid scalar function")
     lpass *= print_results(integrateFunction(f,[0,0],[1,2],method='quad'), [0.5,2], text="quadrature vector function")
     lpass *= print_results(integrateFunction(f,0,1,method='quad'), 0.5, text="quadrature scalar function")
-    lpass *= print_results(integrateFunction(f,[0,0],[1,2],method='romberg'), [0.5,2], text="romberg vector function")
-    lpass *= print_results(integrateFunction(f,0,1,method='romberg'), 0.5, text="romberg scalar function")
 
     # Default functionality
     lpass *= print_results(integrateFunction(f,0,1), 0.5, text="default")
