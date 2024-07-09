@@ -12,6 +12,7 @@ from numpy.linalg import det
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import rel_check, id_3, ze_3
 from latqcdtools.base.speedify import compile
+from latqcdtools.base.check import checkType
 
 
 # Eventually we would like to use default_rng here too, but it doesn't compile straightforwardly
@@ -19,7 +20,7 @@ from latqcdtools.base.speedify import compile
 rng = np.random
 
 
-@compile
+#@compile
 def fastUnitarize(self):
 
     # Normalize row 0.
@@ -63,40 +64,49 @@ def fastRandomize(self):
             self[i,j] = complex( 1 - 2*rng.uniform(0,1), 1 - 2*rng.uniform(0,1) )
 
 
-class SU3(np.matrix):
+class SU3(np.ndarray):
 
     """ 
-    A member of the Lie group SU(3). Implemented as a subclass of the np.matrix class. This gives us access already
-    to all the nice features of np.matrix and lets us leverage the speed of numpy.
+    A member of the Lie group SU(3). Implemented as a subclass of the np.ndarray class. This gives us access already
+    to all the nice features of np.ndarray and lets us leverage the speed of numpy.
         g.trace()
         g.det()
         g.dagger()
         g[i,j], which can be used to access and assign
         g + h
-        g*h
+        g*h = g@h
         2*g
     """
 
-
-    def __new__(cls, mat=None, **kwargs):
+    def __new__(cls, mat=None):
         if mat is None:
-            obj = super().__new__(cls, ze_3, **kwargs)
-        else:
-            obj = super().__new__(cls, mat, **kwargs)
-        if np.shape(obj) != (3,3):
+            mat = ze_3 
+        obj = np.asarray(mat, dtype=complex)
+        if obj.shape != (3, 3):
             logger.TBError("SU(3) matrices must have shape (3,3).")
-        return obj
+        return np.copy(obj).view(cls)
 
 
     def __repr__(self) -> str:
         return "SU(3)"
 
 
-    def trace(self, **kwargs) -> complex:
+    def __mul__(self, other):
+        # Perform matrix multiplication instead of element-wise multiplication
+        return np.dot(self, other)
+
+
+    def __pow__(self,power):
+        # Perform matrix power instead of element-wise power
+        checkType(power,int)
+        return np.linalg.matrix_power(self, power)
+
+
+    def trace(self):
         """ 
         Trace. In np.matrix, this returns a 2d object for some reason. 
         """
-        return complex( super().trace(**kwargs) )
+        return super().trace().item()
 
 
     def dagger(self):
