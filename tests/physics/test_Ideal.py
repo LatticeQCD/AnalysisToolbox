@@ -6,13 +6,14 @@
 # Some tests for the equation of state of an ideal gas. 
 # 
 
+import numpy as np
 from latqcdtools.physics.ideal import idealGas
 from latqcdtools.testing import print_results, concludeTest
 
 
 def testIdeal():
 
-    iGas = idealGas(nf=3)
+    iGas = idealGas(Nf=3,Nc=3)
     
     lpass = True
     
@@ -75,8 +76,12 @@ def testIdeal():
     # Here's a check that the isentropic speed of sound is 1/3
     cs2      = NX/( (eps + pressure)*DX )
     lpass *= print_results(1/3,cs2,text='cs2')
-    
-    
+
+    # Cross check with mathematica for isospin-symmetric case 
+    n_B = iGas.gen_chi(T=T0,B_order=1,Q_order=0,S_order=0,C_order=0,muB=mu0,muQ=0,muS=mu0/3,muC=0)
+    n_B_math = (2/81)*mu0*(mu0**2/np.pi**2+9*T0**2)
+    lpass *= print_results(n_B,n_B_math,text='nB mathematica')
+
     concludeTest(lpass)
 
  

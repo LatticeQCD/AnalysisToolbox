@@ -21,6 +21,7 @@ from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, cov_to_cor, chisquare, logGBF, DOF, \
     expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior, goodnessOfFit
+from latqcdtools.base.printErrorBars import get_err_str
 
 
 # Allowed keys for the constructor
@@ -168,7 +169,7 @@ class Fitter:
 
         # Check if we have the covariance matrix available. 
         if edata is not None:
-            edata = np.asarray(edata, dtype = float)
+            edata = np.array(edata)
             if isHigherDimensional(edata): 
                 self._cov = edata
             else: 
@@ -496,7 +497,7 @@ class Fitter:
         return domain
 
 
-    def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, detailedInfo = False):
+    def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, detailedInfo = False, show_results = False):
         """ 
         Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
         smallest chi^2. By default this method does a standard statistical fit. One can also include priors to obtain
@@ -517,6 +518,8 @@ class Fitter:
             For constrained fits. Prior error bars for the fit.
         detailedInfo : bool, optional. default = False
             If True, return also the covariance matrix of the fit parameters and logGBF
+        show_results : bool, optional. default = False
+            If True, print fit results to screen nicely. 
 
         Returns
         -------
@@ -586,6 +589,13 @@ class Fitter:
             chidof = np.inf
         else:
             chidof = all_chi2[min_ind]/dof
+
+        if show_results:
+            logger.info('Fit Results:')
+            for i in range(len(all_fit_errors[min_ind])):
+                logger.info(f'          p[{i}] =',get_err_str(self._saved_params[i],all_fit_errors[min_ind][i]))
+            logger.info('  chi^2/d.o.f. =',chidof)
+
 
         if detailedInfo:
             return ( np.copy(self._saved_params),

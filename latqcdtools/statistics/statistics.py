@@ -14,7 +14,7 @@ import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet, normalize, invert
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring, unvector
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
 import latqcdtools.base.logger as logger
@@ -510,7 +510,7 @@ def error_prop(func, means, errors, grad=None, args=()):
         error = np.sqrt(error)
     except TypeError:
         error += abs(grad * errors[0])
-    return mean, error
+    return unvector(mean), unvector(error)
 
 
 def error_prop_func(x, func, params, params_err, grad=None, args=()):

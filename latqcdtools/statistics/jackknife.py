@@ -65,6 +65,9 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
         logger.TBError('Need numb_blocks > 1. Set numb_blocks=len(data) for remove-1 jackknife.')
     if not isHigherDimensional(data):
         conf_axis=0
+    data = np.array(data)
+    if numb_blocks > np.size(data,axis=conf_axis):
+        logger.TBError('Need numb_blocks <= ndata.')
     data = _pareAxis(data,conf_axis,numb_blocks)
     n = data.shape[conf_axis]
     total = f(data, *args)

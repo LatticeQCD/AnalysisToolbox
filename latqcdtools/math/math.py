@@ -32,7 +32,7 @@ def checkSquare(mat):
     """
     checkType(mat,np.ndarray)
     if mat.shape[0] != mat.shape[1]:
-        logger.TBError('Expected square matrix.')
+        logger.TBError('Expected square matrix. Got shape',np.shape(mat))
 
 
 def regulate(mat,svdcut=1e-12) -> np.ndarray:

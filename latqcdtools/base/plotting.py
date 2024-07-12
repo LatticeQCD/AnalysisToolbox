@@ -106,8 +106,8 @@ default_params = {
     'ytick_freq': None,
     'xtick_every_n': 2,    # If xtick_freq or ytick_freq is not None, label every nth tick.
     'ytick_every_n': 2,
-    'xtick_format' : None, # Format the y-ticks, e.g. if you want to specify the number of decimals. 
-    'ytick_format' : None,
+#    'xtick_format' : None, # Format the y-ticks, e.g. if you want to specify the number of decimals. 
+#    'ytick_format' : None,
     'xscale': 1.0,         # Scale data in xdata by this factor.
     'yscale': 1.0,
     'xlogscale': False,    # Should we use a log scale for the x-axis?
@@ -455,21 +455,21 @@ def set_params(**params):
             if n % params['ytick_every_n'] != 0:
                 label.set_visible(False)
 
-    if params['xtick_format'] is not None:
-        checkType(params['xtick_format'],str)
-        if plt.rcParams['text.usetex']:
-            x_format = ticker.StrMethodFormatter('$'+params['xtick_format']+'$')
-        else:
-            x_format = ticker.StrMethodFormatter(params['xtick_format'])
-        ax.get_xaxis().set_major_formatter(x_format)
-
-    if params['ytick_format'] is not None:
-        checkType(params['ytick_format'],str)
-        if plt.rcParams['text.usetex']:
-            y_format = ticker.StrMethodFormatter('$'+params['ytick_format']+'$')
-        else:
-            y_format = ticker.StrMethodFormatter(params['ytick_format'])
-        ax.get_yaxis().set_major_formatter(y_format)
+#    if params['xtick_format'] is not None:
+#        checkType(params['xtick_format'],str)
+#        if plt.rcParams['text.usetex']:
+#            x_format = ticker.StrMethodFormatter('$'+params['xtick_format']+'$')
+#        else:
+#            x_format = ticker.StrMethodFormatter(params['xtick_format'])
+#        ax.get_xaxis().set_major_formatter(x_format)
+#
+#    if params['ytick_format'] is not None:
+#        checkType(params['ytick_format'],str)
+#        if plt.rcParams['text.usetex']:
+#            y_format = ticker.StrMethodFormatter('$'+params['ytick_format']+'$')
+#        else:
+#            y_format = ticker.StrMethodFormatter(params['ytick_format'])
+#        ax.get_yaxis().set_major_formatter(y_format)
 
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS

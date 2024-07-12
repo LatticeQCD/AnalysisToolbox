@@ -40,7 +40,7 @@ class Extrapolator(Fitter):
         A framework for doing continuum limit extrapolations.
 
         Args:
-            x (array-like): a^2 data or 1/Nt^2 data 
+            x (array-like): a data or Nt data. (It will get squared in here.) 
             obs (array-like)
             obs_err (array-like)
             ansatz (func, optional): continuum-limit fit ansatz. Power series in a^2 by default.
@@ -78,7 +78,7 @@ class Extrapolator(Fitter):
         return "Extrapolator"
 
 
-    def extrapolate(self,start_coeffs=None,prior=None,priorsigma=None,detailedInfo=False):
+    def extrapolate(self,start_coeffs=None,prior=None,priorsigma=None,detailedInfo=False,show_results=False):
         """ 
         Carry out the extrapolation.
 
@@ -87,6 +87,7 @@ class Extrapolator(Fitter):
             prior (array-like, optional): Bayesian priors. Defaults to None.
             priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
             detailedInfo (bool, optional): Do you want information like AIC? Defaults to False.
+            show_results (bool, optional): Print fit results to screen? Defaults to False.
             
         Returns:
             (array-like, array-like, float, float): fit result, its error, chi^2/d.o.f., and logGBF if relevant.
@@ -102,10 +103,10 @@ class Extrapolator(Fitter):
         self._triedExtrapolation = True
         if prior is None:
             self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, algorithms=std_algs, 
-                                                                                     detailedInfo=True)
+                                                                                     detailedInfo=True, show_results=show_results)
         else:
             self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, priorval=prior, 
-                                                                                     priorsigma=priorsigma, 
+                                                                                     priorsigma=priorsigma, show_results=show_results, 
                                                                                      algorithms=bayes_algs, detailedInfo=True)
         if detailedInfo:
             return self._result, self._result_err, self._chidof, self._stats
@@ -132,29 +133,13 @@ class Extrapolator(Fitter):
         self.save_func(filename,domain,header=header)
 
 
-    def showResults(self):
-        """ 
-        Print extrapolation results to screen. 
-        """
-        if not self._triedExtrapolation:
-            logger.TBError("Can't show extrapolation results without having extrapolated first...")
-        logger.info()
-        for i in range(len(self._result)):
-            logger.info('        c_'+str(i)+' = '+get_err_str(self._result[i],self._result_err[i]))
-        logger.info('chi2/d.o.f. =',round(self._chidof,3))
-        logger.info('     logGBF =',round(self._stats['logGBF'], 3))
-        logger.info()
-
-
 def continuumExtrapolate(x,obs,obs_err,order=1,show_results=False,plot_results=False,prior=None, start_coeffs=None,priorsigma=None,
                          error_strat='propagation',xtype="a",nproc=DEFAULTTHREADS,detailedInfo=False):
     """ 
     A convenience wrapper for the Extrapolator. 
     """
     ext = Extrapolator(x, obs, obs_err, xtype=xtype, order=order, error_strat=error_strat, nproc=nproc)
-    result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, priorsigma=priorsigma,detailedInfo=detailedInfo)
-    if show_results:
-        ext.showResults()
+    result = ext.extrapolate(start_coeffs=start_coeffs, prior=prior, priorsigma=priorsigma, detailedInfo=detailedInfo, show_results=show_results)
     if plot_results:
         if xtype=="a":
             xlabel = "$a^2$"

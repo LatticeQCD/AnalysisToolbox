@@ -41,7 +41,7 @@ def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf) -> np.ndarray:
         return array[:,mask]
 
 
-def intersectAtCol(table1, table2, col) -> np.ndarray:
+def intersectAtCol(table1, table2, col):
     """ 
     Return only those rows of table1 and table2 that have identical elements in column col. 
     """

@@ -28,8 +28,8 @@ latexify()
 # Simulation parameters. 
 #
 Nd    = 2        # number of dimensions
-Tlow  = 1.0      # lowest temperature to sample (kB=1)
-Thi   = 3.0      # highest temperature to sample
+Tlow  = 2.25     # lowest temperature to sample (kB=1)
+Thi   = 2.4      # highest temperature to sample
 h     = 0.       # external magnetic field
 L     = 8        # spatial extension
 Nequi = 300      # equilibrate with this many MCMC sweeps
@@ -56,7 +56,8 @@ logger.info()
 def runIsingModel(T):
 
     beta  = 1/T
- 
+    logger.info('T =',T)
+
     # Initialize the random number generator. When carrying out a statistical physic MCMC, it's
     # crucially important that you pick a good one. The default_rng() constructor is what
     # numpy recommends, which at the time of writing utilizes O'Neill's PCG algorithm. 

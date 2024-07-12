@@ -10,26 +10,43 @@
 import numpy as np
 import sympy
 from latqcdtools.base.check import checkType
-
+import latqcdtools.base.logger as logger
 
 class idealGas:
 
-    def __init__(self,nf): 
+    def __init__(self,Nc,Nf): 
         """ 
-        The idealGas class. Analytic derivatives are implemented with sympy.
+        Class for ideal, massless gas of quarks, zeroth order in the coupling. Fermion chemical
+        potentials are added in the order u-->d-->s-->c.
 
         Args:
-            nf (int): Number of fermion flavors. 
+            Nc (int): Number of colors. 
+            Nf (int): Number of fermion flavors. 
         """
-        checkType(nf,int)
-        self.T, self.muB, self.muS, self.muQ = sympy.symbols('T muB muS muQ') 
-        self.nf   = nf
-        self.c0   = 8*np.pi**2/45*(1 + 21*self.nf/32)
+        checkType(Nc,int)
+        checkType(Nf,int)
+        if Nf >= 4:
+            logger.TBError('Only B, Q, S, C explicitly coded in.')
+        if Nc < 1:
+            logger.TBError('Must have positive number of colors.')
+        self.T, self.muB, self.muS, self.muQ, self.muC = sympy.symbols('T muB muS muQ muC') 
+        self.Nf   = Nf
+        self.Nc   = Nc
         self.muu  = (self.muB + 2*self.muQ)/3
         self.mud  = (self.muB -   self.muQ)/3
         self.mus  = (self.muB -   self.muQ)/3 - self.muS
-        self.Psym = self.T**4*self.c0 + self.T**2*(self.muu**2 + self.mud**2 + self.mus**2)/2 \
-                    + (self.muu**4 + self.mud**4 + self.mus**4)/(4*np.pi**2)
+        self.muc  = (self.muB + 2*self.muQ)/3 + self.muC
+        # eq (8.42) and (8.43) in Kapusta and Gale's "Finite temperature field theory: 
+        # Principles and Applications" (2006)
+        self.Psym = (np.pi**2/45)*(self.Nc**2-1)*self.T**4 
+        if Nf > 0:  
+            self.Psym += self.Nc*( 7*np.pi**2*self.T**4/180 + self.muu**2*self.T**2/6 + self.muu**4/(12*np.pi**2) )
+        if Nf > 1:  
+            self.Psym += self.Nc*( 7*np.pi**2*self.T**4/180 + self.mud**2*self.T**2/6 + self.mud**4/(12*np.pi**2) )
+        if Nf > 2:  
+            self.Psym += self.Nc*( 7*np.pi**2*self.T**4/180 + self.mus**2*self.T**2/6 + self.mus**4/(12*np.pi**2) )
+        if Nf > 3:  
+            self.Psym += self.Nc*( 7*np.pi**2*self.T**4/180 + self.muc**2*self.T**2/6 + self.muc**4/(12*np.pi**2) )
 
     def __repr__(self) -> str:
         return "idealGas"
@@ -38,14 +55,15 @@ class idealGas:
         """ 
         Unitful pressure. 
         """
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
+        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
         return float(self.Psym.subs(values).evalf())
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         chi = sympy.diff(self.Psym, self.muB, B_order)
         chi = sympy.diff(chi      , self.muQ, Q_order)
         chi = sympy.diff(chi      , self.muS, S_order)
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
+        chi = sympy.diff(chi      , self.muC, C_order)
+        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
         return float(chi.subs(values).evalf())
 
     def S(self, T, muB=0., muS=0., muQ=0., muC=0.):
@@ -53,22 +71,24 @@ class idealGas:
         Unitful entropy. 
         """
         entropy = sympy.diff(self.Psym, self.T, 1)
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
+        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
         return float(entropy.subs(values).evalf())
 
     def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         chi     = sympy.diff(self.Psym, self.muB, B_order)
         chi     = sympy.diff(chi      , self.muQ, Q_order)
         chi     = sympy.diff(chi      , self.muS, S_order)
+        chi     = sympy.diff(chi      , self.muC, C_order)
         ddT_chi = sympy.diff(chi      , self.T  , 1      )
-        values  = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
+        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
         return float(ddT_chi.subs(values).evalf())
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         chi       = sympy.diff(self.Psym, self.muB, B_order)
         chi       = sympy.diff(chi      , self.muQ, Q_order)
         chi       = sympy.diff(chi      , self.muS, S_order)
+        chi       = sympy.diff(chi      , self.muC, C_order)
         d2dT2_chi = sympy.diff(chi      , self.T  , 2      )
-        values    = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS} 
+        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
         return float(d2dT2_chi.subs(values).evalf())
 
