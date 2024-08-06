@@ -8,7 +8,7 @@
 import numpy as np
 import math
 import latqcdtools.base.logger as logger
-from latqcdtools.math.math import fallFactorial, riseFactorial, invert 
+from latqcdtools.math.math import fallFactorial, invert
 from latqcdtools.testing import print_results, concludeTest
 
 
@@ -30,6 +30,7 @@ def testMath():
 
     lpass *= print_results(inv,invert(mat,'numpy'),text='scipy vs numpy')
     lpass *= print_results(inv,invert(mat,'svd'),text='scipy vs svd')
+    lpass *= print_results(inv,invert(mat,'pinv'),text='scipy vs pinv')
 
     concludeTest(lpass)
 

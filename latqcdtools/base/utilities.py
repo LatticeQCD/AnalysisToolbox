@@ -246,7 +246,7 @@ def shellVerbose(*args):
     print(process.stdout)
 
 
-def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S") -> bool:
+def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S",beforeOrEqual=False) -> bool:
     """ 
     Check whether date1 comes before date2.
 
@@ -254,12 +254,15 @@ def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S") -> bool:
         date1 (str)
         date2 (str)
         format (str): format for date strings. Defaults to "%Y/%m/%d %H:%M:%S"
-
+        beforeOrEqual (bool): also return True if date1 == date2
+        
     Returns:
         bool: date1 < date2 
     """
     date1_converted = datetime.datetime.strptime(date1, format)
     date2_converted = datetime.datetime.strptime(date2, format)
+    if beforeOrEqual:
+        return date1_converted <= date2_converted
     return date1_converted < date2_converted
 
 

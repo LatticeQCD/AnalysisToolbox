@@ -15,6 +15,7 @@ from latqcdtools.base.check import checkType
 def getValuesFromErrStr(errStr):
     """ 
     Convert A string of the form XX.XX(YY) into a float mean and error bar. Scientific notation not yet supported.
+    Single digit errors not yet supported.
 
     Args:
         errStr (str): string of the form XX.XXXX(YY).
@@ -37,7 +38,7 @@ def getValuesFromErrStr(errStr):
         err *= pow(10,-N)
         return mean, err        
     except:
-        logger.TBError('Expected string of form XX.XXXX(YY).')
+        logger.TBRaise('Expected string of form XX.XXXX(YY). Got',errStr)
 
 
 def get_exp(param):

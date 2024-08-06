@@ -83,7 +83,7 @@ def std_dev(data, axis = 0):
 @appendToDocstring(NUMPYCOMMENT)
 def std_err(data, axis = 0):
     """ 
-    Standard deviation of the sample mean according the the CLT. 
+    Standard deviation of the sample mean according to the CLT. 
     """
     data = np.asarray(data)
     return std_dev(data, axis) / np.sqrt(data.shape[axis])
@@ -682,7 +682,7 @@ def getModelWeights(IC) -> np.ndarray:
     return normalize(np.exp(-0.5*IC))
 
 
-def modelAverage(data,err,IC):
+def modelAverage(data,err,IC,return_syst=False):
     """ 
     Given some fit results, corresponding error, and information criteria, compute
     a weighted model average.
@@ -693,15 +693,19 @@ def modelAverage(data,err,IC):
         IC (array-like): Information criteria 
 
     Returns:
-        tuple: Model average and error
+        tuple: Model average and error (optionally systematic error)
     """
     checkEqualLengths(data,err,IC)
     data, err, IC = toNumpy(data, err, IC)
     pr = getModelWeights(IC)
     mean = np.sum(pr*data)
-    var_data = err**2
-    var = np.sum(pr*var_data) + np.sum(pr*data**2) - mean**2
-    return mean, np.sqrt(var)
+    var_stat = np.sum(pr*err**2)
+    var_syst = np.sum(pr*data**2) - mean**2
+    var = var_stat + var_syst 
+    if return_syst:
+        return mean, np.sqrt(var), np.sqrt(var_syst)
+    else:
+        return mean, np.sqrt(var)
 
 
 def empiricalCDF(data):

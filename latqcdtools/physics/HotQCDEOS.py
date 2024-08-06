@@ -19,8 +19,6 @@ ct = 3.8706
 
 T0 = 154
 
-T = np.arange(130, 305, 5)
-
 a = np.array([0, -8.7704, 3.9200, 0, 0.3419])
 b = np.array([0, -1.2600, 0.8425, 0, -0.0475])
 
@@ -40,8 +38,8 @@ class EOS:
         """
         T = self.temp / T0
         i, ai, bi, x = sy.symbols('i, ai, bi, x')
-        exprP = 0.5 * (1 + sy.tanh(ct * (x - x0))) * (pid + sum(a[i] / x ** i for i in range(1, 5))) / (
-                    1 + sum(b[i] / x ** i for i in range(1, 5)))
+        exprP = 0.5 * (1 + sy.tanh(ct * (x - x0))) * (pid + sum(a[i] / x**i for i in range(1, 5))) \
+                                                   / (1   + sum(b[i] / x**i for i in range(1, 5)))
         pressure = sy.lambdify((ai, bi, x), exprP, modules=[
             'numpy', {'tanh': np.tanh}])(a, b, T)
         return pressure

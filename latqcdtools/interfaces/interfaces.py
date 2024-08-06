@@ -217,6 +217,12 @@ class genericTable(list):
     def __repr__(self) -> str:
         return "genericTable"
 
+    def __str__(self) -> str:
+        result = '\n'
+        for row in self:
+            result += str(row) + '\n'
+        return result 
+
     def append(self, item):
         checkType(item, list)
         super(genericTable, self).append(item)

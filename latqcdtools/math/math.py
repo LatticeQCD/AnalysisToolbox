@@ -11,7 +11,7 @@
 import numpy as np
 import scipy as sp
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import isArrayLike 
+from latqcdtools.base.utilities import isArrayLike, cleanOutput 
 from latqcdtools.base.check import checkType
 
 
@@ -50,13 +50,16 @@ def regulate(mat,svdcut=1e-12) -> np.ndarray:
     Returns:
         np.ndarray: regulated matrix 
     """
+    logger.debug('regulate matrix with condition number',cleanOutput(np.linalg.cond(mat)))
     U, s, Vdagger = sp.linalg.svd(mat)
-    smax = np.max(s)
+    smax = np.max(np.linalg.eigvals(mat))
     s[s < svdcut*smax] = svdcut*smax
-    return U @ np.diag(s) @ Vdagger 
+    res = U @ np.diag(s) @ Vdagger 
+    logger.debug('new condition number:',cleanOutput(np.linalg.cond(res)))
+    return res
 
 
-def invert(mat,method='scipy') -> np.ndarray:
+def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
     """ 
     Invert matrix.
 
@@ -73,13 +76,16 @@ def invert(mat,method='scipy') -> np.ndarray:
         return sp.linalg.inv(mat)
     elif method=='numpy': # Seems to be quite slow
         return np.linalg.inv(mat)
+    elif method=='pinv': 
+        return np.linalg.pinv(mat)
     elif method=='svd':
         U, s, Vdagger = sp.linalg.svd(mat)
         return np.conj(Vdagger.T) @ np.diag(1/s) @ np.conj(U.T)
     elif method=='auto':
         condition_number = np.linalg.cond(mat)
-        if condition_number > 1e12: 
-            return invert(regulate(mat,svdcut=1e-12),'svd')
+        if condition_number > 1/svdcut:
+            res = invert(regulate(mat,svdcut=svdcut),'pinv')
+            return res
         else:
             return invert(mat,'scipy')
     else:

@@ -25,17 +25,48 @@ from latqcdtools.base.printErrorBars import get_err_str
 
 
 # Allowed keys for the constructor
-_allowed_keys = ['grad', 'args', 'grad_args', 'tol', 'use_diff', 'error_strat',
+_allowed_keys = ['grad', 'args', 'grad_args', 'tol', 'use_diff', 'error_strat', 'nowarn',
                 'norm_err_chi2', 'derive_chisq', 'svdcut', 'test_tol', 'max_fev', 'nproc']
 
 # All possible algorithms.
-all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell", "Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg"]
+all_algs = ["curve_fit", "L-BFGS-B", "TNC", "Powell", "Nelder-Mead", "COBYLA", "SLSQP", "CG","dogleg", "trust-ncg", "nonlin"]
 
 # Standard algorithms for the minimization. 
-std_algs = ["curve_fit", "TNC", "Powell", "Nelder-Mead"]
+std_algs = ["curve_fit", "TNC", "Powell", "Nelder-Mead", "nonlin"]
 
 # Fast algorithms that work with priors. 
-bayes_algs = ["TNC", "Powell", "Nelder-Mead"]
+bayes_algs = ["TNC", "Powell", "Nelder-Mead", "nonlin"]
+
+
+def zipXYData(xdata,ydata):
+    """ Collect 1d xdata and ydata into an 2d xydata array. You can then use
+    unzipXYData inside of some func(xydata), which represents some f(x,y), to
+    separate the x part and y part.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+
+    Returns:
+        np.ndarray: array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+    """
+    x,y = np.meshgrid(xdata,ydata)
+    return np.stack((x,y), axis=2).reshape(-1, 2)
+
+
+def unzipXYData(xydata):
+    """ Take a 2d xydata array, created by zipXYData, and extract xvalues and yvalues
+    for use inside of a function of two variables.
+
+    Args:
+        xydata (np.ndarray): array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+
+    Returns:
+        xvalues [x1, x2, ... , xN, x1, x2, ...],
+        yavlues [y1, y1, ... , y1, y2, y2, ...]
+    """
+    X, Y = np.hsplit(xydata, 2)
+    return np.ravel(X), np.ravel(Y)
 
 
 class Fitter:
@@ -88,6 +119,9 @@ class Fitter:
             In case of numerical derivative, apply the derivative to the whole chisquare instead of the function.
         nproc : int, optional, default: DEFAULTTHREADS
             If you want you can accelerate the fits using nprocs threads.
+        nowarn: bool, optional, default: False
+            If you want to turn off warnings.
+        
         """
 
         diff = set(set(kwargs.keys()) - set(_allowed_keys))
@@ -116,19 +150,21 @@ class Fitter:
         self._grad_args     = kwargs.get('grad_args', None)
         self._errorAlg      = kwargs.get('error_strat', 'propagation')
         self._nproc         = kwargs.get('nproc', 1)
-        logger.debug('Initialize fitter with:')
-        logger.debug('  use_diff:',self._use_diff) 
-        logger.debug('  derive_chisq:',self._derive_chisq)
-        logger.debug('  tol:',self._tol)
-        logger.debug('  test_tol:',self._test_tol)
-        logger.debug('  max_fev:',self._max_fev)
+        self._nowarn        = kwargs.get('nowarn', False)
+        logger.debug('Initialize Fitter with:')
+        logger.debug('       use_diff:',self._use_diff) 
+        logger.debug('   derive_chisq:',self._derive_chisq)
+        logger.debug('            tol:',self._tol)
+        logger.debug('       test_tol:',self._test_tol)
+        logger.debug('        max_fev:',self._max_fev)
         logger.debug('  norm_err_chi2:',self._norm_err_chi2)
-        logger.debug('  args:',self._args)
-        logger.debug('  grad_args:',self._grad_args)
-        logger.debug('  errorAlg:',self._errorAlg)
-        logger.debug('  nproc:',self._nproc) 
+        logger.debug('           args:',self._args)
+        logger.debug('      grad_args:',self._grad_args)
+        logger.debug('       errorAlg:',self._errorAlg)
+        logger.debug('         svdcut:',self._svdcut)
+        logger.debug('          nproc:',self._nproc) 
 
-        if (self._errorAlg=='hessian') and self._derive_chisq is True:
+        if (self._errorAlg=='hessian') and (self._derive_chisq) and (not self._nowarn):
             self._errorAlg='propagation'
             logger.warn('hessian strategy not yet compatible with derive_chisq; switching to propagation.')
 
@@ -151,7 +187,8 @@ class Fitter:
                 "SLSQP"      : 15000,
                 "CG"         : 15000,
                 "dogleg"     : 15000,
-                "trust-ncg"  : 15000
+                "trust-ncg"  : 15000,
+                "nonlin"     : 10000,
                 }
 
         # Initialize func. This is also done in set_func, but we need it before that
@@ -360,7 +397,7 @@ class Fitter:
                 grad = None
 
             params, _ = curve_fit(func, self._xdata, self._ydata, sigma = cov, p0 = start_params, jac = grad,
-                                  ftol = self._tol, maxfev = self._max_fev["curve_fit"])
+                                  ftol = self._tol, maxfev = self._max_fev["curve_fit"], method='trf')
 
         else:
             params = minimize(self.calc_chisquare, jac_func, hess_func, start_params, self._tol,
@@ -436,12 +473,14 @@ class Fitter:
         jej = jac.T @ self._inv_cov @ jac
 
         try:
-            pcov = invert(jej,'scipy')
+            pcov = invert(jej,'pinv')
 
             # Test that the inversion went relatively OK
             test = pcov @ jej
             if abs(np.sum(test) - np.sum(np.diag(test))) > self._test_tol:
-                logger.warn(algorithm,"pcov @ jej not close to id")
+                if not self._nowarn:
+                    logger.warn(algorithm,"pcov @ jej not close to id")
+                    logger.warn(np.diag(test))
 
             if np.min(np.diag(pcov)) < 0:
                 logger.TBFail(algorithm + ": Negative entries for the variance!")
@@ -533,7 +572,7 @@ class Fitter:
             If detailedInfo, return dictionary with logGBF, BAIC, pcov.
         """
 
-        if ('curve_fit' in algorithms) and self._errorAlg=='hessian':
+        if ('curve_fit' in algorithms) and (self._errorAlg=='hessian') and (not self._nowarn):
             self._errorAlg='propagation'
             logger.warn('hessian strategy not yet compatible with curve_fit; switching strategy to propagation.')
 
@@ -652,7 +691,8 @@ class Fitter:
         """ 
         Plot the fit function. 
         """
-        logger.debug('Plotting fit.')
+        if isHigherDimensional(self._xdata):
+            logger.TBError('Automatic fit plotting only supported for functions of a single variable.') 
         domain = self._autoDomain(domain)
         if not no_error:
             plot_func(self._func, domain=domain, params=self._saved_params, params_err=self._saved_pcov, 
@@ -665,7 +705,8 @@ class Fitter:
         """ 
         Plot the fit data. 
         """
-        logger.debug('Plotting fit data.')
+        if isHigherDimensional(self._xdata):
+            logger.TBError('Automatic data plotting only supported for functions of a single variable.') 
         if self._cov is not None:
             sigma = np.sqrt( np.diag(self._cov) )
             plot_dots(self._xdata, self._ydata, sigma, **kwargs)
@@ -739,7 +780,7 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
         writeTable(filename,xdata,ydata,ydata_err,header=header,**kwargs)
 
     elif len(args_err) > 0:
-        if grad is None:
+        if (grad is None):
             logger.warn("Used numerical derivative!")
 
         # Arguments that are part of the error propagation
@@ -757,20 +798,21 @@ def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad 
 
 
 def do_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None,
-           algorithm="curve_fit", detailedInfo=False, **kwargs):
+           algorithm="curve_fit", detailedInfo=False, show_results=False, **kwargs):
     """ 
     Wrapper to fitter initialization and the fit in one step. See above for arguments. 
     """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
     return fit.do_fit(start_params=start_params, priorval=priorval, priorsigma=priorsigma, algorithm=algorithm,
-                      detailedInfo=detailedInfo)
+                      detailedInfo=detailedInfo, show_results=show_results)
 
 
 def try_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None,
-            algorithms=std_algs, detailedInfo=False, **kwargs):
+            algorithms=std_algs, detailedInfo=False, show_results=False, **kwargs):
     """ 
     Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
     algorithms has no default values here. 
     """
     fit = Fitter(func, xdata, ydata, edata, **kwargs)
-    return fit.try_fit(algorithms, start_params, priorval, priorsigma, detailedInfo=detailedInfo)
+    return fit.try_fit(start_params=start_params, priorval=priorval, priorsigma=priorsigma, algorithms=algorithms,
+                       detailedInfo=detailedInfo, show_results=show_results)

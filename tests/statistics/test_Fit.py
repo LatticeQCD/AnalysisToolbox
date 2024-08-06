@@ -111,6 +111,7 @@ def testFit():
 
     res_true     = [-1.930355e+00, 6.747380e+00, -6.979050e-02]
     res_err_true = [ 9.072495e-02, 3.357190e-01,  2.676424e-01]
+    res_nonlin   = [-1.930355e+00, 6.747380e+00, -6.958797e-02]
 
 
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="TNC", grad = grad_fit_func, norm_err_chi2=True)
@@ -133,6 +134,9 @@ def testFit():
     res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="Powell", norm_err_chi2=True)
     lpass *= print_results(res, res_true, res_err, res_err_true, "Powell quadratic ",prec=EPSILON)
 
+
+    res, res_err, _ = do_fit(fit_func, xdata, ydata, edata, [1, 1, 1], algorithm="nonlin", norm_err_chi2=True) 
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Nonlinear least-squares ",prec=EPSILON)
 
 
     logger.info("Testing correlator fit...")

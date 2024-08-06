@@ -79,7 +79,7 @@ default_params = {
     'hatch': None,               # Fill pattern
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
-    'elinewidth': 1.0,           # Linewidth of the error bars of caps af error bars
+    'elinewidth': 1,             # Linewidth of the error bars of caps af error bars
     'grid' : False,              # Do you want to put a grid in the background?
 
     # Data markers
@@ -323,8 +323,6 @@ def fill_param_dict(params):
                 if params[key] != default_params[key]:
                     logger.debug('Found legend trigger',key)
                     LEGEND = True
-
-    logger.debug('LEGEND =',LEGEND)
 
     for key, val in default_params.items():
         params.setdefault(key,val)
@@ -672,7 +670,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewid
     set_params(**params) # Needed to put in labels
 
 
-def plot_hist(data, bins = None, density=False, label=None, **params):
+def plot_hist(data, bins = None, density=False, label=None, weights=None, **params):
     """ 
     Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
     simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
@@ -686,11 +684,14 @@ def plot_hist(data, bins = None, density=False, label=None, **params):
     ax = _getAxObject(params)
     if bins is None:
         bins = 'auto'
+        if weights is not None:
+            logger.TBError('Matplotlib does not support automatic bins with weights')
     if isHigherDimensional(data):
-        ax.hist(data, bins=bins, density=density, label=label, orientation=params['orientation'], alpha=params['alpha'])
+        ax.hist(data, bins=bins, density=density, label=label, orientation=params['orientation'], alpha=params['alpha'],
+                weights=weights)
     else:
-        ax.hist(data, bins=bins, density=density, label=label,color=params['color'], orientation=params['orientation'],
-                alpha=params['alpha'])
+        ax.hist(data, bins=bins, density=density, label=label, color=params['color'], orientation=params['orientation'],
+                alpha=params['alpha'], weights=weights)
     if density:
         ax.set_yticklabels([])
     if label is not None:

@@ -18,15 +18,18 @@ RECORDLOG     = False
 CURRENT_LEVEL = 4
 
 
-log_levels    = {
-        'ALL' : 0,
-        'DEBUG' : 1,
-        'DETAILS' : 2,
-        'PROGRESS' : 3,
-        'INFO' : 4,
-        'WARN' : 5,
-        'NONE' : 6
-        }
+class ToolboxException(Exception): pass
+
+
+log_levels = {
+    'ALL' : 0,
+    'DEBUG' : 1,
+    'DETAILS' : 2,
+    'PROGRESS' : 3,
+    'INFO' : 4,
+    'WARN' : 5,
+    'NONE' : 6
+    }
 
 
 def createLogFile(filename="Toolbox.log"):
@@ -86,6 +89,7 @@ def set_log_level(level):
 
 
 def debug(*args,frame=2):
+    global CURRENT_LEVEL
     if CURRENT_LEVEL <= 1:
         args   = [str(s) for s in args]
         output = _getTimeStamp()+' DEBUG: '+_getCallerName(frame)+(' '.join(args))
@@ -94,6 +98,7 @@ def debug(*args,frame=2):
 
 
 def details(*args):
+    global CURRENT_LEVEL
     if CURRENT_LEVEL <= 2:
         args   = [str(s) for s in args]
         output = _getTimeStamp()+' DETAILS: '+(' '.join(args))
@@ -102,6 +107,7 @@ def details(*args):
 
 
 def progress(*args):
+    global CURRENT_LEVEL
     if CURRENT_LEVEL <= 3:
         args   = [str(s) for s in args]
         output = _getTimeStamp()+' PROGRESS: '+(' '.join(args))
@@ -110,6 +116,7 @@ def progress(*args):
 
 
 def info(*args):
+    global CURRENT_LEVEL
     if CURRENT_LEVEL <= 4:
         args   = [str(s) for s in args]
         output = _getTimeStamp()+' INFO: '+(' '.join(args))
@@ -118,6 +125,7 @@ def info(*args):
 
 
 def warn(*args,frame=2):
+    global CURRENT_LEVEL
     if CURRENT_LEVEL <= 5:
         args   = [str(s) for s in args]
         output = _getTimeStamp()+WARNING+' WARNING: '+_getCallerName(frame)+(' '.join(args))+ENDC
@@ -141,6 +149,13 @@ def TBError(*args,frame=2):
     print(output)
     _log(output + '\n')
     sys.exit(-1)
+
+
+def TBRaise(*args,frame=2):
+    args   = [str(s) for s in args]
+    output = FAIL+_getCallerName(frame)+(' '.join(args))+ENDC
+    _log(output + '\n')
+    raise ToolboxException(output) 
 
 
 def TBPass(*args):

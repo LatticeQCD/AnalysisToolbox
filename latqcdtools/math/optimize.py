@@ -126,10 +126,17 @@ def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10
         kwargs['hess'] = hess
         kwargs['options'] = {'maxiter': maxiter}
 
-    try:
-        res = opt.minimize(func, start_params, **kwargs)
-    except Exception as e:
-        raise e
+    if algorithm != "nonlin":
+        try:
+            res = opt.minimize(func, start_params, **kwargs)
+        except Exception as e:
+            raise e
+    else:
+        try:
+            res = opt.least_squares(func, start_params, max_nfev=maxiter, ftol=1e-15, xtol=tol, gtol=tol, 
+                                    jac=jac,  method='trf', loss='huber')
+        except Exception as e:
+            raise e
 
     logger.debug(res)
 
