@@ -46,33 +46,81 @@ def _random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     return _even_knots(sample_xdata, nknots)
 
 
-class customSpline:
+class TBSpline:
 
-    def __init__(self,xdata,ydata,edata=None,knots=None,order=3,smooth=None):
+    """
+    A class that prepares a splrep and wraps it with splev.
+    """
+
+    def __init__(self,xdata,ydata,edata=None,knots=None,order=3,naturalLike=False):
+
+        self.xspline = np.copy(xdata)
+        self.yspline = np.copy(ydata)
+
+        # A "natural spline" is technically a solve that enforces zero curvature at the
+        # endpoints. This class on the other hand wraps smoothing splines, usually being
+        # applied to data with errors. A strategy to impose zero curvature at the endpoints
+        # is to create a fake datum before each endpoint such that the datum is colinear
+        # with both the endpoint and the next-innermost point. When there are weights,
+        # we weight these last three points more than the rest of the data to try to force
+        # the spline to pass through them.
+        if naturalLike:
+            dxL = xdata[1 ]-xdata[0 ]
+            dxR = xdata[-1]-xdata[-2]
+            dyL = ydata[1 ]-ydata[0 ]
+            dyR = ydata[-1]-ydata[-2]
+            self.xspline = np.r_[xdata[0]-dxL, xdata, xdata[-1]+dxR]
+            self.yspline = np.r_[ydata[0]-dyL, ydata, ydata[-1]+dyR]
+
         if edata is None:
-            weights = None
+            self.weights = None
+            smooth = None
         else:
-            weights = 1/edata
-            weights = np.r_[weights[0],weights,weights[-1]]
-        # This is a trick to try to enforce no curvature at the endpoints.
-        xx = np.r_[xdata[0]  ,xdata  ,xdata[-1]]
-        yy = np.r_[ydata[0]  ,ydata  ,ydata[-1]] 
-        self.tck = splrep(xx, yy, t=knots, k=order, w=weights, s=smooth)
+            self.weights = 1/edata
+            smooth = len(self.weights)
+            if naturalLike:
+                weightL = self.weights[0]
+                weightR = self.weights[-1] 
+                self.weights[0]  = weightL 
+                self.weights[1]  = weightL 
+                self.weights[-2] = weightR 
+                self.weights[-1] = weightR 
+                self.weights = np.r_[weightL, self.weights, weightR] 
+
+        self.tck = splrep(self.xspline, self.yspline, t=knots, k=order, w=self.weights, s=smooth, task=-1)
+
+    def __repr__(self) -> str:
+        return "TBSpline"
 
     def __call__(self,x):
         return splev(x,self.tck)
 
+    def get_knots(self):
+        return self.tck[0]
+
     def get_coeffs(self):
         return self.tck[1]
 
+    def get_order(self):
+        return self.tck[2]
+
+    def get_x(self):
+        return self.xspline
+
+    def get_y(self):
+        return self.yspline
+
+    def get_weights(self):
+        return self.weights
+
 
 def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, 
-              getAICc=False, natural=False, smooth=None):
+              getAICc=False, natural=False):
     """ 
-    This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
-    by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
-    since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can't specify
-    the knots, so you can't both pick knots and smooth.
+    This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally
+    this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will
+    use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a
+    smoothing spline that attempts to force no curvature at the endpoints, based on the penultimate points. 
 
     Args:
         xdata (array-like)
@@ -98,13 +146,13 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
     """
 
     if len(xdata) != len(ydata):
-        logger.TBError('len(xdata), len(ydata) =',len(xdata),len(ydata))
+        logger.TBRaise('len(xdata), len(ydata) =',len(xdata),len(ydata))
+    if natural and (order != 3):
+        logger.TBRaise("Natural splines have order=3 by definition.")
 
-    if natural:
+    if natural and (edata is None): 
         if num_knots is not None:
-            logger.TBError('Scipy natural spline chooses knots automatically.')
-        if order != 3:
-            logger.TBError("Scipy natural spline only implemented for cubic splines.")
+            logger.TBRaise('Scipy natural spline solve chooses knots automatically.')
         spline = CubicSpline(x=xdata,y=ydata,bc_type='natural')
 
     else:
@@ -112,10 +160,10 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
         nknots = num_knots
         if fixedKnots is not None:
             if type(fixedKnots) is not list:
-                logger.TBError("knots must be specified as a list.")
+                logger.TBRaise("knots must be specified as a list.")
             nknots -= len(fixedKnots)
             if nknots < 0:
-                logger.TBError("len(fixedKnots)",len(fixedKnots),"exceeds num_knots",num_knots)
+                logger.TBRaise("len(fixedKnots)",len(fixedKnots),"exceeds num_knots",num_knots)
         if nknots>0:
             if rand:
                 knots = _random_knots(xdata,nknots)
@@ -128,10 +176,10 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
                 knots.append(knot)
         knots = sorted(knots)
         if knots[0]<xdata[0]:
-            logger.TBError("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
+            logger.TBRaise("You can't put a knot to the left of the x-data. knots, xdata[0] = ",knots,xdata[0])
         if knots[-1]>xdata[-1]:
-            logger.TBError("You can't put a knot to the right of the x-data. knots, xdata[-1] = ",knots,xdata[-1])
-        spline = customSpline(xdata, ydata, edata=edata, knots=knots, order=order, smooth=smooth)
+            logger.TBRaise("You can't put a knot to the right of the x-data. knots, xdata[-1] = ",knots,xdata[-1])
+        spline = TBSpline(xdata, ydata, edata=edata, knots=knots, order=order, naturalLike=natural)
 
     if getAICc:
         cov = np.diag(edata**2)

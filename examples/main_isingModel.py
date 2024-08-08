@@ -20,7 +20,7 @@ from latqcdtools.statistics.jackknife import jackknife
 import latqcdtools.base.logger as logger
 
 
-initialize('example_ising.log')
+initialize()
 latexify()
 
 

@@ -16,7 +16,7 @@ from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.initialize import initialize, finalize
 
 
-initialize('example_fitting.log')
+initialize()
 
 
 # Here we define our fit function. we pass it its independent variable followed by the fit parameters we are

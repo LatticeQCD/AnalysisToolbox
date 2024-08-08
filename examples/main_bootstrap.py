@@ -15,7 +15,7 @@ from latqcdtools.base.plotting import plt, plot_dots, plot_band, latexify
 from latqcdtools.statistics.bootstr import bootstr_from_gauss
 from latqcdtools.base.initialize import initialize, finalize
 
-initialize('example_bootstrap.log')
+initialize()
 
 latexify()
 

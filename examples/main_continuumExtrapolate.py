@@ -10,7 +10,7 @@ from latqcdtools.physics.continuumExtrap import continuumExtrapolate
 from latqcdtools.physics.constants import r0_phys
 from latqcdtools.physics.lattice_params import latticeParams
 
-initialize('example_continuumExtrapolate.log')
+initialize()
 
 Nts         = [6,8,10,12,14,16,18,20]
 Tds, Tderrs = [], []

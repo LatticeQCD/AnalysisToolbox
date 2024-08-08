@@ -199,7 +199,7 @@ def countPriors(priorsigma=None) -> int:
 def DOF(ndat,nparam,priorsigma=None) -> int:
     """  
     Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
-    initial guesses for the fit algorithm. If you would like parameter in the prior array to be treated as a 
+    initial guesses for the fit algorithm. If you would like parameters in the prior array to be treated as a 
     starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
     are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.
 
@@ -217,7 +217,7 @@ def DOF(ndat,nparam,priorsigma=None) -> int:
     dof = ndat + nprior - nparam 
     logger.debug('dof =',dof,'ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
     if dof < 0:
-        logger.TBError('ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
+        logger.TBRaise('ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
     return dof
 
 

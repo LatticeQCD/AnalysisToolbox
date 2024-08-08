@@ -6,6 +6,7 @@
 # Some routines to set up the toolbox, especially for keeping a record of what you did. 
 # 
 
+import os, sys
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import shell, createFilePath
 
@@ -47,17 +48,19 @@ def introduceYourself():
     logger.info()
 
 
-def initialize(logFile='Toolbox.log'):
+def initialize(logFile=None):
     """ 
     Some common tasks to do at the start of a run where you want to keep track of things. 
     """
     global INITIALIZED
-    INITIALIZED = True
     introduceYourself()
+    if logFile is None:
+        logFile = 'log/' + os.path.splitext(os.path.basename(sys.argv[0]))[0] + '.log'
     createFilePath(logFile)
     logger.createLogFile(logFile)
     logger.info("Current git commit =",gitHash())
     logger.info()
+    INITIALIZED = True
 
 
 def finalize():

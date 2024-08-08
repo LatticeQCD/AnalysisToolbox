@@ -16,7 +16,7 @@ from latqcdtools.interfaces.interfaces import readGPL
 import latqcdtools.base.logger as logger
 
 
-initialize('example_plotting.log')
+initialize()
 logger.set_log_level('INFO')
 
 latexify()
