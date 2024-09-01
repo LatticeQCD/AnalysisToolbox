@@ -10,7 +10,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import std_mean, std_err, checkTS
-from latqcdtools.base.plotting import plt, clearPlot, plot_file
+from latqcdtools.base.plotting import plt, clearPlot, plot_dots, set_params
 from latqcdtools.statistics.jackknife import jackknife 
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.check import checkType
@@ -168,11 +168,13 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
             else:  # acint[it] < tau_int ==> tau_int decreased
                 lmonoton=False
 
-    writeTable(acoutfileName,its,acint,ace,header=['t','tau(t)','tau_err(t)'])
+    if acoutfileName is not None:
+        writeTable(acoutfileName,its,acint,ace,header=['t','tau(t)','tau_err(t)'])
 
     if showPlot:
         clearPlot()
-        plot_file(acoutfileName, xcol=0, ycol=1, yecol=2, xlabel='conf', ylabel='$\\tau_{\\rm int}$')
+        plot_dots(its,acint,ace,color='black',marker=None)
+        set_params(xlabel='conf', ylabel='$\\tau_{\\rm int}$')
         plt.show()
 
     return tau_int, tau_inte, itpick

@@ -41,6 +41,11 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
         raise e
     if col is not None:
         data = clipRange(data,col=col,minVal=minVal,maxVal=maxVal)
+    else:
+        if minVal!=-np.inf:
+            logger.TBRaise('Set col=None with minVal')
+        if maxVal!=np.inf:
+            logger.TBRaise('Set col=None with maxVal')
     return data
 
 

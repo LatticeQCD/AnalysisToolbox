@@ -748,7 +748,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     col = ebar[0].get_color()
 
     line = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], color = col, linewidth=params['linewidth'], 
-                       zorder = ZOD, alpha = params["alpha_lines"], **optional)
+                       zorder = ZOD, alpha = params["alpha"], **optional)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])

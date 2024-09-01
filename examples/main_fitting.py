@@ -3,9 +3,7 @@
 # 
 # D. Clarke, H. Sandmeyer
 # 
-# A basic fit example followed by a more involved two-parameter fit example. The latter
-# is a useful archetype for combined fits, e.g. if you want to do a combined continuum/chiral,
-# continuum/temperature, chiral/temperature, and so on. 
+# A basic fit example followed by a two-parameter fit example.
 #
 
 

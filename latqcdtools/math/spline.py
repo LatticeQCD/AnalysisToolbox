@@ -81,10 +81,6 @@ class TBSpline:
             if naturalLike:
                 weightL = self.weights[0]
                 weightR = self.weights[-1] 
-                self.weights[0]  = weightL 
-                self.weights[1]  = weightL 
-                self.weights[-2] = weightR 
-                self.weights[-1] = weightR 
                 self.weights = np.r_[weightL, self.weights, weightR] 
 
         self.tck = splrep(self.xspline, self.yspline, t=knots, k=order, w=self.weights, s=smooth, task=-1)
@@ -182,8 +178,8 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
         spline = TBSpline(xdata, ydata, edata=edata, knots=knots, order=order, naturalLike=natural)
 
     if getAICc:
-        cov = np.diag(edata**2)
-        return spline, AICc(xdata, ydata, cov, spline)
+        cov = np.diag(1/spline.weights**2)
+        return spline, AICc(spline.xspline, spline.yspline, cov, spline)
     else:
         return spline
 

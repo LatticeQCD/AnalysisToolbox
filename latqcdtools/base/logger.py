@@ -10,25 +10,28 @@ import sys, inspect, datetime, logging
 from colorama import Fore
 
 
-PASS          = Fore.GREEN
-WARNING       = Fore.YELLOW 
-FAIL          = Fore.RED 
-ENDC          = '\033[0m'
+_PASS         = Fore.GREEN
+_WARNING      = Fore.YELLOW 
+_FAIL         = Fore.RED 
+_ENDC         = '\033[0m'
 RECORDLOG     = False
 CURRENT_LEVEL = 4
 
 
 class ToolboxException(Exception): pass
 
+# These modules are not allowed to use the logger
+_BANLIST = ['matplotlib']
 
-log_levels = {
-    'ALL' : 0,
-    'DEBUG' : 1,
-    'DETAILS' : 2,
+
+_log_levels = {
+    'ALL'      : 0,
+    'DEBUG'    : 1,
+    'DETAILS'  : 2,
     'PROGRESS' : 3,
-    'INFO' : 4,
-    'WARN' : 5,
-    'NONE' : 6
+    'INFO'     : 4,
+    'WARN'     : 5,
+    'NONE'     : 6
     }
 
 
@@ -43,6 +46,8 @@ def createLogFile(filename="Toolbox.log"):
     # hence you can get spammed if you set it to DEBUG. Similarly, keep the format the same, which otherwise will
     # print additional, unwanted strings at the beginning of each line.
     logging.basicConfig(filename=filename, encoding='utf-8', level=logging.INFO, format='%(message)s', filemode='w')
+    for module in _BANLIST:
+        logging.getLogger(module).setLevel(logging.CRITICAL)
     info('Created log file',filename)
 
 
@@ -85,7 +90,7 @@ def _getTimeStamp():
 
 def set_log_level(level):
     global CURRENT_LEVEL
-    CURRENT_LEVEL = log_levels[level]
+    CURRENT_LEVEL = _log_levels[level]
 
 
 def debug(*args,frame=2):
@@ -128,7 +133,7 @@ def warn(*args,frame=2):
     global CURRENT_LEVEL
     if CURRENT_LEVEL <= 5:
         args   = [str(s) for s in args]
-        output = _getTimeStamp()+WARNING+' WARNING: '+_getCallerName(frame)+(' '.join(args))+ENDC
+        output = _getTimeStamp()+_WARNING+' WARNING: '+_getCallerName(frame)+(' '.join(args))+_ENDC
         print(output)
         _log(output+'\n')
 
@@ -138,14 +143,14 @@ def warn(*args,frame=2):
 
 def TBFail(*args):
     args   = [str(s) for s in args]
-    output = _getTimeStamp()+FAIL+' FAIL: '+(' '.join(args))+ENDC
+    output = _getTimeStamp()+_FAIL+' FAIL: '+(' '.join(args))+_ENDC
     print(output)
     _log(output + '\n')
 
 
 def TBError(*args,frame=2):
     args   = [str(s) for s in args]
-    output = _getTimeStamp()+FAIL+' ERROR: '+_getCallerName(frame)+(' '.join(args))+ENDC
+    output = _getTimeStamp()+_FAIL+' ERROR: '+_getCallerName(frame)+(' '.join(args))+_ENDC
     print(output)
     _log(output + '\n')
     sys.exit(-1)
@@ -153,13 +158,13 @@ def TBError(*args,frame=2):
 
 def TBRaise(*args,frame=2):
     args   = [str(s) for s in args]
-    output = FAIL+_getCallerName(frame)+(' '.join(args))+ENDC
+    output = _FAIL+_getCallerName(frame)+(' '.join(args))+_ENDC
     _log(output + '\n')
     raise ToolboxException(output) 
 
 
 def TBPass(*args):
     args   = [str(s) for s in args]
-    output = _getTimeStamp()+PASS+' SUCCESS: '+(' '.join(args))+ENDC
+    output = _getTimeStamp()+_PASS+' SUCCESS: '+(' '.join(args))+_ENDC
     print(output)
     _log(output + '\n')

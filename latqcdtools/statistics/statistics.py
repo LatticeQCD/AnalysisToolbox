@@ -281,7 +281,9 @@ def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=Non
 
 def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1) -> float:
     """ 
-    Bayesian Akaike information criterion of 2208.14983.
+    Bayesian Akaike information criterion of 2208.14983. It uses the chi^2 as its likelihood
+    function and includes penalties for having many fit parameters and cutting many data from
+    your original sample.
 
     Args:
         xdata (array-like)

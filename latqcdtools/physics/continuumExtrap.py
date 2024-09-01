@@ -102,12 +102,12 @@ class Extrapolator(Fitter):
             coeffs=start_coeffs
         self._triedExtrapolation = True
         if prior is None:
-            self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, algorithms=std_algs, 
+            self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, algorithms=["curve_fit"], 
                                                                                      detailedInfo=True, show_results=show_results)
         else:
             self._result, self._result_err, self._chidof, self._stats = self.try_fit(start_params=coeffs, priorval=prior, 
                                                                                      priorsigma=priorsigma, show_results=show_results, 
-                                                                                     algorithms=bayes_algs, detailedInfo=True)
+                                                                                     algorithms=["Nelder-Mead"], detailedInfo=True)
         if detailedInfo:
             return self._result, self._result_err, self._chidof, self._stats
         else:
