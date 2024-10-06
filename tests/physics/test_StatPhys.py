@@ -7,7 +7,7 @@
 #
 
 
-from latqcdtools.physics.statisticalPhysics import O2_3d, O3_3d, O4_3d, Z2_4d, Z2_3d, Z2_2d, reweight
+from latqcdtools.physics.statisticalPhysics import O2_3d, O3_3d, O4_3d, Z2_3d, Z2_2d, S3_2d, S4_2d, reweight
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest, gaudif_results
@@ -29,11 +29,13 @@ def testStatPhys():
     lpass *= univ.hyperscalingCheck(tol=1e-2)
     univ = O4_3d()
     lpass *= univ.hyperscalingCheck()
-    univ = Z2_4d()
-    lpass *= univ.hyperscalingCheck()
     univ = Z2_3d()
     lpass *= univ.hyperscalingCheck()
     univ = Z2_2d()
+    lpass *= univ.hyperscalingCheck()
+    univ = S3_2d()
+    lpass *= univ.hyperscalingCheck()
+    univ = S4_2d()
     lpass *= univ.hyperscalingCheck()
 
     # A test of the reweighter where we check against 16x16 Ising model data

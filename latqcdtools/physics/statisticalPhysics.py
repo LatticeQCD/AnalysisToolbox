@@ -67,6 +67,7 @@ class UniversalityClass:
         return True
 
 
+# 3d XY model
 class O2_3d(UniversalityClass):
     """ 
     3d O(2) critical exponents from Phys. Lett. B 492, 219 (2000). 
@@ -82,6 +83,8 @@ class O2_3d(UniversalityClass):
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
 
+
+# 3d Heisenberg model
 class O3_3d(UniversalityClass):
     """ 
     3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class. 
@@ -108,23 +111,6 @@ class O4_3d(UniversalityClass):
     alpha = 2.-beta*(1.+delta)
     gamma = beta*(delta-1.)
     nu    = (beta/d)*(1+delta)
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
-
-
-# 4d Ising model
-class Z2_4d(UniversalityClass):
-    """ 
-    Exact solution for 2d Z_2 class. 
-    """
-    symm  = "Z_2"
-    d     = 4
-    alpha = 0
-    beta  = 1/2
-    gamma = 1
-    delta = 3
-    nu    = 1/2
-    eta   = 0
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
 
@@ -158,6 +144,40 @@ class Z2_2d(UniversalityClass):
     gamma = 7/4
     delta = 15
     nu    = 1
+    eta   = 1/4
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
+
+# 2d Potts q=3/ hard hexagon model 
+class S3_2d(UniversalityClass):
+    """ 
+    Exact solution for 2d S_3 class from Baxter "Exactly Solved Models in Statistical Mechanics"
+    """
+    symm  = "S_3"
+    d     = 2
+    alpha = 1/3 
+    beta  = 1/9
+    gamma = 13/9 
+    delta = 14
+    nu    = 5/6
+    eta   = 4/15
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
+
+# 2d Potts q=4/ Ashkin-Teller model
+class S4_2d(UniversalityClass):
+    """ 
+    Exact solution for 2d S_4 class from Baxter, "Exactly Solved Models in Statistical Mechanics"
+    """
+    symm  = "S_4"
+    d     = 2
+    alpha = 2/3 
+    beta  = 1/12
+    gamma = 7/6
+    delta = 15
+    nu    = 2/3
     eta   = 1/4
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
