@@ -11,7 +11,7 @@
 import numpy as np
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.math.spline import getSpline
-from latqcdtools.base.plotting import plt, plot_dots, plot_band, latexify
+from latqcdtools.base.plotting import plt, plot_dots, plot_fill, latexify
 from latqcdtools.statistics.bootstr import bootstr_from_gauss
 from latqcdtools.base.initialize import initialize, finalize
 
@@ -38,7 +38,7 @@ def splineError(data):
 
 ybs, ybserr = bootstr_from_gauss(splineError,data=ydata,data_std_dev=edata,numb_samples=100)
 
-plot_band(xspline,ybs-ybserr,ybs+ybserr,label='bootstrapped interpolation')
+plot_fill(xspline,ybs,ybserr,label='bootstrapped interpolation')
 
 plt.show()
 

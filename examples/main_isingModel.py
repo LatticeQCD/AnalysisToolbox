@@ -32,13 +32,13 @@ Tlow  = 2.25     # lowest temperature to sample (kB=1)
 Thi   = 2.4      # highest temperature to sample
 h     = 0.       # external magnetic field
 L     = 8        # spatial extension
-Nequi = 300      # equilibrate with this many MCMC sweeps
-Nmeas = 100      # measure this many MCMC sweeps
+Nequi = 2000     # equilibrate with this many MCMC sweeps
+Nmeas = 600      # measure this many MCMC sweeps
 Nskip = 5        # separate measurements by this many MCMC sweeps
 start = 'hot'    # start with all spins up (up), down (down), or random (hot)
 
 
-Tlist = np.linspace(Tlow,Thi,2*DEFAULTTHREADS)
+Tlist = np.linspace(Tlow,Thi,DEFAULTTHREADS)
 logger.info()
 logger.info('Starting parameters:')
 logger.info('  Nequi =',Nequi)
@@ -91,7 +91,7 @@ def runIsingModel(T):
 
 
     def actionLocal(coord):
-        """ Local contribution to action modulo beta.
+        """ Local contribution to action.
 
         Args:
             coord (array-like): local coordinate 
@@ -157,7 +157,7 @@ def runIsingModel(T):
     Bm  , Be   = jackknife( binder  , magnetizations, nproc=1 )
     logger.info('T, <|M|>, chi, B =',round(T,2),get_err_str(Mm,Me),get_err_str(chim,chie),get_err_str(Bm,Be))
 
-    writeTable('T'+str(T)+'.d',magnetizations,actions)
+    writeTable(f'ising_L{L}_d{Nd}/T{T}.d',magnetizations,actions)
 
     return Mm, Me, chim, chie, Bm, Be
 

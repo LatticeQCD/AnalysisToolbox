@@ -85,11 +85,15 @@ def restrictAtCol(table, col, atVal, rtol=None, atol=None) -> np.ndarray:
     return table[:,mask]
 
 
-def excludeAtCol(table, col, atVal) -> np.ndarray:
+def excludeAtCol(table, col=None, atVal=np.inf) -> np.ndarray:
     """ 
     Return everything except those rows of table where col has exactly the value atVal. 
     """
     checkType(table, np.ndarray)
-    checkType(col, int)
-    mask = np.not_equal(table[col,:],atVal)
-    return table[:,mask]
+    if col is None:
+        mask = np.not_equal(table,atVal)
+        return table[mask]
+    else:
+        checkType(col, int)
+        mask = np.not_equal(table[col,:],atVal)
+        return table[:,mask]

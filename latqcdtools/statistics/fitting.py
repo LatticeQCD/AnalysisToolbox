@@ -608,7 +608,7 @@ class Fitter:
         if np.all(np.array(all_chi2) == np.inf): 
             for i, algorithm in enumerate(algorithms):
                 logger.TBFail(algorithm+": ",all_except[i])
-            logger.TBError("No algorithm converged. See above list of exceptions.")
+            logger.TBRaise("No algorithm converged. See above list of exceptions.")
 
         # Find the smallest chi^2
         min_ind = np.argmin(all_chi2)

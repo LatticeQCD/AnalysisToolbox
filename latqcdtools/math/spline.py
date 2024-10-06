@@ -148,7 +148,7 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
 
     if natural and (edata is None): 
         if num_knots is not None:
-            logger.TBRaise('Scipy natural spline solve chooses knots automatically.')
+            logger.TBRaise('Natural spline without error is a solve that chooses knots automatically.')
         spline = CubicSpline(x=xdata,y=ydata,bc_type='natural')
 
     else:

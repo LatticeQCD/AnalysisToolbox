@@ -80,7 +80,7 @@ def err_handler(err, flag):
         else:
             pass
     else:
-        logger.TBError('Encountered unknown exception',err,'with flag',flag)
+        logger.TBRaise('Encountered unknown exception',err,'with flag',flag)
 
 
 np.seterrcall(err_handler)
@@ -145,27 +145,27 @@ def checkType(obj, expectedType):
     if expectedType=="array":
         if not isArrayLike(obj):
             if type(obj)==list or type(obj)==np.ndarray:
-                logger.TBError('Received empty',type(obj),'for',objName,frame=3)
+                logger.TBRaise('Received empty',type(obj),'for',objName,frame=3)
             else:
-                logger.TBError('Expected array-like object for',objName,'but received',type(obj),frame=3)
+                logger.TBRaise('Expected array-like object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="scalar":
         if isArrayLike(obj) or obj is None:
-            logger.TBError('Expected scalar-like object for',objName,'but received',type(obj),frame=3)
+            logger.TBRaise('Expected scalar-like object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="real":
         if isArrayLike(obj) or obj is None:
-            logger.TBError('Expected real scalar object for',objName,'but received',type(obj),frame=3)
+            logger.TBRaise('Expected real scalar object for',objName,'but received',type(obj),frame=3)
         elif obj.imag>0:
-            logger.TBError('Expected real scalar object',objName,'has nonzero imaginary part',frame=3)
+            logger.TBRaise('Expected real scalar object',objName,'has nonzero imaginary part',frame=3)
     elif expectedType=="int":
         isInt = False
         for intType in _intTypes:
             if isinstance(obj,intType):
                 isInt = True
         if not isInt:
-            logger.TBError('Expected int object for',objName,'but received',type(obj),frame=3)
+            logger.TBRaise('Expected int object for',objName,'but received',type(obj),frame=3)
     else:
         if not isinstance(obj,expectedType):
-            logger.TBError('Expected type',expectedType,'for',objName,'but received',type(obj),frame=3)
+            logger.TBRaise('Expected type',expectedType,'for',objName,'but received',type(obj),frame=3)
 
 
 def checkDomain(obj, expectedDomain):
@@ -181,7 +181,7 @@ def checkDomain(obj, expectedDomain):
     for var_name, _ in locals_dict.items():
         objName = var_name  
     if not obj in expectedDomain:
-        logger.TBError('Expected',objName,'to be one of',expectedDomain,frame=3)
+        logger.TBRaise('Expected',objName,'to be one of',expectedDomain,frame=3)
 
 
 def checkEqualLengths(*args):
@@ -193,7 +193,7 @@ def checkEqualLengths(*args):
         if args[i] is not None:
             if len(envector(args[i])) != length:
                 logger.info(length, len(envector(args[i])))
-                logger.TBError('Array length mismatch detected on array',i,frame=3)
+                logger.TBRaise('Array length mismatch detected on array',i,frame=3)
 
 
 def checkExtension(filename,extension,ignoreExtension=False):
@@ -206,4 +206,4 @@ def checkExtension(filename,extension,ignoreExtension=False):
         ignoreExtension (bool, optional): Defaults to False.
     """
     if not filename.endswith(extension) and not ignoreExtension:
-        logger.TBError('Expected a',extension,'file.')
+        logger.TBRaise('Expected a',extension,'file.')

@@ -561,6 +561,86 @@ def _rescale(scale,data):
         return np.copy(data*scale)
 
 
+def plot_vspan(minVal,maxVal,**params):
+    """ 
+    Plot a vertical band.
+
+    Args:
+        minVal (float)
+        maxVal (float)
+    """
+    _initializePlt(params)
+    optional = _add_optional(params)
+    ax = _getAxObject(params)
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+    handle = ax.axvspan(xmin=minVal, xmax=maxVal,color=params['color'],alpha=params['alpha'],zorder=ZOD,**optional)
+    if params['label'] is not None:
+        _update_labels(ax,params['label'])
+        _update_handles(ax,handle)
+    globals()['ZOD'] += 1
+    set_params(**params) # Needed to put in labels
+
+
+def plot_hspan(minVal,maxVal,**params):
+    """ 
+    Plot a horizontal band.
+
+    Args:
+        minVal (float)
+        maxVal (float)
+    """
+    _initializePlt(params)
+    optional = _add_optional(params)
+    ax = _getAxObject(params)
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+    handle = ax.axhspan(ymin=minVal, ymax=maxVal,color=params['color'],alpha=params['alpha'],zorder=ZOD,**optional)
+    if params['label'] is not None:
+        _update_labels(ax,params['label'])
+        _update_handles(ax,handle)
+    globals()['ZOD'] += 1
+    set_params(**params) # Needed to put in labels
+
+
+def plot_hline(y,**params):
+    """ 
+    Plot a horizontal line at y. 
+    """
+    _initializePlt(params)
+    optional = _add_optional(params)
+    ax = _getAxObject(params)
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+    handle = ax.axhline(y=y,xmin=params['xmin'],xmax=params['xmax'],color=params['color'], **optional) 
+    globals()['ZOD'] += 1
+    if params['label'] is not None:
+        _update_labels(ax,params['label'])
+        _update_handles(ax,handle)
+    set_params(**params)
+
+
+def plot_vline(x,**params):
+    """ 
+    Plot a vertical line at x. 
+    """
+    _initializePlt(params)
+    optional = _add_optional(params)
+    ax = _getAxObject(params)
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+    handle = ax.axvline(x=x,xmin=params['ymin'],xmax=params['ymax'],color=params['color'], **optional) 
+    globals()['ZOD'] += 1
+    if params['label'] is not None:
+        _update_labels(ax,params['label'])
+        _update_handles(ax,handle)
+    set_params(**params)
+
+
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     """ 
     Plot ydata vs xdata as dots. 
@@ -592,7 +672,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         logger.warn('Ignoring linestyle',optional['linestyle'])
         del optional['linestyle']
 
-    ax  = _getAxObject(params)
+    ax = _getAxObject(params)
 
     xedata = _rescale(abs(params['xscale']),xedata)
     yedata = _rescale(abs(params['yscale']),yedata)
@@ -610,20 +690,20 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         markerfill="None"
 
     if params['color'] is not None:
-        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
-                           linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], color=params['color'],
+        handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+                           linestyle='None', linewidth=params['linewidth'], alpha=params['alpha'], color=params['color'],
                            zorder=ZOD, markersize=params['markersize'], capsize=params['capsize'],
                            elinewidth=params['elinewidth'],
                            markerfacecolor = markerfill, **optional)
     else:
-        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
-                           linestyle='None', linewidth=params['linewidth'], alpha=params['alpha_dots'], zorder=ZOD,
+        handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+                           linestyle='None', linewidth=params['linewidth'], alpha=params['alpha'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markerfacecolor = markerfill, **optional)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
-        _update_handles(ax,ebar)
+        _update_handles(ax,handle)
 
     globals()['ZOD'] += 1
     set_params(**params) # Needed to put in labels
@@ -731,13 +811,13 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
         markerfill="None"
 
     if params['color'] is not None:
-        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+        handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], color=params['color'], zorder=ZOD,
                            markersize=params['markersize'], capsize=params['capsize'], elinewidth=params['elinewidth'],
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'], 
                            markerfacecolor = markerfill)
     else:
-        ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
+        handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], yerr=yedata, xerr=xedata, marker=marker, 
                            linestyle='None', linewidth=params['linewidth'], zorder=ZOD, markersize=params['markersize'],
                            capsize=params['capsize'], elinewidth=params['elinewidth'], 
                            markeredgewidth=params['elinewidth'], alpha=params['alpha_dots'],
@@ -745,14 +825,14 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
 
     globals()['ZOD'] += 1
 
-    col = ebar[0].get_color()
+    col = handle[0].get_color()
 
     line = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], color = col, linewidth=params['linewidth'], 
                        zorder = ZOD, alpha = params["alpha"], **optional)
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
-        _update_handles(ax,(line,ebar))
+        _update_handles(ax,(line,handle))
     set_params(**params) # Needed to put in labels
 
 
@@ -789,14 +869,14 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
 
     if center :
         if params['color'] is not None:
-            ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+            handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
                                color=params['color'], zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
         else:
-            ebar = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+            handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
                                zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
 
 
-        col = ebar[0].get_color()
+        col = handle[0].get_color()
     else:
         col = params['color']
     if xedata is None:
@@ -822,80 +902,5 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
-        _update_handles(ax,(ebar,pl))
+        _update_handles(ax,(handle,pl))
     set_params(**params) # Needed to put in labels
-
-
-def plot_band(xdata, low_lim, up_lim, center = None, **params):
-    """ 
-    Plot a horizontal band.
-
-    Args:
-        xdata (array-like)
-        low_lim (float): _description_
-        up_lim (float): _description_
-        center (_type_, optional): _description_. Defaults to None.
-        **params: Additional parameters that can be set.
-    """
-    xdata, low_lim, up_lim, center = toNumpy(xdata, low_lim, up_lim, center)
-    checkEqualLengths(xdata, low_lim, up_lim, center)
-    _initializePlt(params) 
-    optional = _add_optional(params)
-
-    ax  = _getAxObject(params)
-
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
-
-
-    if params['color'] is None:
-        pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, alpha=params['alpha'], 
-                             linewidth=0, zorder=ZOD)
-    else:
-        pl = ax.fill_between(xdata*params['xscale'], params['yscale']*low_lim, params['yscale']*up_lim, facecolor=params['color'],
-                             alpha=params['alpha'], linewidth=0, zorder=ZOD)
-
-    col = matplotlib.colors.rgb2hex(pl.get_facecolor()[0])
-
-    if params['alpha_lines'] != 0:
-        ax.errorbar(xdata*params['xscale'], params['yscale']*low_lim, color = col, linewidth=params['linewidth'], zorder = ZOD+1,
-                    alpha = params["alpha_fill_edge"])
-        ax.errorbar(xdata*params['xscale'], params['yscale']*up_lim, color = col, linewidth=params['linewidth'], zorder = ZOD+1,
-                    alpha = params["alpha_fill_edge"])
-
-    ebar = None
-    if center is not None:
-        ebar = ax.errorbar(xdata*params['xscale'], center*params['yscale'], linewidth=params['linewidth'], color=col, zorder=ZOD+1,
-                           alpha = params['alpha_lines'], **optional)
-
-    globals()['ZOD'] += 3
-    if params['label'] is not None:
-        _update_labels(ax,params['label'])
-        if ebar is not None:
-            _update_handles(ax,(ebar, pl))
-        else:
-            _update_handles(ax, pl)
-    set_params(**params) # Needed to put in labels
-
-
-def plot_hline(y,**params):
-    """ 
-    Plot a horizontal line at y. Has the same arguments as matplotlib's axhline.
-    """
-    _initializePlt(params)
-    optional = _add_optional(params)
-    ax  = _getAxObject(params)
-
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
-
-    handle = ax.axhline(y=y,xmin=params['xmin'],xmax=params['xmax'],color=params['color'], **optional) 
-
-    globals()['ZOD'] += 1
-
-    if params['label'] is not None:
-        _update_labels(ax,params['label'])
-        _update_handles(ax,handle)
-    set_params(**params)

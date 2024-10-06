@@ -121,9 +121,9 @@ def checkDomain(domain):
     """
     checkType(domain,tuple)
     if len(domain) != 2:
-        logger.TBError('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].',frame=3)
+        logger.TBRaise('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].',frame=3)
     if domain[0]>=domain[1]:
-        logger.TBError('Must have domain[1]>domain[0].',frame=3)
+        logger.TBRaise('Must have domain[1]>domain[0].',frame=3)
 
 
 def checkPrior(prior,priorsigma):
@@ -131,9 +131,9 @@ def checkPrior(prior,priorsigma):
     Make sure prior and priorsigma status are compatible. 
     """
     if prior is None and priorsigma is not None:
-        logger.TBError('prior = None, priorsigma != None',frame=3)
+        logger.TBRaise('prior = None, priorsigma != None',frame=3)
     if priorsigma is None and prior is not None:
-        logger.TBError('prior != None, priorsigma = None',frame=3)
+        logger.TBRaise('prior != None, priorsigma = None',frame=3)
 
 
 def checkTS(ts):
@@ -146,14 +146,14 @@ def checkTS(ts):
     """
     checkType(ts,'array')
     if isHigherDimensional(ts):
-        logger.TBError('Expected 1-d time series.',frame=3)
+        logger.TBRaise('Expected 1-d time series.',frame=3)
     if len(ts) < 2:
-        logger.TBError('Time series needs at least two measurements.',frame=3)
+        logger.TBRaise('Time series needs at least two measurements.',frame=3)
 
 
 def checkProb(p):
     if not 0 <= p <= 1:
-        logger.TBError('Probabilities must be between 0 and 1.',frame=3)
+        logger.TBRaise('Probabilities must be between 0 and 1.',frame=3)
 
 
 def countParams(func,params) -> int:
@@ -448,7 +448,7 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
         s = 1
     else:
         if CI<0 or CI>1:
-            logger.TBError('Confidence limits are between 0 and 1.') 
+            logger.TBRaise('Confidence limits are between 0 and 1.') 
         s = np.sqrt(-2*np.log(1-CI))
     data = np.vstack((x, y))
     cov  = np.cov(data)
@@ -473,6 +473,8 @@ def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
     numb_data = data.shape[axis]
     idx_dn = max(int(np.floor((numb_data-1) / 2 - percentile/100 * (numb_data-1) / 2)), 0)
     idx_up = min(int(np.ceil((numb_data-1) / 2 + percentile/100 * (numb_data-1) / 2)), numb_data-1)
+    #TODO: Need to handle the situation idx_dn=idx_up a bit carefully. the SRI project presents
+    # some data with this issue, and you can troubleshoot that.
     sorted_data = np.sort(data - np.expand_dims(median, axis), axis=axis)
     q_l = np.take(sorted_data, idx_dn, axis)
     q_r = np.take(sorted_data, idx_up, axis)
@@ -483,13 +485,25 @@ def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
 
 
 def error_prop(func, means, errors, grad=None, args=()):
-    """ 
+    """
     Use error propagation to propagate some errors through function func. The function should have the form
         func( data ), 
-    where data is your array of input variables. 
+    where data is a 1-d array of input variables. 
+
+    Args:
+        func (func)
+        means (array-like)
+        errors (array-like)
+        grad (func, optional): Gradient function. Defaults to None.
+        args (tuple, optional): Arguments of func. Defaults to ().
+
+    Returns:
+        np.ndarray, np.ndarray: f, f_err 
     """
-    errors = np.array(errors)
+    if isHigherDimensional(means):
+        logger.TBRaise('means must be 1-d array.',frame=3)
     means  = np.array(means)
+    errors = np.array(errors)
     mean   = func(means, *args)
 
     # Test if we got a covariance matrix
@@ -497,7 +511,7 @@ def error_prop(func, means, errors, grad=None, args=()):
         errors = np.diag(errors**2)
 
     if type(mean) is tuple:
-        raise TypeError("Tuples are not supported for error propagation")
+        logger.TBRaise("Tuples are not supported for error propagation")
 
     if grad is not None:
         grad = grad(means, *args)
@@ -560,7 +574,7 @@ def gaudif(x1,e1,x2,e2) -> float:
         float: p-value 
     """
     if e1<0 or e2<0:
-        logger.TBError('Error bars should be non-negative. Got',e1,e2)
+        logger.TBRaise('Error bars should be non-negative. Got',e1,e2)
     sigma = np.sqrt(e1**2 + e2**2)
     z     = abs(x1-x2)/(sigma * np.sqrt(2.))
     return 1.0 - sp.special.erf(z)
@@ -584,9 +598,9 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
         float: p-value 
     """
     if e1<0 or e2<0:
-        logger.TBError('Error bars should be non-negative. Got',e1,e2)
+        logger.TBRaise('Error bars should be non-negative. Got',e1,e2)
     if ndat1<1 or ndat2 <1:
-        logger.TBError('Need at least 2 data. Got',ndat1,ndat2)
+        logger.TBRaise('Need at least 2 data. Got',ndat1,ndat2)
     dof   = ndat1 + ndat2 - 2
     var12 = ndat1*e1**2
     var22 = ndat2*e2**2
