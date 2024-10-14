@@ -70,16 +70,16 @@ class UniversalityClass:
 # 3d XY model
 class O2_3d(UniversalityClass):
     """ 
-    3d O(2) critical exponents from Phys. Lett. B 492, 219 (2000). 
+    3d O(2) critical exponents from JHEP08 (2016) 036 
     """
     symm  = "O(2)"
     d     = 3
-    beta  = 0.3490
-    nu    = 0.6723
-    omega = 0.79
-    delta = 4.7798
-    alpha = 2.-beta*(1. + delta)
-    gamma = beta*(delta-1.)
+    eta   = 0.03852
+    nu    = 0.6719
+    gamma = nu*(2-eta)
+    beta  = 0.5*(nu*d-gamma)
+    alpha = 2 - nu*d
+    delta = (gamma+2*alpha)/(2*beta)
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
 
@@ -87,14 +87,15 @@ class O2_3d(UniversalityClass):
 # 3d Heisenberg model
 class O3_3d(UniversalityClass):
     """ 
-    3d O(3) critical exponents from https://en.wikipedia.org/wiki/Universality_class. 
+    3d O(3) critical exponents from JHEP08 (2016) 036 
     """
     symm  = "O(3)"
     d     = 3
-    beta  = 0.366
-    nu    = 0.707
-    alpha = -0.12
-    gamma = 1.395
+    eta   = 0.0386 
+    nu    = 0.7121 
+    gamma = nu*(2-eta)
+    beta  = 0.5*(nu*d-gamma)
+    alpha = 2 - nu*d
     delta = (gamma+2*alpha)/(2*beta)
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name

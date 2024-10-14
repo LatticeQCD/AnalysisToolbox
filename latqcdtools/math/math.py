@@ -32,7 +32,7 @@ def checkSquare(mat):
     """
     checkType(mat,np.ndarray)
     if mat.shape[0] != mat.shape[1]:
-        logger.TBError('Expected square matrix. Got shape',np.shape(mat))
+        logger.TBRaise('Expected square matrix. Got shape',np.shape(mat))
 
 
 def regulate(mat,svdcut=1e-12) -> np.ndarray:
@@ -89,7 +89,7 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         else:
             return invert(mat,'scipy')
     else:
-        logger.TBError('Unrecognized inverter',method)
+        logger.TBRaise('Unrecognized inverter',method)
 
 
 def isPositiveSemidefinite(mat) -> bool:
@@ -110,7 +110,7 @@ def fallFactorial(n,m) -> float:
     Falling factorial n fall to m. 
     """
     if m>n:
-        logger.TBError("m>n.")
+        logger.TBRaise("m>n.")
     return sp.special.poch(n-m+1,m)
 
 
@@ -119,7 +119,7 @@ def riseFactorial(n,m) -> float:
     Rising factorial n rise to m. 
     """
     if n>m:
-        logger.TBError("n>m.")
+        logger.TBRaise("n>m.")
     return sp.special.poch(n,m)
 
 
@@ -130,6 +130,19 @@ def logDet(mat) -> float:
     checkSquare(mat)
     _, ans = np.linalg.slogdet(mat)
     return ans
+
+
+def RMS(data) -> float:
+    """
+    Root-mean-square of data
+
+    Args:
+        data (array-like)
+
+    Returns:
+        float: RMS of data 
+    """
+    return np.sqrt(np.mean(np.array(data)**2))
 
 
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
@@ -148,7 +161,7 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
     """
     if isArrayLike(a):
         if np.shape(a) != np.shape(b):
-            logger.TBError('a and b must have the same shape. Received a, b shapes =',np.shape(a),np.shape(b))
+            logger.TBRaise('a and b must have the same shape. Received a, b shapes =',np.shape(a),np.shape(b))
         return np.allclose( a, b, rtol = prec, atol = abs_prec)
     else:
         checkType(a,"scalar")
@@ -156,4 +169,4 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
         try:
             return np.isclose( a, b, rtol = prec, atol = abs_prec)
         except TypeError:
-            logger.TBError('Expected reals, complexes, or array-like. Received a, b types =',type(a),',',type(b))
+            logger.TBRaise('Expected reals, complexes, or array-like. Received a, b types =',type(a),',',type(b))

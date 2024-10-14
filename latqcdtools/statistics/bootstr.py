@@ -14,7 +14,7 @@ from latqcdtools.base.initialize import DEFAULTSEED
 from latqcdtools.base.check import checkType
 
 
-def _autoSeed(seed):
+def _autoSeed(seed) -> int:
     """ 
     We use seed=None to flag the seed should be automatically chosen. The problem is that we need
     seed to be an integer when enforcing that different bootstrap samples use different seeds. 
@@ -22,6 +22,7 @@ def _autoSeed(seed):
     if seed is None:
         return np.random.randint(0,DEFAULTSEED)
     else:
+        checkType(seed,int)
         return seed
 
 
@@ -73,7 +74,6 @@ class nimbleBoot:
         self._conf_axis=conf_axis
         self._return_sample=return_sample
         self._seed=_autoSeed(seed)
-        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._args=args
         self._nproc = nproc 
@@ -285,3 +285,27 @@ def bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, 
                                    seed=seed, err_by_dist=err_by_dist, useCovariance=useCovariance, Covariance=Covariance, 
                                    args=args, nproc=nproc, asym_err=asym_err)
     return bts_gauss.getResults()
+
+
+def estimateCovariance(data_std_dev,numb_samples,seed=None):
+    """ 
+    Estimate a covariance matrix using data and their corresponding std_dev. The idea is to estimate this with a
+    bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here
+    data should be 1-dimensional.
+    """
+    checkType(numb_samples,int)
+    rng = np.random.default_rng(seed=_autoSeed(seed))
+    # The numpy outer and einsum below is equivalent to the following code:
+    #    ndat = len(data_std_dev)
+    #    cov = np.zeros((ndat,ndat))
+    #    for ibs in range(numb_samples):
+    #        scale = rng.normal(loc=0,scale=1)
+    #        for i in range(ndat):
+    #            for j in range(ndat):
+    #                err_i     = scale*data_std_dev[i]
+    #                err_j     = scale*data_std_dev[j]
+    #                cov[i,j] += err_i*err_j
+    scales = rng.normal(loc=0, scale=1, size=numb_samples)
+    outer_product = np.outer(data_std_dev, data_std_dev)
+    cov = np.einsum('k,ij->ij', scales**2, outer_product)
+    return cov/numb_samples
