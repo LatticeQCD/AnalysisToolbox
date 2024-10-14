@@ -791,3 +791,26 @@ def binSeries(data,nbins) -> np.ndarray:
     binsize=int(ndat/nbins)
     reshaped_data = data[:binsize * nbins].reshape(nbins, binsize)
     return np.apply_along_axis(std_mean, 1, reshaped_data)
+
+
+def symmetrizeError(lo,hi,central,method='conservative') -> float:
+    checkType(method,str)
+    checkType(lo,'real')
+    checkType(hi,'real')
+    checkType(central,'real')
+    if (lo<=0) or (hi<=0):
+        logger.TBRaise('Uncertainties must be positive. Got lo, hi =',lo,hi)
+    if method=='conservative':
+        err  = np.max([lo,hi])
+        mean = central
+    # FLAG method from 10.1140/epjc/s10052-022-10536-1
+    elif method=='FLAG':
+        if lo>hi:
+            mean = central + (lo-hi)/4
+            err  = (hi + 3*lo)/4
+        else:
+            mean = central + (hi-lo)/4
+            err  = (lo + 3*hi)/4
+    else:
+        logger.TBRaise('Unrecognized method',method)
+    return mean, err

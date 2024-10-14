@@ -9,7 +9,7 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse,\
-    KSTest_1side, KSTest_2side, covariance, std_var
+    KSTest_1side, KSTest_2side, covariance, std_var, symmetrizeError
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.plotting import plt
@@ -200,6 +200,12 @@ def testStats():
     lpass *= print_results(KSTest_1side(data2,normalCDF),0.656583347109468 , text='KS 1 side 2')
 
     lpass *= print_results(covariance(ts1,ts1),std_var(ts1), text='diagonal cov')
+
+    m, e = symmetrizeError(lo=0.1,hi=0.3,central=0.2)
+    lpass *= print_results(m,0.2,e,0.3,text='conservative symmetric')
+
+    m, e = symmetrizeError(lo=0.0067,hi=0.015,central=0.4529,method='FLAG')
+    lpass *= print_results(m,0.454975,e, 0.012924999999999999,text='FLAG symmetric')
 
     concludeTest(lpass)
 
