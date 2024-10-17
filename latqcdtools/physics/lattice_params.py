@@ -54,7 +54,7 @@ class latticeParams:
             mu : float
                 Baryon chemical potential.
         """
-        checkDomain(scaleType,CY_phys.keys())
+        checkDomain(scaleType,list(CY_phys.keys()))
         self.scale = scaleType
         self.fK    = fk_phys(CY_phys['fk'],"MeV")
         self.r1    = r1_phys(CY_phys['r1'],"fm")

@@ -30,7 +30,7 @@ def checkSquare(mat):
     Args:
         mat (np.ndarray)
     """
-    checkType(mat,np.ndarray)
+    checkType(np.ndarray,mat=mat)
     if mat.shape[0] != mat.shape[1]:
         logger.TBRaise('Expected square matrix. Got shape',np.shape(mat))
 
@@ -71,7 +71,7 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         np.ndarray: mat^{-1} 
     """
     checkSquare(mat)
-    checkType(method,str)
+    checkType(str,method=method)
     if method=='scipy':
         return sp.linalg.inv(mat)
     elif method=='numpy': # Seems to be quite slow
@@ -164,8 +164,8 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
             logger.TBRaise('a and b must have the same shape. Received a, b shapes =',np.shape(a),np.shape(b))
         return np.allclose( a, b, rtol = prec, atol = abs_prec)
     else:
-        checkType(a,"scalar")
-        checkType(b,"scalar")
+        checkType("scalar",a=a)
+        checkType("scalar",b=b)
         try:
             return np.isclose( a, b, rtol = prec, atol = abs_prec)
         except TypeError:

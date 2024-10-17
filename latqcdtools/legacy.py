@@ -17,7 +17,6 @@
 import numpy as np
 import math
 import latqcdtools.base.logger as logger
-from latqcdtools.base.check import checkType
 from latqcdtools.base.utilities import isHigherDimensional
 from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS
 from latqcdtools.statistics.statistics import meanArgWrapper
@@ -116,10 +115,6 @@ class nimbleJack:
 
     def __init__(self, func, data, nblocks, confAxis, return_sample, args, nproc):
 
-        checkType(nblocks,int)
-        checkType(confAxis,int)
-        checkType(return_sample,bool)
-        checkType(nproc,int)
         self._func = func
         self._data = np.array(data)
         if nblocks==1:
@@ -287,7 +282,6 @@ class nimbleBoot:
         self._conf_axis=conf_axis
         self._return_sample=return_sample
         self._seed=_autoSeed(seed)
-        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._args=args
         self._nproc = nproc 
@@ -394,14 +388,6 @@ class nimbleGaussianBoot:
     def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed,
                  err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
 
-        checkType(numb_samples,int)
-        checkType(sample_size,int)
-        checkType(same_rand_for_obs,bool)
-        checkType(return_sample,bool)
-        checkType(err_by_dist,bool)
-        checkType(useCovariance,bool)
-        checkType(nproc,int)
-        checkType(asym_err,bool)
         self._func=func
         self._data=np.array(data)
         self._data_std_dev=np.array(data_std_dev)
@@ -410,7 +396,6 @@ class nimbleGaussianBoot:
         self._same_rand_for_obs=same_rand_for_obs
         self._return_sample=return_sample
         self._seed=_autoSeed(seed)
-        checkType(self._seed,int)
         self._err_by_dist=err_by_dist
         self._useCovariance=useCovariance
         self._Covariance=Covariance

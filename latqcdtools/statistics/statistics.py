@@ -119,7 +119,7 @@ def checkDomain(domain):
     Args:
         domain (tuple)
     """
-    checkType(domain,tuple)
+    checkType(tuple,domain=domain)
     if len(domain) != 2:
         logger.TBRaise('A domain is a tuple of the form (xmin,xmax) specifying the interval [xmin,xmax].',frame=3)
     if domain[0]>=domain[1]:
@@ -144,7 +144,7 @@ def checkTS(ts):
     Args:
         ts (array-like): time series 
     """
-    checkType(ts,'array')
+    checkType("array",ts=ts)
     if isHigherDimensional(ts):
         logger.TBRaise('Expected 1-d time series.',frame=3)
     if len(ts) < 2:
@@ -211,8 +211,8 @@ def DOF(ndat,nparam,priorsigma=None) -> int:
     Returns:
         int: number of degrees of freedom 
     """
-    checkType(ndat,int)
-    checkType(nparam,int)
+    checkType(int,ndat=ndat)
+    checkType(int,nparam=nparam)
     nprior = countPriors(priorsigma) 
     dof = ndat + nprior - nparam 
     logger.debug('dof =',dof,'ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
@@ -626,7 +626,7 @@ def goodnessOfFit(dof, chi2) -> float:
     Returns:
         float: Q 
     """
-    checkType(dof,int)
+    checkType(int,dof=dof)
     return sp.special.gammaincc(dof/2,chi2/2)
 
 
@@ -647,7 +647,7 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
         npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
     """
     checkDomain(domain)
-    checkType(npoints,int)
+    checkType(int,npoints=npoints)
     fill_param_dict(kwargs)
     kwargs['marker'] = None
     xmin = domain[0] 
@@ -693,7 +693,7 @@ def getModelWeights(IC) -> np.ndarray:
     Returns:
         np.array: Probability weights 
     """
-    checkType(IC,'array')
+    checkType("array",IC=IC)
     IC = np.array(IC)
     return normalize(np.exp(-0.5*IC))
 
@@ -751,8 +751,8 @@ def KSTest_2side(data1,data2) -> float:
     Returns:
         float: 1-p 
     """
-    checkType(data1,'array')
-    checkType(data2,'array')
+    checkType("array",data1=data1)
+    checkType("array",data2=data2)
     data1,data2 = toNumpy(data1,data2)
     return 1 - sp.stats.kstest(data1, data2).pvalue 
 
@@ -769,7 +769,7 @@ def KSTest_1side(data,cdf) -> float:
     Returns:
         float: 1-p 
     """
-    checkType(data,'array')
+    checkType("array",data=data)
     return 1 - sp.stats.kstest(data, cdf).pvalue
 
 
@@ -786,7 +786,7 @@ def binSeries(data,nbins) -> np.ndarray:
         np.ndarray: Binned data
     """
     checkTS(data)
-    checkType(nbins,int)
+    checkType(int,nbins=nbins)
     ndat=len(data)
     binsize=int(ndat/nbins)
     reshaped_data = data[:binsize * nbins].reshape(nbins, binsize)
@@ -794,10 +794,10 @@ def binSeries(data,nbins) -> np.ndarray:
 
 
 def symmetrizeError(lo,hi,central,method='conservative') -> float:
-    checkType(method,str)
-    checkType(lo,'real')
-    checkType(hi,'real')
-    checkType(central,'real')
+    checkType(str,method=method)
+    checkType("real",lo=lo)
+    checkType("real",hi=hi)
+    checkType("real",central=central)
     if (lo<=0) or (hi<=0):
         logger.TBRaise('Uncertainties must be positive. Got lo, hi =',lo,hi)
     if method=='conservative':

@@ -42,7 +42,7 @@ def paramFrom_HotQCD_MILC(ensemble):
     Returns:
         tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string
     """
-    checkType(ensemble,str)
+    checkType(str,ensemble=ensemble)
     NsNt = substringBetween(ensemble,'l','f') 
     if len(NsNt)==3:
         Ns=NsNt[:2]
@@ -65,9 +65,9 @@ def readGPL(filename,discardTag=True,raggedWarn=True):
     tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
     rather than using genfromtxt to allow the possibility of ragged tables. 
     """
-    checkType(filename,str)
-    checkType(discardTag,bool)
-    checkType(raggedWarn,bool)
+    checkType(str,filename=filename)
+    checkType(bool,discardTag)
+    checkType(bool,raggedWarn)
     gplFile = open(filename,'r')
     minIndex = 0
     data = []
@@ -97,7 +97,7 @@ def readYAML(filename,ignoreExtension=False) -> dict:
     """ 
     Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. 
     """
-    checkType(filename,str)
+    checkType(str,filename=filename)
     checkExtension(filename,'yaml',ignoreExtension)
     with open(filename, 'r') as file:
         try:
@@ -110,7 +110,7 @@ def readJSON(filename,ignoreExtension=False) -> dict:
     """ 
     Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. 
     """
-    checkType(filename,str)
+    checkType(str,filename=filename)
     checkExtension(filename,'json',ignoreExtension)
     with open(filename, 'r') as file:
         return json.load(file)
@@ -129,7 +129,7 @@ def readWML(filename) -> list:
     Returns:
         list: list of rows and commands in markup table 
     """
-    checkType(filename,str)
+    checkType(str,filename=filename)
     wmlFile = open(filename,'r')
     data = []
     row = []
@@ -170,8 +170,8 @@ def writeYAML(data,filename):
         data (dict)
         filename (str)
     """
-    checkType(data,dict)
-    checkType(filename,str)
+    checkType(dict,data=data)
+    checkType(str,filename=filename)
     with open(filename, 'w') as file:
         try:
             yaml.safe_dump(data, file) 
@@ -187,8 +187,8 @@ def writeJSON(data,filename):
         data (dict)
         filename (str)
     """
-    checkType(data,dict)
-    checkType(filename,str)
+    checkType(dict,data=data)
+    checkType(str,filename=filename)
     with open(filename, 'w') as file:
         json.dump(data, file, indent=4)
 
@@ -207,9 +207,9 @@ class genericTable(list):
         """
         if delimiter is None:
             logger.TBError("Please set a delimiter. Use delimiter='' for generic whitespace.")
-        checkType(delimiter,str)
-        checkType(pre,str)
-        checkType(post,str)
+        checkType(str,delimiter=delimiter)
+        checkType(str,pre=pre)
+        checkType(str,post=post)
         self.delimiter=delimiter
         self.pre=pre
         self.post=post
@@ -224,7 +224,7 @@ class genericTable(list):
         return result 
 
     def append(self, item):
-        checkType(item, list)
+        checkType(list,item=item)
         super(genericTable, self).append(item)
 
     def empty(self):
@@ -239,7 +239,7 @@ class genericTable(list):
             filename (str, optional): If set, will output to file. Otherwise output to screen. 
         """
         if filename is not None:
-            checkType(filename,str)
+            checkType(str,filename=filename)
             outFile = open(filename,'w')
         for row in self:
             line = self.pre + ' ' +  str(row[0])
@@ -270,7 +270,7 @@ class genericTable(list):
         Args:
             filename (str)
         """
-        checkType(filename,str)
+        checkType(str,filename=filename)
         self.empty()
         inFile = open(filename,'r')
         for line in inFile:
@@ -325,8 +325,8 @@ def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
         source (str): source filename 
         target (str): target filename 
     """
-    checkType(source,str)
-    checkType(target,str)
+    checkType(str,source=source)
+    checkType(str,target=target)
     sourceType = source.split('.')[-1]
     targetType = target.split('.')[-1]
     inFile = open(source,'r')

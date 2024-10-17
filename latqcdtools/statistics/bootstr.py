@@ -22,7 +22,7 @@ def _autoSeed(seed) -> int:
     if seed is None:
         return np.random.randint(0,DEFAULTSEED)
     else:
-        checkType(seed,int)
+        checkType(int,seed=seed)
         return seed
 
 
@@ -59,16 +59,16 @@ class nimbleBoot:
     def __init__(self, func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed,
                  err_by_dist, args, nproc):
 
-        checkType(numb_samples,int)
-        checkType(same_rand_for_obs,bool)
-        checkType(return_sample,bool)
-        checkType(err_by_dist,bool)
-        checkType(nproc,int)
+        checkType(int,numb_samples=numb_samples)
+        checkType(bool,same_rand_for_obs=same_rand_for_obs)
+        checkType(bool,return_sample=return_sample)
+        checkType(bool,err_by_dist=err_by_dist)
+        checkType(int,nproc=nproc)
         self._func=func
         self._data=np.array(data)
         self._numb_samples=numb_samples
         if sample_size is not None:
-            checkType(sample_size,int)
+            checkType(int,sample_size=sample_size)
         self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._conf_axis=conf_axis
@@ -180,14 +180,14 @@ class nimbleGaussianBoot:
     def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed,
                  err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
 
-        checkType(numb_samples,int)
-        checkType(sample_size,int)
-        checkType(same_rand_for_obs,bool)
-        checkType(return_sample,bool)
-        checkType(err_by_dist,bool)
-        checkType(useCovariance,bool)
-        checkType(nproc,int)
-        checkType(asym_err,bool)
+        checkType(int,numb_samples=numb_samples)
+        checkType(int,sample_size=sample_size)
+        checkType(bool,same_rand_for_obs=same_rand_for_obs)
+        checkType(bool,return_sample=return_sample)
+        checkType(bool,err_by_dist=err_by_dist)
+        checkType(bool,useCovariance=useCovariance)
+        checkType(int,nproc=nproc)
+        checkType(bool,asym_err=asym_err)
         self._func=func
         self._data=np.array(data)
         self._data_std_dev=np.array(data_std_dev)
@@ -196,7 +196,7 @@ class nimbleGaussianBoot:
         self._same_rand_for_obs=same_rand_for_obs
         self._return_sample=return_sample
         self._seed=_autoSeed(seed)
-        checkType(self._seed,int)
+        checkType(int,seed=self._seed)
         self._err_by_dist=err_by_dist
         self._useCovariance=useCovariance
         self._Covariance=Covariance
@@ -293,7 +293,7 @@ def estimateCovariance(data_std_dev,numb_samples,seed=None):
     bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here
     data should be 1-dimensional.
     """
-    checkType(numb_samples,int)
+    checkType(int,numb_samples=numb_samples)
     rng = np.random.default_rng(seed=_autoSeed(seed))
     # The numpy outer and einsum below is equivalent to the following code:
     #    ndat = len(data_std_dev)

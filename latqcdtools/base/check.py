@@ -123,7 +123,7 @@ def ignoreInvalidValue():
     logger.warn("Invalid value behavior set to pass.")
 
 
-def checkType(obj, expectedType):
+def checkType(expectedType,**kwargs):
     """ 
     Check the type of an object. If it thinks the type is wrong, it will tell you what the
     name of obj is (as you named it in your code) along with its type and what was expected.
@@ -135,13 +135,12 @@ def checkType(obj, expectedType):
         obj (obj)
         expectedType (type): what type do you expect? Also accepts "array", "real", "int", and "scalar".
     """
-    calling_frame = inspect.currentframe().f_back
-    locals_dict = calling_frame.f_locals
-    if len(locals_dict)==0:
-        objName = 'OBJECT LITERAL'
-    for var_name in locals_dict.keys():
-        objName = var_name
-        break 
+    if len(kwargs)!=1:
+        logger.TBRaise('Call like checkType(expectedtype, var=value)') 
+    objName = list(kwargs.keys())[0]
+    if not isinstance(objName,str):
+        logger.TBRaise('Call like checkType(expectedtype, var=value)') 
+    obj = kwargs[objName]
     if expectedType=="array":
         if not isArrayLike(obj):
             if type(obj)==list or type(obj)==np.ndarray:
@@ -176,6 +175,7 @@ def checkDomain(obj, expectedDomain):
         obj (obj)
         expectedDomain (array-like): collection of values obj is allowed to take
     """
+    checkType("array",expectedDomain=expectedDomain)
     calling_frame = inspect.currentframe().f_back
     locals_dict = calling_frame.f_locals
     for var_name, _ in locals_dict.items():

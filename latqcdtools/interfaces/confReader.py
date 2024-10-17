@@ -35,12 +35,12 @@ class confReader:
         """        
         self.Ns = Ns
         self.Nt = Nt
-        checkType(Ns,int)
-        checkType(Nt,int)
+        checkType(int,Ns=Ns)
+        checkType(int,Nt=Nt)
         if nproc==None:
             self.nproc=self.Nt
         else:
-            checkType(nproc,int)
+            checkType(int,nproc=nproc)
             self.nproc=nproc
         self.offset = None     # How many bytes is the header?
         self.endianness = '>'  # Big endian by default

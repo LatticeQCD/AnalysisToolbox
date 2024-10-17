@@ -49,7 +49,7 @@ class Extrapolator(Fitter):
             error_strat (str, optional): calculate errors using error propagation or augmented chi^2. Defaults to 'propagation'.
             nproc (int, optional): number of processors for fitting. Defaults to DEFAULTTHREADS.
         """
-        checkType(order,int)
+        checkType(int,order=order)
 
         self._order              = order
         self._triedExtrapolation = False

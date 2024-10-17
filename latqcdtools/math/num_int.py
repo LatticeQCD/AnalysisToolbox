@@ -57,8 +57,8 @@ def integrateData(xdata,ydata,method='trapezoid'):
     Returns:
         float: Area under ydata. 
     """
-    checkType(xdata,'array')
-    checkType(ydata,'array')
+    checkType("array",xdata=xdata)
+    checkType("array",ydata=ydata)
     xdata=np.array(xdata)
     ydata=np.array(ydata)
 

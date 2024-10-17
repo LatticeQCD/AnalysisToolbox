@@ -23,7 +23,7 @@ def getValuesFromErrStr(errStr):
     Returns:
         float, float: mean, error. 
     """
-    checkType(errStr,str)
+    checkType(str,errStr=errStr)
     try:
         meanStr = errStr.split('(')[0]
         mean    = float(meanStr)
@@ -57,7 +57,7 @@ def get_err_str(param, param_err, numb_err_dig=2) -> str:
     Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). 
     """
 
-    checkType(numb_err_dig,int)
+    checkType(int,numb_err_dig=numb_err_dig)
     param     = float(param)
     param_err = float(param_err)
 

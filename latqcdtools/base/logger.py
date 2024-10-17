@@ -70,11 +70,14 @@ def _getCallerName(frame):
     if methodName=='<module>: ':
         methodName='' 
     # If the method was called from within a class, get the class name too.
+    call_locals = currframe.f_back.f_back.f_locals
     try:
-        call_locals = currframe.f_back.f_back.f_locals
         className = str(call_locals['self'])+'.'
     except KeyError:
-        className = ''
+        try:
+            className = str(call_locals['locals_dict']['self'])+'.'
+        except KeyError:
+            className = ''
     return className+methodName
 
 

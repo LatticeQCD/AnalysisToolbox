@@ -98,7 +98,7 @@ class SU3(np.ndarray):
 
     def __pow__(self,power):
         # Perform matrix power instead of element-wise power
-        checkType(power,int)
+        checkType(int,power=power)
         return np.linalg.matrix_power(self, power)
 
 

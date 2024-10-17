@@ -23,8 +23,8 @@ class idealGas:
             Nc (int): Number of colors. 
             Nf (int): Number of fermion flavors. 
         """
-        checkType(Nc,int)
-        checkType(Nf,int)
+        checkType(int,Nc=Nc)
+        checkType(int,Nf=Nf)
         if Nf >= 4:
             logger.TBError('Only B, Q, S, C explicitly coded in.')
         if Nc < 1:

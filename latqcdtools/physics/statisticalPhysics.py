@@ -200,8 +200,8 @@ def reweight(X, pRW, p0, S):
         p0 (float): Simulation point.
         S (np.array): Measurements of the action (extensive) divided by parameter p. 
     """
-    checkType(X,'array')
-    checkType(S,'array')
+    checkType(np.ndarray,X=X)
+    checkType(np.ndarray,S=S)
     Z_i = np.exp( (pRW-p0)*(S-std_mean(S)) )
     Z   = np.sum(Z_i)
     return np.sum(X*Z_i/Z)

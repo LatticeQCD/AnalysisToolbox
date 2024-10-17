@@ -27,12 +27,11 @@ class observablesOfInterest(list):
     using methods like np.genfromtxt. 
     """
 
-
     def __init__(self,iterable=None):
         if iterable is None:
             iterable = _allowed_observables
         super().__init__(iterable)
-        checkType(iterable,list)
+        checkType(list,iterable=iterable)
         for item in iterable:
             checkDomain(item,_allowed_observables)
         if not iterable[0] == "confID":

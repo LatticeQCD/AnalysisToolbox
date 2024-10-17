@@ -14,17 +14,17 @@ logger.set_log_level('INFO')
 
 def testCheck():
 
-    checkType(1,int) 
-    checkType(True,bool) 
-    checkType([1,'two',3],list)
-    checkType([1,'two',3],'array')
-    checkType(np.array([1,'two',3]),'array')
-    checkType((None,None,1),'array')
-    checkType(1,'scalar')
-    checkType(1.,'scalar')
-    checkType(3+1j,'scalar')
-    checkType(3,'real')
-    checkType(np.complex128(3),'real')
+    checkType(int,test=1) 
+    checkType(bool,test=True) 
+    checkType(list,test=[1,'two',3])
+    checkType("array",test=[1,'two',3])
+    checkType("array",test=np.array([1,'two',3]))
+    checkType("array",test=(None,None,1))
+    checkType("scalar",test=1)
+    checkType("scalar",test=1.)
+    checkType("scalar",test=3+1j)
+    checkType("real",test=3)
+    checkType("real",test=np.complex128(3))
 
     checkEqualLengths([1,1,1],[2,2,2],[3,3,3],[4,4,4])
 

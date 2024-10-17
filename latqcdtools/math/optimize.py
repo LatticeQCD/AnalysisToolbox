@@ -34,8 +34,8 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
         maxiter (int, optional): Maximum iterations. Defaults to 300.
         method (str, optional): Defaults to 'newton_krylov'.
     """
-    checkType(tol,"real")
-    checkType(maxiter,int)
+    checkType("real",tol=tol)
+    checkType(int,maxiter=maxiter)
     if method=='newton_krylov':
         return newton_krylov(LHS, guess, f_tol=tol, maxiter=maxiter)
     elif method=='fsolve':
@@ -70,8 +70,8 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
         tol (real, optional): Solve tolerance. Defaults to 1e-8.
         maxiter (int, optional): Maximum iterations. Defaults to 300.
     """
-    checkType(tol,"real")
-    checkType(maxiter,int)
+    checkType("real",tol=tol)
+    checkType(int,maxiter=maxiter)
     for method in _solve_methods:
         try:
             return solve(LHS,guess,tol=tol,maxiter=maxiter,method=method)

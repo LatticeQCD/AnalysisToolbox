@@ -152,7 +152,7 @@ def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fix
         spline = CubicSpline(x=xdata,y=ydata,bc_type='natural')
 
     else:
-        checkType(num_knots,int)
+        checkType(int,num_knots=num_knots)
         nknots = num_knots
         if fixedKnots is not None:
             if type(fixedKnots) is not list:

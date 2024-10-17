@@ -353,7 +353,7 @@ class Fitter:
 
     def minimize_chi2(self, start_params, algorithm):
         """ 
-        Minimize the chi^2 using the scipy minimize routine is used.
+        Minimize the chi^2 using the scipy minimize routine.
 
         Parameters
         ----------

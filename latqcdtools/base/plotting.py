@@ -106,8 +106,6 @@ default_params = {
     'ytick_freq': None,
     'xtick_every_n': 2,    # If xtick_freq or ytick_freq is not None, label every nth tick.
     'ytick_every_n': 2,
-#    'xtick_format' : None, # Format the y-ticks, e.g. if you want to specify the number of decimals. 
-#    'ytick_format' : None,
     'xscale': 1.0,         # Scale data in xdata by this factor.
     'yscale': 1.0,
     'xlogscale': False,    # Should we use a log scale for the x-axis?
@@ -171,8 +169,8 @@ def getColorGradient(NUM_COLORS,map='viridis') -> list:
     Returns:
         list: colors 
     """
-    checkType(NUM_COLORS,int)
-    checkType(map,str)
+    checkType(int,NUM_COLORS=NUM_COLORS)
+    checkType(str,map=map)
     cm = plt.get_cmap(map)
     gradColors=[]
     for i in range(NUM_COLORS):
@@ -212,8 +210,8 @@ def getSubplots(x,y):
     Returns:
         fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
     """
-    checkType(x,int)
-    checkType(y,int)
+    checkType(int,x=x)
+    checkType(int,y=y)
     fig, axs = plt.subplots(y,x,figsize=(4*x,4*y))
     return fig, axs
 
@@ -225,7 +223,7 @@ def _initializePlt(params):
     Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
     so that this only gets called once per plot. 
     """
-    checkType(params,dict)
+    checkType(dict,params=params)
     fill_param_dict(params)
     global INITIALIZE
     if INITIALIZE:
@@ -244,7 +242,7 @@ def _initializePlt(params):
 
 
 def _update_labels(ax,label):
-    checkType(label,str)
+    checkType(str,label=label)
     global legend_labels
     if ax in legend_labels:
         legend_labels[ax].append(label)
@@ -374,7 +372,7 @@ def set_params(**params):
         logger.warn("ytick_freq assumes no log scale.")
 
     if params['xlabel'] is not None:
-        checkType(params['xlabel'],str)
+        checkType(str,xlabel=params['xlabel'])
         if params['labelsintoplot'] or params['xlabelpos'] is not None:
             if params['xlabelpos'] is None:
                 params['xlabelpos'] = (0.95,0.027)
@@ -387,7 +385,7 @@ def set_params(**params):
             ax.xaxis.get_label().set_fontsize(params['font_size'])
 
     if params['ylabel'] is not None:
-        checkType(params['ylabel'],str)
+        checkType(str,ylabel=params['ylabel'])
         if params['labelsintoplot'] or params['ylabelpos'] is not None:
             if params['ylabelpos'] is None:
                 params['ylabelpos'] = (0.025,0.972)
@@ -400,7 +398,7 @@ def set_params(**params):
             ax.yaxis.get_label().set_fontsize(params['font_size'])
 
     if params['title'] is not None:
-        checkType(params['title'],str)
+        checkType(str,title=params['title'])
         plt.title(params['title'])
 
     if params['xlogscale']:
@@ -453,22 +451,6 @@ def set_params(**params):
             if n % params['ytick_every_n'] != 0:
                 label.set_visible(False)
 
-#    if params['xtick_format'] is not None:
-#        checkType(params['xtick_format'],str)
-#        if plt.rcParams['text.usetex']:
-#            x_format = ticker.StrMethodFormatter('$'+params['xtick_format']+'$')
-#        else:
-#            x_format = ticker.StrMethodFormatter(params['xtick_format'])
-#        ax.get_xaxis().set_major_formatter(x_format)
-#
-#    if params['ytick_format'] is not None:
-#        checkType(params['ytick_format'],str)
-#        if plt.rcParams['text.usetex']:
-#            y_format = ticker.StrMethodFormatter('$'+params['ytick_format']+'$')
-#        else:
-#            y_format = ticker.StrMethodFormatter(params['ytick_format'])
-#        ax.get_yaxis().set_major_formatter(y_format)
-
 
 # ------------------------------------------------------------------------------------------------ MAIN PLOTTING METHODS
 
@@ -482,7 +464,7 @@ def preliminary(x,y,text='PRELIMINARY',**kwargs):
         y (float): y-position of bottom-left corner (in units of y-axis) 
         text (str, optional): Text indicating result is preliminary. Defaults to 'PRELIMINARY'.
     """
-    checkType(text,str)
+    checkType(str,text=text)
     _initializePlt(kwargs)
     if 'color' in kwargs: 
         color=kwargs['color']
@@ -509,8 +491,8 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         style (str, optional): Choose from dots, lines, fill, and band. Defaults to 'dots'.
         **params: Additional parameters that can be set.
     """
-    checkType(xcol,int)
-    checkType(ycol,int)
+    checkType(int,xcol=xcol)
+    checkType(int,ycol=ycol)
     _initializePlt(params)
     data   = readTable(filename,dtype=str)
     xdata  = data[xcol].astype(float)

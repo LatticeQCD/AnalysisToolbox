@@ -76,7 +76,7 @@ _baseUnits = [
 
 
 def _separatePrefix(units):
-    checkType(units,str)
+    checkType(str,units=units)
     if units in _baseUnits: 
         prefix=1
         baseUnit=units
@@ -88,7 +88,8 @@ def _separatePrefix(units):
 
 def convert(x,unit1,unit2) -> float:
     """ 
-    General method for doing unit conversions.
+    General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
+    If the unit ends in 'inv', it is interpreted as 1/unit.
 
     Args:
         x (float): measurement in [unit1]. 
@@ -101,9 +102,9 @@ def convert(x,unit1,unit2) -> float:
     p1, u1 = _separatePrefix(unit1)
     p2, u2 = _separatePrefix(unit2)
     if not p1 in _prefix:
-        logger.TBError('Unknown prefix',p1)
+        logger.TBRaise('Unknown prefix',p1)
     if not p2 in _prefix:
-        logger.TBError('Unknown prefix',p2)
+        logger.TBRaise('Unknown prefix',p2)
     u1u2 = (u1,u2)
 
     if u1.endswith('inv'):
@@ -210,29 +211,65 @@ def convert(x,unit1,unit2) -> float:
         result = convert(x*kBJdivK,'J','eV')
 
     else:
-        logger.TBError('No rule for conversion of ['+u1+'] to ['+u2+']') 
+        logger.TBRaise('No rule for conversion of ['+u1+'] to ['+u2+']') 
 
     return fac*result
 
 
+# This block is to support some legacy code.
 hcMeVfm = convert( convert(hceVm,"eV","MeV"), "m","fm" )
 hcGeVfm = convert(hcMeVfm,"MeV","GeV")
-
-
 def fm_to_MeVinv(x) -> float:
     return x/hcMeVfm
 def fm_to_GeVinv(x) -> float:
     return x/hcGeVfm
-
 def MeV_to_fminv(x) -> float:
     return x/hcMeVfm
 def GeV_to_fminv(x) -> float:
     return x/hcGeVfm
-
 def MeVinv_to_fm(x) -> float:
     return hcMeVfm*x
 def GeVinv_to_fm(x) -> float:
     return hcGeVfm*x
+
+
+class physicalConstant():
+
+    name = None
+
+    def __init__(self,name,scale,units):
+        """
+        Wrap a dictionary of scale values in physical units.
+
+        Args:
+            name (str)
+            scale (dict): A dictionary of lists indexed by year. 
+            units (str): Units. See convert method for what units are allowed. 
+        """
+        checkType(str,name=name)
+        checkType(dict,scale=scale)
+        checkType(str,units=units)
+        for key in scale:
+            checkType(list,scale=scale[key])
+        self.name=name
+        self.scale=scale
+        self.scaleUnits=units
+    
+    def __repr__(self) -> str:
+        if self.name is None:
+            return 'physicalConstant'
+        return self.name 
+
+    def getValue(self,year,units,returnErr):
+        checkType(int,year=year)
+        checkType(str,units=units)
+        checkType(bool,returnErr=returnErr)
+        if not year in self.scale:
+            logger.TBRaise(f"Invalid year specification {year}. Allowed years:",list(self.scale.keys()))
+        if returnErr:
+            return convert(self.scale[year][0],self.scaleUnits,units), convert(self.scale[year][1],self.scaleUnits,units)
+        else:
+            return convert(self.scale[year][0],self.scaleUnits,units)
 
 
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
@@ -242,36 +279,22 @@ def M_mu_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of the muon mass. 
     """
-    if year==2022:
-        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        m_mu_MeV, m_mu_MeV_err = 105.6583755, 0.0000023
-    elif year==2020:
-        # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
-        m_mu_MeV, m_mu_MeV_err = 105.6583745, 0.0000024
-    else:
-        logger.TBError("Invalid year specification.")
-    if returnErr:
-        return convert(m_mu_MeV,"MeV",units), convert(m_mu_MeV_err,"MeV",units)
-    else:
-        return convert(m_mu_MeV,"MeV",units)
+    scale = {
+        2022: [105.6583755, 0.0000023], # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2020: [105.6583745, 0.0000024]  # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
+    }
+    return physicalConstant("muon",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_pi0_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of the pi0 mass. 
     """
-    if year==2022:
-        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
-        m_pi0_MeV, m_pi0_MeV_err = 134.9768, 0.0005
-    elif year==2014:
-        # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
-        m_pi0_MeV, m_pi0_MeV_err = 134.9766, 0.0006
-    else:
-        logger.TBError("Invalid year specification.")
-    if returnErr:
-        return convert(m_pi0_MeV,"MeV",units), convert(m_pi0_MeV_err,"MeV",units)
-    else:
-        return convert(m_pi0_MeV,"MeV",units)
+    scale = {
+        2022: [134.9768, 0.0005], # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2014: [134.9766, 0.0006]  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+    }
+    return physicalConstant("pi0",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_pipm_phys(year=2022,units="MeV",returnErr=False):
@@ -285,7 +308,7 @@ def M_pipm_phys(year=2022,units="MeV",returnErr=False):
         # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
         m_pipm_MeV, m_pipm_MeV_err = 139.57018, 0.00035
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
         return convert(m_pipm_MeV,"MeV",units), convert(m_pipm_MeV_err,"MeV",units)
     else:
@@ -303,11 +326,41 @@ def M_rho_phys(year=2022,units="MeV",returnErr=False):
         # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
         m_rho_MeV, m_rho_MeV_err = 775.26, 0.25
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
         return convert(m_rho_MeV,"MeV",units), convert(m_rho_MeV_err,"MeV",units)
     else:
         return convert(m_rho_MeV,"MeV",units)
+
+
+def M_K0_phys(year=2022,units="MeV",returnErr=False):
+    """ 
+    Physical value of K0 mass. 
+    """
+    if year==2022:
+        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
+        m_K0_MeV, m_K0_MeV_err = 497.611, 0.013 
+    else:
+        logger.TBRaise("Invalid year specification.")
+    if returnErr:
+        return convert(m_K0_MeV,"MeV",units), convert(m_K0_MeV_err,"MeV",units)
+    else:
+        return convert(m_K0_MeV,"MeV",units)
+
+
+def M_Kpm_phys(year=2022,units="MeV",returnErr=False):
+    """ 
+    Physical value of K0 mass. 
+    """
+    if year==2022:
+        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
+        m_K0_MeV, m_K0_MeV_err = 493.677, 0.013 
+    else:
+        logger.TBRaise("Invalid year specification.")
+    if returnErr:
+        return convert(m_K0_MeV,"MeV",units), convert(m_K0_MeV_err,"MeV",units)
+    else:
+        return convert(m_K0_MeV,"MeV",units)
 
 
 # ------------------------------------------------------------------------------------------------------ DECAY CONSTANTS
@@ -327,7 +380,7 @@ def fk_phys(year=2019,units="MeV"):
         # PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
         fkMeV = 156.1
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     return convert( fkMeV/np.sqrt(2.), "MeV", units )
 
 
@@ -339,59 +392,29 @@ def frho_phys(year=2017,units="GeV",returnErr=False):
         # HPQCD 2017. DOI: https://doi.org/10.1103/PhysRevD.93.014503. Figure 6.
         frhoGeV, frhoGeV_err = 0.21, 0.01
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
         return convert( frhoGeV, "GeV", units ), convert( frhoGeV_err, "GeV", units )
     else:
         return convert( frhoGeV, "GeV", units )
-    
-
-# ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
 
 
-def alpha_e(year=2018,returnErr=False):
+# ---------------------------------------------------------------------------------------------------- LATTICE CONSTANTS 
+
+
+def w0_phys(year=2013,units="fm",returnErr=False):
     """ 
-    Fine structure constant. 
-    """
-    # NIST 2018 CODATA recommended value.
-    if year==2018:
-        alpha, alpha_err  = 7.2973525693e-3, 0.0000000011e-3
+    Gradient flow scale w0.
+    """    
+    if year==2013:
+        # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
+        w0fm, w0fm_err = 0.1715, 0.0009 
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
-        return alpha, alpha_err 
+        return convert(w0fm,"fm",units), convert(w0fm_err,"fm",units)
     else:
-        return alpha 
-
-
-def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
-    """ 
-    Physical value of MS-bar lambda parameter. 
-    """
-    if year==2021:
-        # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
-        LMS, LMSerr = 339, 12
-    else:
-        logger.TBError("Invalid year specification.")
-    if returnErr:
-        return convert(LMS,"MeV",units), convert(LMSerr,"MeV",units)
-    else:
-        return convert(LMS,"MeV",units)
-
-
-def Rproton_phys(year=2018,units="fm",returnErr=False):
-    """ 
-    Physical value of proton charge radius. 
-    """
-    if year==2018:
-        # From NIST 2018. 
-        R, Rerr =  0.8414, 0.0019
-    else:
-        logger.TBError("Invalid year specification.")
-    if returnErr:
-        return convert(R,"fm",units), convert(Rerr,"fm",units)
-    else:
-        return convert(R,"fm",units)
+        return convert(w0fm,"fm",units)
 
 
 def r1_phys(year=2010,units="fm",returnErr=False):
@@ -402,7 +425,7 @@ def r1_phys(year=2010,units="fm",returnErr=False):
         # r1 taken from MILC 2010. arXiv:1012.0868. 
         r1fm, r1fm_err = 0.3106, np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
         return convert(r1fm,"fm",units), convert(r1fm_err,"fm",units)
     else:
@@ -418,7 +441,7 @@ def r0_phys(year=2014,units="fm",returnErr=False):
         r1, r1_err = r1_phys(year=2010,units=units,returnErr=True)
         r0, r0_err = 1.5092*r1, 1.5092*r1_err
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
         return r0, r0_err 
     else:
@@ -434,9 +457,56 @@ def sqrt_t0_phys(year=2015,units="fm",returnErr=False):
         sqrtt0_div_r0 = 0.334
         sqrtt0        = sqrtt0_div_r0 * r0_phys(year=2014,units=units,returnErr=False) 
     else:
-        logger.TBError("Invalid year specification.")
+        logger.TBRaise("Invalid year specification.")
     if returnErr:
         return sqrtt0, None 
     else:
         return sqrtt0
+    
 
+# ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
+
+
+def alpha_e(year=2018,returnErr=False):
+    """ 
+    Fine structure constant. 
+    """
+    # NIST 2018 CODATA recommended value.
+    if year==2018:
+        alpha, alpha_err  = 7.2973525693e-3, 0.0000000011e-3
+    else:
+        logger.TBRaise("Invalid year specification.")
+    if returnErr:
+        return alpha, alpha_err 
+    else:
+        return alpha 
+
+
+def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
+    """ 
+    Physical value of MS-bar lambda parameter. 
+    """
+    if year==2021:
+        # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
+        LMS, LMSerr = 339, 12
+    else:
+        logger.TBRaise("Invalid year specification.")
+    if returnErr:
+        return convert(LMS,"MeV",units), convert(LMSerr,"MeV",units)
+    else:
+        return convert(LMS,"MeV",units)
+
+
+def Rproton_phys(year=2018,units="fm",returnErr=False):
+    """ 
+    Physical value of proton charge radius. 
+    """
+    if year==2018:
+        # From NIST 2018. 
+        R, Rerr =  0.8414, 0.0019
+    else:
+        logger.TBRaise("Invalid year specification.")
+    if returnErr:
+        return convert(R,"fm",units), convert(Rerr,"fm",units)
+    else:
+        return convert(R,"fm",units)

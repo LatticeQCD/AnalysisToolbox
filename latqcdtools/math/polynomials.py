@@ -3,7 +3,6 @@
 # 
 # J. Goswami
 # 
-#
 
 from latqcdtools.base.check import checkType
 
@@ -17,7 +16,7 @@ class Polynomial:
     """
 
     def __init__(self, coeffs=None):
-        checkType(coeffs,"array")
+        checkType("array",coeffs=coeffs)
         self.coeffs = coeffs
 
     @property
@@ -38,8 +37,8 @@ class Rational:
     """
 
     def __init__(self, num_coeffs, den_coeffs):
-        checkType(num_coeffs,"array")
-        checkType(den_coeffs,"array")
+        checkType("array",num_coeffs=num_coeffs)
+        checkType("array",den_coeffs=den_coeffs)
         self.num_coeffs = num_coeffs
         self.den_coeffs = den_coeffs
 

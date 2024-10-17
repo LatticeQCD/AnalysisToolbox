@@ -55,10 +55,10 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
     Returns:
         jackknife mean and error (optionally pseudovalues) 
     """
-    checkType(numb_blocks,int)
-    checkType(conf_axis,int)
-    checkType(nproc,int)
-    checkType(return_sample,bool)
+    checkType(int,numb_blocks=numb_blocks)
+    checkType(int,conf_axis=conf_axis)
+    checkType(int,nproc=nproc)
+    checkType(bool,return_sample=return_sample)
     if type(data) is tuple:
         logger.TBError('Does not support tuple data. Use latqcdtools.legacy.jackknife if you need this.')
     if numb_blocks <= 1:

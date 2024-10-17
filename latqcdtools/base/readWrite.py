@@ -34,7 +34,7 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
     Returns:
         np.array: Data table. 
     """
-    checkType(filename,str)
+    checkType(str,filename=filename)
     try: 
         data = np.loadtxt(filename,unpack=unpack,**kwargs)
     except Exception as e:

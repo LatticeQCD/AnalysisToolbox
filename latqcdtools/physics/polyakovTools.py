@@ -111,8 +111,8 @@ class polyakovTools:
     """
 
     def __init__(self, Nsigma, Ntau):
-        checkType(Nsigma,int)
-        checkType(Ntau,int)
+        checkType(int,Nsigma=Nsigma)
+        checkType(int,Ntau=Ntau)
         self.Ns = Nsigma
         self.Nt = Ntau
 
