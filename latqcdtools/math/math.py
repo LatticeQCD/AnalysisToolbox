@@ -127,6 +127,7 @@ def logDet(mat) -> float:
     """ 
     Logarithm of determinant. 
     """
+    checkType(np.ndarray,mat=mat)
     checkSquare(mat)
     _, ans = np.linalg.slogdet(mat)
     return ans
@@ -137,12 +138,27 @@ def RMS(data) -> float:
     Root-mean-square of data
 
     Args:
-        data (array-like)
+        data (np.ndarray)
 
     Returns:
         float: RMS of data 
     """
-    return np.sqrt(np.mean(np.array(data)**2))
+    checkType(np.ndarray,data=data)
+    return np.sqrt(np.mean(data**2))
+
+
+def quadrature(data) -> float:
+    """
+    Add data in quadrature
+
+    Args:
+        data (np.ndarray)
+
+    Returns:
+        float: data added in quadrature 
+    """
+    checkType(np.ndarray,data=data)
+    return np.sqrt(np.sum(data**2))
 
 
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:

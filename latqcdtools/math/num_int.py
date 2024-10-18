@@ -57,10 +57,8 @@ def integrateData(xdata,ydata,method='trapezoid'):
     Returns:
         float: Area under ydata. 
     """
-    checkType("array",xdata=xdata)
-    checkType("array",ydata=ydata)
-    xdata=np.array(xdata)
-    ydata=np.array(ydata)
+    checkType(np.ndarray,xdata=xdata)
+    checkType(np.ndarray,ydata=ydata)
 
     if method=='simpson':
         return integrate.simpson(y=ydata,x=xdata)

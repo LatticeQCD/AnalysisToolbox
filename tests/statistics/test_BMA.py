@@ -14,6 +14,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.printErrorBars import getValuesFromErrStr
 from latqcdtools.base.initialize import DEFAULTSEED
 from latqcdtools.base.plotting import plt, plot_dots, clearPlot
+from latqcdtools.base.utilities import toNumpy
 from latqcdtools.statistics.statistics import plot_func, getModelWeights, modelAverage
 from latqcdtools.statistics.fitting import Fitter
 from latqcdtools.testing import concludeTest, print_results
@@ -39,6 +40,8 @@ BAICPAPER   = [30.85, 19.17, 20.23, 20.88, 22.22, 23.79]
 PRBAICPAPER = [0.0012, 0.43, 0.25, 0.18, 0.09, 0.04]
 BAICCONTROL = [29.21641305840999, 19.229646697947416, 20.126005931878353,
                    20.36733203289231, 20.654635925777384, 22.64892748439832 ]
+
+paper_data, paper_a0, BAICPAPER, PRBAICPAPER, BAICCONTROL = toNumpy(paper_data, paper_a0, BAICPAPER, PRBAICPAPER, BAICCONTROL) 
 
 
 def testBMA():

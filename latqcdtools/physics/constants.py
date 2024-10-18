@@ -3,12 +3,16 @@
 # 
 # D. Clarke 
 # 
-# Many constants and unit conversions that are relevant for physics.
+# Many constants and unit conversions that are relevant for physics. These values do not necessarily
+# represent the most up-to-date or appropriate choices; rather they are a collection of constants I
+# have needed for work or teaching classes. This is especially true of constants like particle masses,
+# where choosing one value over another may be subtle. 
 #
 
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
+from latqcdtools.math.math import quadrature
 
 
 # Base constants for unit conversions
@@ -17,9 +21,16 @@ cms             = 299792458        # c in [m/s]. NIST 2018.
 days_per_year   = 365.2422         # NIST 2018.
 days_per_month  = days_per_year/12
 meters_per_mile = 1609.344         # NIST 2023 based on international foot (not survey foot).
-BTU_per_Wh      = 3.412            # Many possible definitions, don't take too seriously. A stupid unit, indeed.
+BTU_per_Wh      = 3.412            # Many possible definitions--don't take too seriously. A stupid unit, indeed.
 kBJdivK         = 1.380649e-23     # kB in [J/K]. NIST 2018.
 eC              = 1.602176634e-19  # e in [C]. NIST 2018.
+
+
+# See corresponding _phys() functions for the references
+_fkerrs2012   = np.array([0.2   ,0.8   ,0.2   ])
+_fkerrs2018   = np.array([0.17  ,0.45  ,0.16  ])
+_fpierrs2018  = np.array([0.01  ,0.03  ,0.13  ])
+_r1fmerrs2010 = np.array([0.0008,0.0014,0.0004])
 
 
 # List of scientific prefixes
@@ -244,13 +255,14 @@ class physicalConstant():
         Args:
             name (str)
             scale (dict): A dictionary of lists indexed by year. 
-            units (str): Units. See convert method for what units are allowed. 
+            units (str): Base units. See convert method for what units are allowed. 
         """
         checkType(str,name=name)
         checkType(dict,scale=scale)
-        checkType(str,units=units)
+        if units is not None:
+            checkType(str,units=units)
         for key in scale:
-            checkType(list,scale=scale[key])
+            checkType(tuple,scale=scale[key])
         self.name=name
         self.scale=scale
         self.scaleUnits=units
@@ -260,16 +272,35 @@ class physicalConstant():
             return 'physicalConstant'
         return self.name 
 
-    def getValue(self,year,units,returnErr):
+    def getValue(self,year,units,returnErr,normalize=1.):
+        """
+        Retrieve the value of this scale.
+
+        Args:
+            year (int): Year this was measured. 
+            units (str): Get it in these units. Use None for unitless quantities. 
+            returnErr (bool): Return both mean and uncertainty as tuple.
+            normalize (real): Return scale/normalize. Defaults to 1.
+        """
         checkType(int,year=year)
-        checkType(str,units=units)
+        if units is not None:
+            checkType(str,units=units)
         checkType(bool,returnErr=returnErr)
+        checkType("scalar",normalize=normalize)
         if not year in self.scale:
             logger.TBRaise(f"Invalid year specification {year}. Allowed years:",list(self.scale.keys()))
-        if returnErr:
-            return convert(self.scale[year][0],self.scaleUnits,units), convert(self.scale[year][1],self.scaleUnits,units)
+        if self.scaleUnits is None:
+            if units is not None:
+                logger.TBRaise("Tried to convert a unitless quantity to units",units)
+            val = self.scale[year][0]
+            err = self.scale[year][1]
         else:
-            return convert(self.scale[year][0],self.scaleUnits,units)
+            val = convert(self.scale[year][0],self.scaleUnits,units)/normalize
+            err = convert(self.scale[year][1],self.scaleUnits,units)/normalize
+        if returnErr:
+            return val, err 
+        else:
+            return val 
 
 
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
@@ -280,10 +311,10 @@ def M_mu_phys(year=2022,units="MeV",returnErr=False):
     Physical value of the muon mass. 
     """
     scale = {
-        2022: [105.6583755, 0.0000023], # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2020: [105.6583745, 0.0000024]  # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
+        2022: (105.6583755, 0.0000023), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2020: (105.6583745, 0.0000024)  # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
     }
-    return physicalConstant("muon",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_mu",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_pi0_phys(year=2022,units="MeV",returnErr=False):
@@ -291,112 +322,88 @@ def M_pi0_phys(year=2022,units="MeV",returnErr=False):
     Physical value of the pi0 mass. 
     """
     scale = {
-        2022: [134.9768, 0.0005], # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2014: [134.9766, 0.0006]  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        2022: (134.9768, 0.0005), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2014: (134.9766, 0.0006)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
     }
-    return physicalConstant("pi0",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_pi0",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_pipm_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of the pi+/- mass. 
     """
-    if year==2022:
-        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
-        m_pipm_MeV, m_pipm_MeV_err = 139.57039, 0.00018
-    elif year==2014:
-        # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
-        m_pipm_MeV, m_pipm_MeV_err = 139.57018, 0.00035
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(m_pipm_MeV,"MeV",units), convert(m_pipm_MeV_err,"MeV",units)
-    else:
-        return convert(m_pipm_MeV,"MeV",units)
+    scale = {
+        2022: (139.57039, 0.00018), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2014: (139.57018, 0.00035)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+    }
+    return physicalConstant("M_pi+/-",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_rho_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of the rho mass. 
     """
-    if year==2022:
-        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
-        m_rho_MeV, m_rho_MeV_err = 775.26, 0.23
-    elif year==2014:
-        # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
-        m_rho_MeV, m_rho_MeV_err = 775.26, 0.25
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(m_rho_MeV,"MeV",units), convert(m_rho_MeV_err,"MeV",units)
-    else:
-        return convert(m_rho_MeV,"MeV",units)
+    scale = {
+        2022: (775.26, 0.23), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2014: (775.26, 0.25)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+    }
+    return physicalConstant("M_rho",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_K0_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of K0 mass. 
     """
-    if year==2022:
-        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
-        m_K0_MeV, m_K0_MeV_err = 497.611, 0.013 
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(m_K0_MeV,"MeV",units), convert(m_K0_MeV_err,"MeV",units)
-    else:
-        return convert(m_K0_MeV,"MeV",units)
+    scale = {
+        2022: (497.611, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+    }
+    return physicalConstant("M_K0",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_Kpm_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of K0 mass. 
     """
-    if year==2022:
-        # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097
-        m_K0_MeV, m_K0_MeV_err = 493.677, 0.013 
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(m_K0_MeV,"MeV",units), convert(m_K0_MeV_err,"MeV",units)
-    else:
-        return convert(m_K0_MeV,"MeV",units)
+    scale = {
+        2022: (493.677, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+    }
+    return physicalConstant("M_K+/-",scale,"MeV").getValue(year,units,returnErr) 
 
 
 # ------------------------------------------------------------------------------------------------------ DECAY CONSTANTS
 
 
-def fk_phys(year=2019,units="MeV"):
+
+def fk_phys(year=2019,units="MeV",returnErr=False):
     """ 
-    Physical value of Kaon decay constant. 
+    Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
     """
-    if year==2019:
-        # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6.
-        fkMeV = 155.7
-    elif year==2018:
-        # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
-        fkMeV = 155.72
-    elif year==2012:
-        # PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
-        fkMeV = 156.1
-    else:
-        logger.TBRaise("Invalid year specification.")
-    return convert( fkMeV/np.sqrt(2.), "MeV", units )
+    scale = {
+        2019: (155.7 , 0.7),                     # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6, Nf=2+1.
+        2018: (155.72, quadrature(_fkerrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
+        2012: (156.1 , quadrature(_fkerrs2012)), # PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
+    }
+    return physicalConstant("f_K+/-",scale,"MeV").getValue(year,units,returnErr,normalize=np.sqrt(2.)) 
+
+
+def fpi_phys(year=2018,units="MeV",returnErr=False):
+    """
+    Physical value of the pion decay constant, f_pi+/-. 
+    """
+    scale = {
+        2018: (130.50, quadrature(_fpierrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
+    }
+    return physicalConstant("f_pi+/-",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def frho_phys(year=2017,units="GeV",returnErr=False):
     """ 
     Physical value of the rho decay constant. 
     """
-    if year==2017:
-        # HPQCD 2017. DOI: https://doi.org/10.1103/PhysRevD.93.014503. Figure 6.
-        frhoGeV, frhoGeV_err = 0.21, 0.01
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert( frhoGeV, "GeV", units ), convert( frhoGeV_err, "GeV", units )
-    else:
-        return convert( frhoGeV, "GeV", units )
+    scale = {
+        2017: (0.21, 0.01), # HPQCD 2017. DOI: https://doi.org/10.1103/PhysRevD.93.014503. Figure 6.
+    }
+    return physicalConstant("f_rho",scale,"GeV").getValue(year,units,returnErr) 
 
 
 # ---------------------------------------------------------------------------------------------------- LATTICE CONSTANTS 
@@ -406,63 +413,32 @@ def w0_phys(year=2013,units="fm",returnErr=False):
     """ 
     Gradient flow scale w0.
     """    
-    if year==2013:
-        # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
-        w0fm, w0fm_err = 0.1715, 0.0009 
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(w0fm,"fm",units), convert(w0fm_err,"fm",units)
-    else:
-        return convert(w0fm,"fm",units)
+    scale = {
+        2013: (0.1715, 0.0009), # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
+    }
+    return physicalConstant("w0",scale,"fm").getValue(year,units,returnErr) 
 
 
 def r1_phys(year=2010,units="fm",returnErr=False):
     """ 
     Physical value of Sommer scale r1. 
     """    
-    if year==2010:
-        # r1 taken from MILC 2010. arXiv:1012.0868. 
-        r1fm, r1fm_err = 0.3106, np.sqrt( 0.0008**2 + 0.0014**2 + 0.0004**2 )
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(r1fm,"fm",units), convert(r1fm_err,"fm",units)
-    else:
-        return convert(r1fm,"fm",units)
+    scale = {
+        2010: (0.3106, quadrature(_r1fmerrs2010)), # r1 taken from MILC 2010. arXiv:1012.0868. 
+    }
+    return physicalConstant("r1",scale,"fm").getValue(year,units,returnErr) 
 
 
+_r1phys2010, _r1phys2010e = r1_phys(year=2010,units="fm",returnErr=True)
 def r0_phys(year=2014,units="fm",returnErr=False):
     """ 
     Physical value of Sommer scale r0. 
     """    
-    if year==2014:
-        # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
-        r1, r1_err = r1_phys(year=2010,units=units,returnErr=True)
-        r0, r0_err = 1.5092*r1, 1.5092*r1_err
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return r0, r0_err 
-    else:
-        return r0 
+    scale = {
+        2014: (_r1phys2010*1.5092, _r1phys2010e*1.5092), # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
+    }
+    return physicalConstant("r0",scale,"fm").getValue(year,units,returnErr) 
 
-
-def sqrt_t0_phys(year=2015,units="fm",returnErr=False):
-    """ 
-    Gradient flow scale t0^(1/2). 
-    """
-    if year==2015:
-        # TODO: Where did this come from? Is the year correct? 
-        sqrtt0_div_r0 = 0.334
-        sqrtt0        = sqrtt0_div_r0 * r0_phys(year=2014,units=units,returnErr=False) 
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return sqrtt0, None 
-    else:
-        return sqrtt0
-    
 
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
 
@@ -471,42 +447,27 @@ def alpha_e(year=2018,returnErr=False):
     """ 
     Fine structure constant. 
     """
-    # NIST 2018 CODATA recommended value.
-    if year==2018:
-        alpha, alpha_err  = 7.2973525693e-3, 0.0000000011e-3
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return alpha, alpha_err 
-    else:
-        return alpha 
+    scale = {
+        2018: (7.2973525693e-3, 0.0000000011e-3), # NIST 2018 CODATA recommended value.
+    }
+    return physicalConstant("alpha_e",scale,None).getValue(year,None,returnErr) 
 
 
 def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
     """ 
     Physical value of MS-bar lambda parameter. 
     """
-    if year==2021:
-        # Kaon decay constant taken from FLAG 2021. arXiv: 2111.09849
-        LMS, LMSerr = 339, 12
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(LMS,"MeV",units), convert(LMSerr,"MeV",units)
-    else:
-        return convert(LMS,"MeV",units)
+    scale = {
+        2021: ( 339, 12 ), # Taken from FLAG 2021. arXiv: 2111.09849
+    }
+    return physicalConstant("lambda_MSbar",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def Rproton_phys(year=2018,units="fm",returnErr=False):
     """ 
     Physical value of proton charge radius. 
     """
-    if year==2018:
-        # From NIST 2018. 
-        R, Rerr =  0.8414, 0.0019
-    else:
-        logger.TBRaise("Invalid year specification.")
-    if returnErr:
-        return convert(R,"fm",units), convert(Rerr,"fm",units)
-    else:
-        return convert(R,"fm",units)
+    scale = {
+        2018: ( 0.8414, 0.0019 ), # Taken from FLAG 2021. arXiv: 2111.09849
+    }
+    return physicalConstant("Rproton",scale,"fm").getValue(year,units,returnErr) 

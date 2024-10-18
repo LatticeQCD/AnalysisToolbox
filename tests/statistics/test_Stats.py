@@ -14,6 +14,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.plotting import plt
 from latqcdtools.base.initialize import DEFAULTSEED
+from latqcdtools.base.utilities import toNumpy
 
 logger.set_log_level('INFO')
 
@@ -90,6 +91,8 @@ ts2 = [-0.41765878, -0.2333498 ,  -0.22939907,  -0.27035445,  -0.29163003,  -0.2
         0.5725527 ,  0.5917013 ,   0.46564984,   0.5967817 ,   0.68037146,   0.53769773,
         0.5776071 ,  0.6235754 ,   0.67287165,   0.82511437,   0.93292713,   0.84517425,
         0.762654  ,  0.8910726 ,   0.9227938 ,   0.7618559 ,   0.80128413]
+
+ts1, ts2 = toNumpy(ts1, ts2)
 
 # An example taken from P. Lepage's lsqfit tutorial:
 ycov  = np.array(

@@ -9,6 +9,7 @@
 
 from latqcdtools.math.num_int import integrateData, integrateFunction
 from latqcdtools.testing import print_results, concludeTest
+from latqcdtools.base.utilities import toNumpy
 import latqcdtools.base.logger as logger
 
 
@@ -40,6 +41,7 @@ def testInt():
           3.87964264e-02,  3.71900954e-02,  3.40575679e-02,  3.04882265e-02,
           2.01035478e-03, -2.99829433e-02, -2.63919195e-02, -3.27346097e-02,
          -4.18786374e-02]
+    x, y = toNumpy(x,y)
 
     EPSILON =1e-8
     I_simp  =3.86033230

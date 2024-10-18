@@ -7,6 +7,7 @@
 # by Bernd Berg.
 #
 
+import numpy as np
 from latqcdtools.statistics.autocorrelation import getTauInt
 from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
@@ -27,6 +28,7 @@ def testAutocor():
           62.1, 61.9, 62.6, 62.6, 62.4, 63.1, 62.5, 61.9, 62.2, 62.8, 61.8, 61.8, 62.1, 62.1, 61.5, 61.5, 62.1, 62.1, 62.3,
           61.9, 61.9, 61.9, 61.6, 61.9, 61.5, 61.9, 62.2, 61.8, 61.8, 61.8, 62.9, 62.1, 62.1, 62  , 61.9, 62.6, 62  , 62  ,
           62.4, 62.4, 62.2, 61.8, 62.3, 62  , 61.7, 61.7, 62  , 61.4, 61.4, 61.4, 62.3, 62  , 62  , 62  , 62.1]
+    ts = np.array(ts)
 
     tau_int, tau_inte, itpick = getTauInt(ts, nbins, nt, 'acor.d', showPlot=False)
 

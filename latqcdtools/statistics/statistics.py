@@ -144,7 +144,7 @@ def checkTS(ts):
     Args:
         ts (array-like): time series 
     """
-    checkType("array",ts=ts)
+    checkType(np.ndarray,ts=ts)
     if isHigherDimensional(ts):
         logger.TBRaise('Expected 1-d time series.',frame=3)
     if len(ts) < 2:
@@ -693,7 +693,7 @@ def getModelWeights(IC) -> np.ndarray:
     Returns:
         np.array: Probability weights 
     """
-    checkType("array",IC=IC)
+    checkType(np.ndarray,IC=IC)
     IC = np.array(IC)
     return normalize(np.exp(-0.5*IC))
 
@@ -751,8 +751,8 @@ def KSTest_2side(data1,data2) -> float:
     Returns:
         float: 1-p 
     """
-    checkType("array",data1=data1)
-    checkType("array",data2=data2)
+    checkType(np.ndarray,data1=data1)
+    checkType(np.ndarray,data2=data2)
     data1,data2 = toNumpy(data1,data2)
     return 1 - sp.stats.kstest(data1, data2).pvalue 
 
@@ -769,7 +769,7 @@ def KSTest_1side(data,cdf) -> float:
     Returns:
         float: 1-p 
     """
-    checkType("array",data=data)
+    checkType(np.ndarray,data=data)
     return 1 - sp.stats.kstest(data, cdf).pvalue
 
 
