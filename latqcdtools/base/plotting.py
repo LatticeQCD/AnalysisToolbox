@@ -597,7 +597,7 @@ def plot_hline(y,**params):
     ZOD = params['ZOD']
     if ZOD is None:
         ZOD = globals()['ZOD']
-    handle = ax.axhline(y=y,xmin=params['xmin'],xmax=params['xmax'],color=params['color'], **optional) 
+    handle = ax.axhline(y=y,color=params['color'], **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])
@@ -615,7 +615,7 @@ def plot_vline(x,**params):
     ZOD = params['ZOD']
     if ZOD is None:
         ZOD = globals()['ZOD']
-    handle = ax.axvline(x=x,xmin=params['ymin'],xmax=params['ymax'],color=params['color'], **optional) 
+    handle = ax.axvline(x=x,color=params['color'], **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])

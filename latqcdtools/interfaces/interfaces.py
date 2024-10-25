@@ -66,8 +66,8 @@ def readGPL(filename,discardTag=True,raggedWarn=True):
     rather than using genfromtxt to allow the possibility of ragged tables. 
     """
     checkType(str,filename=filename)
-    checkType(bool,discardTag)
-    checkType(bool,raggedWarn)
+    checkType(bool,discardTag=discardTag)
+    checkType(bool,raggedWarn=raggedWarn)
     gplFile = open(filename,'r')
     minIndex = 0
     data = []
