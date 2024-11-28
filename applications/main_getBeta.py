@@ -9,14 +9,13 @@
 #
 
 import argparse
-from latqcdtools.physics.referenceScales import r0_div_a, a_times_fk, ignoreBetaRange, CY_phys, CY_param
+from latqcdtools.physics.referenceScales import r0_div_a, a_times_fk, CY_phys, CY_param
 from latqcdtools.physics.constants import fk_phys, r0_phys
 from latqcdtools.base.utilities import getArgs
 from latqcdtools.math.optimize import persistentSolve
 import latqcdtools.base.logger as logger
 
 logger.set_log_level('INFO')
-ignoreBetaRange()
 
 parser = argparse.ArgumentParser(description='Compute a and T.')
 

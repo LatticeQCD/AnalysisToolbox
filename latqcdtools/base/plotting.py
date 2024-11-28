@@ -65,7 +65,8 @@ default_params = {
     'title': None,
     'label': None,               # What are the data called? (Will appear in legend.)
     'color': None,               # Color for your data. (By default each new set automatically gets different color.)
-    'font_size': 12,             # Default font size for text.
+    'facecolor' : 'color',       # Sometimes one differentiates between colors of faces and edges. (By default same as color.)
+    'font_size': 12,             # Controls font size for everything. 
     'font_weight': 'normal',     # Default style of font ('normal', 'bold', 'heavy', 'light')
     'alpha': 0.5,                # General transparency for data.
     'ticksintoplot': True,       # Put ticks into plotting area.
@@ -93,8 +94,13 @@ default_params = {
     #   6     10    7           'center left'   'center'        'center right'
     #   3     8     4           'lower left'    'lower center'  'lower right'
     'legendpos': 'best',
-    'bbox_to_anchor': None,      # Manual position of the legend. The very bottom-left is (0,0), and the very 
-                                 #   top-right is (1,1). If you set this, legendpos appears to get ignored.
+    'bbox_to_anchor': None,      # Manual position of the legend. If this is not None, then legendpos
+                                 #   controls the point on the legend that bbox_to_anchor controls.
+                                 #   for example legendpos='lower left' along with bbox_to_anchor=(0,0)
+                                 #   puts the lower left corner of the legend at the bottom left corner
+                                 #   of the plot. The same legendpos with bbox_to_anchor=(1,1) puts the
+                                 #   lower left corner of the legend in the upper right corner of the plot.
+                                 #   This is not my fault--this was a matplotlib design choice.
     'legend_ncol': 1,            # Number of columns in the legend.
     'legend_col_spacing': None,  # Spacing between columns in the legend.
     'handletextpad': 0.2,        # Spacing between symbol and text in legend.
@@ -139,6 +145,11 @@ def latexify(bold=False):
     plt.rcParams['axes.formatter.use_mathtext'] = True
 
 
+def resetLEGEND():
+    global LEGEND
+    LEGEND = False
+
+
 def clearPlot():
     """ 
     Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. 
@@ -147,15 +158,11 @@ def clearPlot():
     global INITIALIZE, ZOD, LEGEND, legend_labels, legend_handles
     ZOD        = 10
     INITIALIZE = True
-    LEGEND     = False
+    resetLEGEND() 
     legend_handles = { plt : [] }
     legend_labels  = { plt : [] }
     plt.clf()
-
-
-def resetLEGEND():
-    global LEGEND
-    LEGEND = False
+    plt.close('all')
 
 
 def getColorGradient(NUM_COLORS,map='viridis') -> list:
@@ -316,7 +323,8 @@ def fill_param_dict(params):
     if not LEGEND:
         # When filling params, check if we show the legend. This is triggered by one of these keys
         # being different from the default value. 
-        for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 'alpha_legend'):
+        for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 
+                    'alpha_legend', 'bbox_to_anchor'):
             if key in params:
                 if params[key] != default_params[key]:
                     logger.debug('Found legend trigger',key)
@@ -396,6 +404,8 @@ def set_params(**params):
         else:
             ax.set_ylabel(params['ylabel'])
             ax.yaxis.get_label().set_fontsize(params['font_size'])
+
+    ax.tick_params(axis='both', which='major', labelsize=params['font_size']) 
 
     if params['title'] is not None:
         checkType(str,title=params['title'])
@@ -525,8 +535,6 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         plot_lines(xdata, ydata, yedata=yedata, xedata=xedata, **params)
     elif style == "fill":
         plot_fill(xdata, ydata, yedata=yedata, **params)
-    elif style == "band":
-        plot_band(xdata, ydata, yedata, xedata, **params)
     else:
         logger.TBError("Unknown style",style)
 
@@ -561,8 +569,8 @@ def plot_vspan(minVal,maxVal,**params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
+        set_params(**params) # Needed to put in labels
     globals()['ZOD'] += 1
-    set_params(**params) # Needed to put in labels
 
 
 def plot_hspan(minVal,maxVal,**params):
@@ -583,11 +591,11 @@ def plot_hspan(minVal,maxVal,**params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
+        set_params(**params) # Needed to put in labels
     globals()['ZOD'] += 1
-    set_params(**params) # Needed to put in labels
 
 
-def plot_hline(y,**params):
+def plot_hline(y,minVal=None,maxVal=None,**params):
     """ 
     Plot a horizontal line at y. 
     """
@@ -597,15 +605,26 @@ def plot_hline(y,**params):
     ZOD = params['ZOD']
     if ZOD is None:
         ZOD = globals()['ZOD']
-    handle = ax.axhline(y=y,color=params['color'], **optional) 
+    x1, x2 = ax.get_xlim()
+    if minVal is not None:
+        x1=minVal
+    if maxVal is not None:
+        x2=maxVal
+    logger.debug('x1, x2 = ',x1,x2)
+    # The matplotlib people are psychopaths. I couldn't get this to work in any other
+    # way. Yes, the comma after handle in the else branch is mandatory. 
+    if (minVal is None) and (maxVal is None):
+        handle = ax.axhline(y=y,color=params['color'], **optional) 
+    else:
+        handle, = ax.plot([x1, x2], [y, y], color=params['color'], **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-    set_params(**params)
+        set_params(**params)
 
 
-def plot_vline(x,**params):
+def plot_vline(x,minVal=None,maxVal=None,**params):
     """ 
     Plot a vertical line at x. 
     """
@@ -615,12 +634,21 @@ def plot_vline(x,**params):
     ZOD = params['ZOD']
     if ZOD is None:
         ZOD = globals()['ZOD']
-    handle = ax.axvline(x=x,color=params['color'], **optional) 
+    y1, y2 = ax.get_ylim()
+    if minVal is not None:
+        y1=minVal
+    if maxVal is not None:
+        y2=maxVal
+    logger.debug('y1, y2 = ',y1,y2)
+    if (minVal is None) and (maxVal is None):
+        handle = ax.axvline(x=x,color=params['color'], **optional) 
+    else:
+        handle, = ax.plot([x, x], [y1, y2], color=params['color'], **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-    set_params(**params)
+        set_params(**params)
 
 
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
@@ -686,9 +714,9 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
+        set_params(**params) # Needed to put in labels
 
     globals()['ZOD'] += 1
-    set_params(**params) # Needed to put in labels
 
 
 def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewidth=0.2, **params):
@@ -727,9 +755,9 @@ def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewid
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,bar)
+        set_params(**params) # Needed to put in labels
 
     globals()['ZOD'] += 1
-    set_params(**params) # Needed to put in labels
 
 
 def plot_hist(data, bins = None, density=False, label=None, weights=None, **params):
@@ -815,10 +843,10 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(line,handle))
-    set_params(**params) # Needed to put in labels
+        set_params(**params) # Needed to put in labels
 
 
-def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
+def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
     """ 
     Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 
@@ -827,7 +855,7 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
         ydata (array-like)
         yedata (array-like): y error 
         xedata (array-like, optional): x error. Defaults to None.
-        pattern (_type_, optional): _description_. Defaults to None.
+        center (bool): Do you show the central line? Defaults to True. 
         **params: Additional parameters that can be set.
     """
     if (yedata is None) and (xedata is None):
@@ -849,6 +877,11 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
     if ZOD is None:
         ZOD = globals()['ZOD']
 
+    if params['facecolor'] == 'color':
+        facecol=params['color']
+    else:
+        facecol=params['facecolor']
+
     if center :
         if params['color'] is not None:
             handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
@@ -856,8 +889,6 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
         else:
             handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
                                zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
-
-
         col = handle[0].get_color()
     else:
         col = params['color']
@@ -866,23 +897,23 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center = True , **params):
             pl = ax.fill_between(xdata*params['xscale'],
                                  (np.asarray(ydata*params['yscale']) - np.asarray(yedata[0]*params['yscale'])),
                                  (np.asarray(ydata*params['yscale']) + np.asarray(yedata[1]*params['yscale'])), 
-                                 facecolor=col, alpha=params['alpha'], linewidth=params['linewidth'], 
+                                 facecolor=facecol, alpha=params['alpha'], linewidth=params['linewidth'], 
                                  zorder=ZOD, edgecolor=col, hatch=params['hatch'])
         else:    
             pl = ax.fill_between(xdata*params['xscale'],
                                  (np.asarray(ydata*params['yscale']) - np.asarray(yedata*params['yscale'])),
                                  (np.asarray(ydata*params['yscale']) + np.asarray(yedata*params['yscale'])), 
-                                 facecolor=col, alpha=params['alpha'], linewidth=params['linewidth'], 
+                                 facecolor=facecol, alpha=params['alpha'], linewidth=params['linewidth'], 
                                  zorder=ZOD, edgecolor=col, hatch=params['hatch'])
     else:
         pl = ax.fill_betweenx(ydata*params['yscale'], 
                               (np.asarray(xdata*params['xscale']) - np.asarray(xedata*params['xscale'])),
                               (np.asarray(xdata*params['xscale']) + np.asarray(xedata*params['xscale'])), 
-                              facecolor=col, alpha=params['alpha'],linewidth=params['linewidth'], 
+                              facecolor=facecol, alpha=params['alpha'],linewidth=params['linewidth'], 
                               zorder=ZOD, edgecolor=col, hatch=params['hatch'])
     globals()['ZOD'] += 2
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(handle,pl))
-    set_params(**params) # Needed to put in labels
+        set_params(**params) # Needed to put in labels

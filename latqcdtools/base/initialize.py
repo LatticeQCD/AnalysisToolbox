@@ -6,7 +6,7 @@
 # Some routines to set up the toolbox, especially for keeping a record of what you did. 
 # 
 
-import os, sys
+import os, sys, warnings
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import shell, createFilePath
 
@@ -53,6 +53,7 @@ def initialize(logFile=None):
     Some common tasks to do at the start of a run where you want to keep track of things. 
     """
     global INITIALIZED
+    warnings.simplefilter('ignore', UserWarning)
     introduceYourself()
     if logFile is None:
         logFile = 'log/' + os.path.splitext(os.path.basename(sys.argv[0]))[0] + '.log'

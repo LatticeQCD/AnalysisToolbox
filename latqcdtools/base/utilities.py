@@ -8,7 +8,7 @@
 
 from subprocess import run, PIPE
 import numpy as np
-import time, re, datetime, os
+import time, re, datetime, os, shutil
 import latqcdtools.base.logger as logger
 
 
@@ -314,6 +314,22 @@ def deleteFile(target):
     else:
         pass
     logger.warn('Unable to remove file',target)
+
+
+def deleteFolder(target):
+    """ 
+    Delete the folder at target, if it exists. 
+    """
+    if os.path.isdir(target):
+        try:
+            shutil.rmtree(target)
+            logger.info("Deleted folder",target,"and its subdirectories.")
+            return
+        except OSError:
+            pass
+    else:
+        pass
+    logger.warn('Unable to remove folder',target)
 
 
 def createFilePath(fullFileName):

@@ -10,11 +10,10 @@
 import numpy as np
 from latqcdtools.base.plotting import latexify, set_params, plot_file, clearPlot, preliminary, \
     plot_bar, plot_hist, plt
-from latqcdtools.base.initialize import initialize, finalize
 from latqcdtools.statistics.statistics import plot_func
 from latqcdtools.interfaces.interfaces import readGPL 
 import latqcdtools.base.logger as logger
-
+from latqcdtools.base.initialize import initialize, finalize
 
 initialize()
 logger.set_log_level('INFO')
@@ -43,7 +42,7 @@ set_params(xlabel   ="$T$ [MeV]",
            legend_title="$\\ev{\\int dx}$",
            xlabelpos=(0.6,0.05),
            ylabelpos=(0.05,0.4),
-           font_size=10,
+           font_size=14,
            xmin=1.0,
            xmax=3.0,
            ymin=1.0

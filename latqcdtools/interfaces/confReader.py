@@ -10,7 +10,7 @@
 
 import struct
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import numbaON
+from latqcdtools.base.speedify import numbaON,DEFAULTTHREADS
 from latqcdtools.math.math import rel_check
 from latqcdtools.base.check import checkType
 numbaON()
@@ -38,7 +38,7 @@ class confReader:
         checkType(int,Ns=Ns)
         checkType(int,Nt=Nt)
         if nproc==None:
-            self.nproc=self.Nt
+            self.nproc=min(self.Nt,DEFAULTTHREADS)
         else:
             checkType(int,nproc=nproc)
             self.nproc=nproc
@@ -83,7 +83,7 @@ class confReader:
         elif self.precision == 'd':
             return 8
         else:
-            logger.TBError('Unknown precision',self.precision,'(expected f or d)')
+            logger.TBRaise('Unknown precision',self.precision,'(expected f or d)')
 
 
 
@@ -111,7 +111,7 @@ class NERSCReader(confReader):
         minOffset = 78 # Minimal number of characters for the entries above, not including what comes on RHS.
         self.offset = header.find(b'END_HEADER\n')+11
         if self.offset < minOffset:
-            logger.TBError(fileName,'not in NERSC format.')
+            logger.TBRaise(fileName,'not in NERSC format.')
 
         # Convert header to metaData dictionary.
         entries = header[:self.offset-1].split(b'\n')[1:-1]
@@ -127,13 +127,13 @@ class NERSCReader(confReader):
         Nz = int(metaData[b'DIMENSION_3'])
         Nt = int(metaData[b'DIMENSION_4'])
         if Nx != self.Ns:
-            logger.TBError('Read Nx =',Nx,'. Expected ',self.Ns)
+            logger.TBRaise('Read Nx =',Nx,'. Expected ',self.Ns)
         if Ny != self.Ns:
-            logger.TBError('Read Ny =',Ny,'. Expected ',self.Ns)
+            logger.TBRaise('Read Ny =',Ny,'. Expected ',self.Ns)
         if Nz != self.Ns:
-            logger.TBError('Read Nz =',Nz,'. Expected ',self.Ns)
+            logger.TBRaise('Read Nz =',Nz,'. Expected ',self.Ns)
         if Nt != self.Nt:
-            logger.TBError('Read Nt =',Nt,'. Expected ',self.Nt)
+            logger.TBRaise('Read Nt =',Nt,'. Expected ',self.Nt)
 
         # Extract endianness
         if metaData[b'FLOATING_POINT'].endswith(b'SMALL'):
@@ -141,7 +141,7 @@ class NERSCReader(confReader):
         elif metaData[b'FLOATING_POINT'].endswith(b'BIG'):
             self.endianness = '>'
         else:
-            logger.TBError('Unrecognized endianness.')
+            logger.TBRaise('Unrecognized endianness.')
 
         # Extract precision
         if metaData[b'FLOATING_POINT'].startswith(b'IEEE32'):
@@ -149,7 +149,7 @@ class NERSCReader(confReader):
         elif metaData[b'FLOATING_POINT'].startswith(b'IEEE64'):
             self.precision = 'd'
         else:
-            logger.TBError('Unrecognized precision.')
+            logger.TBRaise('Unrecognized precision.')
 
         # Extract number of rows
         if metaData[b'DATATYPE'].endswith(b'3x3'):
@@ -196,14 +196,14 @@ class NERSCReader(confReader):
         if self.linkTrace is not None:
             linkTrace = self.gauge.getLinkTrace()
             if not rel_check(linkTrace, self.linkTrace):
-                logger.TBError('<tr U> is wrong. Compare:',linkTrace,'with',self.linkTrace)
+                logger.TBRaise('<tr U> is wrong. Compare:',linkTrace,'with',self.linkTrace)
             logger.details('Configuration',fileName,'has correct <tr U>.')
 
         # Check <tr U^[]>
         if self.plaquette is not None:
             plaq = self.gauge.getPlaquette()
             if not rel_check(plaq, self.plaquette):
-                logger.TBError('<tr U^[]> is wrong. Compare:',plaq,'with',self.plaquette)
+                logger.TBRaise('<tr U^[]> is wrong. Compare:',plaq,'with',self.plaquette)
             logger.details('Configuration', fileName, 'has correct <tr U_plaq>.')
 
         return self.gauge

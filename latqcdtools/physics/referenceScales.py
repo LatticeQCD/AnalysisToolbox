@@ -1,7 +1,7 @@
 #
 # referenceScales.py
 #
-# A collection of scales and related functions for pure SU(3) configurations.
+# A collection of scales computed as a function of beta. 
 #
 
 import numpy as np
@@ -52,7 +52,7 @@ def _betaRangeWarn(beta, beta_range):
     """
     global CHECKBETARANGE
     if isinstance(beta , (float,np.floating)) :
-        beta    = np.array([ beta , beta ]) 
+        beta = np.array([ beta , beta ]) 
     if CHECKBETARANGE:
         if np.sort(beta)[0] < beta_range[0] or np.sort(beta)[-1] > beta_range[1]:
             logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
@@ -80,13 +80,13 @@ def allton_type_ansatz(beta, c0, c2, d2):
 # ===================================================== f_K scales
 
 
-def a_times_fk(beta: float, year):
+def a_times_fk(beta, year):
     """ 
     Get a*f_k(beta).
 
     Args:
         beta (float)
-        year (int): year that parameterization was determined 
+        year (int/str): year that parameterization was determined 
 
     Returns:
         float: a*f_k 
@@ -130,13 +130,18 @@ def a_div_r1(beta, year):
 
     Args:
         beta (float)
-        year (int): year that parameterization was determined 
+        year (int/str): year that parameterization was determined 
 
     Returns:
         float: a/r_1
     """
-    # https://arxiv.org/pdf/2107.10011.pdf, 10.1103/PhysRevD.104.074512
+    # https://arxiv.org/pdf/2107.10011.pdf. Note that in this study, they say they update
+    # numbers from https://arxiv.org/pdf/1407.6387.pdf making changes that seem unrelated
+    # to the beta range, while providing no new beta range. I therefore assume the beta
+    # range is the same as Table IV of https://arxiv.org/pdf/1407.6387.pdf
     if str(year) == "2021":
+        beta_range = [5.9, 7.825]
+        _betaRangeWarn(beta, beta_range)
         c0 = 43.16
         c2 = 339472
         d2 = 5452.0
@@ -149,11 +154,16 @@ def a_div_r1(beta, year):
         d2 = 5584
     # https://arxiv.org/pdf/1407.6387.pdf
     elif str(year) == "2014":
+        beta_range = [5.9, 7.825]
+        _betaRangeWarn(beta, beta_range)
         c0 = 43.1
         c2 = 343236.0
         d2 = 5514.0
-    # https://arxiv.org/pdf/1111.1710.pdf
+    # https://arxiv.org/pdf/1111.1710.pdf. It should be noted that this one has its LCP
+    # tuned at ms/ml=20.
     elif str(year) == "2012":
+        beta_range = [5.9, 7.28]
+        _betaRangeWarn(beta, beta_range)
         c0 = 44.06
         c2 = 272102.0
         d2 = 4281.0
@@ -202,7 +212,7 @@ def r0_div_a(beta,year):
 
     Args:
         beta (float)
-        year (int): year that parameterization was determined 
+        year (int/str): year that parameterization was determined 
 
     Returns:
         float: r0/a 
