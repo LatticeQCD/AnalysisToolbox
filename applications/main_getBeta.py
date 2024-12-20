@@ -22,8 +22,8 @@ parser = argparse.ArgumentParser(description='Compute a and T.')
 parser.add_argument('--Nt', dest='Nt', type=int, default=8, help='euclidean time extension')
 parser.add_argument('--scale', dest='scale', required=True, help='reference scale (r0, r1, or fk)')
 parser.add_argument('--T', dest='T', required=True, type=int, help='temperature in [MeV]')
-parser.add_argument('--paramYear', dest='paramYear', default=None, help='year for a(beta) parameterization')
-parser.add_argument('--scaleYear', dest='scaleYear', default=None, help='year for scale in physical units')
+parser.add_argument('--paramYear', dest='paramYear', type=int, default=None, help='year for a(beta) parameterization')
+parser.add_argument('--scaleYear', dest='scaleYear', type=int, default=None, help='year for scale in physical units')
 
 args = getArgs(parser)
 

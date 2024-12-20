@@ -20,7 +20,7 @@ from latqcdtools.base.check import checkType
 rng = np.random
 
 
-#@compile
+@compile
 def fastUnitarize(self):
 
     # Normalize row 0.

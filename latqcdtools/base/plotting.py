@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector, createFilePath
 from latqcdtools.base.readWrite import readTable
 
 
@@ -917,3 +917,11 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
         _update_labels(ax,params['label'])
         _update_handles(ax,(handle,pl))
         set_params(**params) # Needed to put in labels
+
+
+def saveFigure(filename,**kwargs):
+    """
+    Wrapper for plt.savefig that creates the directory path if it doesn't exist already.
+    """
+    createFilePath(filename)
+    plt.savefig(filename,**kwargs)
