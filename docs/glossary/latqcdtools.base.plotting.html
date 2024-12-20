@@ -195,17 +195,6 @@ Returns:
 convenient functions like ev. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_band(xdata,</span> <span class="pre">low_lim,</span> <span class="pre">up_lim,</span> <span class="pre">center=None,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a horizontal band.
-
-Args:
-    xdata (array-like)
-    low_lim (float): _description_
-    up_lim (float): _description_
-    center (_type_, optional): _description_. Defaults to None.
-    **params: Additional parameters that can be set.
-</pre></div>
-</div>
 <p><code class="docutils literal notranslate"><span class="pre">plot_bar(xdata,</span> <span class="pre">ydata,</span> <span class="pre">width=None,</span> <span class="pre">align='edge',</span> <span class="pre">edgecolor='#666677',</span> <span class="pre">linewidth=0.2,</span> <span class="pre">**params)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata as bars.
 
@@ -253,11 +242,11 @@ Args:
     ydata (array-like)
     yedata (array-like): y error 
     xedata (array-like, optional): x error. Defaults to None.
-    pattern (_type_, optional): _description_. Defaults to None.
+    center (bool): Do you show the central line? Defaults to True. 
     **params: Additional parameters that can be set.
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_hist(data,</span> <span class="pre">bins=None,</span> <span class="pre">density=False,</span> <span class="pre">label=None,</span> <span class="pre">**params)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">plot_hist(data,</span> <span class="pre">bins=None,</span> <span class="pre">density=False,</span> <span class="pre">label=None,</span> <span class="pre">weights=None,</span> <span class="pre">**params)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
 simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
 
@@ -265,6 +254,18 @@ Args:
     data (array-like)
     bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
     **params: Additional parameters that can be set.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_hline(y,</span> <span class="pre">minVal=None,</span> <span class="pre">maxVal=None,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a horizontal line at y. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_hspan(minVal,</span> <span class="pre">maxVal,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a horizontal band.
+
+Args:
+    minVal (float)
+    maxVal (float)
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">plot_lines(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata=None,</span> <span class="pre">xedata=None,</span> <span class="pre">**params)</span></code></p>
@@ -278,6 +279,18 @@ Args:
     **params: Additional parameters that can be set.
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_vline(x,</span> <span class="pre">minVal=None,</span> <span class="pre">maxVal=None,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a vertical line at x. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_vspan(minVal,</span> <span class="pre">maxVal,</span> <span class="pre">**params)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a vertical band.
+
+Args:
+    minVal (float)
+    maxVal (float)
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">preliminary(x,</span> <span class="pre">y,</span> <span class="pre">text='PRELIMINARY',</span> <span class="pre">**kwargs)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Generate a PRELIMINARY tag on the plot.
 
@@ -285,6 +298,11 @@ Args:
     x (float): x-position of bottom-left corner (in units of x-axis) 
     y (float): y-position of bottom-left corner (in units of y-axis) 
     text (str, optional): Text indicating result is preliminary. Defaults to &#39;PRELIMINARY&#39;.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">resetLEGEND()</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">saveFigure(filename,</span> <span class="pre">**kwargs)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for plt.savefig that creates the directory path if it doesn&#39;t exist already.
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">set_default_param(**kwargs)</span></code></p>
@@ -298,8 +316,8 @@ Args:
     **params: Additional parameters that can be set.
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">set_xrange(xmin=None,</span> <span class="pre">xmax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/.local/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">set_yrange(ymin=None,</span> <span class="pre">ymax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/.local/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">set_xrange(xmin=None,</span> <span class="pre">xmax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/GitHub/AnalysisToolbox/venv/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">set_yrange(ymin=None,</span> <span class="pre">ymax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/GitHub/AnalysisToolbox/venv/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
 </section>
 
 

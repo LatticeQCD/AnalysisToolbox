@@ -3,13 +3,24 @@ latqcdtools.base.logger
 
 `TBError(*args, frame=2)`
 
+    Print error message and exit with -1.
 
+    Args:
+        frame (int, optional): Controls the name of the caller. Defaults to method that called TBError.
+    
 `TBFail(*args)`
 
 
 `TBPass(*args)`
 
 
+`TBRaise(*args, frame=2)`
+
+    Print error message and raise ToolboxException. 
+
+    Args:
+        frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
+    
 `_getCallerName(frame)`
  
     Gets the name of the function that calls the present function. 
@@ -42,5 +53,9 @@ latqcdtools.base.logger
 
 
 `warn(*args, frame=2)`
+
+
+`ToolboxException
+`
 
 

@@ -86,17 +86,6 @@ latqcdtools.base.plotting
     Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
     convenient functions like ev. 
     
-`plot_band(xdata, low_lim, up_lim, center=None, **params)`
- 
-    Plot a horizontal band.
-
-    Args:
-        xdata (array-like)
-        low_lim (float): _description_
-        up_lim (float): _description_
-        center (_type_, optional): _description_. Defaults to None.
-        **params: Additional parameters that can be set.
-    
 `plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677', linewidth=0.2, **params)`
  
     Plot ydata vs xdata as bars.
@@ -145,10 +134,10 @@ latqcdtools.base.plotting
         ydata (array-like)
         yedata (array-like): y error 
         xedata (array-like, optional): x error. Defaults to None.
-        pattern (_type_, optional): _description_. Defaults to None.
+        center (bool): Do you show the central line? Defaults to True. 
         **params: Additional parameters that can be set.
     
-`plot_hist(data, bins=None, density=False, label=None, **params)`
+`plot_hist(data, bins=None, density=False, label=None, weights=None, **params)`
  
     Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
     simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
@@ -157,6 +146,18 @@ latqcdtools.base.plotting
         data (array-like)
         bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
         **params: Additional parameters that can be set.
+    
+`plot_hline(y, minVal=None, maxVal=None, **params)`
+ 
+    Plot a horizontal line at y. 
+    
+`plot_hspan(minVal, maxVal, **params)`
+ 
+    Plot a horizontal band.
+
+    Args:
+        minVal (float)
+        maxVal (float)
     
 `plot_lines(xdata, ydata, yedata=None, xedata=None, **params)`
  
@@ -169,6 +170,18 @@ latqcdtools.base.plotting
         xedata (array-like, optional): x error. Defaults to None.
         **params: Additional parameters that can be set.
     
+`plot_vline(x, minVal=None, maxVal=None, **params)`
+ 
+    Plot a vertical line at x. 
+    
+`plot_vspan(minVal, maxVal, **params)`
+ 
+    Plot a vertical band.
+
+    Args:
+        minVal (float)
+        maxVal (float)
+    
 `preliminary(x, y, text='PRELIMINARY', **kwargs)`
  
     Generate a PRELIMINARY tag on the plot.
@@ -177,6 +190,13 @@ latqcdtools.base.plotting
         x (float): x-position of bottom-left corner (in units of x-axis) 
         y (float): y-position of bottom-left corner (in units of y-axis) 
         text (str, optional): Text indicating result is preliminary. Defaults to 'PRELIMINARY'.
+    
+`resetLEGEND()`
+
+
+`saveFigure(filename, **kwargs)`
+
+    Wrapper for plt.savefig that creates the directory path if it doesn't exist already.
     
 `set_default_param(**kwargs)`
  
@@ -189,9 +209,9 @@ latqcdtools.base.plotting
     Args:
         **params: Additional parameters that can be set.
     
-`set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.12/site-packages/matplotlib/pyplot.py'>)`
+`set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/GitHub/AnalysisToolbox/venv/lib/python3.12/site-packages/matplotlib/pyplot.py'>)`
 
 
-`set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.12/site-packages/matplotlib/pyplot.py'>)`
+`set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/GitHub/AnalysisToolbox/venv/lib/python3.12/site-packages/matplotlib/pyplot.py'>)`
 
 

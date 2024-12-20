@@ -17,18 +17,18 @@ latqcdtools.physics.referenceScales
 
     Args:
         beta (float)
-        year (int): year that parameterization was determined 
+        year (int/str): year that parameterization was determined 
 
     Returns:
         float: a/r_1
     
-`a_times_fk(beta: float, year)`
+`a_times_fk(beta, year)`
  
     Get a*f_k(beta).
 
     Args:
         beta (float)
-        year (int): year that parameterization was determined 
+        year (int/str): year that parameterization was determined 
 
     Returns:
         float: a*f_k 
@@ -55,7 +55,7 @@ latqcdtools.physics.referenceScales
 
     Args:
         beta (float)
-        year (int): year that parameterization was determined 
+        year (int/str): year that parameterization was determined 
 
     Returns:
         float: r0/a 

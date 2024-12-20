@@ -14,14 +14,36 @@ import latqcdtools.base.logger as logger
 
 
 def deleteRow(array, row) -> np.ndarray:
+    """
+    Remove a row of a 2d np.ndarray.
+
+    Args:
+        array (np.ndarray)
+        row (int): Remove this row 
+
+    Returns:
+        np.ndarray: array with row removed
+    """
     checkType(np.ndarray,array=array)
+    checkType(int,row=row)
     if array.ndim != 2:
         logger.TBError('Expected 2-d numpy array.')       
     return np.delete(array,row,0)
 
 
 def deleteCol(array, col) -> np.ndarray:
+    """
+    Remove a column of a 2d np.ndarray.
+
+    Args:
+        array (np.ndarray)
+        col (int): Remove this column 
+
+    Returns:
+        np.ndarray: array with row removed
+    """
     checkType(np.ndarray,array=array)
+    checkType(int,col=col)
     if array.ndim != 2:
         logger.TBError('Expected 2-d numpy array.')       
     return np.delete(array,col,1)

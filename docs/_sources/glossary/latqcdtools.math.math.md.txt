@@ -1,6 +1,16 @@
 latqcdtools.math.math
 =============
 
+`RMS(data) -> float`
+
+    Root-mean-square of data
+
+    Args:
+        data (np.ndarray)
+
+    Returns:
+        float: RMS of data 
+    
 `checkSquare(mat)`
  
     Make sure mat is a square np.ndarray object. 
@@ -12,7 +22,7 @@ latqcdtools.math.math
  
     Falling factorial n fall to m. 
     
-`invert(mat, method='scipy') -> numpy.ndarray`
+`invert(mat, method='scipy', svdcut=1e-12) -> numpy.ndarray`
  
     Invert matrix.
 
@@ -36,6 +46,16 @@ latqcdtools.math.math
 `normalize(arr)`
 
 
+`quadrature(data) -> float`
+
+    Add data in quadrature
+
+    Args:
+        data (np.ndarray)
+
+    Returns:
+        float: data added in quadrature 
+    
 `regulate(mat, svdcut=1e-12) -> numpy.ndarray`
  
     If a matrix's singular values are too small, it will be ill-conditioned,

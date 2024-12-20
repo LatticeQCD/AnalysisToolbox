@@ -42,7 +42,9 @@ latqcdtools.statistics.statistics
 
 `BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1) -> float`
  
-    Bayesian Akaike information criterion of 2208.14983.
+    Bayesian Akaike information criterion of 2208.14983. It uses the chi^2 as its likelihood
+    function and includes penalties for having many fit parameters and cutting many data from
+    your original sample.
 
     Args:
         xdata (array-like)
@@ -62,7 +64,7 @@ latqcdtools.statistics.statistics
 `DOF(ndat, nparam, priorsigma=None) -> int`
   
     Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
-    initial guesses for the fit algorithm. If you would like parameter in the prior array to be treated as a 
+    initial guesses for the fit algorithm. If you would like parameters in the prior array to be treated as a 
     starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
     are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.
 
@@ -240,10 +242,20 @@ latqcdtools.statistics.statistics
         func: CDF 
     
 `error_prop(func, means, errors, grad=None, args=())`
- 
+
     Use error propagation to propagate some errors through function func. The function should have the form
         func( data ), 
-    where data is your array of input variables. 
+    where data is a 1-d array of input variables. 
+
+    Args:
+        func (func)
+        means (array-like)
+        errors (array-like)
+        grad (func, optional): Gradient function. Defaults to None.
+        args (tuple, optional): Arguments of func. Defaults to ().
+
+    Returns:
+        np.ndarray, np.ndarray: f, f_err 
     
 `error_prop_func(x, func, params, params_err, grad=None, args=())`
  
@@ -331,7 +343,7 @@ latqcdtools.statistics.statistics
 `meanArgWrapper(func, used_data, args)`
 
 
-`modelAverage(data, err, IC)`
+`modelAverage(data, err, IC, return_syst=False)`
  
     Given some fit results, corresponding error, and information criteria, compute
     a weighted model average.
@@ -342,7 +354,7 @@ latqcdtools.statistics.statistics
         IC (array-like): Information criteria 
 
     Returns:
-        tuple: Model average and error
+        tuple: Model average and error (optionally systematic error)
     
 `pearson(x, y) -> float`
  
@@ -380,7 +392,7 @@ latqcdtools.statistics.statistics
     
 `std_err(data, axis=0)`
  
-    Standard deviation of the sample mean according the the CLT. 
+    Standard deviation of the sample mean according to the CLT. 
      
     The default behavior of numpy is to flatten the data, flagged by axis=None. This is
     something that is never needed in our context. Changing the default to axis=0 means
@@ -427,6 +439,9 @@ latqcdtools.statistics.statistics
     Returns:
         float: p-value 
     
+`symmetrizeError(lo, hi, central, method='conservative') -> float`
+
+
 `unbiased_mean_variance(data, err) -> float`
  
     Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency

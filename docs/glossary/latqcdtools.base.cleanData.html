@@ -130,16 +130,36 @@ renders arrays finite.
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">deleteCol(array,</span> <span class="pre">col)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Remove a column of a 2d np.ndarray.
+
+Args:
+    array (np.ndarray)
+    col (int): Remove this column 
+
+Returns:
+    np.ndarray: array with row removed
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">deleteRow(array,</span> <span class="pre">row)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">excludeAtCol(table,</span> <span class="pre">col,</span> <span class="pre">atVal)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Remove a row of a 2d np.ndarray.
+
+Args:
+    array (np.ndarray)
+    row (int): Remove this row 
+
+Returns:
+    np.ndarray: array with row removed
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">excludeAtCol(table,</span> <span class="pre">col=None,</span> <span class="pre">atVal=inf)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return everything except those rows of table where col has exactly the value atVal. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">intersectAtCol(table1,</span> <span class="pre">table2,</span> <span class="pre">col)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">intersectAtCol(table1,</span> <span class="pre">table2,</span> <span class="pre">col)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return only those rows of table1 and table2 that have identical elements in column col. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">restrictAtCol(table,</span> <span class="pre">col,</span> <span class="pre">atVal)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">restrictAtCol(table,</span> <span class="pre">col,</span> <span class="pre">atVal,</span> <span class="pre">rtol=None,</span> <span class="pre">atol=None)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return only those rows of table where col has exactly the value atVal. 
 </pre></div>
 </div>

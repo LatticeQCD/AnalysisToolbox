@@ -9,12 +9,12 @@ latqcdtools.math.spline
  
     Return a list of nknots randomly spaced knots. 
     
-`getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False, smooth=None)`
+`getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False)`
  
-    This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
-    by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
-    since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can't specify
-    the knots, so you can't both pick knots and smooth.
+    This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally
+    this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will
+    use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a
+    smoothing spline that attempts to force no curvature at the endpoints, based on the penultimate points. 
 
     Args:
         xdata (array-like)
@@ -42,6 +42,7 @@ latqcdtools.math.spline
  
     Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. 
     
-`customSpline(xdata, ydata, edata=None, knots=None, order=3, smooth=None)`
+`TBSpline(xdata, ydata, edata=None, knots=None, order=3, naturalLike=False)`
 
-
+    A class that prepares a splrep and wraps it with splev.
+    

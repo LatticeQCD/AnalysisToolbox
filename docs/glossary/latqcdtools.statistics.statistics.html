@@ -164,7 +164,9 @@ Returns:
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">BAIC(xdata,</span> <span class="pre">ydata,</span> <span class="pre">cov,</span> <span class="pre">func,</span> <span class="pre">args=(),</span> <span class="pre">params=(),</span> <span class="pre">Ncut=0,</span> <span class="pre">modelPrior=1)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bayesian Akaike information criterion of 2208.14983.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bayesian Akaike information criterion of 2208.14983. It uses the chi^2 as its likelihood
+function and includes penalties for having many fit parameters and cutting many data from
+your original sample.
 
 Args:
     xdata (array-like)
@@ -184,7 +186,7 @@ Returns:
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">DOF(ndat,</span> <span class="pre">nparam,</span> <span class="pre">priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
-initial guesses for the fit algorithm. If you would like parameter in the prior array to be treated as a 
+initial guesses for the fit algorithm. If you would like parameters in the prior array to be treated as a 
 starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
 are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.
 
@@ -363,7 +365,17 @@ Returns:
 <p><code class="docutils literal notranslate"><span class="pre">error_prop(func,</span> <span class="pre">means,</span> <span class="pre">errors,</span> <span class="pre">grad=None,</span> <span class="pre">args=())</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Use error propagation to propagate some errors through function func. The function should have the form
     func( data ), 
-where data is your array of input variables. 
+where data is a 1-d array of input variables. 
+
+Args:
+    func (func)
+    means (array-like)
+    errors (array-like)
+    grad (func, optional): Gradient function. Defaults to None.
+    args (tuple, optional): Arguments of func. Defaults to ().
+
+Returns:
+    np.ndarray, np.ndarray: f, f_err 
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">error_prop_func(x,</span> <span class="pre">func,</span> <span class="pre">params,</span> <span class="pre">params_err,</span> <span class="pre">grad=None,</span> <span class="pre">args=())</span></code></p>
@@ -450,7 +462,7 @@ Returns:
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">meanArgWrapper(func,</span> <span class="pre">used_data,</span> <span class="pre">args)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">modelAverage(data,</span> <span class="pre">err,</span> <span class="pre">IC)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">modelAverage(data,</span> <span class="pre">err,</span> <span class="pre">IC,</span> <span class="pre">return_syst=False)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Given some fit results, corresponding error, and information criteria, compute
 a weighted model average.
 
@@ -460,7 +472,7 @@ Args:
     IC (array-like): Information criteria 
 
 Returns:
-    tuple: Model average and error
+    tuple: Model average and error (optionally systematic error)
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">pearson(x,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
@@ -498,7 +510,7 @@ applying this function to an np.ndarray of shape (N,M) yields an array of shape 
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">std_err(data,</span> <span class="pre">axis=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Standard deviation of the sample mean according the the CLT. 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Standard deviation of the sample mean according to the CLT. 
  
 The default behavior of numpy is to flatten the data, flagged by axis=None. This is
 something that is never needed in our context. Changing the default to axis=0 means
@@ -546,6 +558,7 @@ Returns:
     float: p-value 
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">symmetrizeError(lo,</span> <span class="pre">hi,</span> <span class="pre">central,</span> <span class="pre">method='conservative')</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">unbiased_mean_variance(data,</span> <span class="pre">err)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
 weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is

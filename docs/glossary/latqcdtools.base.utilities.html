@@ -158,14 +158,15 @@ Returns:
     str: formatted output string 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">comesBefore(date1,</span> <span class="pre">date2,</span> <span class="pre">format='%Y/%m/%d</span> <span class="pre">%H:%M:%S')</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">comesBefore(date1,</span> <span class="pre">date2,</span> <span class="pre">format='%Y/%m/%d</span> <span class="pre">%H:%M:%S',</span> <span class="pre">beforeOrEqual=False)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check whether date1 comes before date2.
 
 Args:
     date1 (str)
     date2 (str)
     format (str): format for date strings. Defaults to &quot;%Y/%m/%d %H:%M:%S&quot;
-
+    beforeOrEqual (bool): also return True if date1 == date2
+    
 Returns:
     bool: date1 &lt; date2 
 </pre></div>
@@ -176,6 +177,10 @@ Returns:
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">deleteFile(target)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Delete the file at target, if it exists. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">deleteFolder(target)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Delete the folder at target, if it exists. 
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">envector(*args)</span></code></p>

@@ -223,12 +223,12 @@ This allows you to write your own statistical mechanical simulations.</p>
     
 
     <span class="k">def</span> <span class="nf">getMagnetization</span><span class="p">():</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Order parameter is |M|. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Order parameter is |M|. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span><span class="o">/</span><span class="n">lat</span><span class="o">.</span><span class="n">vol</span><span class="p">)</span>
     
     
     <span class="k">def</span> <span class="nf">mcLocal</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; The Markov step. </span>
+        <span class="sd">&quot;&quot;&quot; The Markov step. </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            coord (array-like): local coordinate </span>
@@ -260,12 +260,12 @@ This allows you to write your own statistical mechanical simulations.</p>
 
 
     <span class="k">def</span> <span class="nf">chi_M</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Magnetic susceptibility. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Magnetic susceptibility. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">lat</span><span class="o">.</span><span class="n">vol</span><span class="o">*</span><span class="p">(</span> <span class="n">std_mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">std_mean</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">binder</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Binder cumulant. For the ising model in 2d, this should tend to 2/3 below</span>
+        <span class="sd">&quot;&quot;&quot; Binder cumulant. For the ising model in 2d, this should tend to 2/3 below</span>
 <span class="sd">        Tc, while it should tend to 0 above Tc, in the thermodynamic limit. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
@@ -441,7 +441,7 @@ Z-test, which is implemented in our <a class="reference internal" href="dataAnal
 <span class="n">xspline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">xdata</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xdata</span><span class="p">),</span><span class="mi">101</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">splineError</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; We assume no errors in the xdata. For the ydata, we will pass the bootstrap</span>
+    <span class="sd">&quot;&quot;&quot; We assume no errors in the xdata. For the ydata, we will pass the bootstrap</span>
 <span class="sd">    routine ydata along with the errors. The input to this function, data, will then</span>
 <span class="sd">    be generated in each bootstrap bin by drawing normally from ydata with a spread</span>
 <span class="sd">    of edata. In this example we simply get a spline, but you wrap anything you want</span>

@@ -1,17 +1,40 @@
 latqcdtools.statistics.fitting
 =============
 
-`do_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None, algorithm='curve_fit', detailedInfo=False, **kwargs)`
+`do_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None, algorithm='curve_fit', detailedInfo=False, show_results=False, **kwargs)`
  
     Wrapper to fitter initialization and the fit in one step. See above for arguments. 
     
 `save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad=None, header=None, npoints=1000, **kwargs)`
 
 
-`try_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None, algorithms=['curve_fit', 'TNC', 'Powell', 'Nelder-Mead'], detailedInfo=False, **kwargs)`
+`try_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None, algorithms=['curve_fit', 'TNC', 'Powell', 'Nelder-Mead', 'nonlin'], detailedInfo=False, show_results=False, **kwargs)`
  
     Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
     algorithms has no default values here. 
+    
+`unzipXYData(xydata)`
+ Take a 2d xydata array, created by zipXYData, and extract xvalues and yvalues
+    for use inside of a function of two variables.
+
+    Args:
+        xydata (np.ndarray): array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+
+    Returns:
+        xvalues [x1, x2, ... , xN, x1, x2, ...],
+        yavlues [y1, y1, ... , y1, y2, y2, ...]
+    
+`zipXYData(xdata, ydata)`
+ Collect 1d xdata and ydata into an 2d xydata array. You can then use
+    unzipXYData inside of some func(xydata), which represents some f(x,y), to
+    separate the x part and y part.
+
+    Args:
+        xdata (array-like)
+        ydata (array-like)
+
+    Returns:
+        np.ndarray: array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
     
 `Fitter(func, xdata, ydata, edata=None, **kwargs)`
  

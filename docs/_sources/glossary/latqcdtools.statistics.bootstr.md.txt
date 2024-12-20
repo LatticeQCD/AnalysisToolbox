@@ -1,7 +1,7 @@
 latqcdtools.statistics.bootstr
 =============
 
-`_autoSeed(seed)`
+`_autoSeed(seed) -> int`
  
     We use seed=None to flag the seed should be automatically chosen. The problem is that we need
     seed to be an integer when enforcing that different bootstrap samples use different seeds. 
@@ -62,6 +62,12 @@ latqcdtools.statistics.bootstr
     The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.
     This means that data_std_dev should always be the standard deviation of a single measurement and not the standard
     deviation of a mean.
+    
+`estimateCovariance(data_std_dev, numb_samples, seed=None)`
+ 
+    Estimate a covariance matrix using data and their corresponding std_dev. The idea is to estimate this with a
+    bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here
+    data should be 1-dimensional.
     
 `recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for_obs, i, my_seed)`
  

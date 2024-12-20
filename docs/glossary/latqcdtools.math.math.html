@@ -124,6 +124,16 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-math">
 <h1>latqcdtools.math.math<a class="headerlink" href="#latqcdtools-math-math" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">RMS(data)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Root-mean-square of data
+
+Args:
+    data (np.ndarray)
+
+Returns:
+    float: RMS of data 
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">checkSquare(mat)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Make sure mat is a square np.ndarray object. 
 
@@ -135,7 +145,7 @@ Args:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Falling factorial n fall to m. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">invert(mat,</span> <span class="pre">method='scipy')</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">invert(mat,</span> <span class="pre">method='scipy',</span> <span class="pre">svdcut=1e-12)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Invert matrix.
 
 Args:
@@ -153,6 +163,16 @@ Returns:
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">normalize(arr)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">quadrature(data)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Add data in quadrature
+
+Args:
+    data (np.ndarray)
+
+Returns:
+    float: data added in quadrature 
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">regulate(mat,</span> <span class="pre">svdcut=1e-12)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>If a matrix&#39;s singular values are too small, it will be ill-conditioned,
 making it difficult to invert and hence reducing numerical stability. This method

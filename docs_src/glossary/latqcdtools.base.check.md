@@ -22,7 +22,7 @@ latqcdtools.base.check
         extension (str)
         ignoreExtension (bool, optional): Defaults to False.
     
-`checkType(obj, expectedType)`
+`checkType(expectedType, **kwargs)`
  
     Check the type of an object. If it thinks the type is wrong, it will tell you what the
     name of obj is (as you named it in your code) along with its type and what was expected.
@@ -32,7 +32,7 @@ latqcdtools.base.check
 
     Args:
         obj (obj)
-        expectedType (type): what type do you expect? Also accepts "array", "real", and "scalar".
+        expectedType (type): what type do you expect? Also accepts "array", "real", "int", and "scalar".
     
 `err_handler(err, flag)`
  

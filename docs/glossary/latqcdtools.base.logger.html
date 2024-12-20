@@ -125,8 +125,21 @@
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-logger">
 <h1>latqcdtools.base.logger<a class="headerlink" href="#latqcdtools-base-logger" title="Permalink to this headline"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">TBError(*args,</span> <span class="pre">frame=2)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Print error message and exit with -1.
+
+Args:
+    frame (int, optional): Controls the name of the caller. Defaults to method that called TBError.
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">TBFail(*args)</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">TBPass(*args)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">TBRaise(*args,</span> <span class="pre">frame=2)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Print error message and raise ToolboxException. 
+
+Args:
+    frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">_getCallerName(frame)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Gets the name of the function that calls the present function. 
 </pre></div>
@@ -147,6 +160,7 @@ logging module because it knows how to handle multiple processes writing to the 
 <p><code class="docutils literal notranslate"><span class="pre">progress(*args)</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">set_log_level(level)</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">warn(*args,</span> <span class="pre">frame=2)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ToolboxException</span> </code></p>
 </section>
 
 

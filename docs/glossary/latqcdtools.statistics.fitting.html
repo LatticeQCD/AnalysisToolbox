@@ -124,14 +124,37 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-fitting">
 <h1>latqcdtools.statistics.fitting<a class="headerlink" href="#latqcdtools-statistics-fitting" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">do_fit(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">start_params=None,</span> <span class="pre">priorval=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">algorithm='curve_fit',</span> <span class="pre">detailedInfo=False,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">do_fit(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">start_params=None,</span> <span class="pre">priorval=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">algorithm='curve_fit',</span> <span class="pre">detailedInfo=False,</span> <span class="pre">show_results=False,</span> <span class="pre">**kwargs)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to fitter initialization and the fit in one step. See above for arguments. 
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">save_func(func,</span> <span class="pre">filename,</span> <span class="pre">domain,</span> <span class="pre">args=(),</span> <span class="pre">func_err=None,</span> <span class="pre">args_err=(),</span> <span class="pre">grad=None,</span> <span class="pre">header=None,</span> <span class="pre">npoints=1000,</span> <span class="pre">**kwargs)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">try_fit(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">start_params=None,</span> <span class="pre">priorval=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">algorithms=['curve_fit',</span> <span class="pre">'TNC',</span> <span class="pre">'Powell',</span> <span class="pre">'Nelder-Mead'],</span> <span class="pre">detailedInfo=False,</span> <span class="pre">**kwargs)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">try_fit(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">start_params=None,</span> <span class="pre">priorval=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">algorithms=['curve_fit',</span> <span class="pre">'TNC',</span> <span class="pre">'Powell',</span> <span class="pre">'Nelder-Mead',</span> <span class="pre">'nonlin'],</span> <span class="pre">detailedInfo=False,</span> <span class="pre">show_results=False,</span> <span class="pre">**kwargs)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
 algorithms has no default values here. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">unzipXYData(xydata)</span></code>
+Take a 2d xydata array, created by zipXYData, and extract xvalues and yvalues
+for use inside of a function of two variables.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Args:
+    xydata (np.ndarray): array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+
+Returns:
+    xvalues [x1, x2, ... , xN, x1, x2, ...],
+    yavlues [y1, y1, ... , y1, y2, y2, ...]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">zipXYData(xdata,</span> <span class="pre">ydata)</span></code>
+Collect 1d xdata and ydata into an 2d xydata array. You can then use
+unzipXYData inside of some func(xydata), which represents some f(x,y), to
+separate the x part and y part.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Args:
+    xdata (array-like)
+    ydata (array-like)
+
+Returns:
+    np.ndarray: array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Fitter(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">**kwargs)</span></code></p>

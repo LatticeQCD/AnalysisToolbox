@@ -132,11 +132,11 @@
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return a list of nknots randomly spaced knots. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">getSpline(xdata,</span> <span class="pre">ydata,</span> <span class="pre">num_knots=None,</span> <span class="pre">edata=None,</span> <span class="pre">order=3,</span> <span class="pre">rand=False,</span> <span class="pre">fixedKnots=None,</span> <span class="pre">getAICc=False,</span> <span class="pre">natural=False,</span> <span class="pre">smooth=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This is a wrapper that calls SciPy spline fitting methods, depending on your needs. Calls LSQUnivariateSpline
-by default. If you need to ensure a well defined second derivative at the knots, we call instead UnivariateSpline,
-since LSQUnivariate spline seems to have no smoothing option. Sadly if you call UnivariateSpline, you can&#39;t specify
-the knots, so you can&#39;t both pick knots and smooth.
+<p><code class="docutils literal notranslate"><span class="pre">getSpline(xdata,</span> <span class="pre">ydata,</span> <span class="pre">num_knots=None,</span> <span class="pre">edata=None,</span> <span class="pre">order=3,</span> <span class="pre">rand=False,</span> <span class="pre">fixedKnots=None,</span> <span class="pre">getAICc=False,</span> <span class="pre">natural=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally
+this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will
+use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a
+smoothing spline that attempts to force no curvature at the endpoints, based on the penultimate points. 
 
 Args:
     xdata (array-like)
@@ -165,7 +165,10 @@ Returns:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">customSpline(xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">knots=None,</span> <span class="pre">order=3,</span> <span class="pre">smooth=None)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">TBSpline(xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">knots=None,</span> <span class="pre">order=3,</span> <span class="pre">naturalLike=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A class that prepares a splrep and wraps it with splev.
+</pre></div>
+</div>
 </section>
 
 

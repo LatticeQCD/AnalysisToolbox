@@ -4,6 +4,7 @@ latqcdtools.base.printErrorBars
 `getValuesFromErrStr(errStr)`
  
     Convert A string of the form XX.XX(YY) into a float mean and error bar. Scientific notation not yet supported.
+    Single digit errors not yet supported.
 
     Args:
         errStr (str): string of the form XX.XXXX(YY).

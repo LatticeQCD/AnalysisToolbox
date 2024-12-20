@@ -12,7 +12,7 @@ latqcdtools.base.initialize
     Returns:
         str: git hash 
     
-`initialize(logFile='Toolbox.log')`
+`initialize(logFile=None)`
  
     Some common tasks to do at the start of a run where you want to keep track of things. 
     

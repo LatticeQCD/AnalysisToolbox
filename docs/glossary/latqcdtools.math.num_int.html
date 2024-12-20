@@ -139,8 +139,8 @@ Returns:
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">integrateFunction(func,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">method='persistent',</span> <span class="pre">args=(),</span> <span class="pre">stepsize=None,</span> <span class="pre">limit=1000,</span> <span class="pre">epsrel=1.49e-08,</span> <span class="pre">epsabs=1.49e-08)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, and
-scipy.romberg, which otherwise do not like to handle numpy arrays.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
+which otherwise does not like to handle numpy arrays.
 
 Args:
     func (func): Integrand. 
@@ -149,7 +149,6 @@ Args:
     method (str,optional): Integration method. Defaults to &#39;persistent_quad_trap&#39;. Possibilities are:
                             &gt; &#39;persistent&#39; : Try various methods until something works. 
                             &gt; &#39;quad&#39; : Gaussian quadrature.
-                            &gt; &#39;romberg&#39; : Romberg method. 
                             &gt; &#39;trapezoid&#39; : Trapezoidal rule.
     args (tuple, optional): Arguments to func. Defaults to ().
     stepsize (float, optional): _description_. Defaults to None.

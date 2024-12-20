@@ -124,15 +124,15 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-su3">
 <h1>latqcdtools.math.SU3<a class="headerlink" href="#latqcdtools-math-su3" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">SU3(mat=None,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A member of the Lie group SU(3). Implemented as a subclass of the np.matrix class. This gives us access already
-to all the nice features of np.matrix and lets us leverage the speed of numpy.
+<p><code class="docutils literal notranslate"><span class="pre">SU3(mat=None)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A member of the Lie group SU(3). Implemented as a subclass of the np.ndarray class. This gives us access already
+to all the nice features of np.ndarray and lets us leverage the speed of numpy.
     g.trace()
     g.det()
     g.dagger()
     g[i,j], which can be used to access and assign
     g + h
-    g*h
+    g*h = g@h
     2*g
 </pre></div>
 </div>

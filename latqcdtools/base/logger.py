@@ -152,6 +152,12 @@ def TBFail(*args):
 
 
 def TBError(*args,frame=2):
+    """
+    Print error message and exit with -1.
+
+    Args:
+        frame (int, optional): Controls the name of the caller. Defaults to method that called TBError.
+    """
     args   = [str(s) for s in args]
     output = _getTimeStamp()+_FAIL+' ERROR: '+_getCallerName(frame)+(' '.join(args))+_ENDC
     print(output)
@@ -160,6 +166,12 @@ def TBError(*args,frame=2):
 
 
 def TBRaise(*args,frame=2):
+    """
+    Print error message and raise ToolboxException. 
+
+    Args:
+        frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
+    """
     args   = [str(s) for s in args]
     output = _FAIL+_getCallerName(frame)+(' '.join(args))+_ENDC
     _log(output + '\n')

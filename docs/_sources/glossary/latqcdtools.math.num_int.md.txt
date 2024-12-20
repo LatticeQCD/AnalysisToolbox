@@ -17,8 +17,8 @@ latqcdtools.math.num_int
     
 `integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08)`
  
-    Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, and
-    scipy.romberg, which otherwise do not like to handle numpy arrays.
+    Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
+    which otherwise does not like to handle numpy arrays.
 
     Args:
         func (func): Integrand. 
@@ -27,7 +27,6 @@ latqcdtools.math.num_int
         method (str,optional): Integration method. Defaults to 'persistent_quad_trap'. Possibilities are:
                                 > 'persistent' : Try various methods until something works. 
                                 > 'quad' : Gaussian quadrature.
-                                > 'romberg' : Romberg method. 
                                 > 'trapezoid' : Trapezoidal rule.
         args (tuple, optional): Arguments to func. Defaults to ().
         stepsize (float, optional): _description_. Defaults to None.

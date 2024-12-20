@@ -126,7 +126,15 @@
 <h1>latqcdtools.physics.constants<a class="headerlink" href="#latqcdtools-physics-constants" title="Permalink to this headline"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">GeV_to_fminv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">GeVinv_to_fm(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">M_mu_phys(year=2020,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">M_K0_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of K0 mass. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">M_Kpm_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of K0 mass. 
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">M_mu_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the muon mass. 
 </pre></div>
 </div>
@@ -154,7 +162,8 @@
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">convert(x,</span> <span class="pre">unit1,</span> <span class="pre">unit2)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>General method for doing unit conversions.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
+If the unit ends in &#39;inv&#39;, it is interpreted as 1/unit.
 
 Args:
     x (float): measurement in [unit1]. 
@@ -165,12 +174,16 @@ Returns:
     float: measurement in [unit2]. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fk_phys(year=2019,</span> <span class="pre">units='MeV')</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of Kaon decay constant. 
+<p><code class="docutils literal notranslate"><span class="pre">fk_phys(year=2019,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">fm_to_GeVinv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">fm_to_MeVinv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">fpi_phys(year=2018,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the pion decay constant, f_pi+/-. 
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">frho_phys(year=2017,</span> <span class="pre">units='GeV',</span> <span class="pre">returnErr=False)</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the rho decay constant. 
 </pre></div>
@@ -187,10 +200,11 @@ Returns:
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of Sommer scale r1. 
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">sqrt_t0_phys(year=2015,</span> <span class="pre">units='fm',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Gradient flow scale t0^(1/2). 
+<p><code class="docutils literal notranslate"><span class="pre">w0_phys(year=2013,</span> <span class="pre">units='fm',</span> <span class="pre">returnErr=False)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Gradient flow scale w0.
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">physicalConstant(name,</span> <span class="pre">scale,</span> <span class="pre">units)</span></code></p>
 </section>
 
 

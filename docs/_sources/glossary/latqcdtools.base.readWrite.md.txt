@@ -31,7 +31,7 @@ latqcdtools.base.readWrite
     
     writeTable('file.txt',col1,col2,header=['header1','header2])
     
-    This works for an arbitrary number of columns col. It seems much more intuitive to me 
+    This works for an arbitrary number of 1-d columns col. It seems much more intuitive to me 
     that you pass columns as arguments than whatever np.savetxt is doing.
 
     Args:

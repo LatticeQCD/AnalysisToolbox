@@ -41,7 +41,7 @@ latqcdtools.base.utilities
     Returns:
         str: formatted output string 
     
-`comesBefore(date1, date2, format='%Y/%m/%d %H:%M:%S') -> bool`
+`comesBefore(date1, date2, format='%Y/%m/%d %H:%M:%S', beforeOrEqual=False) -> bool`
  
     Check whether date1 comes before date2.
 
@@ -49,7 +49,8 @@ latqcdtools.base.utilities
         date1 (str)
         date2 (str)
         format (str): format for date strings. Defaults to "%Y/%m/%d %H:%M:%S"
-
+        beforeOrEqual (bool): also return True if date1 == date2
+        
     Returns:
         bool: date1 < date2 
     
@@ -60,6 +61,10 @@ latqcdtools.base.utilities
 `deleteFile(target)`
  
     Delete the file at target, if it exists. 
+    
+`deleteFolder(target)`
+ 
+    Delete the folder at target, if it exists. 
     
 `envector(*args)`
  

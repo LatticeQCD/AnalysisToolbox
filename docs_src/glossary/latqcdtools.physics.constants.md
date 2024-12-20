@@ -7,7 +7,15 @@ latqcdtools.physics.constants
 `GeVinv_to_fm(x) -> float`
 
 
-`M_mu_phys(year=2020, units='MeV', returnErr=False)`
+`M_K0_phys(year=2022, units='MeV', returnErr=False)`
+ 
+    Physical value of K0 mass. 
+    
+`M_Kpm_phys(year=2022, units='MeV', returnErr=False)`
+ 
+    Physical value of K0 mass. 
+    
+`M_mu_phys(year=2022, units='MeV', returnErr=False)`
  
     Physical value of the muon mass. 
     
@@ -42,7 +50,8 @@ latqcdtools.physics.constants
     
 `convert(x, unit1, unit2) -> float`
  
-    General method for doing unit conversions.
+    General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
+    If the unit ends in 'inv', it is interpreted as 1/unit.
 
     Args:
         x (float): measurement in [unit1]. 
@@ -52,9 +61,9 @@ latqcdtools.physics.constants
     Returns:
         float: measurement in [unit2]. 
     
-`fk_phys(year=2019, units='MeV')`
+`fk_phys(year=2019, units='MeV', returnErr=False)`
  
-    Physical value of Kaon decay constant. 
+    Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
     
 `fm_to_GeVinv(x) -> float`
 
@@ -62,6 +71,10 @@ latqcdtools.physics.constants
 `fm_to_MeVinv(x) -> float`
 
 
+`fpi_phys(year=2018, units='MeV', returnErr=False)`
+
+    Physical value of the pion decay constant, f_pi+/-. 
+    
 `frho_phys(year=2017, units='GeV', returnErr=False)`
  
     Physical value of the rho decay constant. 
@@ -78,7 +91,10 @@ latqcdtools.physics.constants
  
     Physical value of Sommer scale r1. 
     
-`sqrt_t0_phys(year=2015, units='fm', returnErr=False)`
+`w0_phys(year=2013, units='fm', returnErr=False)`
  
-    Gradient flow scale t0^(1/2). 
+    Gradient flow scale w0.
     
+`physicalConstant(name, scale, units)`
+
+

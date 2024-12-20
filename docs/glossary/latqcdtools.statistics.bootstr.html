@@ -124,7 +124,7 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-bootstr">
 <h1>latqcdtools.statistics.bootstr<a class="headerlink" href="#latqcdtools-statistics-bootstr" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_autoSeed(seed)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_autoSeed(seed)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>We use seed=None to flag the seed should be automatically chosen. The problem is that we need
 seed to be an integer when enforcing that different bootstrap samples use different seeds. 
 </pre></div>
@@ -184,6 +184,12 @@ default = 1 for higher order arrays.)
 The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.
 This means that data_std_dev should always be the standard deviation of a single measurement and not the standard
 deviation of a mean.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">estimateCovariance(data_std_dev,</span> <span class="pre">numb_samples,</span> <span class="pre">seed=None)</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Estimate a covariance matrix using data and their corresponding std_dev. The idea is to estimate this with a
+bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here
+data should be 1-dimensional.
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">recurs_append(data,</span> <span class="pre">sample_data,</span> <span class="pre">axis,</span> <span class="pre">conf_axis,</span> <span class="pre">sample_size,</span> <span class="pre">same_rand_for_obs,</span> <span class="pre">i,</span> <span class="pre">my_seed)</span></code></p>
