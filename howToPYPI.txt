@@ -1,0 +1,18 @@
+- Update setup.py
+- (Maybe) python -m pip install --upgrade twine
+- If you need API token, it's saved in personal account area
+- twine upload dist/*
+- make sure you have a .pypirc in your home directory like this:
+- python3 -m build
+
+[distutils]
+index-servers =
+    pypi
+
+[pypi]
+username = __token__
+password = pypi-somestuff
+
+your experience was that putting in repository = ... ruined things.
+it took you hours to figure that out because twine fails silently.
+hopefully this is enough for you to figure it out next time.
