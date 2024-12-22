@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 def read_requirements():
     """Read requirements.txt and return a list of dependencies."""
-    with open("requirements.txt", "r") as fh:
+    with open("/home/dclarke/GitHub/AnalysisToolbox/requirements.txt", "r") as fh:
         return fh.read().splitlines()
 
 
@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="latqcdtools",
-    version="1.2.2",
+    version="1.2.3",
     author="D. A. Clarke",
     author_email="clarke.davida@gmail.com",
     description="A set of Python tools for statistically analyzing correlated data. This includes aspects of lattice QCD applications related to QCD phenomenology.",
