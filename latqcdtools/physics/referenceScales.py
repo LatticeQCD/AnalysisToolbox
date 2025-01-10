@@ -51,11 +51,13 @@ def _betaRangeWarn(beta, beta_range):
         beta_range (array-like): min and max beta of range, in that order 
     """
     global CHECKBETARANGE
-    if isinstance(beta , (float,np.floating)) :
-        beta = np.array([ beta , beta ]) 
     if CHECKBETARANGE:
-        if np.sort(beta)[0] < beta_range[0] or np.sort(beta)[-1] > beta_range[1]:
-            logger.warn("beta out of fit range [" + str(beta_range[0]) + "," + str(beta_range[1]) + "]",frame=3)
+        if isinstance(beta , (float,np.floating)) :
+            if beta < beta_range[0] or beta > beta_range[1]:
+                logger.warn(f"beta out of fit range [{beta_range[0]},{beta_range[1]}]",frame=3)
+        else:
+            if np.min(beta) < beta_range[0] or np.max(beta) > beta_range[1]:
+                logger.warn(f"beta out of fit range [{beta_range[0]},{beta_range[1]}]",frame=3)
 
 
 # -------------------------------------------------------------------------------------------------------- FITTING FORMS
@@ -73,8 +75,8 @@ def fit_tayloraLambda(beta,a,b,c):
 
 
 def allton_type_ansatz(beta, c0, c2, d2):
-    return (c0 * beta_func(beta) + c2 * (10 / beta) * beta_func(beta) ** 3) / \
-           (1 + d2 * (10 / beta) * beta_func(beta) ** 2)
+    return (c0*beta_func(beta) + c2*(10/beta)*beta_func(beta)**3) / \
+           (1 + d2*(10/beta)*beta_func(beta)**2)
 
 
 # ===================================================== f_K scales
@@ -231,6 +233,12 @@ def r0_div_a(beta,year):
         c2 = 14.9600
         c3 = -3.95983
         c4 = -5.30334
+    # 10.1103/PhysRevD.85.054503
+    elif str(year) == "2012":
+        c0 = 32.83
+        c2 = 81127
+        d2 = 1778
+        return 1/allton_type_ansatz(beta,c0,c2,d2)
     else:
         logger.TBError("No fit parameters for year", str(year))
     return wuppertal_type_ansatz(beta,c1,c2,c3,c4)

@@ -59,6 +59,8 @@ def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf) -> np.ndarray:
         mask = np.logical_and( array[:]>minVal, array[:]<maxVal )
         return array[mask]
     else:
+        if array.ndim<2:
+            logger.TBRaise('Set col=None for 1-d numpy arrays.')
         mask = np.logical_and( array[col,:]>minVal, array[col,:]<maxVal )
         return array[:,mask]
 

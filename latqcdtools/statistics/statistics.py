@@ -663,17 +663,17 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
     if func_err is not None:
         ydata_err = func_err(xdata, params, params_err, *args)
         if swapXY:
-            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, center=False, **kwargs)
         else:
-            return plot_fill(xdata, ydata, ydata_err, **kwargs)
+            return plot_fill(xdata, ydata, ydata_err, center=False, **kwargs)
 
     # No explicit error function, but received a covariance matrix: 
     elif len(params_err) > 0:
         ydata_err = error_prop_func(xdata, func, params=params, params_err=params_err, grad=grad, args=args)
         if swapXY:
-            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, **kwargs)
+            return plot_fill(xdata, ydata, yedata=None, xedata=ydata_err, center=False, **kwargs)
         else:
-            return plot_fill(xdata, ydata, ydata_err, **kwargs)
+            return plot_fill(xdata, ydata, ydata_err, center=False, **kwargs)
 
     # No errors at all: 
     else:

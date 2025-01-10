@@ -10,11 +10,11 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
-from latqcdtools.base.cleanData import clipRange
+from latqcdtools.base.cleanData import clipRange, excludeAtCol 
 from latqcdtools.base.utilities import createFilePath
 
 
-def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwargs) -> np.ndarray:
+def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,excludeAtVal=None,**kwargs) -> np.ndarray:
     """ 
     Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally
     allows the user to restrict the table based on the range of one of the columns.
@@ -27,10 +27,13 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
         col (int, optional): 
             Use this column to restrict the range of the rest of the table. Defaults to None.
         minVal (float, optional): 
-            Minimum value for above restriction. Defaults to None.
+            Minimum value for above restriction. Defaults to -np.inf.
         maxVal (float, optional):
-            Maximum value for above restriction. Defaults to None.
-
+            Maximum value for above restriction. Defaults to np.inf.
+        excludeAtVal (float, optional):
+            Throw out all rows for which column col has value excludeAtVal. Exclusion is
+            carried out after range restriction. 
+            
     Returns:
         np.array: Data table. 
     """
@@ -41,11 +44,15 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,**kwarg
         raise e
     if col is not None:
         data = clipRange(data,col=col,minVal=minVal,maxVal=maxVal)
+        if excludeAtVal is not None:
+            data = excludeAtCol(data,col=col,atVal=excludeAtVal)
     else:
         if minVal!=-np.inf:
             logger.TBRaise('Set col=None with minVal')
         if maxVal!=np.inf:
             logger.TBRaise('Set col=None with maxVal')
+        if excludeAtVal is not None:
+            logger.TBRaise('Set col=None with excludeAtVal')
     return data
 
 

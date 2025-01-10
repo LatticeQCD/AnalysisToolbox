@@ -41,7 +41,13 @@ def testUtilities():
     if not isArrayLike(envector(x)):
         logger.TBFail('isArrayLike')
         lpass=False
-    
+
+    x = 3.143342342
+    test = np.array([np.array([x])])
+    if x != unvector(unvector(test)):
+        logger.TBFail('unvector**2')
+        lpass=False
+
     date1 = "2017/12/14 14:50:30"
     date2 = "2018/1/1 15:20:25"
     if not comesBefore(date1,date2):

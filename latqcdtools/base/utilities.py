@@ -77,7 +77,7 @@ def isHigherDimensional(obj) -> bool:
     Figure out whether obj has at least two indices.
 
     Args:
-        data (array-like)
+        obj (array-like)
 
     Returns:
         bool: True if there are at least two indices, false otherwise. 
@@ -91,8 +91,20 @@ def isHigherDimensional(obj) -> bool:
 
 def unvector(obj):
     """ 
-    Remove outermost brackets of array-like object, if possible. 
+    Remove outermost brackets of array-like object with single element, if possible. This is needed
+    because sometimes different numpy methods give inconsistent outputs, like turning a scalar
+    into a zero-dimensional array, a 1-dimensional array, or just the scalar itself.
+
+    Args:
+        obj (python object)
+
+    Returns:
+        obj, obj[0], or obj.item() depending on obj
+    
     """ 
+    if isinstance(obj,np.ndarray):
+        if obj.ndim==0:
+            return obj.item()
     if not isArrayLike(obj):
         return obj
     N = len(obj)
