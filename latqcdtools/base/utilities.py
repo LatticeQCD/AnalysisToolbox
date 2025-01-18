@@ -224,18 +224,19 @@ def printClean(*args,label=None):
     logger.info(cleanOutput(*args,label))
 
 
-def printDict(dic):
+def printDict(dic,level=0):
     """ 
     Prints key, value pairs line by line. 
     """
     if not isinstance(dic,dict):
         logger.TBError('Expected type', dict, 'but received', type(dic))
+    indent='  '*level
     for key in dic:
         if type(dic[key])==dict:
-            logger.info(key)
-            printDict(dic[key])
+            logger.info(f'{indent}{key}:')
+            printDict(dic[key],level+1)
         else:
-            printClean(key,dic[key])
+            printClean(f'{indent}{key}:',dic[key])
 
 
 def shell(*args):

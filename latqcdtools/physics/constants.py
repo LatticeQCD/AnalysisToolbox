@@ -339,17 +339,6 @@ def M_pipm_phys(year=2022,units="MeV",returnErr=False):
     return physicalConstant("M_pi+/-",scale,"MeV").getValue(year,units,returnErr) 
 
 
-def M_rho_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of the rho mass. 
-    """
-    scale = {
-        2022: (775.26, 0.23), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2014: (775.26, 0.25)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
-    }
-    return physicalConstant("M_rho",scale,"MeV").getValue(year,units,returnErr) 
-
-
 def M_K0_phys(year=2022,units="MeV",returnErr=False):
     """ 
     Physical value of K0 mass. 
@@ -368,6 +357,18 @@ def M_Kpm_phys(year=2022,units="MeV",returnErr=False):
         2022: (493.677, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
     }
     return physicalConstant("M_K+/-",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_rho_phys(year=2022,units="MeV",returnErr=False):
+    """ 
+    Physical value of the rho mass. 
+    """
+    scale = {
+        2022: (775.26, 0.23), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        2014: (775.26, 0.25)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+    }
+    return physicalConstant("M_rho",scale,"MeV").getValue(year,units,returnErr) 
+
 
 
 # ------------------------------------------------------------------------------------------------------ DECAY CONSTANTS

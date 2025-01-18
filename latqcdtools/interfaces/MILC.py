@@ -3,7 +3,7 @@
 # 
 # D. Clarke
 # 
-# Some parameter combinations and naming conventions special to projects of the MILC code.
+# Some parameter combinations and naming conventions special to projects of the MILC collaboration.
 #
 
 from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params

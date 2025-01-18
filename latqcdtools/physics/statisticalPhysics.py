@@ -202,6 +202,8 @@ def reweight(X, pRW, p0, S):
     """
     checkType(np.ndarray,X=X)
     checkType(np.ndarray,S=S)
+    # Subtracting by std_mean(S) is a trick to prevent overflow. This can be
+    # further improved with logarithms.
     Z_i = np.exp( (pRW-p0)*(S-std_mean(S)) )
     Z   = np.sum(Z_i)
     return np.sum(X*Z_i/Z)
