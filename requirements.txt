@@ -1,10 +1,9 @@
 colorama
 matplotlib
 numba
-numpy
+jax[cuda12]
 pathos
 PyQt5
 pytest
 pyyaml
-scipy
 sympy
