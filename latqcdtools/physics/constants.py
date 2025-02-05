@@ -242,6 +242,8 @@ def MeVinv_to_fm(x) -> float:
     return hcMeVfm*x
 def GeVinv_to_fm(x) -> float:
     return hcGeVfm*x
+def fminv_to_MeV(x) -> float:
+    return x*hcMeVfm
 
 
 class physicalConstant():

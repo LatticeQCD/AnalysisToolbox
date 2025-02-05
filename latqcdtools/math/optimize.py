@@ -37,7 +37,7 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
     checkType("real",tol=tol)
     checkType(int,maxiter=maxiter)
     if method=='newton_krylov':
-        return newton_krylov(LHS, guess, f_tol=tol, maxiter=maxiter)
+        return newton_krylov(LHS, guess, f_tol=tol, f_rtol=tol, maxiter=maxiter)
     elif method=='fsolve':
         return fsolve(LHS, guess, xtol=tol, maxfev=maxiter)
     elif method=='root':

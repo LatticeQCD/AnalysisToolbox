@@ -182,7 +182,7 @@ class Fitter:
                 "L-BFGS-B"   : 15000,
                 "TNC"        : 5000 ,
                 "Powell"     : 10000,
-                "Nelder-Mead": 5000 ,
+                "Nelder-Mead": 10000 ,
                 "COBYLA"     : 15000,
                 "SLSQP"      : 15000,
                 "CG"         : 15000,
@@ -572,6 +572,9 @@ class Fitter:
             If detailedInfo, return dictionary with logGBF, BAIC, pcov.
         """
 
+        if isinstance(algorithms,str):
+            algorithms=[algorithms]
+
         if ('curve_fit' in algorithms) and (self._errorAlg=='hessian') and (not self._nowarn):
             self._errorAlg='propagation'
             logger.warn('hessian strategy not yet compatible with curve_fit; switching strategy to propagation.')
@@ -594,7 +597,7 @@ class Fitter:
         try:
             _test = self.wrap_func(self._xdata, self._saved_params)
         except Exception as e:
-            logger.TBError('Fit function must have signature func(xdata,params,args). Got exception:',e)
+            logger.TBRaise('Fit function must have signature func(xdata,params,args). Got exception:',e)
         checkEqualLengths(_test, self._xdata)
 
         resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )

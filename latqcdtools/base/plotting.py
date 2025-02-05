@@ -280,7 +280,7 @@ def _set_xmin(ax,x_min=None):
         except AttributeError:
             # The issue here is that the get_xlim() won't know what x2
             # is without having seen the data first.
-            logger.TBError('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.')
 
 
 def _set_xmax(ax,x_max=None):
@@ -289,7 +289,7 @@ def _set_xmax(ax,x_max=None):
             x1, x2 = ax.get_xlim()
             ax.set_xlim([x1,x_max])
         except AttributeError:
-            logger.TBError('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.')
 
 
 def _set_ymin(ax,y_min=None):
@@ -298,7 +298,7 @@ def _set_ymin(ax,y_min=None):
             y1, y2 = ax.get_ylim()
             ax.set_ylim([y_min,y2])
         except AttributeError:
-            logger.TBError('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.')
 
 
 def _set_ymax(ax,y_max=None):
@@ -307,7 +307,7 @@ def _set_ymax(ax,y_max=None):
             y1, y2 = ax.get_ylim()
             ax.set_ylim([y1,y_max])
         except AttributeError:
-            logger.TBError('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.')
 
 
 def fill_param_dict(params):
@@ -432,7 +432,7 @@ def set_params(**params):
 
     if LEGEND:
         if not ax in legend_handles:
-            logger.TBError('Legend for axis',ax,'was activated without any label.')
+            logger.TBRaise('Legend for axis',ax,'was activated without any label.')
         leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
                         columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
@@ -514,7 +514,7 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         yedata = data[yecol].astype(float)
     else:
         if style == "fill":
-            logger.TBError("Need error column for filled plotting")
+            logger.TBRaise("Need error column for filled plotting")
     if xecol is not None:
         xedata = data[xecol].astype(float)
 
@@ -536,7 +536,7 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
     elif style == "fill":
         plot_fill(xdata, ydata, yedata=yedata, **params)
     else:
-        logger.TBError("Unknown style",style)
+        logger.TBRaise("Unknown style",style)
 
 
 def _rescale(scale,data):
@@ -775,7 +775,7 @@ def plot_hist(data, bins = None, density=False, label=None, weights=None, **para
     if bins is None:
         bins = 'auto'
         if weights is not None:
-            logger.TBError('Matplotlib does not support automatic bins with weights')
+            logger.TBRaise('Matplotlib does not support automatic bins with weights')
     if isHigherDimensional(data):
         ax.hist(data, bins=bins, density=density, label=label, orientation=params['orientation'], alpha=params['alpha'],
                 weights=weights)
@@ -859,9 +859,9 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
         **params: Additional parameters that can be set.
     """
     if (yedata is None) and (xedata is None):
-        logger.TBError("Please pass some error bars.")
+        logger.TBRaise("Please pass some error bars.")
     if (yedata is not None) and (xedata is not None):
-        logger.TBError("Please pass either x-error or y-error, not both.")
+        logger.TBRaise("Please pass either x-error or y-error, not both.")
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
 
     if len(envector(yedata)) == 2:

@@ -32,7 +32,7 @@ def countConfigurations(targetFolder,name,delimiter='.'):
             _, confno = f.rsplit(delimiter,1)
             confs.append(int(confno))
         except ValueError:
-            logger.TBRaise(f'All configuration names in {targetFolder} must end in int. delimiter="{delimiter}"')
+            logger.TBRaise(f'Configuration names in {targetFolder} must end in int. file={f}, delimiter="{delimiter}"')
     logger.info(f'{targetFolder}:  min={min(confs)}  max={max(confs)}')
     return len(confs)
 
