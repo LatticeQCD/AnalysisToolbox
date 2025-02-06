@@ -14,6 +14,7 @@ from latqcdtools.testing import concludeTest, gaudif_results
 from latqcdtools.statistics.statistics import std_mean
 from latqcdtools.statistics.jackknife import jackknife
 import glob
+import numpy as np
 
 
 logger.set_log_level('INFO')
@@ -33,6 +34,8 @@ def testStatPhys():
     lpass *= univ.hyperscalingCheck()
     univ = Z2_2d()
     lpass *= univ.hyperscalingCheck()
+    if univ.Tc() != 2/np.log(1+np.sqrt(2)):
+        logger.TBFail('Z2_2d Tc')
     univ = S3_2d()
     lpass *= univ.hyperscalingCheck()
     univ = S4_2d()

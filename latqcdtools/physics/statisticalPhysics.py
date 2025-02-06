@@ -10,7 +10,9 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
-from latqcdtools.statistics.statistics import std_mean
+from latqcdtools.statistics.statistics import std_mean, weighted_mean, weighted_variance
+from latqcdtools.base.printErrorBars import getValuesFromErrStr
+from latqcdtools.base.utilities import toNumpy
 
 
 def _printExponent(prefix, exponent):
@@ -33,6 +35,7 @@ class UniversalityClass:
     nu    = None
     eta   = None
     omega = None
+    Tcs   = {} # J=1, no magnetic field
 
     def __repr__(self) -> str:
         return "UniversalityClass"
@@ -66,6 +69,29 @@ class UniversalityClass:
             return False
         return True
 
+    def Tc(self,paper=None):
+        """ Give the weighted average of literature values of Tc. These are in units with
+        k_B=J=1 and no magnetic field. If there is only one known value, give that back.
+        The 2d, Z(2) univerality class just gives back the Onsager solution. If you want
+        to access a particular result, you can pass the DOI of the paper. """ 
+        if len(self.Tcs)==0:
+            logger.TBRaise('No Tc data for this universality class.')
+        elif paper is not None:
+            return getValuesFromErrStr(self.Tcs[paper])
+        elif (self.symm=="Z_2") and (self.d==2):
+            return self.Tcs['Onsager']
+        elif len(self.Tcs)==1:
+            for key in self.Tcs:
+                return getValuesFromErrStr(self.Tcs[key])
+        else:
+            _Tcs, _Tces = [],[]
+            for key in self.Tcs:
+                m, e = getValuesFromErrStr(self.Tcs[key])
+                _Tcs.append(m)
+                _Tces.append(e)
+            _Tcs, _Tces = toNumpy(_Tcs,_Tces)
+            return weighted_mean(_Tcs, _Tces), np.sqrt(weighted_variance(_Tces))
+
 
 # 3d XY model
 class O2_3d(UniversalityClass):
@@ -97,6 +123,10 @@ class O3_3d(UniversalityClass):
     beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
     delta = (gamma+2*alpha)/(2*beta)
+    Tcs = {
+        '10.1103/PhysRevB.43.6087' : '1.44321(21)',
+        '10.1103/PhysRevB.48.936'  : '1.44300(21)'
+    }
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
 
@@ -129,6 +159,12 @@ class Z2_3d(UniversalityClass):
     gamma = nu*(2 - eta)
     beta  = (nu*d -gamma)/2
     delta = nu*d/beta-1.
+    Tcs = {
+        '10.1103/PhysRevB.29.4030'     : '4.51154(13)',
+        '10.1103/PhysRevB.32.1720'     : '4.51162(11)',
+        '10.1016/0378-4371(94)90490-1' : '4.511463(45)',
+        '10.1103/PhysRevB.82.174433'   : '4.5115232(17)'
+    }
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
 
@@ -146,6 +182,9 @@ class Z2_2d(UniversalityClass):
     delta = 15
     nu    = 1
     eta   = 1/4
+    Tcs = {
+        'Onsager' : 2/np.log(1+np.sqrt(2))
+    }
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
 
