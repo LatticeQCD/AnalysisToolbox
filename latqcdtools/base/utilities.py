@@ -279,6 +279,24 @@ def comesBefore(date1,date2,format="%Y/%m/%d %H:%M:%S",beforeOrEqual=False) -> b
     return date1_converted < date2_converted
 
 
+def elapsedSeconds(date1,date2,format="%Y/%m/%d %H:%M:%S") -> float:
+    """
+    Compute elapsed time in seconds between date1 and date2. 
+
+    Args:
+        date1 (str)
+        date2 (str)
+        format (str): format for date strings. Defaults to "%Y/%m/%d %H:%M:%S"
+        
+    Returns:
+        float: elapsed time in seconds 
+    """
+    date1_converted = datetime.datetime.strptime(date1, format)
+    date2_converted = datetime.datetime.strptime(date2, format)
+    elapsed = date1_converted-date2_converted
+    return abs(elapsed.total_seconds())
+
+
 def naturalSort(l) -> list:
     """
     Sort list of strings so that, e.g. '10' comes after '9' rather than before it.

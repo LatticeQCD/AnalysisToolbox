@@ -8,7 +8,7 @@
 import numpy as np
 import math
 import latqcdtools.base.logger as logger
-from latqcdtools.math.math import fallFactorial, invert, RMS
+from latqcdtools.math.math import fallFactorial, invert, RMS, forcePositiveSemidefinite
 from latqcdtools.testing import print_results, concludeTest
 
 
@@ -18,6 +18,11 @@ mat = [[ 1,2,-1],
        [ 2,1, 2],
        [-1,2, 1]]
 mat = np.array(mat)
+
+psd = [[ 1.69631062,  1.17407766, -0.30368938],
+       [ 1.17407766,  1.97966008,  1.17407766],
+       [-0.30368938,  1.17407766,  1.69631062]]
+
 
 def testMath():
 
@@ -31,6 +36,8 @@ def testMath():
     lpass *= print_results(inv,invert(mat,'numpy'),text='scipy vs numpy')
     lpass *= print_results(inv,invert(mat,'svd'),text='scipy vs svd')
     lpass *= print_results(inv,invert(mat,'pinv'),text='scipy vs pinv')
+
+    lpass *= print_results(psd,forcePositiveSemidefinite(mat),text='positive semidefinite',prec=1e-7)
 
     data = np.array([7,12,48,1/2,np.pi])
     lpass *= print_results(22.392496977340823,RMS(data),text='RMS')

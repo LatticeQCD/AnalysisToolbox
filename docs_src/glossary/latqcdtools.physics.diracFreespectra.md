@@ -5,6 +5,6 @@ latqcdtools.physics.diracFreespectra
 
 
 `GammaMatrix()`
- 
-    The 4x4 gamma matrices used in Euclidean quantum field theory. 
-    
+
+The 4x4 gamma matrices used in Euclidean quantum field theory. 
+

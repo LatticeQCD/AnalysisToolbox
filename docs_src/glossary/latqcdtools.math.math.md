@@ -3,89 +3,107 @@ latqcdtools.math.math
 
 `RMS(data) -> float`
 
-    Root-mean-square of data
+Root-mean-square of data
 
-    Args:
-        data (np.ndarray)
+Args:
+    data (np.ndarray)
 
-    Returns:
-        float: RMS of data 
-    
+Returns:
+    float: RMS of data 
+
 `checkSquare(mat)`
- 
-    Make sure mat is a square np.ndarray object. 
 
-    Args:
-        mat (np.ndarray)
-    
+Make sure mat is a square np.ndarray object. 
+
+Args:
+    mat (np.ndarray)
+
 `fallFactorial(n, m) -> float`
- 
-    Falling factorial n fall to m. 
-    
+
+Falling factorial n fall to m. 
+
+`forcePositiveSemidefinite(mat)`
+Doctors a matrix mat to be positive semidefinite if it isn't already. Note
+that this will in general make mat complex. 
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    np.ndarray: positive semidefinite matrix 
+
 `invert(mat, method='scipy', svdcut=1e-12) -> numpy.ndarray`
- 
-    Invert matrix.
 
-    Args:
-        mat (np.ndarray): to-be-inverted matrix 
-        method (str): algorithm for inverting the matrix
-        
-    Returns:
-        np.ndarray: mat^{-1} 
+Invert matrix.
+
+Args:
+    mat (np.ndarray): to-be-inverted matrix 
+    method (str): algorithm for inverting the matrix
     
-`isPositiveSemidefinite(mat) -> bool`
+Returns:
+    np.ndarray: mat^{-1} 
 
+`isPositiveSemidefinite(mat, details=False) -> bool`
+Returns true if mat is positive semidefinite. Otherwise, if details=True,
+list the eigenvalues that are not >=0.
+
+Args:
+    mat (np.ndarray)
+    details (bool, optional): If true, report problematic eigenvalues. Defaults to False.
+
+Returns:
+    bool: True if positive semidefinite 
 
 `isSymmetric(mat) -> bool`
 
 
 `logDet(mat) -> float`
- 
-    Logarithm of determinant. 
-    
+
+Logarithm of determinant. 
+
 `normalize(arr)`
 
 
 `quadrature(data) -> float`
 
-    Add data in quadrature
+Add data in quadrature
 
-    Args:
-        data (np.ndarray)
+Args:
+    data (np.ndarray)
 
-    Returns:
-        float: data added in quadrature 
-    
+Returns:
+    float: data added in quadrature 
+
 `regulate(mat, svdcut=1e-12) -> numpy.ndarray`
- 
-    If a matrix's singular values are too small, it will be ill-conditioned,
-    making it difficult to invert and hence reducing numerical stability. This method
-    extracts its singular values using SVD, then doctors the singular values to reduce
-    the condition number. In the context of applying an SVD cut to a covariance 
-    matrix, see e.g. Appendix D of 10.1103/PhysRevD.100.094508.
 
-    Args:
-        mat (np.ndarray)
-        svdcut (float, optional): condition number threshold. Defaults to 1e-12.
+If a matrix's singular values are too small, it will be ill-conditioned,
+making it difficult to invert and hence reducing numerical stability. This method
+extracts its singular values using SVD, then doctors the singular values to reduce
+the condition number. In the context of applying an SVD cut to a covariance 
+matrix, see e.g. Appendix D of 10.1103/PhysRevD.100.094508.
 
-    Returns:
-        np.ndarray: regulated matrix 
-    
+Args:
+    mat (np.ndarray)
+    svdcut (float, optional): condition number threshold. Defaults to 1e-12.
+
+Returns:
+    np.ndarray: regulated matrix 
+
 `rel_check(a, b, prec=1e-06, abs_prec=1e-14) -> bool`
- 
-    Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
-    and b are array-like, we check that they are element-wise equal within the tolerance. 
 
-    Args:
-        a (obj)
-        b (obj)
-        prec (float, optional): Relative precision. Defaults to 1e-6.
-        abs_prec (float, optional): Absolute precision. Defaults to 1e-14.
+Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
+and b are array-like, we check that they are element-wise equal within the tolerance. 
 
-    Returns:
-        bool: True if a and b are equal. 
-    
+Args:
+    a (obj)
+    b (obj)
+    prec (float, optional): Relative precision. Defaults to 1e-6.
+    abs_prec (float, optional): Absolute precision. Defaults to 1e-14.
+
+Returns:
+    bool: True if a and b are equal. 
+
 `riseFactorial(n, m) -> float`
- 
-    Rising factorial n rise to m. 
-    
+
+Rising factorial n rise to m. 
+

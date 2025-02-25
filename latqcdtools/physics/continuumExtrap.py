@@ -35,7 +35,8 @@ def _powerSeries(x,coeffs):
 class Extrapolator(Fitter):
 
 
-    def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', ansatz=None, nproc=DEFAULTTHREADS):
+    def __init__(self, x, obs, obs_err, order=1, xtype="a", error_strat='propagation', ansatz=None, nproc=DEFAULTTHREADS,
+                 tol=1e-12, max_fev=None):
         """ 
         A framework for doing continuum limit extrapolations.
 
@@ -48,6 +49,8 @@ class Extrapolator(Fitter):
             xtype (str, optional): choose to fit a data or Nt data. Defaults to "a".
             error_strat (str, optional): calculate errors using error propagation or augmented chi^2. Defaults to 'propagation'.
             nproc (int, optional): number of processors for fitting. Defaults to DEFAULTTHREADS.
+            tol (float, optional): tolerance for the minimization. Defaults to 1e-12
+            max_fev (int, optional): maximum number of iterations. Defaults to 10000
         """
         checkType(int,order=order)
 
@@ -71,7 +74,8 @@ class Extrapolator(Fitter):
                 logger.warn('Not using a power series ansatz, but still using custom order.')
             logger.debug('received ansatz',ansatz)
 
-        Fitter.__init__(self, ansatz, x, obs, obs_err, norm_err_chi2=False, error_strat=error_strat, nproc=nproc)
+        Fitter.__init__(self, ansatz, x, obs, obs_err, norm_err_chi2=False, error_strat=error_strat, nproc=nproc,
+                        tol=tol,max_fev=max_fev)
 
 
     def __repr__(self) -> str:

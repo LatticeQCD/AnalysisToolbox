@@ -8,29 +8,37 @@ latqcdtools.physics.constants
 
 
 `M_K0_phys(year=2022, units='MeV', returnErr=False)`
- 
-    Physical value of K0 mass. 
-    
+
+Physical value of K0 mass. 
+
 `M_Kpm_phys(year=2022, units='MeV', returnErr=False)`
- 
-    Physical value of K0 mass. 
-    
+
+Physical value of K0 mass. 
+
 `M_mu_phys(year=2022, units='MeV', returnErr=False)`
- 
-    Physical value of the muon mass. 
-    
+
+Physical value of the muon mass. 
+
+`M_neutron_phys(year=2024, units='MeV', returnErr=False)`
+
+Physical value of the neutron mass. 
+
 `M_pi0_phys(year=2022, units='MeV', returnErr=False)`
- 
-    Physical value of the pi0 mass. 
-    
+
+Physical value of the pi0 mass. 
+
 `M_pipm_phys(year=2022, units='MeV', returnErr=False)`
- 
-    Physical value of the pi+/- mass. 
-    
+
+Physical value of the pi+/- mass. 
+
+`M_proton_phys(year=2024, units='MeV', returnErr=False)`
+
+Physical value of the proton mass. 
+
 `M_rho_phys(year=2022, units='MeV', returnErr=False)`
- 
-    Physical value of the rho mass. 
-    
+
+Physical value of the rho mass. 
+
 `MeV_to_fminv(x) -> float`
 
 
@@ -38,63 +46,66 @@ latqcdtools.physics.constants
 
 
 `Rproton_phys(year=2018, units='fm', returnErr=False)`
- 
-    Physical value of proton charge radius. 
-    
+
+Physical value of proton charge radius. 
+
 `_separatePrefix(units)`
 
 
 `alpha_e(year=2018, returnErr=False)`
- 
-    Fine structure constant. 
-    
+
+Fine structure constant. 
+
 `convert(x, unit1, unit2) -> float`
- 
-    General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
-    If the unit ends in 'inv', it is interpreted as 1/unit.
 
-    Args:
-        x (float): measurement in [unit1]. 
-        unit1 (str): Original units.
-        unit2 (str): Target units.
+General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
+If the unit ends in 'inv', it is interpreted as 1/unit.
 
-    Returns:
-        float: measurement in [unit2]. 
-    
+Args:
+    x (float): measurement in [unit1]. 
+    unit1 (str): Original units.
+    unit2 (str): Target units.
+
+Returns:
+    float: measurement in [unit2]. 
+
 `fk_phys(year=2019, units='MeV', returnErr=False)`
- 
-    Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
-    
+
+Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
+
 `fm_to_GeVinv(x) -> float`
 
 
 `fm_to_MeVinv(x) -> float`
 
 
+`fminv_to_MeV(x) -> float`
+
+
 `fpi_phys(year=2018, units='MeV', returnErr=False)`
 
-    Physical value of the pion decay constant, f_pi+/-. 
-    
+Physical value of the pion decay constant, f_pi+/-. 
+
 `frho_phys(year=2017, units='GeV', returnErr=False)`
- 
-    Physical value of the rho decay constant. 
-    
+
+Physical value of the rho decay constant. 
+
 `lambda_MSbar_phys(year=2021, units='MeV', returnErr=False)`
- 
-    Physical value of MS-bar lambda parameter. 
-    
+
+Physical value of MS-bar lambda parameter. 
+
 `r0_phys(year=2014, units='fm', returnErr=False)`
- 
-    Physical value of Sommer scale r0. 
-    
+
+Physical value of Sommer scale r0. 
+
 `r1_phys(year=2010, units='fm', returnErr=False)`
- 
-    Physical value of Sommer scale r1. 
-    
+
+Physical value of Sommer scale r1. 
+
 `w0_phys(year=2013, units='fm', returnErr=False)`
- 
-    Gradient flow scale w0.
-    
+
+Gradient flow scale w0.
+
 `physicalConstant(name, scale, units)`
 
 

@@ -372,6 +372,26 @@ def M_rho_phys(year=2022,units="MeV",returnErr=False):
     return physicalConstant("M_rho",scale,"MeV").getValue(year,units,returnErr) 
 
 
+def M_proton_phys(year=2024,units="MeV",returnErr=False):
+    """ 
+    Physical value of the proton mass. 
+    """
+    scale = {
+        2024: (938.27208816, 0.00000029), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_proton",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_neutron_phys(year=2024,units="MeV",returnErr=False):
+    """ 
+    Physical value of the neutron mass. 
+    """
+    scale = {
+        2024: (939.56542052, 0.00000054), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_neutron",scale,"MeV").getValue(year,units,returnErr) 
+
+
 
 # ------------------------------------------------------------------------------------------------------ DECAY CONSTANTS
 

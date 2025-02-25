@@ -13,12 +13,12 @@ import numpy as np
 import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet, normalize, invert
-from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND
+from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND, plt
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring, unvector
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
 import latqcdtools.base.logger as logger
-from matplotlib.patches import Ellipse
+import matplotlib
 
 
 NUMPYCOMMENT = """ 
@@ -152,6 +152,7 @@ def checkTS(ts):
 
 
 def checkProb(p):
+    checkType('real',p=p)
     if not 0 <= p <= 1:
         logger.TBRaise('Probabilities must be between 0 and 1.',frame=3)
 
@@ -457,10 +458,24 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
     theta = np.rad2deg( np.arctan2(maj_eigvec[1],maj_eigvec[0]) )
     a = s*np.sqrt(np.max(eigvals))
     b = s*np.sqrt(np.min(eigvals))
-    ellipse = Ellipse((std_mean(x), std_mean(y)), width = 2*a, height = 2*b, angle = theta,
-                      edgecolor=color, fc='None', zorder=FOREGROUND)
+    ellipse = matplotlib.patches.Ellipse((std_mean(x), std_mean(y)), width = 2*a, height = 2*b, angle = theta,
+                                          edgecolor=color, fc='None', zorder=FOREGROUND)
     ax.add_patch(ellipse)
     return a, b, theta 
+
+
+def plot_correlation(mat,ax=plt):
+    """ Plot correlation matrix as a heatmap.
+
+    Args:
+        mat (np.ndarray): correlation matrix
+        ax (matplotlib ax object): Defaults to plt.
+    """
+    checkType(np.ndarray,mat=mat)
+    heatmapColors = ['blue', 'white', 'red']
+    cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom_cmap', heatmapColors)
+    ax.imshow(mat, cmap=cmap, vmin=-1,vmax=1)
+    ax.colorbar()
 
 
 def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):

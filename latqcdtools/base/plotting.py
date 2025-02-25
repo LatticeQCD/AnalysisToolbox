@@ -919,6 +919,20 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
         set_params(**params) # Needed to put in labels
 
 
+def plot_matrix(mat,vmin=None,vmax=None):
+    """ Plot matrix as a heatmap.
+
+    Args:
+        mat (np.ndarray): correlation matrix
+        ax (matplotlib ax object): Defaults to plt.
+    """
+    checkType(np.ndarray,mat=mat)
+    heatmapColors = ['blue', 'white', 'red']
+    cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom_cmap', heatmapColors)
+    plt.imshow(mat, cmap=cmap, vmin=vmin,vmax=vmax)
+    plt.colorbar()
+
+
 def saveFigure(filename,**kwargs):
     """
     Wrapper for plt.savefig that creates the directory path if it doesn't exist already.

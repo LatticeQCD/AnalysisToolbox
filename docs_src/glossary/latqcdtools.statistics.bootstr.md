@@ -2,77 +2,77 @@ latqcdtools.statistics.bootstr
 =============
 
 `_autoSeed(seed) -> int`
- 
-    We use seed=None to flag the seed should be automatically chosen. The problem is that we need
-    seed to be an integer when enforcing that different bootstrap samples use different seeds. 
-    
+
+We use seed=None to flag the seed should be automatically chosen. The problem is that we need
+seed to be an integer when enforcing that different bootstrap samples use different seeds. 
+
 `bootstr(func, data, numb_samples, sample_size=None, same_rand_for_obs=False, conf_axis=1, return_sample=False, seed=None, err_by_dist=False, args=(), nproc=6)`
 
-    Bootstrap for arbitrary functions. This routine resamples the data and passes them to the function in the same
-    format as in the input. So the idea is to write a function that computes an observable from a given data set. This
-    function can be put into this bootstrap routine and will get bootstrap samples as input. Based on the output of the
-    function, the bootstrap mean and error are computed. The function may return multiple observables that are either
-    scalars or numpy objects. You can pass a multidimensional object as data, but the bootstrap function has to know
-    which axis should be resampled which is controlled by conf_axis (default = 0 for one dimensional arrays and
-    default = 1 for higher order arrays.)
+Bootstrap for arbitrary functions. This routine resamples the data and passes them to the function in the same
+format as in the input. So the idea is to write a function that computes an observable from a given data set. This
+function can be put into this bootstrap routine and will get bootstrap samples as input. Based on the output of the
+function, the bootstrap mean and error are computed. The function may return multiple observables that are either
+scalars or numpy objects. You can pass a multidimensional object as data, but the bootstrap function has to know
+which axis should be resampled which is controlled by conf_axis (default = 0 for one dimensional arrays and
+default = 1 for higher order arrays.)
 
-        Parameters
-        ----------
-        func : callable
-            The function that calculates the observable
+    Parameters
+    ----------
+    func : callable
+        The function that calculates the observable
 
-        data : array_like
-            Input data
+    data : array_like
+        Input data
 
-        numb_samples : integer
-            Number of bootstrap samples
+    numb_samples : integer
+        Number of bootstrap samples
 
-        sample_size : integer, optional, default = 0
-            Size of sample
+    sample_size : integer, optional, default = 0
+        Size of sample
 
-        same_rand_for_obs : boolean, optional, default = False
-            Use the same random numbers for each observable accessed by index conf_axis - 1. Please note:
-                - Objects that are accessed by an axis >= conf_axis + 1 do always have the same random numbers.
-                - Objects that are accessed by axis conf_axis < conf_axis - 1 never share the same random numbers.
+    same_rand_for_obs : boolean, optional, default = False
+        Use the same random numbers for each observable accessed by index conf_axis - 1. Please note:
+            - Objects that are accessed by an axis >= conf_axis + 1 do always have the same random numbers.
+            - Objects that are accessed by axis conf_axis < conf_axis - 1 never share the same random numbers.
 
-        conf_axis : integer, optional, default = 0 for dim(data) = 1 or default = 1 for dim(data) >= 2
-            Axis that should be resampled
+    conf_axis : integer, optional, default = 0 for dim(data) = 1 or default = 1 for dim(data) >= 2
+        Axis that should be resampled
 
-        return_sample : boolean, optional, default = False
-            Along with the mean and the error also return the results from the individual samples
+    return_sample : boolean, optional, default = False
+        Along with the mean and the error also return the results from the individual samples
 
-        seed: integer, optional, default = None
-            seed for the random generator. If None, the default seed from numpy is used (probably from time)
+    seed: integer, optional, default = None
+        seed for the random generator. If None, the default seed from numpy is used (probably from time)
 
-        same_rand_for_obs : boolean, optional, default = False
-            same random numbers per observable
+    same_rand_for_obs : boolean, optional, default = False
+        same random numbers per observable
 
-        err_by_dist : boolean, optional, default = False
-            Compute the error from the distribution using the median and the 68% quantile
+    err_by_dist : boolean, optional, default = False
+        Compute the error from the distribution using the median and the 68% quantile
 
-        args : array_like or dict, default = ()
-            optional arguments to be passed to func. If a dictionary the are passed as **args.
+    args : array_like or dict, default = ()
+        optional arguments to be passed to func. If a dictionary the are passed as **args.
 
-        nproc : integer
-            Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
-    
+    nproc : integer
+        Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.
+
 `bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size=1, same_rand_for_obs=False, return_sample=False, seed=None, err_by_dist=True, useCovariance=False, Covariance=None, args=(), nproc=6, asym_err=False)`
 
-    Same as standard bootstrap routine, but the data are generated by gaussian noise around the mean values in data.
-    The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.
-    This means that data_std_dev should always be the standard deviation of a single measurement and not the standard
-    deviation of a mean.
-    
+Same as standard bootstrap routine, but the data are generated by gaussian noise around the mean values in data.
+The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.
+This means that data_std_dev should always be the standard deviation of a single measurement and not the standard
+deviation of a mean.
+
 `estimateCovariance(data_std_dev, numb_samples, seed=None)`
- 
-    Estimate a covariance matrix using data and their corresponding std_dev. The idea is to estimate this with a
-    bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here
-    data should be 1-dimensional.
-    
+
+Estimate a covariance matrix using data and their corresponding std_dev. The idea is to estimate this with a
+bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here
+data should be 1-dimensional.
+
 `recurs_append(data, sample_data, axis, conf_axis, sample_size, same_rand_for_obs, i, my_seed)`
- 
-    Recursive function to fill the sample. 
-    
+
+Recursive function to fill the sample. 
+
 `nimbleBoot(func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed, err_by_dist, args, nproc)`
 
 

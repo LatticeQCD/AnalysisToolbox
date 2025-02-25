@@ -5,6 +5,6 @@ latqcdtools.interfaces.confReader
 
 
 `confReader(Ns, Nt, nproc=None)`
- 
-    Base class for reading configurations. 
-    
+
+Base class for reading configurations. 
+

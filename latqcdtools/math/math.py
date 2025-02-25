@@ -70,6 +70,7 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
     Returns:
         np.ndarray: mat^{-1} 
     """
+    checkType(np.ndarray,mat=mat)
     checkSquare(mat)
     checkType(str,method=method)
     if method=='scipy':
@@ -92,16 +93,55 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         logger.TBRaise('Unrecognized inverter',method)
 
 
-def isPositiveSemidefinite(mat) -> bool:
+def isPositiveSemidefinite(mat,details=False) -> bool:
+    """ Returns true if mat is positive semidefinite. Otherwise, if details=True,
+    list the eigenvalues that are not >=0.
+
+    Args:
+        mat (np.ndarray)
+        details (bool, optional): If true, report problematic eigenvalues. Defaults to False.
+
+    Returns:
+        bool: True if positive semidefinite 
+    """
+    checkType(np.ndarray,mat=mat)
     eigenvalues = np.linalg.eigvals(mat)
-    return np.all(eigenvalues >= 0)
+    positiveSemidefinite = np.all(eigenvalues >= 0)
+    if details and (not positiveSemidefinite):
+        logger.info('Problem eigenvalues:')
+        for i in range(len(eigenvalues)):
+            if not eigenvalues[i]>=0:
+                logger.info(f'  lambda[{i}] = {eigenvalues[i]}')
+    return positiveSemidefinite 
 
 
 def isSymmetric(mat) -> bool:
+    checkType(np.ndarray,mat=mat)
     return np.allclose(mat, mat.T)
 
 
+def forcePositiveSemidefinite(mat):
+    """ Doctors a matrix mat to be positive semidefinite if it isn't already. Note
+    that this will in general make mat complex. 
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        np.ndarray: positive semidefinite matrix 
+    """
+    eigvals, eigvecs = np.linalg.eig(mat)
+    eigvals[eigvals<0] = 0
+    D = np.diag(eigvals)
+    Q = eigvecs
+    res = Q @ D @ invert(Q)
+    if not isPositiveSemidefinite(res):
+        res = forcePositiveSemidefinite(res)
+    return res
+
+
 def normalize(arr):
+    checkType(np.ndarray,arr=arr)
     return arr/np.sum(np.abs(arr))
 
 
@@ -109,6 +149,8 @@ def fallFactorial(n,m) -> float:
     """ 
     Falling factorial n fall to m. 
     """
+    checkType('int',n=n)
+    checkType('int',m=m)
     if m>n:
         logger.TBRaise("m>n.")
     return sp.special.poch(n-m+1,m)
@@ -118,6 +160,8 @@ def riseFactorial(n,m) -> float:
     """ 
     Rising factorial n rise to m. 
     """
+    checkType('int',n=n)
+    checkType('int',m=m)
     if n>m:
         logger.TBRaise("n>m.")
     return sp.special.poch(n,m)

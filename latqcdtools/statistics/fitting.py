@@ -141,7 +141,7 @@ class Fitter:
         # arguments when the Fitter is initialized, they take the default value shown here. 
         self._use_diff      = kwargs.get('use_diff', True)
         self._derive_chisq  = kwargs.get('derive_chisq', False)
-        self._tol           = kwargs.get('tol', 1e-10)
+        self._tol           = kwargs.get('tol', 1e-12)
         self._test_tol      = kwargs.get('test_tol', 1e-10)
         self._svdcut        = kwargs.get('svdcut', 1e-12)
         self._max_fev       = kwargs.get('max_fev', None)
