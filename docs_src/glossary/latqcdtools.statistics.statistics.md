@@ -285,6 +285,16 @@ Args:
 Returns:
     func(x,params,args) 
 
+`forcePositiveSemidefinite(mat)`
+Doctors a noisy correlation matrix mat to be positive semidefinite if it isn't already. 
+Uses algorithm of Rebonato and Jaeckel, DOI: 10.2139/ssrn.1969689
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    np.ndarray: positive semidefinite matrix 
+
 `gaudif(x1, e1, x2, e2) -> float`
 
 Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are

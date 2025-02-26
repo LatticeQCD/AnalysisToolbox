@@ -93,7 +93,7 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         logger.TBRaise('Unrecognized inverter',method)
 
 
-def isPositiveSemidefinite(mat,details=False) -> bool:
+def isPositiveSemidefinite(mat,details=False,eps=1e-12) -> bool:
     """ Returns true if mat is positive semidefinite. Otherwise, if details=True,
     list the eigenvalues that are not >=0.
 
@@ -106,7 +106,7 @@ def isPositiveSemidefinite(mat,details=False) -> bool:
     """
     checkType(np.ndarray,mat=mat)
     eigenvalues = np.linalg.eigvals(mat)
-    positiveSemidefinite = np.all(eigenvalues >= 0)
+    positiveSemidefinite = np.all(eigenvalues >= -eps)
     if details and (not positiveSemidefinite):
         logger.info('Problem eigenvalues:')
         for i in range(len(eigenvalues)):
@@ -118,26 +118,6 @@ def isPositiveSemidefinite(mat,details=False) -> bool:
 def isSymmetric(mat) -> bool:
     checkType(np.ndarray,mat=mat)
     return np.allclose(mat, mat.T)
-
-
-def forcePositiveSemidefinite(mat):
-    """ Doctors a matrix mat to be positive semidefinite if it isn't already. Note
-    that this will in general make mat complex. 
-
-    Args:
-        mat (np.ndarray)
-
-    Returns:
-        np.ndarray: positive semidefinite matrix 
-    """
-    eigvals, eigvecs = np.linalg.eig(mat)
-    eigvals[eigvals<0] = 0
-    D = np.diag(eigvals)
-    Q = eigvecs
-    res = Q @ D @ invert(Q)
-    if not isPositiveSemidefinite(res):
-        res = forcePositiveSemidefinite(res)
-    return res
 
 
 def normalize(arr):

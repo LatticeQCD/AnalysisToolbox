@@ -478,6 +478,27 @@ def plot_correlation(mat,ax=plt):
     ax.colorbar()
 
 
+def forcePositiveSemidefinite(mat):
+    """ Doctors a noisy correlation matrix mat to be positive semidefinite if it isn't already. 
+    Uses algorithm of Rebonato and Jaeckel, DOI: 10.2139/ssrn.1969689
+    
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        np.ndarray: positive semidefinite matrix 
+    """
+    eigvals, S = np.linalg.eig(mat)
+    eigvals[eigvals<0] = 0
+    sqrtLambda = np.diag(np.sqrt(eigvals))
+
+    T = np.sum(S**2*eigvals,axis=1)
+    sqrtT = np.diag(np.sqrt(1/T))
+    B = sqrtT @ S @ sqrtLambda
+
+    return B @ B.T
+
+
 def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
     """ 
     Calculate the distance between the median and 68% quantiles. Returns the larger of the two 

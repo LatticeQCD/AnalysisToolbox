@@ -22,16 +22,6 @@ Args:
 
 Falling factorial n fall to m. 
 
-`forcePositiveSemidefinite(mat)`
-Doctors a matrix mat to be positive semidefinite if it isn't already. Note
-that this will in general make mat complex. 
-
-Args:
-    mat (np.ndarray)
-
-Returns:
-    np.ndarray: positive semidefinite matrix 
-
 `invert(mat, method='scipy', svdcut=1e-12) -> numpy.ndarray`
 
 Invert matrix.
@@ -43,7 +33,7 @@ Args:
 Returns:
     np.ndarray: mat^{-1} 
 
-`isPositiveSemidefinite(mat, details=False) -> bool`
+`isPositiveSemidefinite(mat, details=False, eps=1e-12) -> bool`
 Returns true if mat is positive semidefinite. Otherwise, if details=True,
 list the eigenvalues that are not >=0.
 

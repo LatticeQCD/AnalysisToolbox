@@ -9,7 +9,8 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse,\
-    KSTest_1side, KSTest_2side, covariance, std_var, symmetrizeError
+    KSTest_1side, KSTest_2side, covariance, std_var, symmetrizeError, forcePositiveSemidefinite
+from latqcdtools.math.math import isPositiveSemidefinite
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.plotting import plt
@@ -123,6 +124,17 @@ ycov  = np.array(
        )
 
 
+mat = [[ 1,2,-1],
+       [ 2,1, 2],
+       [-1,2, 1]]
+mat = np.array(mat)
+
+psd =np.array(
+[[ 1.        ,  0.64069129, -0.17902934],
+ [ 0.64069129,  1.        ,  0.64069129],
+ [-0.17902934,  0.64069129,  1.        ]])
+
+
 def norm_cov(cov) -> np.ndarray:
     """ A more transparent covariance normalizer. """ 
     res = np.zeros((len(cov), len(cov[0])))
@@ -176,6 +188,11 @@ def testStats():
     lpass *= print_results(cov_to_cor(ycov),norm_cov(ycov),text='cov_to_cor')
 
     lpass *= print_results(pearson(ts1,ts2),R,text='pearson explicit')
+
+    lpass *= print_results(psd,forcePositiveSemidefinite(mat),text='positive semidefinite',prec=1e-7)
+    if not isPositiveSemidefinite(psd):
+        logger.TBFail('psd not positive semidefinite')
+        lpass = False
 
     # This will work whatever ddof is, since this factor cancels in the ratio.
     lpass *= print_results(cov_to_cor(np.cov(ts1,ts2))[0,1], pearson(ts1,ts2), text='pearson numpy')
