@@ -22,11 +22,11 @@ def testContExtrap():
 
     lpass = True
 
-    a         = np.array( [0.09, 0.12, 0.15] )
-    a_mu      = [-3.83725749e-01, -2.50780435e-01, -1.51850559e-01]
-    a_mu_err  = [7.05719861e-03, 1.60531523e-02, 9.46881142e-03]
-    prior     = [-0.51180259,2,0.0]
-    priorsigma = [0.02250462,1,1]
+    a          = np.array( [0.09, 0.12, 0.15] )
+    a_mu       = np.array([-3.83725749e-01, -2.50780435e-01, -1.51850559e-01])
+    a_mu_err   = np.array([7.05719861e-03, 1.60531523e-02, 9.46881142e-03])
+    prior      = np.array([-0.51180259,2,0.0])
+    priorsigma = np.array([0.02250462,1,1])
 
     result, result_err, chidof = continuumExtrapolate(a,a_mu,a_mu_err,show_results=True)
 

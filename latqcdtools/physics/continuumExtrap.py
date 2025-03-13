@@ -53,19 +53,22 @@ class Extrapolator(Fitter):
             max_fev (int, optional): maximum number of iterations. Defaults to 10000
         """
         checkType(int,order=order)
+        checkType(np.ndarray,x=x)
+        checkType(np.ndarray,obs=obs)
+        checkType(np.ndarray,obs_err=obs_err)
 
         self._order              = order
         self._triedExtrapolation = False
         self._ansatz             = ansatz
 
         if xtype == "a":
-            x = np.array(x)**2
+            x = x**2
         elif xtype == "Nt":
-            x = 1/np.array(x)**2
+            x = 1/x**2
         else:
-            logger.TBError('Unknown xtype',xtype)
+            logger.TBRaise('Unknown xtype',xtype)
         if order<1:
-            logger.TBError('Please input order > 1.')
+            logger.TBRaise('Please input order > 1.')
 
         if ansatz is None:
             ansatz = _powerSeries
@@ -98,11 +101,10 @@ class Extrapolator(Fitter):
         """
         if start_coeffs is None:
             if self._ansatz is not None:
-                logger.TBError('You need to provide start_coeffs if you use an ansatz.')
-            coeffs = ()
-            for i in range(self._order+1):
-                coeffs += (1.0,)
+                logger.TBRaise('You need to provide start_coeffs if you use an ansatz.')
+            coeffs = np.ones(self._order+1) 
         else:
+            checkType(np.ndarray,start_coeffs=start_coeffs)
             coeffs=start_coeffs
         self._triedExtrapolation = True
         if prior is None:
@@ -123,7 +125,7 @@ class Extrapolator(Fitter):
         Add extrapolation to plot. Accepts the same kwargs as Fitter.plot_fit. 
         """
         if not self._triedExtrapolation:
-            logger.TBError("Can't plot an extrapolation without having extrapolated first...")
+            logger.TBRaise("Can't plot an extrapolation without having extrapolated first...")
         domain=(1e-8,np.max(self._xdata))
         self.plot_data(**kwargs)
         kwargs['label']=None
@@ -132,7 +134,7 @@ class Extrapolator(Fitter):
 
     def save(self,filename,header):
         if not self._triedExtrapolation:
-            logger.TBError("Can't save an extrapolation without having extrapolated first...")
+            logger.TBRaise("Can't save an extrapolation without having extrapolated first...")
         domain=(1e-8,np.max(self._xdata))
         self.save_func(filename,domain,header=header)
 

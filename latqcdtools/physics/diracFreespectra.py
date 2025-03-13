@@ -11,6 +11,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.math.math import id_4
 import itertools
 
+logger.warn('This might be broken... Use with caution.')
 
 class GammaMatrix:
     

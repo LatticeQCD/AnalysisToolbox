@@ -167,12 +167,7 @@ def runIsingModel(T):
 data = parallel_function_eval(runIsingModel,Tlist)
 
 
-res_M    = []
-res_E    = []
-res_chi  = []
-res_chie = []
-res_B    = []
-res_Be   = []
+res_M, res_E, res_chi, res_chie, res_B, res_Be = [], [], [], [], [], []
 for i in range(len(Tlist)):
     res_M.append(   data[i][0])
     res_E.append(   data[i][1])

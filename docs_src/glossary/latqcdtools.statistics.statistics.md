@@ -249,8 +249,8 @@ where data is a 1-d array of input variables.
 
 Args:
     func (func)
-    means (array-like)
-    errors (array-like)
+    means (np.ndarray)
+    errors (np.ndarray)
     grad (func, optional): Gradient function. Defaults to None.
     args (tuple, optional): Arguments of func. Defaults to ().
 
@@ -387,6 +387,21 @@ Args:
 `plot_func(func, domain, params=(), args=(), func_err=None, params_err=(), grad=None, swapXY=False, npoints=1000, **kwargs)`
 
 Plot a function along with its error bands.
+
+Args:
+    func (func)
+    domain (tuple): Domain of function. 
+    params (tuple, optional): Model parameters. Defaults to ().
+    params_err (tuple, optional): Error in model parameters. Defaults to ().
+    args (tuple, optional): Optional function arguments. Defaults to ().
+    func_err (func, optional): Explicit error function. Defaults to None.
+    grad (func, optional): Explicit function gradient to compute error. Defaults to None.
+    swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
+    npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
+
+`save_func(func, domain, params=(), args=(), func_err=None, params_err=(), grad=None, npoints=1000, header=None, filename='func.d', **kwargs)`
+
+Save a function along with its error bands.
 
 Args:
     func (func)

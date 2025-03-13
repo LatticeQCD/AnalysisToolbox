@@ -18,10 +18,13 @@ def testPrintErrorBars():
     lpass = True
 
     x  = -5.50e-08
-    xe = 2.16e-08
+    xe = 2.14e-08
 
     if get_err_str(x,xe) != "-0.000000055(22)":
-        logger.TBFail('get_err_str')
+        logger.TBFail('conservative')
+        lpass = False
+    if get_err_str(x,xe,rounding='canonical') != "-0.000000055(21)":
+        logger.TBFail('canonical')
         lpass = False
 
     test = "-0.000000055(22)"

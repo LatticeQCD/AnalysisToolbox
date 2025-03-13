@@ -59,6 +59,7 @@ def integrateData(xdata,ydata,method='trapezoid'):
     """
     checkType(np.ndarray,xdata=xdata)
     checkType(np.ndarray,ydata=ydata)
+    checkEqualLengths(xdata,ydata)
 
     if method=='simpson':
         return integrate.simpson(y=ydata,x=xdata)
@@ -73,7 +74,8 @@ def integrateData(xdata,ydata,method='trapezoid'):
 persistentMethods = ['quad', 'trapezoid']
 
 
-def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,epsabs=1.49e-8):
+def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,
+                      epsabs=1.49e-8,floatT=np.float64):
     """ 
     Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
     which otherwise does not like to handle numpy arrays.
@@ -126,9 +128,9 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
             if b[i] == np.inf or a[i] == -np.inf:
                 logger.TBError('Trapezoid rule is meant for definite integrals.')
         if stepsize is None:
-            x = np.array([ np.linspace(a[i], b[i], 101) for i in range(len(b)) ])
+            x = np.array([ np.linspace(a[i], b[i], 101) for i in range(len(b)) ],dtype=floatT)
         else:
-            x = np.array([ np.arange(start=a[i], stop=b[i], step=stepsize) for i in range(len(b)) ])
+            x = np.array([ np.arange(start=a[i], stop=b[i], step=stepsize) for i in range(len(b)) ],dtype=floatT)
         y = func(x,*args)
         if len(a)==1:
             return integrateData(x, y, method='trapezoid')[0]

@@ -63,20 +63,26 @@ def testErrorProp():
 
     res_true = err_func(x_test, [1,2], [a_err,b_err], opt)
 
-    res = error_prop_func(x_test, func, params=[1,2], params_err=[a_err,b_err], args=(opt,))
+    params = np.array([1,2])
+    params_err = np.array([a_err,b_err])
+
+    res = error_prop_func(x_test, func, params=params, params_err=params_err, args=(opt,))
     lpass *= print_results(res, res_true, text = "Error_prop using numerical derivative")
 
-    res = error_prop_func(x_test, func, grad=grad, params=[1,2], params_err=[a_err,b_err], args=(opt,))
+    res = error_prop_func(x_test, func, grad=grad, params=params, params_err=params_err, args=(opt,))
     lpass *= print_results(res, res_true, text = "Error_prop using analytic gradient")
 
-    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), func_err = err_func, params_err=[a_err,b_err])
-    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), params_err = [a_err,b_err]) 
-    plot_func(func, domain=(-1,1), params = (a,b), args=(opt,), params_err = [a_err,b_err], grad = grad,
+    params=np.array([a,b])
+    params_err=np.array([a_err,b_err])
+
+    plot_func(func, domain=(-1,1), params = params, args=(opt,), params_err = params_err,func_err=err_func)
+    plot_func(func, domain=(-1,1), params = params, args=(opt,), params_err = params_err) 
+    plot_func(func, domain=(-1,1), params = params, args=(opt,), params_err = params_err, grad = grad,
               title = "Please check if all error bands are the same")
     plt.savefig("errorprop.pdf")
 
     amean, aerr = 0.09, 0.001
-    mean, err   = error_prop(K_G, [1,m_mu_MeV,amean], [0,m_mu_MeV_err,aerr])
+    mean, err   = error_prop(K_G, np.array([1,m_mu_MeV,amean]), np.array([0,m_mu_MeV_err,aerr]))
     REFmean     = 176798.90810433426
     REFerr      = 21366.184730206216
 

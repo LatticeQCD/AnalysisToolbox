@@ -15,7 +15,7 @@ Args:
 Returns:
     float: Area under ydata. 
 
-`integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08)`
+`integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08, floatT=<class 'numpy.float64'>)`
 
 Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
 which otherwise does not like to handle numpy arrays.

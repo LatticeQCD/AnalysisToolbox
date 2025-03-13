@@ -71,7 +71,7 @@ def testStaticPotential():
                             13.544391972286602, 13.58028166502769 , 13.614215294566756, 13.6765398945205]
 
     lpass *= print_results(impdistancesNs32r16 , refdistancesNs32r16 , text="Ns=32, r2max=16")
-    lpass *= print_results(impdistancesNs56r200, refdistancesNs56r200, text="Ns=64, r2max=200")
+    lpass *= print_results(impdistancesNs56r200, refdistancesNs56r200, text="Ns=56, r2max=200")
 
     concludeTest(lpass)
 

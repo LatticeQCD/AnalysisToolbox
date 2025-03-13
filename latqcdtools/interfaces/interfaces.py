@@ -59,7 +59,7 @@ def paramFrom_HotQCD_MILC(ensemble):
     return int(Ns), int(Nt), Nf, cbeta, cm1, cm2 
 
 
-def readGPL(filename,discardTag=True,raggedWarn=True):
+def readGPL(filename,discardTag=True,raggedWarn=True,floatT=np.float64):
     """ 
     Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
     tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
@@ -88,7 +88,7 @@ def readGPL(filename,discardTag=True,raggedWarn=True):
         data.append( [ parse[i] for i in range(minIndex,minLength) ] )
     gplFile.close()
     if discardTag:
-        return np.array(data,dtype=float)
+        return np.array(data,dtype=floatT)
     else:
         return np.array(data,dtype=object)
 

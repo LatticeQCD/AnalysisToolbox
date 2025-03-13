@@ -65,11 +65,15 @@ def tauint(nt,ts,xhat = None) -> np.ndarray:
         if xhat is None:
             c_it=c_it*ndat/(ndat-1.)
         acov.append(c_it)
-    # Calculate integrated autocorrelation time
-    acint=[1.]
-    for it in range(1,nt+1):
-        acint.append( acint[it-1] + 2.*acov[it]/acov[0] )
-    return np.array( acint )
+    acov=np.array(acov)
+    # Calculate integrated autocorrelation time. This is equivalent to the following code:
+    #    acint=[1.]
+    #    for it in range(1,nt+1):
+    #        acint.append( acint[it-1] + 2.*acov[it]/acov[0] )
+    acint     = np.zeros(nt + 1)
+    acint[0]  = 1
+    acint[1:] = 1 + 2*np.cumsum(acov[1:]/acov[0])
+    return acint
 
 
 def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:

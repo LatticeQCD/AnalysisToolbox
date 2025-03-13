@@ -153,7 +153,7 @@ Args:
 Returns:
     str: substring
 
-`toNumpy(*args)`
+`toNumpy(*args, **kwargs)`
 
 
 `unvector(obj)`

@@ -6,7 +6,7 @@
 # Quick test of the integration class.
 # 
 
-
+import numpy as np
 from latqcdtools.math.num_int import integrateData, integrateFunction
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.utilities import toNumpy
@@ -26,8 +26,8 @@ def testInt():
 
     lpass = True
 
-    x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-         30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
+    x = np.arange(0,49)
+         
     y = [ 1.67787710e+01,  1.25847027e+01,  1.10282977e+01,  5.40264891e+00,
           3.12776222e+00, -4.17877810e-01, -1.56451625e+00, -3.05995384e+00,
          -3.25481867e+00, -3.58460190e+00, -3.33892230e+00, -3.18112342e+00,
@@ -75,3 +75,4 @@ def testInt():
 
 if __name__ == '__main__':
     testInt()
+    

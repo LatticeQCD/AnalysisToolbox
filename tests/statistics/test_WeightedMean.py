@@ -51,8 +51,8 @@ def testWeightedMean():
     data  = np.concatenate((data1,data2))
     x     = std_mean(data)
     e     = std_err(data)
-    x12   = weighted_mean([x1,x2],[e1,e2])
-    e12   = np.sqrt(weighted_variance([e1,e2]))
+    x12   = weighted_mean(np.array([x1,x2]),np.array([e1,e2]))
+    e12   = np.sqrt(weighted_variance(np.array([e1,e2])))
 
     q = gaudif(x,e,x12,e12)
 

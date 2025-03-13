@@ -126,11 +126,11 @@ def envector(*args):
     return unvector(result)
 
 
-def toNumpy(*args):
+def toNumpy(*args,**kwargs):
     result = ()
     for obj in args:
         if isArrayLike(obj):
-            obj = np.array(obj)
+            obj = np.array(obj,**kwargs)
         result += (obj,)
     return result
 
@@ -199,7 +199,7 @@ def cleanOutput(*args,label=None) -> str:
             form += spacing+'%15s'
         elif isinstance(col,str):
             data += (col,)
-            form += spacing+'%15s'
+            form += spacing+'%20s'
         elif isinstance(col,complex):
             data += (col.real,)
             data += (col.imag,)

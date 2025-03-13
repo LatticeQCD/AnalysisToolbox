@@ -16,7 +16,7 @@ Take the operators from loadDens and combine them into physically meaningful obs
 Parameters
 ----------
 opTable : dict
-    A table indexed by confID. Its values are a list of operators that have been measured.
+    A table indexed by confID. Its values are numpy arrays of operators that have been measured.
 lp : latticeParams
     Parameters for the ensemle the configuration belongs to.
 obs : observablesOfInterest, optional

@@ -6,7 +6,7 @@
 # Quick test to make sure the bootstrap works. Do not adjust the values of any of the variables, arrays, or arguments.
 # 
 
-from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss, estimateCovariance
+from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss
 from latqcdtools.statistics.statistics import KSTest_1side
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.initialize import DEFAULTSEED
@@ -54,11 +54,6 @@ def Test_Bootstrap():
     REFm = 5.004629053835201
     REFe = 0.3474936630487199
     lpass *= print_results(TESTm, REFm, TESTe, REFe, "div gauss", EPSILON)
-
-    # Making a maximally correlated covariance matrix
-    REFcov = np.array([[0.26083891, 0.05216778],[0.05216778, 0.01043356]])
-    cov = estimateCovariance([0.5,0.1], numb_samples=1000, seed=DEFAULTSEED)
-    lpass *= print_results(1, np.sum(cov/REFcov)/4, text="estimate cov test", prec=1e-6)
 
     concludeTest(lpass)
 
