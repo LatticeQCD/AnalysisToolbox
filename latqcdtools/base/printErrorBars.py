@@ -78,7 +78,7 @@ def get_err_str(param, param_err, numb_err_dig=2, rounding='conservative') -> st
         return param
 
     if numb_err_dig < 1:
-        logger.TBError("Number of error digits has to be larger than 0!")
+        logger.TBRaise("Number of error digits has to be larger than 0!")
     if param < 0:
         param = -param
         sign = -1

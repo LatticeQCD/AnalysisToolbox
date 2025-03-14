@@ -83,7 +83,7 @@ class SU3(np.ndarray):
             mat = ze_3 
         obj = np.asarray(mat, dtype=complex)
         if obj.shape != (3, 3):
-            logger.TBError("SU(3) matrices must have shape (3,3).")
+            logger.TBRaise("SU(3) matrices must have shape (3,3).")
         return np.copy(obj).view(cls)
 
 

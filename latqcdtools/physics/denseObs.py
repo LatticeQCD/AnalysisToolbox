@@ -36,7 +36,7 @@ class observablesOfInterest(list):
         for item in iterable:
             checkDomain(item,_allowed_observables)
         if not iterable[0] == "confID":
-            logger.TBError('observablesOfInterest[0] must be confID.')
+            logger.TBRaise('observablesOfInterest[0] must be confID.')
         self.dtypes=('U12',)
         for item in range(1,len(iterable)):
             self.dtypes += (float,float,)
@@ -59,7 +59,7 @@ class observablesOfInterest(list):
         elif part == "Im":
             return 2*self.index(obs)
         else:
-            logger.TBError('part must be Re or Im. Got', part)
+            logger.TBRaise('part must be Re or Im. Got', part)
 
 
 def mean_square(vec):
@@ -106,7 +106,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
     for cID in opTable:
 
         if len(cID) != len(cID.strip()):
-            logger.TBError('confIDs must not have whitespace! This throws off the column indexing.')
+            logger.TBRaise('confIDs must not have whitespace! This throws off the column indexing.')
 
         trMdMl=opTable[cID][0] # tr M^-1 d M 
         trMdMs=opTable[cID][1]

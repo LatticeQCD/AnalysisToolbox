@@ -51,7 +51,7 @@ def paramFrom_HotQCD_MILC(ensemble):
         Ns=NsNt[:2]
         Nt=NsNt[2:]
     else:
-        logger.TBError('I do not know how to handle an ensemble name of this form.')
+        logger.TBRaise('I do not know how to handle an ensemble name of this form.')
     Nf    = substringBetween(ensemble,'f','b') 
     cbeta = substringBetween(ensemble,'b','m') 
     cm1   = ensemble.split('m')[1].strip()
@@ -103,7 +103,7 @@ def readYAML(filename,ignoreExtension=False) -> dict:
         try:
             return yaml.safe_load(file)
         except yaml.YAMLError as e:
-            logger.TBError('Encountered exception:',e)
+            logger.TBRaise('Encountered exception:',e)
 
 
 def readJSON(filename,ignoreExtension=False) -> dict:
@@ -176,7 +176,7 @@ def writeYAML(data,filename):
         try:
             yaml.safe_dump(data, file) 
         except yaml.YAMLError as e:
-            logger.TBError('Encountered exception:',e)
+            logger.TBRaise('Encountered exception:',e)
 
 
 def writeJSON(data,filename):
@@ -206,7 +206,7 @@ class genericTable(list):
             post (str, optional): String to appear at end of every line of table. Defaults to ''.
         """
         if delimiter is None:
-            logger.TBError("Please set a delimiter. Use delimiter='' for generic whitespace.")
+            logger.TBRaise("Please set a delimiter. Use delimiter='' for generic whitespace.")
         checkType(str,delimiter=delimiter)
         checkType(str,pre=pre)
         checkType(str,post=post)
@@ -339,7 +339,7 @@ def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
     elif sourceType == 'csv':
         sourceTable = csvTable(delimiter=sourceDelimiter)
     else: 
-        logger.TBError('Unknown source file type',sourceType)
+        logger.TBRaise('Unknown source file type',sourceType)
     if targetType == 'tex':
         targetTable = latexTable()
     elif targetType == 'redmine':
@@ -349,7 +349,7 @@ def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
     elif targetType == 'csv':
         targetTable = csvTable(delimiter=targetDelimiter)
     else: 
-        logger.TBError('Unknown target file type',targetType)
+        logger.TBRaise('Unknown target file type',targetType)
     for row in inFile:
         start = len(sourceTable.pre)
         end = len(sourceTable.post)

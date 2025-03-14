@@ -75,13 +75,13 @@ def writeTable(filename,*args,**kwargs):
         head = kwargs['header']
         del npkwargs['header']
         if isinstance(head,list):
-            form = '%20s'
+            form = '%15s'
             temp = (head[0],)
-            if len(head[0]) > 17:
-                logger.warn("writeTable header[0] should be kept under 17 characters.")
+            if len(head[0]) > 12:
+                logger.warn("writeTable header[0] should be kept under 12 characters.")
             for label in head[1:]:
-                if len(label)>20:
-                    logger.warn("writeTable header labels should be kept under 19 characters.")
+                if len(label)>15:
+                    logger.warn("writeTable header labels should be kept under 14 characters.")
                 form += '  %15s'
                 temp += label,
             head = form % temp
@@ -93,7 +93,7 @@ def writeTable(filename,*args,**kwargs):
     colno = 0
     ndat = len(args[0])
     for col in args:
-        col_arr=np.array(col)
+        col_arr = np.array(col)
         if len(col_arr) != ndat:
             logger.TBRaise('Expected length',ndat,'for col',colno,'but found',len(col_arr))
         if isinstance(col_arr[0],complex):
@@ -105,8 +105,8 @@ def writeTable(filename,*args,**kwargs):
             colno += 2
         elif isinstance(col_arr[0],str):
             data += (col_arr,)
-            form += '  %20s'
-            dtypes.append( (_lab(colno), 'U20' ) ) # 15 characters
+            form += '  %15s'
+            dtypes.append( (_lab(colno), 'U15' ) ) # 15 characters
             colno += 1
         else:
             data += (col_arr,)

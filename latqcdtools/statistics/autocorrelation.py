@@ -46,7 +46,7 @@ def tauint(nt,ts,xhat = None) -> np.ndarray:
     checkTS(ts)
     ndat=len(ts)
     if nt>=ndat:
-        logger.TBError("Need nt<ndat.")
+        logger.TBRaise("Need nt<ndat.")
     if xhat is not None:
         x=xhat
     else:
@@ -95,7 +95,7 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
     checkTS(ts)
     ndat=len(ts)
     if not 1<nbins<ndat:
-        logger.TBError("Need 1<nbins<ndat. nbins, ndat =",nbins,ndat)
+        logger.TBRaise("Need 1<nbins<ndat. nbins, ndat =",nbins,ndat)
     if xhat is not None:
         x=xhat
     else:
@@ -110,7 +110,7 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
         # This is a check that we can't spill into the last bin
         itmax=nbins*binsize-binsize
         if it>=itmax:
-            logger.TBError("it>=itmax.")
+            logger.TBRaise("it>=itmax.")
         for ibin in range(nbins):
             i1=ibin*binsize
             i2=(ibin+1)*binsize-1

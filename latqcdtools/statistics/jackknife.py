@@ -60,14 +60,14 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
     checkType(int,nproc=nproc)
     checkType(bool,return_sample=return_sample)
     if type(data) is tuple:
-        logger.TBError('Does not support tuple data. Use latqcdtools.legacy.jackknife if you need this.')
+        logger.TBRaise('Does not support tuple data. Use latqcdtools.legacy.jackknife if you need this.')
     if numb_blocks <= 1:
-        logger.TBError('Need numb_blocks > 1. Set numb_blocks=len(data) for remove-1 jackknife.')
+        logger.TBRaise('Need numb_blocks > 1. Set numb_blocks=len(data) for remove-1 jackknife.')
     if not isHigherDimensional(data):
         conf_axis=0
     data = np.array(data)
     if numb_blocks > np.size(data,axis=conf_axis):
-        logger.TBError('Need numb_blocks <= ndata.')
+        logger.TBRaise('Need numb_blocks <= ndata.')
     data = _pareAxis(data,conf_axis,numb_blocks)
     n = data.shape[conf_axis]
     total = f(data, *args)

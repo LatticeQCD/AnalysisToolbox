@@ -161,7 +161,7 @@ def getArgs(parser):
     """
     args, invalid_args = parser.parse_known_args()
     if len(invalid_args)>0:
-        logger.TBError("Received unrecognized arguments",invalid_args,".")
+        logger.TBRaise("Received unrecognized arguments",invalid_args,".")
     return args
 
 
@@ -189,7 +189,7 @@ def cleanOutput(*args,label=None) -> str:
     form = ''
     if label is not None:
         if not isinstance(label,str):
-            logger.TBError('label must be a string')
+            logger.TBRaise('label must be a string')
         form += '%'+str(len(label))+'s'
         data += (label,)
     spacing = ''
@@ -205,7 +205,7 @@ def cleanOutput(*args,label=None) -> str:
             data += (col.imag,)
             form += spacing+'%15.8e  %15.8e'
         elif isinstance(col,list):
-            logger.TBError('Expected list of scalars rather than list of lists.')
+            logger.TBRaise('Expected list of scalars rather than list of lists.')
         else:
             data += (col,)
             form += spacing+'%15.8e'
@@ -229,7 +229,7 @@ def printDict(dic,level=0):
     Prints key, value pairs line by line. 
     """
     if not isinstance(dic,dict):
-        logger.TBError('Expected type', dict, 'but received', type(dic))
+        logger.TBRaise('Expected type', dict, 'but received', type(dic))
     indent='  '*level
     for key in dic:
         if type(dic[key])==dict:

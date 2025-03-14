@@ -26,9 +26,9 @@ class idealGas:
         checkType(int,Nc=Nc)
         checkType(int,Nf=Nf)
         if Nf >= 4:
-            logger.TBError('Only B, Q, S, C explicitly coded in.')
+            logger.TBRaise('Only B, Q, S, C explicitly coded in.')
         if Nc < 1:
-            logger.TBError('Must have positive number of colors.')
+            logger.TBRaise('Must have positive number of colors.')
         self.T, self.muB, self.muS, self.muQ, self.muC = sympy.symbols('T muB muS muQ muC') 
         self.Nf   = Nf
         self.Nc   = Nc
