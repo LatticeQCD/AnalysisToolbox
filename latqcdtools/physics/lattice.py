@@ -22,7 +22,7 @@ class Lattice():
 
     def __init__(self, geometry, example):
 
-        checkType("array",geometry)
+        checkType("array",geometry=geometry)
 
         if np.asarray(example).shape:
             self.nodeShape = np.asarray(example).shape
