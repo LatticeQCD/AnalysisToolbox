@@ -877,21 +877,22 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
     if ZOD is None:
         ZOD = globals()['ZOD']
 
-    if params['facecolor'] == 'color':
-        facecol=params['color']
-    else:
-        facecol=params['facecolor']
-
     if center :
         if params['color'] is not None:
             handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
-                               color=params['color'], zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
+                                 color=params['color'], zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
         else:
             handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
-                               zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
+                                 zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
         col = handle[0].get_color()
     else:
         col = params['color']
+
+    if params['facecolor'] == 'color':
+        facecol=col
+    else:
+        facecol=params['facecolor']
+
     if xedata is None:
         if len(yedata) == 2:
             pl = ax.fill_between(xdata*params['xscale'],

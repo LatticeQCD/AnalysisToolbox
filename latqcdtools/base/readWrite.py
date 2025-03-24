@@ -70,7 +70,7 @@ def writeTable(filename,*args,**kwargs):
     """
     npkwargs=kwargs
     if len(args)==0:
-        logger.TBError('No data passed to writeTable.')
+        logger.TBRaise('No data passed to writeTable.')
     if 'header' in kwargs:
         head = kwargs['header']
         del npkwargs['header']
@@ -95,7 +95,7 @@ def writeTable(filename,*args,**kwargs):
     for col in args:
         col_arr = np.array(col)
         if len(col_arr) != ndat:
-            logger.TBError('Expected length',ndat,'for col',colno,'but found',len(col_arr))
+            logger.TBRaise('Expected length',ndat,'for col',colno,'but found',len(col_arr))
         if isinstance(col_arr[0],complex):
             data += (col_arr.real,)
             data += (col_arr.imag,)

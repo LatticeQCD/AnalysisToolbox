@@ -126,7 +126,7 @@ class Fitter:
 
         diff = set(set(kwargs.keys()) - set(_allowed_keys))
         if len(diff) != 0:
-            logger.TBError("Illegal argument(s) to fitter", *diff)
+            logger.TBRaise("Illegal argument(s) to fitter", *diff)
 
         # Some attributes that are set in functions other than __init__.
         self._grad = None
@@ -217,9 +217,9 @@ class Fitter:
 
         checkSquare(self._cov)
         if not isSymmetric(self._cov):
-            logger.TBError('Covariance matrix is not symmetric.')
+            logger.TBRaise('Covariance matrix is not symmetric.')
         if not isPositiveSemidefinite(self._cov):
-            logger.TBError('Covariance matrix is not positive semidefinite.')
+            logger.TBRaise('Covariance matrix is not positive semidefinite.')
 
         # Compute a correlation matrix. Note that if the incoming data are highly correlated, then
         # the covariance matrix is likely to be ill-conditioned. This results in numerical stability
@@ -380,7 +380,7 @@ class Fitter:
         if algorithm == "curve_fit":
 
             if self._priorsigma is not None:
-                logger.TBError('The curve_fit algorithm is not yet able to handle priors.')
+                logger.TBRaise('The curve_fit algorithm is not yet able to handle priors.')
 
             # This ensures that however func is used, whatever is passed to him as arguments will be captured as a
             # tuple, which is then plugged into wrap_func.
@@ -445,7 +445,7 @@ class Fitter:
             elif self._errorAlg=='hessian':
                 pcov = self.pcov_hessian(params,algorithm)
             else:
-                logger.TBError('Unknown fitting algorithm', self._errorAlg)
+                logger.TBRaise('Unknown fitting algorithm', self._errorAlg)
 
         # Sometimes people like to rescale the parameter covariance matrix by the chi^2/dof. This tries to
         # take the fit quality in account into the error directly, and to my understanding it is what
@@ -695,7 +695,7 @@ class Fitter:
         Plot the fit function. 
         """
         if isHigherDimensional(self._xdata):
-            logger.TBError('Automatic fit plotting only supported for functions of a single variable.') 
+            logger.TBRaise('Automatic fit plotting only supported for functions of a single variable.') 
         domain = self._autoDomain(domain)
         if not no_error:
             plot_func(self._func, domain=domain, params=self._saved_params, params_err=self._saved_pcov, 
@@ -709,7 +709,7 @@ class Fitter:
         Plot the fit data. 
         """
         if isHigherDimensional(self._xdata):
-            logger.TBError('Automatic data plotting only supported for functions of a single variable.') 
+            logger.TBRaise('Automatic data plotting only supported for functions of a single variable.') 
         if self._cov is not None:
             sigma = np.sqrt( np.diag(self._cov) )
             plot_dots(self._xdata, self._ydata, sigma, **kwargs)

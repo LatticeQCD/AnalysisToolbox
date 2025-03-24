@@ -425,7 +425,7 @@ class HRGexact(HRGbase):
         elif charge == 'C':
             X = self.C
         else:
-            logger.TBError('Unrecognized charge', charge)
+            logger.TBRaise('Unrecognized charge', charge)
 
         def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
             NX = 0.

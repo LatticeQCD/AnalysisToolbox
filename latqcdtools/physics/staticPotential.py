@@ -111,7 +111,6 @@ def compute_sine_terms_kernel(sinf, cw, Ns, sine_terms_lookup):
     else:
         sine_terms_lookup[k1, k2, k3] = 0.0
 
-
 @cuda.jit
 def calculate_potential_kernel(points, Ns, cosf, sine_terms_lookup, point_results):
     """

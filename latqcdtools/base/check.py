@@ -191,9 +191,10 @@ def checkEqualLengths(*args):
     length = len(envector(args[0]))
     for i in range(len(args)):
         if args[i] is not None:
-            if len(envector(args[i])) != length:
+            len_i = len(envector(args[i]))
+            if len_i != length:
                 logger.info(length, len(envector(args[i])))
-                logger.TBRaise('Array length mismatch detected on array',i,frame=3)
+                logger.TBRaise(f'Array length mismatch detected on array {i}. len, len[i] = {length}, {len_i}',frame=3)
 
 
 def checkExtension(filename,extension,ignoreExtension=False):

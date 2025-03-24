@@ -57,7 +57,7 @@ def solve(LHS,guess,tol=1e-8,maxiter=300,method='newton_krylov'):
                 continue
         raise NoConvergence('No root method converged.')
     else:
-        logger.TBError('Unrecognized method',method)
+        logger.TBRaise('Unrecognized method',method)
 
 
 def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):

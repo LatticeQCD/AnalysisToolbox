@@ -87,7 +87,7 @@ class latticeParams:
         self.vol4 = self.Ns**3 * self.Nt
         if Nf=='21':
             if mass3 is not None:
-                logger.TBError('Nf=2+1 expects only 2 mass parameters.')
+                logger.TBRaise('Nf=2+1 expects only 2 mass parameters.')
             self.cml  = mass1
             self.cms  = mass2
             self.ml   = _massStringToFloat(mass1)
@@ -109,7 +109,7 @@ class latticeParams:
             self.pre  = None
         elif Nf=='3' or Nf=='5':
             if mass3 is not None:
-                logger.TBError('Degenerate Nf expects only 2 mass parameters.')
+                logger.TBRaise('Degenerate Nf expects only 2 mass parameters.')
             self.cml  = None
             self.cms  = None
             self.ml   = None
@@ -121,9 +121,9 @@ class latticeParams:
         if (self.ml is not None) and (self.ms is not None):
             self.msml=int(round(self.ms/self.ml))
         if (self.beta<1.) or (10.<self.beta):
-            logger.TBError("Invalid beta =",self.beta)
+            logger.TBRaise("Invalid beta =",self.beta)
         if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
-            logger.TBError("Unknown reference scale",scaleType)
+            logger.TBRaise("Unknown reference scale",scaleType)
 
 
     def __repr__(self) -> str:
@@ -154,7 +154,7 @@ class latticeParams:
         if self.Ns is not None:
             return fm_to_MeVinv(self.Ns*self.geta())
         else:
-            logger.TBError('Must specify Ns get get Ls.')
+            logger.TBRaise('Must specify Ns get get Ls.')
 
 
     # A nicely formatted summary of the lattice parameters.

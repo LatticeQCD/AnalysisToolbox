@@ -27,7 +27,7 @@ def deleteRow(array, row) -> np.ndarray:
     checkType(np.ndarray,array=array)
     checkType(int,row=row)
     if array.ndim != 2:
-        logger.TBError('Expected 2-d numpy array.')       
+        logger.TBRaise('Expected 2-d numpy array.')       
     return np.delete(array,row,0)
 
 
@@ -45,7 +45,7 @@ def deleteCol(array, col) -> np.ndarray:
     checkType(np.ndarray,array=array)
     checkType(int,col=col)
     if array.ndim != 2:
-        logger.TBError('Expected 2-d numpy array.')       
+        logger.TBRaise('Expected 2-d numpy array.')       
     return np.delete(array,col,1)
 
 

@@ -12,9 +12,21 @@ Args:
 Returns:
     float, float: mean, error. 
 
-`get_err_str(param, param_err, numb_err_dig=2) -> str`
+`get_err_str(param, param_err, numb_err_dig=2, rounding='conservative') -> str`
 
 Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). 
+
+Args:
+    param (float): _description_
+    param_err (float): _description_
+    numb_err_dig (int, optional): How many significant digits for your error? Defaults to 2.
+    rounding (str, optional): The strategy for rounding the last significant digit of the error.
+        The 'canonical' strategy rounds how one learns in grade school, i.e. 44 gets rounded to 40.
+        The 'conservative' strategy always rounds up, i.e. 44 gets rounded to 50. Defaults to
+        'conservative'. 
+
+Returns:
+    str: Error string. 
 
 `get_err_str_auto(param, param_err, numb_err_dig=1, mulicon='x') -> str`
 

@@ -2,6 +2,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.initialize import initialize, finalize
+from latqcdtools.base.utilities import toNumpy
 from latqcdtools.math.num_deriv import diff_deriv
 from latqcdtools.math.spline import getSpline
 from latqcdtools.statistics.statistics import gaudif
@@ -40,6 +41,11 @@ for Nt in Nts:
     Td, Tde = bootstr_from_gauss(getTd, PM, PE, 1000)
     Tds.append(Td)
     Tderrs.append(Tde)
+
+# This convenience wrapper allows conversion of multiple lists or tuples into numpy 
+# arrays with one command. You can pass it the same keyword arguments as np.array, 
+# which it will apply to all arrays.
+Nts, Tds, Tderrs = toNumpy(Nts, Tds, Tderrs, dtype=np.float64)
 
 # Perform O(a^4) continuum-limit extrapolation
 result, result_err, chidof = continuumExtrapolate( Nts, Tds, Tderrs, order=2, xtype="Nt",

@@ -52,21 +52,33 @@ def get_exp(param):
         return int(result)
 
 
-def get_err_str(param, param_err, numb_err_dig=2) -> str:
-    """ 
-    Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). 
+def get_err_str(param, param_err, numb_err_dig=2, rounding='conservative') -> str:
     """
+    Get the string of a number + error, e.g. 1.234567+-0.324456 --> 12.34(33) (numb_err_dig = 2). 
 
+    Args:
+        param (float): _description_
+        param_err (float): _description_
+        numb_err_dig (int, optional): How many significant digits for your error? Defaults to 2.
+        rounding (str, optional): The strategy for rounding the last significant digit of the error.
+            The 'canonical' strategy rounds how one learns in grade school, i.e. 44 gets rounded to 40.
+            The 'conservative' strategy always rounds up, i.e. 44 gets rounded to 50. Defaults to
+            'conservative'. 
+
+    Returns:
+        str: Error string. 
+    """
+    checkType('real',param=param)
+    checkType('real',param_err=param_err)
     checkType(int,numb_err_dig=numb_err_dig)
-    param     = float(param)
-    param_err = float(param_err)
+    checkType(str,rounding=rounding)
 
     if param_err<=0:
         logger.details('Encountered non-positive error',param_err)
         return param
 
     if numb_err_dig < 1:
-        logger.TBError("Number of error digits has to be larger than 0!")
+        logger.TBRaise("Number of error digits has to be larger than 0!")
     if param < 0:
         param = -param
         sign = -1
@@ -94,7 +106,12 @@ def get_err_str(param, param_err, numb_err_dig=2) -> str:
 
     # floor does not support a second index -> we have to multiply and then divide
     param_err *= pow(10, roundidx)
-    param_err = np.ceil(param_err) * pow(10, -roundidx)
+    if rounding=='conservative':
+        param_err = np.ceil(param_err) * pow(10, -roundidx)
+    elif rounding=='canonical':
+        param_err = np.round(param_err) * pow(10, -roundidx)
+    else:
+        logger.TBRaise('Unknown rounding strategy',rounding)
 
     # as the exponent might have changed through rounding, we have to recalculate it
     relnum = get_exp(param_err)

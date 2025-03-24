@@ -35,11 +35,11 @@ its parameters rather than x.
 When fitting we're trying to optimize params, and hence we want to think of func as a function of
 its parameters rather than x. 
 
-`diff_grad(params, func, args=(), h=None) -> numpy.ndarray`
+`diff_grad(params, func, args=(), h=None, floatT=<class 'numpy.float64'>) -> numpy.ndarray`
 
 Gradient using difference quotient. 
 
-`diff_hess(params, func, args=(), h=None) -> numpy.ndarray`
+`diff_hess(params, func, args=(), h=None, floatT=<class 'numpy.float64'>) -> numpy.ndarray`
 
 Hessian using difference quotient. 
 

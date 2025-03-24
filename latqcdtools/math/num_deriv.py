@@ -47,13 +47,13 @@ def diff_deriv(x, func, args = (), h = None):
     return (func(up, *args) - func(down, *args)) / (2*h)
 
 
-def diff_grad(params, func, args = (), h = None) -> np.ndarray:
+def diff_grad(params, func, args = (), h = None, floatT=np.float64) -> np.ndarray:
     """ 
     Gradient using difference quotient. 
     """
-    ret = [0.0]*len(params)
-    up = np.array(params, dtype = float)
-    down = np.array(params, dtype = float)
+    ret  = [0.0]*len(params)
+    up   = np.array(params, dtype = floatT)
+    down = np.array(params, dtype = floatT)
     for i in range(len(params)):
         if h is None:
             h = _best_h(params[i])
@@ -62,10 +62,10 @@ def diff_grad(params, func, args = (), h = None) -> np.ndarray:
         ret[i] = (func(up, *args) - func(down, *args)) / (2*h)
         up[i] = params[i]
         down[i] = params[i]
-    return np.array(ret)
+    return np.array(ret,dtype=floatT)
 
 
-def diff_hess(params, func, args = (), h = None) -> np.ndarray:
+def diff_hess(params, func, args = (), h = None, floatT=np.float64) -> np.ndarray:
     """ 
     Hessian using difference quotient. 
     """
@@ -73,12 +73,12 @@ def diff_hess(params, func, args = (), h = None) -> np.ndarray:
     # This has to be a list, as we might put in arrays, if params is higher dimensional
     ret = [ [0.0]*len(params) for _ in range(len(params)) ]
     # convert to float
-    up = np.array(params, dtype = float)
-    down = np.array(params, dtype = float)
-    upup = np.array(params, dtype = float)
-    updown = np.array(params, dtype = float)
-    downdown = np.array(params, dtype = float)
-    downup = np.array(params, dtype = float)
+    up       = np.array(params, dtype = floatT)
+    down     = np.array(params, dtype = floatT)
+    upup     = np.array(params, dtype = floatT)
+    updown   = np.array(params, dtype = floatT)
+    downdown = np.array(params, dtype = floatT)
+    downup   = np.array(params, dtype = floatT)
 
     for i in range(len(params)):
         if h is None:
@@ -119,7 +119,7 @@ def diff_hess(params, func, args = (), h = None) -> np.ndarray:
         downdown[i] = down[i]
         downup[i] = down[i]
 
-    return np.array(ret)
+    return np.array(ret,dtype=floatT)
 
 
 def diff_fit_grad(x, params, func, args = (), h = None):

@@ -118,7 +118,7 @@ def a_times_fk(beta, year):
         d2fk = 2388.0
 
     else:
-        logger.TBError("No fit parameters for ", str(year))
+        logger.TBRaise("No fit parameters for ", str(year))
 
     return allton_type_ansatz(beta, c0fk, c2fk, d2fk)
 
@@ -170,7 +170,7 @@ def a_div_r1(beta, year):
         c2 = 272102.0
         d2 = 4281.0
     else:
-        logger.TBError("No fit parameters for year", str(year))
+        logger.TBRaise("No fit parameters for year", str(year))
     return allton_type_ansatz(beta, c0, c2, d2)
 
 
@@ -240,7 +240,7 @@ def r0_div_a(beta,year):
         d2 = 1778
         return 1/allton_type_ansatz(beta,c0,c2,d2)
     else:
-        logger.TBError("No fit parameters for year", str(year))
+        logger.TBRaise("No fit parameters for year", str(year))
     return wuppertal_type_ansatz(beta,c1,c2,c3,c4)
 
 

@@ -107,6 +107,7 @@ class ComputationClass:
         if self._nproc==1:
             results = []
             for i in self._input_array:
+                logger.progress(i)
                 results.append(self.pass_argument_wrapper(i)) 
         else:
             if self._parallelizer=='concurrent.futures':
@@ -119,7 +120,7 @@ class ComputationClass:
                 pool.join() 
                 pool.clear()
             else:
-                logger.TBError('Unknown parallelizer',self._parallelizer)
+                logger.TBRaise('Unknown parallelizer',self._parallelizer)
             results = list(results)
         return results
 

@@ -19,7 +19,7 @@ def _even_knots(xdata, nknots):
     Return a list of nknots evenly spaced knots. 
     """
     if len(xdata)<nknots:
-        logger.TBError('number of data < number of knots')
+        logger.TBRaise('number of data < number of knots')
     flat_xdata = np.sort(np.asarray(xdata))
     # to ensure no knot sits at a data position
     flat_xdata = np.unique(flat_xdata)

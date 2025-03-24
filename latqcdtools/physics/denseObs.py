@@ -11,6 +11,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.check import checkType, checkDomain
 
+logger.warn('THIS IS NOT WORKING RIGHT NOW')
 
 _allowed_observables = ["confID",
                         "Nl", "NB", "NQ", "NS", "NI",
@@ -35,7 +36,7 @@ class observablesOfInterest(list):
         for item in iterable:
             checkDomain(item,_allowed_observables)
         if not iterable[0] == "confID":
-            logger.TBError('observablesOfInterest[0] must be confID.')
+            logger.TBRaise('observablesOfInterest[0] must be confID.')
         self.dtypes=('U12',)
         for item in range(1,len(iterable)):
             self.dtypes += (float,float,)
@@ -58,7 +59,7 @@ class observablesOfInterest(list):
         elif part == "Im":
             return 2*self.index(obs)
         else:
-            logger.TBError('part must be Re or Im. Got', part)
+            logger.TBRaise('part must be Re or Im. Got', part)
 
 
 def mean_square(vec):
@@ -82,7 +83,7 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
     Parameters
     ----------
     opTable : dict
-        A table indexed by confID. Its values are a list of operators that have been measured.
+        A table indexed by confID. Its values are numpy arrays of operators that have been measured.
     lp : latticeParams
         Parameters for the ensemle the configuration belongs to.
     obs : observablesOfInterest, optional
@@ -105,24 +106,24 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
     for cID in opTable:
 
         if len(cID) != len(cID.strip()):
-            logger.TBError('confIDs must not have whitespace! This throws off the column indexing.')
+            logger.TBRaise('confIDs must not have whitespace! This throws off the column indexing.')
 
-        trMdMl=np.array(opTable[cID][0]) # tr M^-1 d M 
-        trMdMs=np.array(opTable[cID][1])
+        trMdMl=opTable[cID][0] # tr M^-1 d M 
+        trMdMs=opTable[cID][1]
 
         if len(trMdMl) != len(trMdMs): 
             logger.warn("len(trMdMl) != len(trMdMs) cID = "+cID+"... skipping")
             continue
 
-        trMdMl2=np.array(opTable[cID][2])  # tr ( M^-1 d M )^2
-        trMdMs2=np.array(opTable[cID][3])
+        trMdMl2=opTable[cID][2]  # tr ( M^-1 d M )^2
+        trMdMs2=opTable[cID][3]
 
         if len(trMdMl2) != len(trMdMs2):
             logger.warn("len(trMdMl2) != len(trMdMs2) cID = "+cID+"... skipping")
             continue
 
-        trMd2Ml=np.array(opTable[cID][4]) # tr ( M^-1 dd M )^2
-        trMd2Ms=np.array(opTable[cID][5])
+        trMd2Ml=opTable[cID][4] # tr ( M^-1 dd M )^2
+        trMd2Ms=opTable[cID][5]
 
         if len(trMd2Ml) != len(trMd2Ms): 
             logger.warn("len(trMd2Ml) != len(trMd2Ms), cID = "+cID+"... skipping")

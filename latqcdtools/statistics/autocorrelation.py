@@ -46,7 +46,7 @@ def tauint(nt,ts,xhat = None) -> np.ndarray:
     checkTS(ts)
     ndat=len(ts)
     if nt>=ndat:
-        logger.TBError("Need nt<ndat.")
+        logger.TBRaise("Need nt<ndat.")
     if xhat is not None:
         x=xhat
     else:
@@ -65,11 +65,15 @@ def tauint(nt,ts,xhat = None) -> np.ndarray:
         if xhat is None:
             c_it=c_it*ndat/(ndat-1.)
         acov.append(c_it)
-    # Calculate integrated autocorrelation time
-    acint=[1.]
-    for it in range(1,nt+1):
-        acint.append( acint[it-1] + 2.*acov[it]/acov[0] )
-    return np.array( acint )
+    acov=np.array(acov)
+    # Calculate integrated autocorrelation time. This is equivalent to the following code:
+    #    acint=[1.]
+    #    for it in range(1,nt+1):
+    #        acint.append( acint[it-1] + 2.*acov[it]/acov[0] )
+    acint     = np.zeros(nt + 1)
+    acint[0]  = 1
+    acint[1:] = 1 + 2*np.cumsum(acov[1:]/acov[0])
+    return acint
 
 
 def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
@@ -91,7 +95,7 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
     checkTS(ts)
     ndat=len(ts)
     if not 1<nbins<ndat:
-        logger.TBError("Need 1<nbins<ndat. nbins, ndat =",nbins,ndat)
+        logger.TBRaise("Need 1<nbins<ndat. nbins, ndat =",nbins,ndat)
     if xhat is not None:
         x=xhat
     else:
@@ -106,7 +110,7 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
         # This is a check that we can't spill into the last bin
         itmax=nbins*binsize-binsize
         if it>=itmax:
-            logger.TBError("it>=itmax.")
+            logger.TBRaise("it>=itmax.")
         for ibin in range(nbins):
             i1=ibin*binsize
             i2=(ibin+1)*binsize-1

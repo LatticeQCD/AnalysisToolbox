@@ -51,13 +51,13 @@ def massRatioToMasses(msml, Nt, cbeta, Nf='21'):
 
 
 def _badbeta(beta,msml,Nt,Nf):
-    logger.TBError("No entries for beta =",beta,", Nf =",Nf,", Nt =",Nt,", msml =",msml)
+    logger.TBRaise("No entries for beta =",beta,", Nf =",Nf,", Nt =",Nt,", msml =",msml)
 def _badmsml(msml,Nt,Nf):
-    logger.TBError("No entries for Nf =",Nf,", Nt =",Nt,", msml =",msml)
+    logger.TBRaise("No entries for Nf =",Nf,", Nt =",Nt,", msml =",msml)
 def _badNt(Nt,Nf):
-    logger.TBError("No entries for Nf =",Nf,", Nt =",Nt)
+    logger.TBRaise("No entries for Nf =",Nf,", Nt =",Nt)
 def _badNf(Nf):
-    logger.TBError("No entries for Nf =",Nf)
+    logger.TBRaise("No entries for Nf =",Nf)
 
 
 def quarkMassTableHISQ(Nf, Nt, msml) -> dict:
@@ -262,14 +262,14 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
     """
 
     if len(confID) != len(confID.strip()):
-        logger.TBError('confID must not contain whitespace.')
+        logger.TBRaise('confID must not contain whitespace.')
 
     logger.warn('This may be wrong. Do not use for now.')
 
     if inTable is None:
         outTable  = {}
     elif not isinstance(inTable,dict):
-        logger.TBError("Must pass dict to inTable, or else pass None.")
+        logger.TBRaise("Must pass dict to inTable, or else pass None.")
     else:
         outTable = inTable
 
@@ -326,7 +326,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
             elif rel_check(mass, lp.ms):
                 trMinvsVec.append(Nc * complex(ReOP, ImOP))
             else:
-                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+                logger.TBRaise("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
 
         elif OPID == 2:  # D1 = tr M^-1 d M
             if rel_check(mass, lp.ml):
@@ -334,7 +334,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
             elif rel_check(mass, lp.ms):
                 nsVec.append(Nc * complex(ReOP, ImOP))
             else:
-                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+                logger.TBRaise("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
 
         elif OPID == 3:  # tr M^-1 dd M
             if rel_check(mass, lp.ml):
@@ -342,7 +342,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
             elif rel_check(mass, lp.ms):
                 MddMsVec.append(Nc * complex(ReOP, ImOP))
             else:
-                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+                logger.TBRaise("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
 
         elif OPID == 12:  # tr (M^-1 d M)**2
             if rel_check(mass, lp.ml):
@@ -350,7 +350,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
             elif rel_check(mass, lp.ms):
                 ns2Vec.append(Nc * complex(ReOP, ImOP))
             else:
-                logger.TBError("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
+                logger.TBRaise("Unexpected mass on line", lineno, "of file", densFile, ". ms, ml, m =", lp.ms, lp.ml, mass)
 
         else:
             continue

@@ -21,7 +21,7 @@ Args:
 Returns:
     tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string
 
-`readGPL(filename, discardTag=True, raggedWarn=True)`
+`readGPL(filename, discardTag=True, raggedWarn=True, floatT=<class 'numpy.float64'>)`
 
 Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
 tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way

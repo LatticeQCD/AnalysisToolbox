@@ -59,6 +59,7 @@ def integrateData(xdata,ydata,method='trapezoid'):
     """
     checkType(np.ndarray,xdata=xdata)
     checkType(np.ndarray,ydata=ydata)
+    checkEqualLengths(xdata,ydata)
 
     if method=='simpson':
         return integrate.simpson(y=ydata,x=xdata)
@@ -67,13 +68,14 @@ def integrateData(xdata,ydata,method='trapezoid'):
         return integrate.trapezoid(y=ydata, x=xdata)
 
     else:
-        logger.TBError("Unknown integration method",method)
+        logger.TBRaise("Unknown integration method",method)
 
 
 persistentMethods = ['quad', 'trapezoid']
 
 
-def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,epsabs=1.49e-8):
+def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1000,epsrel=1.49e-8,
+                      epsabs=1.49e-8,floatT=np.float64):
     """ 
     Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
     which otherwise does not like to handle numpy arrays.
@@ -107,7 +109,7 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
                 return integrateFunction(func,a,b,args=args,method=persistentMethod,stepsize=stepsize,epsrel=epsrel,epsabs=epsabs)
             except integrate.IntegrationWarning:
                 continue
-        logger.TBError('No persistent method worked.')
+        logger.TBRaise('No persistent method worked.')
 
     elif method=='vec_quad':
         def g(A,B):
@@ -124,11 +126,11 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
     elif method=='trapezoid':
         for i in range(len(b)):
             if b[i] == np.inf or a[i] == -np.inf:
-                logger.TBError('Trapezoid rule is meant for definite integrals.')
+                logger.TBRaise('Trapezoid rule is meant for definite integrals.')
         if stepsize is None:
-            x = np.array([ np.linspace(a[i], b[i], 101) for i in range(len(b)) ])
+            x = np.array([ np.linspace(a[i], b[i], 101) for i in range(len(b)) ],dtype=floatT)
         else:
-            x = np.array([ np.arange(start=a[i], stop=b[i], step=stepsize) for i in range(len(b)) ])
+            x = np.array([ np.arange(start=a[i], stop=b[i], step=stepsize) for i in range(len(b)) ],dtype=floatT)
         y = func(x,*args)
         if len(a)==1:
             return integrateData(x, y, method='trapezoid')[0]
@@ -136,7 +138,7 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
             return integrateData(x, y, method='trapezoid')
 
     elif method=='romberg':
-        logger.TBError('Scipy is deprecating Romberg.')
+        logger.TBRaise('Scipy is deprecating Romberg.')
 
     else:
-        logger.TBError('Unrecognized integration method',method)
+        logger.TBRaise('Unrecognized integration method',method)

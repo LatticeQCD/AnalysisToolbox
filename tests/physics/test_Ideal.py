@@ -10,20 +10,35 @@ import numpy as np
 from latqcdtools.physics.ideal import idealGas
 from latqcdtools.testing import print_results, concludeTest
 
+# Numbers provided by J. Goswami
+Idealvals={'X002': 1, 'X004': 0.6079271018540267, 'X011': 0.3333333333333333, 'X013': 0.20264236728467555,
+ 'X020': 0.6666666666666666, 'X022': 0.06754745576155852, 'X031': 0.02251581858718617,
+ 'X040': 0.13509491152311703, 'X101': -0.3333333333333333, 'X103': -0.20264236728467555,
+ 'X110': 0.0, 'X112': -0.06754745576155852, 'X121': -0.02251581858718617, 'X130': 0.04503163717437234,
+ 'X200': 0.3333333333333333, 'X202': 0.06754745576155852, 'X211': 0.02251581858718617,
+ 'X220': 0.04503163717437234, 'X301': -0.02251581858718617, 'X310': 0.0, 'X400': 0.02251581858718617}
 
 def testIdeal():
 
     iGas = idealGas(Nf=3,Nc=3)
     
     lpass = True
-    
+
+    for B in range(0,5):
+        for Q in range(0,5):
+            for S in range(0,5):
+                if not (B+Q+S)%2==0:
+                    continue
+                try:
+                    cum = f'X{B}{Q}{S}'
+                    lpass *= print_results(Idealvals[cum],iGas.gen_chi(T=1,B_order=B,Q_order=Q,S_order=S,C_order=0,muB=0,muQ=0,muS=0,muC=0),text=cum)
+                except KeyError:
+                    continue
+
     # There's only up to 4 powers of each chemical potential in the pressure.
-    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=5,Q_order=0,S_order=0,C_order=0,muB=1,muQ=0,muS=0,muC=0),
-                           text='B5')
-    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=0,Q_order=5,S_order=0,C_order=0,muB=0,muQ=1,muS=0,muC=0),
-                           text='Q5')
-    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=0,Q_order=0,S_order=5,C_order=0,muB=0,muQ=0,muS=1,muC=0),
-                           text='S5')
+    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=5,Q_order=0,S_order=0,C_order=0,muB=1,muQ=0,muS=0,muC=0),text='B5')
+    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=0,Q_order=5,S_order=0,C_order=0,muB=0,muQ=1,muS=0,muC=0),text='Q5')
+    lpass *= print_results(0,iGas.gen_chi(T=1,B_order=0,Q_order=0,S_order=5,C_order=0,muB=0,muQ=0,muS=1,muC=0),text='S5')
 
     # nB at muB=0 should be zero.
     lpass *= print_results(0,iGas.gen_chi(T=1,B_order=1,Q_order=0,S_order=0,C_order=0,muB=0,muQ=0,muS=0,muC=0),

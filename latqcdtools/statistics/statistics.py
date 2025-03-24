@@ -14,9 +14,11 @@ import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet, normalize, invert
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND, plt
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring, unvector
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring, unvector,\
+    createFilePath
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
+from latqcdtools.base.readWrite import writeTable
 import latqcdtools.base.logger as logger
 import matplotlib
 
@@ -353,8 +355,9 @@ def weighted_mean(data, err) -> float:
     Returns:
         float: weighted mean 
     """
-    data = np.array(data)
-    weights  = 1/np.array(err)**2
+    checkType(np.ndarray,data=data) 
+    checkType(np.ndarray,err=err) 
+    weights  = 1/err**2
     return np.sum( weights @ data )/np.sum(weights)
 
 
@@ -368,7 +371,8 @@ def weighted_variance(err) -> float:
     Returns:
         float: weighted variance 
     """
-    weights = 1/np.array(err)**2
+    checkType(np.ndarray,err=err) 
+    weights = 1/err**2
     return 1/np.sum(weights)
 
 
@@ -384,8 +388,10 @@ def biased_sample_variance(data, err) -> float:
     Returns:
         float: sample variance 
     """
+    checkType(np.ndarray,data=data) 
+    checkType(np.ndarray,err=err) 
     mean = weighted_mean(data, err)
-    weights = 1/np.array(err)**2
+    weights = 1/err**2
     V1 = np.sum(weights)
     return weights.dot((data - mean)**2) / V1
 
@@ -395,7 +401,9 @@ def unbiased_sample_variance(data, err) -> float:
     Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
     the variance of the mean. Do not use this function if your weights are frequency weights. 
     """
-    weights = 1/np.array(err)**2
+    checkType(np.ndarray,data=data) 
+    checkType(np.ndarray,err=err) 
+    weights = 1/err**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
@@ -407,8 +415,9 @@ def unbiased_mean_variance(data, err) -> float:
     weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
     constructed using the deviations of the individual data points. 
     """
-    data    = np.asarray(data)
-    weights = 1/np.array(err)**2
+    checkType(np.ndarray,data=data) 
+    checkType(np.ndarray,err=err) 
+    weights = 1/err**2
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
     return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
@@ -424,6 +433,7 @@ def cov_to_cor(cov) -> np.ndarray:
     Returns:
         np.ndarray: correlation matrix 
     """
+    checkType(np.ndarray,cov=cov) 
     diagonal_sqrt = np.sqrt(np.diag(cov))
     return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
 
@@ -444,6 +454,8 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
     Returns:
         float, float: semi-major and semi-minor lengths of drawn ellipse 
     """
+    checkType(np.ndarray,x=x)
+    checkType(np.ndarray,y=y)
     checkEqualLengths(x,y)
     if CI is None:
         s = 1
@@ -528,19 +540,19 @@ def error_prop(func, means, errors, grad=None, args=()):
 
     Args:
         func (func)
-        means (array-like)
-        errors (array-like)
+        means (np.ndarray)
+        errors (np.ndarray)
         grad (func, optional): Gradient function. Defaults to None.
         args (tuple, optional): Arguments of func. Defaults to ().
 
     Returns:
         np.ndarray, np.ndarray: f, f_err 
     """
+    checkType(np.ndarray,means=means)
+    checkType(np.ndarray,errors=errors)
     if isHigherDimensional(means):
         logger.TBRaise('means must be 1-d array.',frame=3)
-    means  = np.array(means)
-    errors = np.array(errors)
-    mean   = func(means, *args)
+    mean = func(means, *args)
 
     # Test if we got a covariance matrix
     if not isHigherDimensional(errors):
@@ -719,6 +731,48 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
             return plot_lines(xdata, ydata, yedata=None, xedata=None, **kwargs)
 
 
+def save_func(func, domain, params=(), args=(), func_err=None, params_err=(), 
+              grad = None, npoints=1000, header=None, filename='func.d', **kwargs):
+    """ 
+    Save a function along with its error bands.
+
+    Args:
+        func (func)
+        domain (tuple): Domain of function. 
+        params (tuple, optional): Model parameters. Defaults to ().
+        params_err (tuple, optional): Error in model parameters. Defaults to ().
+        args (tuple, optional): Optional function arguments. Defaults to ().
+        func_err (func, optional): Explicit error function. Defaults to None.
+        grad (func, optional): Explicit function gradient to compute error. Defaults to None.
+        swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
+        npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
+    """
+    checkDomain(domain)
+    checkType(int,npoints=npoints)
+    checkType(str,filename=filename)
+    xmin = domain[0] 
+    xmax = domain[1] 
+
+    createFilePath(filename)
+
+    xdata = np.arange(xmin, xmax, (xmax - xmin) / npoints)
+    try:
+        ydata = func(xdata, params, *args)
+    except TypeError:
+        ydata = func(xdata, *params, *args)
+
+    if func_err is not None:
+        ydata_err = func_err(xdata, params, params_err, *args)
+        writeTable(filename,xdata,ydata,ydata_err,header=header,**kwargs)
+
+    elif len(params_err) > 0:
+        ydata_err = error_prop_func(xdata, func, params=params, params_err=params_err, grad=grad, args=args)
+        writeTable(filename,xdata,ydata,ydata_err,header=header,**kwargs)
+
+    else:
+        writeTable(filename,xdata,ydata,header=header,**kwargs)
+
+
 def getModelWeights(IC) -> np.ndarray:
     """ 
     Convert information criteria IC to normalized probability weights.
@@ -730,7 +784,6 @@ def getModelWeights(IC) -> np.ndarray:
         np.array: Probability weights 
     """
     checkType(np.ndarray,IC=IC)
-    IC = np.array(IC)
     return normalize(np.exp(-0.5*IC))
 
 
@@ -747,8 +800,10 @@ def modelAverage(data,err,IC,return_syst=False):
     Returns:
         tuple: Model average and error (optionally systematic error)
     """
+    checkType(np.ndarray,data=data)
+    checkType(np.ndarray,err=err)
+    checkType(np.ndarray,IC=IC)
     checkEqualLengths(data,err,IC)
-    data, err, IC = toNumpy(data, err, IC)
     pr = getModelWeights(IC)
     mean = np.sum(pr*data)
     var_stat = np.sum(pr*err**2)
