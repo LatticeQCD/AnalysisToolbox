@@ -13,91 +13,44 @@ from latqcdtools.base.speedify import numbaON, compile
 numbaON()
 
 #------------------------------------------------------------------------------
-# Constants for V_Teq0 (from Phys. Rev. D90 (2014) 094503)
-#------------------------------------------------------------------------------
-# Fit result: [ -91.30436191 1022.25286821  106.70659264]
-# Fit error:  [0.53809612 2.51598869 2.58370288]
-# chi2/dof:   0.8083127937775374
-COULOMB_TERM = -91.30436191  # Coulomb term coefficient [MeV·fm]
-STRING_TERM = 1022.25286821  # String tension [MeV/fm]
-CONSTANT_TERM = 106.70659264  # Constant term [MeV]
-
-#------------------------------------------------------------------------------
 # Static potential functions
 #------------------------------------------------------------------------------
-def V_Teq0(r: float) -> float:
+def V_Teq0(r) -> float:
     """ 
-    Zero temperature quark potential in [MeV], takes r in [fm].
-    
-    The parameters come from a Levenberg-Marquardt fit of the data in 
-    Fig 14 of Phys. Rev. D90 (2014) 094503. These values can be obtained
-    by running analysistoolbox/hisq_potential/fit_hisq_pot.py.
-    
-    Args:
-        r: Distance in femtometers [fm]
-        
-    Returns:
-        Potential in MeV
+    Zero temperature quark potential in [MeV], takes r in [fm]. The parameters a, b, and c come from
+    a Levenberg-Marquardt fit of the data in Fig 14 of Phys. Rev. D90 (2014) 094503. These numbers can
+    be obtained again by running analysistoolbox/hisq_potential/fit_hisq_pot.py. 
     """
-    return COULOMB_TERM/r + STRING_TERM*r + CONSTANT_TERM
+    #    result:  [ -91.30436191 1022.25286821  106.70659264]
+    #     error:  [0.53809612 2.51598869 2.58370288]
+    #  chi2/dof:  0.8083127937775374
+    a =  -91.30436191
+    b = 1022.25286821
+    c =  106.70659264
+    return a/r + b*r + c
 
 
-def fitV_Teq0(r: float, a: float, b: float, c: float) -> float:
+
+def fitV_Teq0(r, a, b, c) -> float:
     """ 
-    Standard Cornell potential fit form.
-    
-    Args:
-        r: Distance in lattice units
-        a: Constant term
-        b: Coulomb term coefficient
-        c: String tension
-        
-    Returns:
-        Potential in lattice units
+    Fit form of standard Cornell potential. Fit to be done in lattice units.
     """
     return a + b/r + c*r
 
 
-def fitV_Teq0_oneloop(r: float, a: float, b: float, c: float, d: float) -> float:
+def fitV_Teq0_oneloop(r,a,b,c,d) -> float:
     """ 
-    Cornell potential with one-loop corrections to Coulomb term.
-    
-    References:
-        - Nucl. Phys. B 129 (1977)
-        - Phys. Lett B 92 (1980)
-    
-    Args:
-        r: Distance in lattice units
-        a: Constant term
-        b: Coulomb term coefficient
-        c: String tension
-        d: Log term coefficient
-        
-    Returns:
-        Potential in lattice units
+    Including one-loop corrections to Coulomb. See Nucl. Phys. B 129 (1977) and Phys. Lett B 92 (1980).
+    Fit to be done in lattice units.
     """
-    return a + (b + d*np.log(r))/r + c*r
+    return a + ( b + d*np.log(r) )/r + c*r
 
 
-def fitV_Teq0_twoloop(r: float, a: float, b: float, c: float, d: float, e: float) -> float:
+def fitV_Teq0_twoloop(r,a,b,c,d,e) -> float:
     """ 
-    Cornell potential with two-loop corrections to Coulomb term.
-    
-    Reference:
-        - Nucl. Phys. B 501 (1997)
-    
-    Args:
-        r: Distance in lattice units
-        a: Constant term
-        b: Coulomb term coefficient
-        c: String tension
-        d: Log term coefficient
-        e: Log-log term coefficient
-        
-    Returns:
-        Potential in lattice units
+    Including two-loop corrections to Coulomb. See Nucl. Phys. B 501 (1997). Fit to be done in lattice units.
     """
-    return a + (b + d*np.log(r) + e*np.log(np.log(r)))/r + c*r
+    return a + ( b + d*np.log(r) + e*np.log(np.log(r)) )/r + c*r
 
 
 #------------------------------------------------------------------------------
@@ -123,324 +76,352 @@ def get_optimal_block_size():
 # CUDA kernels
 #------------------------------------------------------------------------------
 @cuda.jit
-def compute_sin_terms_kernel(sine_values, improved_coeff, lattice_size, sin_terms_lookup):
+def compute_sine_terms_kernel(sinf, cw, Ns, sine_terms_lookup):
     """
-    Precompute sin terms for all k1, k2, k3 combinations to avoid redundant calculations.
+    Precompute sin terms for all k1, k2, k3 combinations to improve performance.
     
     Args:
-        sine_values: Precomputed sine values
-        improved_coeff: Coefficient for improved action
-        lattice_size: Spatial extension of lattice
-        sin_terms_lookup: Output array for precomputed sin terms
+        sinf: Precomputed sine values
+        cw: Coefficient for improved action
+        Ns: Spatial extension of lattice
+        sine_terms_lookup: Output array for precomputed sine terms
     """
     # Get thread position
     idx = cuda.grid(1)
     
     # Calculate 3D indices
-    total_indices = lattice_size**3
+    total_indices = Ns**3
     if idx >= total_indices:
         return
     
-    k3 = idx % lattice_size
-    temp = idx // lattice_size
-    k2 = temp % lattice_size
-    k1 = temp // lattice_size
+    k3 = idx % Ns
+    temp = idx // Ns
+    k2 = temp % Ns
+    k1 = temp // Ns
     
     if not (k1 + k2 + k3 == 0):
-        # Calculate sin term once and store it
-        sin_term = 0.0
+        # Calculate sine term once and store it
+        r2 = 0.0
         for k in [k1, k2, k3]:
-            sin_k = sine_values[k]
-            sin_term += sin_k*sin_k + improved_coeff*sin_k*sin_k*sin_k*sin_k
+            sin_k = sinf[k]
+            r2 += sin_k*sin_k + cw*sin_k*sin_k*sin_k*sin_k
         
         # Store result in 3D lookup table
-        sin_terms_lookup[k1, k2, k3] = 1.0 / (4.0 * sin_term)
+        sine_terms_lookup[k1, k2, k3] = 1.0 / (4.0 * r2)
     else:
-        sin_terms_lookup[k1, k2, k3] = 0.0
+        sine_terms_lookup[k1, k2, k3] = 0.0
 
 
 @cuda.jit
-def calculate_potential_kernel_optimized(points, lattice_size, cosine_values, 
-                                        sin_terms_lookup, point_results):
+def calculate_potential_kernel(points, Ns, cosf, sine_terms_lookup, point_results):
     """
-    Optimized CUDA kernel with reduced atomic operations and improved memory access.
+    CUDA kernel for calculating lattice QCD potentials for a set of spatial points.
+    
+    This kernel calculates the static potential for each input point. Each block 
+    processes one spatial point, with the workload distributed across threads within the block.
     
     Args:
-        points: Array of points (x, y, z) to compute, shape (N, 3)
-        lattice_size: Spatial extension of lattice
-        cosine_values: Precomputed cosine values
-        sin_terms_lookup: Precomputed sin terms for all k1,k2,k3 combinations
-        point_results: Output array for results (potential, weight) per point
+        points: Array of spatial coordinates (x,y,z) with shape (N,3)
+        Ns: Size of the lattice in each dimension
+        cosf: Precomputed cosine values for all possible indices
+        sine_terms_lookup: Precomputed sine terms for all (k1,k2,k3) combinations
+        point_results: Output array to store results with shape (N,3)
+                       Each row contains [sq, pot, weight]
     """
-    # Use shared memory for frequently accessed values
-    shared_dist_squared = cuda.shared.array(shape=1, dtype=np.int32)
-    shared_potential = cuda.shared.array(shape=1, dtype=np.float64)
+    # Allocate shared memory for values accessed by all threads in block
+    shared_sq = cuda.shared.array(shape=1, dtype=np.int32)
+    shared_pot = cuda.shared.array(shape=1, dtype=np.float64)
     
-    # Get thread indices
+    # Get the current thread's block and thread indices
     point_idx = cuda.blockIdx.x
     thread_idx = cuda.threadIdx.x
     
-    # Total threads in block
+    # Get number of threads in this block
     block_size = cuda.blockDim.x
     
-    # Check if this thread's block should process a point
+    # Exit if this block doesn't correspond to a valid point
     if point_idx >= points.shape[0]:
         return
     
-    # Unpack coordinates (all threads in block access same point)
+    # Get coordinates of the point for this block
     x = points[point_idx, 0]
     y = points[point_idx, 1]
     z = points[point_idx, 2]
     
-    # Calculate squared distance (only once per block)
+    # Thread 0 initializes shared memory values
     if thread_idx == 0:
-        shared_dist_squared[0] = x*x + y*y + z*z
-        shared_potential[0] = 0.0
+        shared_sq[0] = x*x + y*y + z*z
+        shared_pot[0] = 0.0
     
+    # Wait for thread 0 to complete initialization
     cuda.syncthreads()
     
-    # Compute potential with work distributed across threads in block
-    # Each thread handles a subset of the k1,k2,k3 combinations
-    local_potential = 0.0
+    # Each thread will calculate a partial sum of the potential
+    local_pot = 0.0
     
-    # Determine the range each thread processes in the k1,k2,k3 loops
-    total_iterations = lattice_size**3
+    # Divide the workload among threads in the block
+    total_iterations = Ns**3
     iterations_per_thread = (total_iterations + block_size - 1) // block_size
     start_idx = thread_idx * iterations_per_thread
     end_idx = min(start_idx + iterations_per_thread, total_iterations)
     
+    # Calculate this thread's portion of the potential sum
     for idx in range(start_idx, end_idx):
-        # Convert linear index to 3D indices
-        k3 = idx % lattice_size
-        temp = idx // lattice_size
-        k2 = temp % lattice_size
-        k1 = temp // lattice_size
+        # Convert linear index to 3D lattice indices
+        k3 = idx % Ns
+        temp = idx // Ns
+        k2 = temp % Ns
+        k1 = temp // Ns
         
-        # Skip origin point
+        # Skip the origin point in momentum space
         if not (k1 + k2 + k3 == 0):
-            # Index for cosine lookup 
-            cos_idx = (k1*x + k2*y + k3*z) % (3*lattice_size*lattice_size)
-            cos_term = cosine_values[cos_idx]
+            # Calculate index for cosine lookup
+            cos_idx = (k1*x + k2*y + k3*z) % (3*Ns*Ns)
+            r1 = cosf[cos_idx]
             
-            # Get precomputed sin term
-            sin_term_factor = sin_terms_lookup[k1, k2, k3]
+            # Get the precomputed sine term for these k-indices
+            r2_factor = sine_terms_lookup[k1, k2, k3]
             
-            # Add contribution
-            local_potential += cos_term * sin_term_factor
+            # Add this term's contribution to the local sum
+            local_pot += r1 * r2_factor
     
-    # Use shared memory to accumulate results within block
-    cuda.atomic.add(shared_potential, 0, local_potential)
+    # Add local result to the block's shared sum
+    cuda.atomic.add(shared_pot, 0, local_pot)
+    
+    # Wait for all threads to complete their additions
     cuda.syncthreads()
     
-    # Only first thread in block writes the final result
+    # Thread 0 finalizes and stores the results
     if thread_idx == 0:
-        # Normalize and store result for this point
-        final_potential = shared_potential[0] / lattice_size**3
-        dist_squared = shared_dist_squared[0]
+        # Normalize the potential by the lattice volume
+        final_pot = shared_pot[0] / Ns**3
+        sq = shared_sq[0]
         
-        # Store results for this point (no atomic operations across points)
-        point_results[point_idx, 0] = dist_squared
-        point_results[point_idx, 1] = final_potential
-        point_results[point_idx, 2] = 1.0  # Weight
+        # Store results for this point
+        point_results[point_idx, 0] = sq
+        point_results[point_idx, 1] = final_pot
+        point_results[point_idx, 2] = 1.0  # Weight for later averaging
 
 
 @cuda.jit
-def calculate_x_potential_kernel_optimized(points, lattice_size, cosine_values,
-                                          sin_terms_lookup, point_results):
+def calculate_x_potential_kernel(points, Ns, cosf,
+                                 sine_terms_lookup, point_results):
     """
-    Optimized CUDA kernel for x-axis points with reduced atomic operations.
+    CUDA kernel for calculating potentials for points on the x-axis.
+    
+    This kernel computes the static potential specifically for points along the 
+    x-axis (where y=0, z=0). 
+    
+    Each block processes one spatial point with work distributed across threads.
     
     Args:
-        points: Array of points (x, 0, 0) to compute, shape (N, 3)
-        lattice_size: Spatial extension of lattice
-        cosine_values: Precomputed cosine values
-        sin_terms_lookup: Precomputed sin terms for all k1,k2,k3 combinations
-        point_results: Output array for results (potential, weight) per point
+        points: Array of x-axis coordinates with shape (N,3), where the y and z
+                components are expected to be zero
+        Ns: Size of the lattice in each dimension
+        cosf: Precomputed cosine values for all possible indices
+        sine_terms_lookup: Precomputed sine terms for all (k1,k2,k3) combinations
+        point_results: Output array to store results with shape (N,3)
+                       Each row contains [sq, pot, weight]
     """
-    # Use shared memory for frequently accessed values
-    shared_dist_squared = cuda.shared.array(shape=1, dtype=np.int32)
-    shared_potential = cuda.shared.array(shape=1, dtype=np.float64)
+    # Allocate shared memory for values accessed by all threads in block
+    shared_sq = cuda.shared.array(shape=1, dtype=np.int32)
+    shared_pot = cuda.shared.array(shape=1, dtype=np.float64)
     
-    # Get thread indices
+    # Get the current thread's block and thread indices
     point_idx = cuda.blockIdx.x
     thread_idx = cuda.threadIdx.x
     
-    # Total threads in block
+    # Get number of threads in this block
     block_size = cuda.blockDim.x
     
-    # Check if this thread's block should process a point
+    # Exit if this block doesn't correspond to a valid point
     if point_idx >= points.shape[0]:
         return
     
-    # Unpack x coordinate (all threads in block access same point)
+    # Get x-coordinate of the point for this block (y and z are zero)
     x = points[point_idx, 0]
     
-    # Calculate squared distance (only once per block)
+    # Thread 0 initializes shared memory values
     if thread_idx == 0:
-        shared_dist_squared[0] = x*x
-        shared_potential[0] = 0.0
+        shared_sq[0] = x*x  # Simplified: sq = x**2 for x-axis points
+        shared_pot[0] = 0.0
     
+    # Wait for thread 0 to complete initialization
     cuda.syncthreads()
     
-    # Compute potential with work distributed across threads in block
-    # Each thread handles a subset of the k1,k2,k3 combinations
-    local_potential = 0.0
+    # Each thread will calculate a partial sum of the potential
+    local_pot = 0.0
     
-    # Determine the range each thread processes in the k1,k2,k3 loops
-    total_iterations = lattice_size**3
+    # Divide the workload among threads in the block
+    total_iterations = Ns**3
     iterations_per_thread = (total_iterations + block_size - 1) // block_size
     start_idx = thread_idx * iterations_per_thread
     end_idx = min(start_idx + iterations_per_thread, total_iterations)
     
+    # Calculate this thread's portion of the potential sum
     for idx in range(start_idx, end_idx):
-        # Convert linear index to 3D indices
-        k3 = idx % lattice_size
-        temp = idx // lattice_size
-        k2 = temp % lattice_size
-        k1 = temp // lattice_size
+        # Convert linear index to 3D lattice indices
+        k3 = idx % Ns
+        temp = idx // Ns
+        k2 = temp % Ns
+        k1 = temp // Ns
         
-        # Skip origin point
+        # Skip the origin point in momentum space
         if not (k1 + k2 + k3 == 0):
-            # Index for cosine lookup (only x component for x-axis points)
-            cos_idx = (k1*x) % (3*lattice_size*lattice_size)
-            cos_term = cosine_values[cos_idx]
+            # Simplified cosine lookup for x-axis points (y=0, z=0)
+            cos_idx = (k1*x) % (3*Ns*Ns)
+            r1 = cosf[cos_idx]
             
-            # Get precomputed sin term
-            sin_term_factor = sin_terms_lookup[k1, k2, k3]
+            # Get the precomputed sine term for these k-indices
+            r2_factor = sine_terms_lookup[k1, k2, k3]
             
-            # Add contribution
-            local_potential += cos_term * sin_term_factor
+            # Add this term's contribution to the local sum
+            local_pot += r1 * r2_factor
     
-    # Use shared memory to accumulate results within block
-    cuda.atomic.add(shared_potential, 0, local_potential)
+    # Add local result to the block's shared sum
+    cuda.atomic.add(shared_pot, 0, local_pot)
+    
+    # Wait for all threads to complete their additions
     cuda.syncthreads()
     
-    # Only first thread in block writes the final result
+    # Thread 0 finalizes and stores the results
     if thread_idx == 0:
-        # Normalize and store result for this point
-        final_potential = shared_potential[0] / lattice_size**3
-        dist_squared = shared_dist_squared[0]
+        # Normalize the potential by the lattice volume
+        final_pot = shared_pot[0] / Ns**3
+        sq = shared_sq[0]
         
-        # Store results for this point (no atomic operations across points)
-        point_results[point_idx, 0] = dist_squared
-        point_results[point_idx, 1] = final_potential
-        point_results[point_idx, 2] = 1.0  # Weight
+        # Store results for this point
+        point_results[point_idx, 0] = sq
+        point_results[point_idx, 1] = final_pot
+        point_results[point_idx, 2] = 1.0  # Weight for later averaging
 
 
 @cuda.jit
-def reduce_results_kernel(point_results, potentials, weights, num_points):
+def reduce_results_kernel(point_results, pots, weight, num_points):
     """
-    Reduce individual point results into the final potentials and weights arrays.
+    CUDA kernel for aggregating individual point calculations into final result arrays.
+    
+    This kernel takes the individual point results from
+    previous calculations and combines them by their squared distance, summing both
+    the potential values and weights for subsequent averaging.
+    
+    The reduction process organizes results by distance rather than by spatial 
+    coordinates, allowing the static potential to be properly represented as a
+    function of separation distance.
     
     Args:
-        point_results: Array of (dist_squared, potential, weight) for each point
-        potentials: Output array for potential values
-        weights: Output array for weight counts
-        num_points: Number of points
+        point_results: Array of results from individual points with shape (N,3),
+                      where each row contains [sq, pot, weight]
+        pots: Output array indexed by squared distance, accumulating potential values
+        weight: Output array indexed by squared distance, accumulating weights
+        num_points: Total number of points to process
     """
-    # Get thread index
+    # Get the unique global thread index
     idx = cuda.grid(1)
     
+    # Only process if this thread corresponds to a valid point
     if idx < num_points:
-        dist_squared = int(point_results[idx, 0])
-        potential = point_results[idx, 1]
-        weight = point_results[idx, 2]
+        # Extract data for this point
+        sq = int(point_results[idx, 0])  # Convert to integer for array indexing
+        pot = point_results[idx, 1]      # Potential value for this point
+        w = point_results[idx, 2]        # Weight for this point (typically 1.0)
         
-        # Update global arrays with atomic operations
-        # This is more efficient as we do it once per point instead of in the main kernel
-        cuda.atomic.add(potentials, dist_squared, potential)
-        cuda.atomic.add(weights, dist_squared, weight)
+        # Atomically add this point's values to the appropriate distance bin
+        # Atomic operations are necessary to handle the case where multiple threads
+        # attempt to update the same distance bin simultaneously
+        cuda.atomic.add(pots, sq, pot)
+        cuda.atomic.add(weight, sq, w)
 
 
 #------------------------------------------------------------------------------
 # CPU fallback implementation
 #------------------------------------------------------------------------------
-def _cpu_impdist(lattice_size, max_dist_squared, improved_action=True):
+def _cpu_impdist(Ns, r2max, improvedAction=True):
     """
     CPU implementation of improved distances calculation.
     Used as fallback when CUDA is not available.
     
     Args:
-        lattice_size: Spatial extension of lattice
-        max_dist_squared: Maximum squared distance to improve
-        improved_action: Whether to use improved action
+        Ns: Spatial extension of lattice
+        r2max: Maximum squared distance to improve
+        improvedAction: Whether to use improved action
         
     Returns:
         List of improved distances
     """
     # Set coefficient based on action type
-    improved_coeff = 1/3 if improved_action else 0
+    cw = 1/3 if improvedAction else 0
 
     @compile
-    def compiled_imp_dist():
+    def compiled_impdist():
         """ 
         Ported from code by O. Kaczmarek. 
         """
-        improved_distances = []
-        k_norm = 2.0 * np.pi / lattice_size
-        potentials = [0.0] * 3 * lattice_size**2
-        weights = [0] * 3 * lattice_size**2
+        rimp = []
+        kn = 2.0 * np.pi / Ns
+        pots = [0.0] * 3 * Ns**2
+        weight = [0] * 3 * Ns**2
         
         # Precompute trigonometric values
-        cosine_values = [np.cos(i * k_norm) for i in range(3 * lattice_size**2)]
-        sine_values = [np.sin(i * k_norm / 2.0) for i in range(lattice_size)]
+        cosf = [np.cos(i * kn) for i in range(3 * Ns**2)]
+        sinf = [np.sin(i * kn / 2.0) for i in range(Ns)]
         
-        # First part: compute for all x,y,z points up to Ns/4
-        for x in range(int(lattice_size/4) + 1):
-            for y in range(int(lattice_size/4) + 1):
-                for z in range(int(lattice_size/4) + 1):
-                    dist_squared = x**2 + y**2 + z**2
-                    if dist_squared > max_dist_squared:
+        # First compute for all x,y,z points up to Ns/4
+        for x in range(int(Ns/4) + 1):
+            for y in range(int(Ns/4) + 1):
+                for z in range(int(Ns/4) + 1):
+                    sq = x**2 + y**2 + z**2
+                    if sq > r2max:
                         continue
                         
-                    potential = 0.0
-                    for k1 in range(lattice_size):
-                        for k2 in range(lattice_size):
-                            for k3 in range(lattice_size):
+                    pot = 0.0
+                    for k1 in range(Ns):
+                        for k2 in range(Ns):
+                            for k3 in range(Ns):
                                 if not (k1+k2+k3) == 0:
-                                    cos_term = cosine_values[k1*x + k2*y + k3*z]
-                                    sin_term = (sine_values[k1]**2 + improved_coeff*sine_values[k1]**4 +
-                                               sine_values[k2]**2 + improved_coeff*sine_values[k2]**4 +
-                                               sine_values[k3]**2 + improved_coeff*sine_values[k3]**4)
-                                    potential += cos_term / (4.0 * sin_term)
+                                    r1 = cosf[k1*x + k2*y + k3*z]
+                                    r2 = (sinf[k1]**2 + cw*sinf[k1]**4 +
+                                          sinf[k2]**2 + cw*sinf[k2]**4 +
+                                          sinf[k3]**2 + cw*sinf[k3]**4)
+                                    pot += r1 / (4.0 * r2)
                                     
-                    potential *= 1.0 / lattice_size**3
-                    potentials[dist_squared] += potential
-                    weights[dist_squared] += 1
+                    pot *= 1.0 / Ns**3
+                    pots[sq] += pot
+                    weight[sq] += 1
         
-        # Second part: compute for x-axis points from Ns/4+1 to Ns/2
-        for x in range(int(lattice_size/4) + 1, int(lattice_size/2) + 1):
-            dist_squared = x**2
-            if dist_squared > max_dist_squared:
+        # Then compute for x-axis points from Ns/4+1 to Ns/2
+        for x in range(int(Ns/4) + 1, int(Ns/2) + 1):
+            sq = x**2
+            if sq > r2max:
                 continue
                 
-            potential = 0.0
-            for k1 in range(lattice_size):
-                for k2 in range(lattice_size):
-                    for k3 in range(lattice_size):
+            pot = 0.0
+            for k1 in range(Ns):
+                for k2 in range(Ns):
+                    for k3 in range(Ns):
                         if not (k1+k2+k3) == 0:
-                            cos_term = cosine_values[k1*x]
-                            sin_term = (sine_values[k1]**2 + improved_coeff*sine_values[k1]**4 +
-                                       sine_values[k2]**2 + improved_coeff*sine_values[k2]**4 +
-                                       sine_values[k3]**2 + improved_coeff*sine_values[k3]**4)
-                            potential += cos_term / (4.0 * sin_term)
+                            r1 = cosf[k1*x]
+                            r2 = (sinf[k1]**2 + cw*sinf[k1]**4 +
+                                  sinf[k2]**2 + cw*sinf[k2]**4 +
+                                  sinf[k3]**2 + cw*sinf[k3]**4)
+                            pot += r1 / (4.0 * r2)
                             
-            potential *= 1.0 / lattice_size**3
-            potentials[dist_squared] += potential
-            weights[dist_squared] += 1
+            pot *= 1.0 / Ns**3
+            pots[sq] += pot
+            weight[sq] += 1
         
         # Calculate final improved distances
-        for i in range(1, int(max_dist_squared) + 1):
-            if weights[i] != 0:
-                improved_distances.append(
-                    1.0 / (4.0 * np.pi * (potentials[i] / weights[i] + 0.22578 / lattice_size))
+        for i in range(1, int(r2max) + 1):
+            if weight[i] != 0:
+                rimp.append(
+                    1.0 / (4.0 * np.pi * (pots[i] / weight[i] + 0.22578 / Ns))
                 )
                 
-        return improved_distances
+        return rimp
 
-    return compiled_imp_dist()
+    return compiled_impdist()
 
-def impdist(lattice_size, max_dist_squared, improved_action=True):
+def impdist(Ns, r2max, improvedAction=True):
     """
     GPU-accelerated calculation of tree-level improved distances.
     
@@ -448,75 +429,75 @@ def impdist(lattice_size, max_dist_squared, improved_action=True):
     Falls back to CPU implementation if CUDA is unavailable.
 
     Args:
-        lattice_size: Spatial extension of lattice
-        max_dist_squared: Maximum squared distance to improve
-        improved_action: Whether to use improved action (default: True)
+        Ns: Spatial extension of lattice
+        r2max: Maximum squared distance to improve
+        improvedAction: Whether to use improved action (default: True)
 
     Returns:
-        List of improved distances
+        rimp: List of improved distances
 
     Raises:
-        ValueError: If lattice_size <= 0 or max_dist_squared is too large
+        ValueError: If Ns <= 0 or r2max is too large
     """
     # Input validation
-    if not lattice_size > 0:
-        logger.TBError(f"Lattice size must be positive, got {lattice_size}")
+    if not Ns > 0:
+        logger.TBError("Need Ns>0")
         
-    if max_dist_squared > (lattice_size/2)**2:
-        logger.TBError(f"Maximum squared distance {max_dist_squared} exceeds allowed range {(lattice_size/2)**2}")
+    if r2max > (Ns/2)**2:
+        logger.TBError("r2max is too large.")
     
     # Check if CUDA is available
     try:
         if not cuda.is_available():
             logger.warn("CUDA not available, falling back to CPU implementation.")
-            return _cpu_impdist(lattice_size, max_dist_squared, improved_action)
+            return _cpu_impdist(Ns, r2max, improvedAction)
     except:
         logger.warn("CUDA not available, falling back to CPU implementation.")
-        return _cpu_impdist(lattice_size, max_dist_squared, improved_action)
+        return _cpu_impdist(Ns, r2max, improvedAction)
     
     # Set coefficients based on improved action
-    improved_coeff = 1/3 if improved_action else 0
+    cw = 1/3 if improvedAction else 0
     
     # Prepare data
-    k_norm = 2.0 * np.pi / lattice_size
+    kn = 2.0 * np.pi / Ns
     
     # Pre-calculate cosine and sine values
-    cosine_values = np.array([np.cos(i*k_norm) for i in range(3*lattice_size**2)], dtype=np.float64)
-    sine_values = np.array([np.sin(i*k_norm/2.0) for i in range(lattice_size)], dtype=np.float64)
+    cosf = np.array([np.cos(i*kn) for i in range(3*Ns**2)], dtype=np.float64)
+    sinf = np.array([np.sin(i*kn/2.0) for i in range(Ns)], dtype=np.float64)
     
     # Initialize arrays for potentials and weights
-    potentials = np.zeros(3*lattice_size**2, dtype=np.float64)
-    weights = np.zeros(3*lattice_size**2, dtype=np.int32)
+    pots = np.zeros(3*Ns**2, dtype=np.float64)
+    weight = np.zeros(3*Ns**2, dtype=np.int32)
     
     # Transfer data to device
-    cosine_device = cuda.to_device(cosine_values)
-    sine_device = cuda.to_device(sine_values)
-    potentials_device = cuda.to_device(potentials)
-    weights_device = cuda.to_device(weights)
+    cosf_device = cuda.to_device(cosf)
+    sinf_device = cuda.to_device(sinf)
+    pots_device = cuda.to_device(pots)
+    weight_device = cuda.to_device(weight)
     
     # Get optimal threads per block
     threads_per_block = get_optimal_block_size()
     
-    # Create and precompute sin_terms_lookup table to avoid redundant calculations
-    sin_terms_lookup = np.zeros((lattice_size, lattice_size, lattice_size), dtype=np.float64)
-    sin_terms_device = cuda.to_device(sin_terms_lookup)
+    # Create and precompute sine_terms_lookup table to avoid redundant calculations
+    sine_terms_lookup = np.zeros((Ns, Ns, Ns), dtype=np.float64)
+    sine_terms_device = cuda.to_device(sine_terms_lookup)
     
-    # Configure grid for sin terms precomputation
+    # Configure grid for sine terms precomputation
     precompute_threads = threads_per_block
-    precompute_blocks = (lattice_size**3 + precompute_threads - 1) // precompute_threads
+    precompute_blocks = (Ns**3 + precompute_threads - 1) // precompute_threads
     
-    # Launch kernel to precompute sin terms
-    compute_sin_terms_kernel[precompute_blocks, precompute_threads](
-        sine_device, improved_coeff, lattice_size, sin_terms_device
+    # Launch kernel to precompute sine terms
+    compute_sine_terms_kernel[precompute_blocks, precompute_threads](
+        sinf_device, cw, Ns, sine_terms_device
     )
     
     # Generate xyz points for first calculation phase
     xyz_points = []
-    for x in range(int(lattice_size/4)+1):
-        for y in range(int(lattice_size/4)+1):
-            for z in range(int(lattice_size/4)+1):
-                dist_squared = x**2 + y**2 + z**2
-                if dist_squared <= max_dist_squared:
+    for x in range(int(Ns/4)+1):
+        for y in range(int(Ns/4)+1):
+            for z in range(int(Ns/4)+1):
+                sq = x**2 + y**2 + z**2
+                if sq <= r2max:
                     xyz_points.append((x, y, z))
     
     if xyz_points:
@@ -526,7 +507,7 @@ def impdist(lattice_size, max_dist_squared, improved_action=True):
         xyz_points_device = cuda.to_device(xyz_points_array)
         
         # Allocate array for individual point results
-        xyz_results = np.zeros((num_xyz_points, 3), dtype=np.float64)  # [dist_squared, potential, weight]
+        xyz_results = np.zeros((num_xyz_points, 3), dtype=np.float64)  # [sq, pot, weight]
         xyz_results_device = cuda.to_device(xyz_results)
         
         # Configure CUDA grid - one block per point, multiple threads per block
@@ -534,21 +515,21 @@ def impdist(lattice_size, max_dist_squared, improved_action=True):
         blocks_per_grid = num_xyz_points
         
         # Launch optimized kernel - one block per point
-        calculate_potential_kernel_optimized[blocks_per_grid, threads_per_block](
-            xyz_points_device, lattice_size, cosine_device, sin_terms_device, xyz_results_device
+        calculate_potential_kernel[blocks_per_grid, threads_per_block](
+            xyz_points_device, Ns, cosf_device, sine_terms_device, xyz_results_device
         )
         
         # Reduce individual point results to final arrays
         reduce_blocks = (num_xyz_points + threads_per_block - 1) // threads_per_block
         reduce_results_kernel[reduce_blocks, threads_per_block](
-            xyz_results_device, potentials_device, weights_device, num_xyz_points
+            xyz_results_device, pots_device, weight_device, num_xyz_points
         )
     
     # Generate x-only points for second calculation phase
     x_points = []
-    for x in range(int(lattice_size/4)+1, int(lattice_size/2)+1):
-        dist_squared = x**2
-        if dist_squared <= max_dist_squared:
+    for x in range(int(Ns/4)+1, int(Ns/2)+1):
+        sq = x**2
+        if sq <= r2max:
             x_points.append((x, 0, 0))
     
     if x_points:
@@ -558,33 +539,33 @@ def impdist(lattice_size, max_dist_squared, improved_action=True):
         x_points_device = cuda.to_device(x_points_array)
         
         # Allocate array for individual point results
-        x_results = np.zeros((num_x_points, 3), dtype=np.float64)  # [dist_squared, potential, weight]
+        x_results = np.zeros((num_x_points, 3), dtype=np.float64)  # [sq, pot, weight]
         x_results_device = cuda.to_device(x_results)
         
         # Configure CUDA grid - one block per point, multiple threads per block
         blocks_per_grid = num_x_points
         
         # Launch optimized kernel
-        calculate_x_potential_kernel_optimized[blocks_per_grid, threads_per_block](
-            x_points_device, lattice_size, cosine_device, sin_terms_device, x_results_device
+        calculate_x_potential_kernel[blocks_per_grid, threads_per_block](
+            x_points_device, Ns, cosf_device, sine_terms_device, x_results_device
         )
         
         # Reduce individual point results to final arrays
         reduce_blocks = (num_x_points + threads_per_block - 1) // threads_per_block
         reduce_results_kernel[reduce_blocks, threads_per_block](
-            x_results_device, potentials_device, weights_device, num_x_points
+            x_results_device, pots_device, weight_device, num_x_points
         )
     
     # Transfer results back to host
-    potentials_device.copy_to_host(potentials)
-    weights_device.copy_to_host(weights)
+    pots_device.copy_to_host(pots)
+    weight_device.copy_to_host(weight)
     
     # Calculate improved distances
-    improved_distances = []
-    for i in range(1, int(max_dist_squared)+1):
-        if weights[i] != 0:
-            improved_distances.append(
-                1.0 / (4.0 * np.pi * (potentials[i] / weights[i] + 0.22578/lattice_size))
+    rimp = []
+    for i in range(1, int(r2max)+1):
+        if weight[i] != 0:
+            rimp.append(
+                1.0 / (4.0 * np.pi * (pots[i] / weight[i] + 0.22578/Ns))
             )
     
-    return improved_distances
+    return rimp
