@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 def read_requirements():
     """Read requirements.txt and return a list of dependencies."""
-    with open("/home/dclarke/GitHub/AnalysisToolbox/requirements.txt", "r") as fh:
+    with open("/home/kai/Utah/AnalysisToolbox/requirements.txt", "r") as fh:
         return fh.read().splitlines()
 
 
