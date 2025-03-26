@@ -1,4 +1,7 @@
-# test_scaling_static_potential.py
+#
+# profile_StaticPotential
+# 
+# K. Ebira 
 # 
 # Benchmarking script to test the performance scaling of impdist
 # with increasing lattice sizes and fixed r2max

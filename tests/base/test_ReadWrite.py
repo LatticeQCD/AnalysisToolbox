@@ -20,8 +20,12 @@ def testReadWrite():
     xdata = np.linspace(0,1,101)
     ydata = xdata**2
 
-    writeTable("test.d",xdata,ydata,header=["who","bastank"])
-    xtest,ytest = readTable("test.d")
+    longString="Mitten_in_dem_kleinen_Teiche_steht_ein_Pavillon_aus_grünem_und_aus_weißem_Porzellan"
+
+    textColumn=[longString for i in range(len(xdata))]
+
+    writeTable("test.d",textColumn,xdata,ydata,header=["long string","xdata","ydata"],width=20,digits=10)
+    stest,xtest,ytest = readTable("test.d",dtype='U99,f8,f8')
 
     lpass *= print_results(xdata,xtest,text='x data')
     lpass *= print_results(ydata,ytest,text='y data')

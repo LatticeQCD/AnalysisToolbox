@@ -453,7 +453,7 @@ def impdist(Ns, r2max, improvedAction=True):
     except:
         logger.warn("CUDA not available, falling back to CPU implementation.")
         return _cpu_impdist(Ns, r2max, improvedAction)
-    
+
     # Set coefficients based on improved action
     cw = 1/3 if improvedAction else 0
     
@@ -486,10 +486,16 @@ def impdist(Ns, r2max, improvedAction=True):
     precompute_blocks = (Ns**3 + precompute_threads - 1) // precompute_threads
     
     # Launch kernel to precompute sine terms
-    compute_sine_terms_kernel[precompute_blocks, precompute_threads](
-        sinf_device, cw, Ns, sine_terms_device
-    )
-    
+    try:
+        compute_sine_terms_kernel[precompute_blocks, precompute_threads](
+            sinf_device, cw, Ns, sine_terms_device
+        )
+    except Exception as e:
+        logger.warn('Kernel launch failed. Exception:')
+        logger.warn(e)
+        logger.warn("CUDA not available, falling back to CPU implementation.")
+        return _cpu_impdist(Ns, r2max, improvedAction)
+
     # Generate xyz points for first calculation phase
     xyz_points = []
     for x in range(int(Ns/4)+1):

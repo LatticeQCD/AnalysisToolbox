@@ -71,20 +71,26 @@ def writeTable(filename,*args,**kwargs):
     npkwargs=kwargs
     if len(args)==0:
         logger.TBRaise('No data passed to writeTable.')
+    width=15
+    prec=8
+    if 'width' in kwargs:
+        width = kwargs['width']
+        del npkwargs['width']
+    if 'digits' in kwargs:
+        prec = kwargs['digits']
+        del npkwargs['digits']
     if 'header' in kwargs:
         head = kwargs['header']
         del npkwargs['header']
-        if isinstance(head,list):
-            form = '%15s'
-            temp = (head[0],)
-            if len(head[0]) > 12:
-                logger.warn("writeTable header[0] should be kept under 12 characters.")
-            for label in head[1:]:
-                if len(label)>15:
-                    logger.warn("writeTable header labels should be kept under 14 characters.")
-                form += '  %15s'
-                temp += label,
-            head = form % temp
+        checkType(list,header=head)
+        if len(head)!=len(args):
+            logger.TBRaise('Mismatch between header length and number of columns')
+        form = f'%{width}s'
+        temp = (head[0],)
+        for label in head[1:]:
+            form += f'  %{width}s'
+            temp += label,
+        head = form % temp
     else:
         head = ''
     data = ()
@@ -99,18 +105,18 @@ def writeTable(filename,*args,**kwargs):
         if isinstance(col_arr[0],complex):
             data += (col_arr.real,)
             data += (col_arr.imag,)
-            form += '  %15.8e  %15.8e'
+            form += f'  %{width}.{prec}e  %{width}.{prec}e'
             dtypes.append( (_lab(colno), float) )
             dtypes.append( (_lab(colno+1), float) )
             colno += 2
         elif isinstance(col_arr[0],str):
             data += (col_arr,)
-            form += '  %15s'
-            dtypes.append( (_lab(colno), 'U15' ) ) # 15 characters
+            form += f'  %{width}s'
+            dtypes.append( (_lab(colno), f'U{width}' ) ) # 15 characters
             colno += 1
         else:
             data += (col_arr,)
-            form += '  %15.8e'
+            form += f'  %{width}.{prec}e'
             dtypes.append( (_lab(colno), float) )
             colno += 1
     ab = np.zeros(data[0].size, dtype=dtypes)

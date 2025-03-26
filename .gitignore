@@ -17,6 +17,13 @@ HotQCDEos2022_fixedmuBdivT2.00.txt
 tryApplications.bash
 tests/statistics/acor.d
 
+# Image files
+*.pdf
+*.png
+*.jpg
+*.eps
+*.gif
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -147,5 +154,3 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# pdf outputs from test functions
-*.pdf

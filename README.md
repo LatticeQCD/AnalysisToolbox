@@ -74,6 +74,7 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 [D. A. Clarke](https://github.com/clarkedavida), 
 [L. Altenkort](https://github.com/luhuhis), 
 [H. Dick](https://github.com/redweasel),
+[K. Ebira](https://github.com/kaiebira),
 [J. Goswami](https://github.com/jishnuxx),
 [O. Kaczmarek](https://github.com/olaf-kaczmarek),
 [L. Mazur](https://github.com/lukas-mazur),
@@ -104,5 +105,5 @@ us out by citing
 - We acknowledge support by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) through the CRC-TR 211 'Strong-interaction matter under extreme conditions'– project number 315477589 – TRR 211.
 - This work was partly performed in the framework of the PUNCH4NFDI consortium supported by DFG fund "NFDI 39/1", Proj.No. 460248186 (PUNCH4NFDI).
 - DAC acknowledges helpful discussions with [C. DeTar](https://github.com/detar), S. Lahert, 
-and [G. P. LePage](https://github.com/gplepage).
+[G. P. LePage](https://github.com/gplepage), and [C. Rohde](https://github.com/rohdog2003).
 
