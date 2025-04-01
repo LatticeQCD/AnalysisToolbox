@@ -115,8 +115,48 @@ def isPositiveSemidefinite(mat,details=False,eps=1e-12) -> bool:
     return positiveSemidefinite 
 
 
-def isSymmetric(mat) -> bool:
+def isUnitary(mat) -> bool:
+    """
+    Unitary matrices U satisfy U^dag U = 1.
+    
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if unitary
+    """
     checkType(np.ndarray,mat=mat)
+    checkSquare(mat)
+    id_N = np.diag(np.ones(len(mat[0])))
+    return rel_check(id_N,mat*mat.T.conj())
+
+
+def isSpecial(mat) -> bool:
+    """
+    Special matrices M satisfy det(M) = 1.
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if special
+    """
+    checkType(np.ndarray,mat=mat)
+    return rel_check(mat.det(), 1.)
+
+
+def isSymmetric(mat) -> bool:
+    """
+    Symmetric matrices satisfy M^t = M.
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if symmetric
+    """
+    checkType(np.ndarray,mat=mat)
+    checkSquare(mat)
     return np.allclose(mat, mat.T)
 
 

@@ -44,8 +44,35 @@ Args:
 Returns:
     bool: True if positive semidefinite 
 
+`isSpecial(mat) -> bool`
+
+Special matrices M satisfy det(M) = 1.
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: True if special
+
 `isSymmetric(mat) -> bool`
 
+Symmetric matrices satisfy M^t = M.
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: True if symmetric
+
+`isUnitary(mat) -> bool`
+
+Unitary matrices U satisfy U^dag U = 1.
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: True if unitary
 
 `logDet(mat) -> float`
 

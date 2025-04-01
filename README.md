@@ -14,13 +14,15 @@ We advertise briefly here some features of the AnalysisToolbox:
 - **General mathematics:** Numerical differentiation, convenience wrappers for
 SciPy numerical integration and solving IVPs.
 - **General statistics:** Jackknife, bootstrap, Gaussian bootstrap, error propagation,
-various information criteria, estimation of integrated autocorrelation time,
+various information criteria, Bayesian model averaging, 
+estimation of integrated autocorrelation time,
 error ellipses, Kolmogorov-Smirnov tests, 
 and curve fitting with and without Bayesian priors.
 We stress that our math and statistics methods are generally useful, independent of physics contexts.
-- **General physics:** Unit conversions, critical exponents for various universality
+- **General physics:** Unit conversions, critical exponents and temperatures for various universality
 classes, physical constants, framework for spin models. 
-- **QCD physics:** Hadron resonance gas model, HotQCD equation of state, and the QCD beta function. 
+- **QCD physics:** Hadron resonance gas model, ideal fermion gas, HotQCD equation of state, 
+and the QCD beta function. 
 These methods are useful for QCD phenomenology, independent of lattice contexts.
 - **Lattice QCD:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
 fields, reading in gauge fields, and the static quark-antiquark potential. These methods

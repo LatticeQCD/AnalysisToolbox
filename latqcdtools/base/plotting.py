@@ -135,14 +135,18 @@ def latexify(bold=False):
     Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
     convenient functions like ev. 
     """
-    logger.info("Using LaTeX to make pretty plots.")
-    if bold:
-        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
-    else:
-        plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
-    plt.rcParams['text.usetex'] = True
-    plt.rcParams['font.family'] = 'cmr10'
-    plt.rcParams['axes.formatter.use_mathtext'] = True
+    try:
+        logger.info("Using LaTeX to make pretty plots.")
+        if bold:
+            plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}\boldmath"
+        else:
+            plt.rcParams['text.latex.preamble'] = r"\usepackage{lmodern}\usepackage{amssymb}\usepackage{physics}"
+        plt.rcParams['text.usetex'] = True
+        plt.rcParams['font.family'] = 'cmr10'
+        plt.rcParams['axes.formatter.use_mathtext'] = True
+    except Exception as e:
+        logger.warn("You seem to be missing some LaTeX packages, so latexify won't work. Encountered exception:")
+        logger.warn(e)
 
 
 def resetLEGEND():

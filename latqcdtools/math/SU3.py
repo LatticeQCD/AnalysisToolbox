@@ -10,7 +10,7 @@
 import numpy as np
 from numpy.linalg import det
 import latqcdtools.base.logger as logger
-from latqcdtools.math.math import rel_check, id_3, ze_3
+from latqcdtools.math.math import id_3, ze_3, isUnitary, isSpecial
 from latqcdtools.base.speedify import compile
 from latqcdtools.base.check import checkType
 
@@ -127,12 +127,7 @@ class SU3(np.ndarray):
         """ 
         Check that I have det=1 and am unitary. 
         """
-        special = rel_check(self.det(), 1.)
-        UdaggU  = self.dagger()*self
-        unitary = rel_check(UdaggU,id_3)
-        logger.debug('\ndet(U) =',self.det())
-        logger.debug('\nU^t U =',UdaggU)
-        if not (special and unitary):
+        if not (isSpecial(self) and isUnitary(self)):
             return False
         return True
 
