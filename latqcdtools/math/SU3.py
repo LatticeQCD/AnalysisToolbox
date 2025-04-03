@@ -10,7 +10,7 @@
 import numpy as np
 from numpy.linalg import det
 import latqcdtools.base.logger as logger
-from latqcdtools.math.math import id_3, ze_3, isUnitary, isSpecial
+from latqcdtools.math.math import id_3, ze_3, isUnitary, isSpecial, dagger
 from latqcdtools.base.speedify import compile
 from latqcdtools.base.check import checkType
 
@@ -110,10 +110,7 @@ class SU3(np.ndarray):
 
 
     def dagger(self):
-        """ 
-        Conjugate transpose. 
-        """
-        return self.T.conj()
+        return dagger(self) 
 
 
     def det(self):

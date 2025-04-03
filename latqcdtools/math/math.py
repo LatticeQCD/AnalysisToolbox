@@ -23,6 +23,21 @@ ze_3 = np.zeros((3,3), dtype=complex)
 ze_4 = np.zeros((3,3), dtype=complex)
 
 
+def isMatrix(mat) -> bool:
+    checkType(np.ndarray,mat=mat)
+    return mat.ndim==2
+
+
+def checkMatrix(mat):
+    if not isMatrix(mat):
+        logger.TBRaise('Expected matrix. Got shape',np.shape(mat))
+
+
+def isSquare(mat) -> bool:
+    checkMatrix(mat)
+    return mat.shape[0] == mat.shape[1]
+
+
 def checkSquare(mat):
     """ 
     Make sure mat is a square np.ndarray object. 
@@ -30,9 +45,157 @@ def checkSquare(mat):
     Args:
         mat (np.ndarray)
     """
-    checkType(np.ndarray,mat=mat)
-    if mat.shape[0] != mat.shape[1]:
+    if not isSquare(mat):
         logger.TBRaise('Expected square matrix. Got shape',np.shape(mat))
+
+
+def dagger(mat) -> np.ndarray:
+    checkMatrix(mat)
+    return np.conjugate(mat).T
+
+
+def isUnitary(mat) -> bool:
+    """
+    Unitary matrices U satisfy U^dag U = 1.
+    
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if unitary
+    """
+    checkMatrix(mat)
+    id_N = np.diag(np.ones(len(mat[0])))
+    return rel_check(id_N,mat @ dagger(mat))
+
+
+def isSpecial(mat) -> bool:
+    """
+    Special matrices M satisfy det(M) = 1.
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if special
+    """
+    checkSquare(mat)
+    return rel_check(np.linalg.det(mat), 1.)
+
+
+def isSymmetric(mat) -> bool:
+    """
+    Symmetric matrices satisfy M^t = M.
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if symmetric
+    """
+    checkSquare(mat)
+    return np.allclose(mat, mat.T)
+
+
+def isHermitian(mat) -> bool:
+    """
+    Hermitian matrices satisfy dagger(M)=M
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if hermitian 
+    """
+    checkSquare(mat)
+    return np.allclose(mat, dagger(mat))
+
+
+def isAntihermitian(mat) -> bool:
+    """
+    Antihermitian matrices satisfy dagger(M)=-M
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if antihermitian 
+    """
+    checkSquare(mat)
+    return np.allclose(mat, -dagger(mat))
+
+
+def isOrthogonal(mat) -> bool:
+    """
+    Orthogonal matrices satisfy M^t M = id
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: True if orthogonal 
+    """
+    checkSquare(mat)
+    id_N = np.diag(np.ones(len(mat[0])))
+    return np.allclose(mat@mat.T, id_N)
+
+
+def isHankel(mat) -> bool:
+    """
+    Hankel matrices look like (3d example)
+    a b c
+    b c d
+    c d e
+
+    Args:
+        mat np.ndarray 
+
+    Returns:
+        bool: True if Hankel 
+    """
+    checkSquare(mat)
+    hankel = True
+    for j in range(mat.shape[0]):
+        for i in range(j):
+            for k in range(j-i):
+                hankel *= mat[i,j]==mat[i+k,j-k]
+    return hankel
+
+
+def TA(mat) -> np.ndarray:
+    """
+    Make mat traceless and antihermitian
+
+    Args:
+        mat (np.ndarray)
+
+    Returns:
+        bool: _description_
+    """
+    checkSquare(mat)
+    return 0.5*(mat-dagger(mat))
+
+
+def isPositiveSemidefinite(mat,details=False,eps=1e-12) -> bool:
+    """ Returns true if mat is positive semidefinite. Otherwise, if details=True,
+    list the eigenvalues that are not >=0.
+
+    Args:
+        mat (np.ndarray)
+        details (bool, optional): If true, report problematic eigenvalues. Defaults to False.
+
+    Returns:
+        bool: True if positive semidefinite 
+    """
+    checkSquare(mat)
+    eigenvalues = np.linalg.eigvals(mat)
+    positiveSemidefinite = np.all(eigenvalues >= -eps)
+    if details and (not positiveSemidefinite):
+        logger.info('Problem eigenvalues:')
+        for i in range(len(eigenvalues)):
+            if not eigenvalues[i]>=0:
+                logger.info(f'  lambda[{i}] = {eigenvalues[i]}')
+    return positiveSemidefinite
 
 
 def regulate(mat,svdcut=1e-12) -> np.ndarray:
@@ -81,7 +244,7 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         return np.linalg.pinv(mat)
     elif method=='svd':
         U, s, Vdagger = sp.linalg.svd(mat)
-        return np.conj(Vdagger.T) @ np.diag(1/s) @ np.conj(U.T)
+        return dagger(Vdagger) @ np.diag(1/s) @ dagger(U)
     elif method=='auto':
         condition_number = np.linalg.cond(mat)
         if condition_number > 1/svdcut:
@@ -91,73 +254,6 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
             return invert(mat,'scipy')
     else:
         logger.TBRaise('Unrecognized inverter',method)
-
-
-def isPositiveSemidefinite(mat,details=False,eps=1e-12) -> bool:
-    """ Returns true if mat is positive semidefinite. Otherwise, if details=True,
-    list the eigenvalues that are not >=0.
-
-    Args:
-        mat (np.ndarray)
-        details (bool, optional): If true, report problematic eigenvalues. Defaults to False.
-
-    Returns:
-        bool: True if positive semidefinite 
-    """
-    checkType(np.ndarray,mat=mat)
-    eigenvalues = np.linalg.eigvals(mat)
-    positiveSemidefinite = np.all(eigenvalues >= -eps)
-    if details and (not positiveSemidefinite):
-        logger.info('Problem eigenvalues:')
-        for i in range(len(eigenvalues)):
-            if not eigenvalues[i]>=0:
-                logger.info(f'  lambda[{i}] = {eigenvalues[i]}')
-    return positiveSemidefinite 
-
-
-def isUnitary(mat) -> bool:
-    """
-    Unitary matrices U satisfy U^dag U = 1.
-    
-    Args:
-        mat (np.ndarray)
-
-    Returns:
-        bool: True if unitary
-    """
-    checkType(np.ndarray,mat=mat)
-    checkSquare(mat)
-    id_N = np.diag(np.ones(len(mat[0])))
-    return rel_check(id_N,mat*mat.T.conj())
-
-
-def isSpecial(mat) -> bool:
-    """
-    Special matrices M satisfy det(M) = 1.
-
-    Args:
-        mat (np.ndarray)
-
-    Returns:
-        bool: True if special
-    """
-    checkType(np.ndarray,mat=mat)
-    return rel_check(mat.det(), 1.)
-
-
-def isSymmetric(mat) -> bool:
-    """
-    Symmetric matrices satisfy M^t = M.
-
-    Args:
-        mat (np.ndarray)
-
-    Returns:
-        bool: True if symmetric
-    """
-    checkType(np.ndarray,mat=mat)
-    checkSquare(mat)
-    return np.allclose(mat, mat.T)
 
 
 def normalize(arr):
