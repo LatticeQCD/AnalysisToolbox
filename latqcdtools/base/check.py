@@ -9,7 +9,7 @@
 import warnings, inspect
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import envector, isArrayLike
+from latqcdtools.base.utilities import envector, isArrayLike, isIntType, isScalar
 
 
 # This warning is on by default, which worries that we may lose precision when using complex numbers. But
@@ -19,7 +19,6 @@ try:
 except AttributeError:
     pass
 
-_intTypes = [ int, np.int8, np.int16, np.int32, np.int64 ]
 
 # I want solvers to try other strategies when they hit RuntimeWarnings.
 warnings.filterwarnings("error", category=RuntimeWarning)
@@ -143,24 +142,20 @@ def checkType(expectedType,**kwargs):
     obj = kwargs[objName]
     if expectedType=="array":
         if not isArrayLike(obj):
-            if type(obj)==list or type(obj)==np.ndarray:
+            if type(obj)==list or type(obj)==np.ndarray or type(obj)==tuple:
                 logger.TBRaise('Received empty',type(obj),'for',objName,frame=3)
             else:
                 logger.TBRaise('Expected array-like object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="scalar":
-        if isArrayLike(obj) or obj is None:
-            logger.TBRaise('Expected scalar-like object for',objName,'but received',type(obj),frame=3)
+        if not isScalar(obj): 
+            logger.TBRaise('Expected scalar object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="real":
-        if isArrayLike(obj) or obj is None:
+        if not isScalar(obj): 
             logger.TBRaise('Expected real scalar object for',objName,'but received',type(obj),frame=3)
         elif obj.imag>0:
             logger.TBRaise('Expected real scalar object',objName,'has nonzero imaginary part',frame=3)
     elif expectedType=="int":
-        isInt = False
-        for intType in _intTypes:
-            if isinstance(obj,intType):
-                isInt = True
-        if not isInt:
+        if not isIntType(obj):
             logger.TBRaise('Expected int object for',objName,'but received',type(obj),frame=3)
     else:
         if not isinstance(obj,expectedType):

@@ -56,7 +56,7 @@ class idealGas:
         Unitful pressure. 
         """
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return float(self.Psym.subs(values).evalf())
+        return np.float128(self.Psym.subs(values).evalf())
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         """
@@ -67,7 +67,7 @@ class idealGas:
         chi = sympy.diff(chi      , self.muS, S_order)
         chi = sympy.diff(chi      , self.muC, C_order)
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return float(chi.subs(values).evalf())
+        return np.float128(chi.subs(values).evalf())
 
     def S(self, T, muB=0., muS=0., muQ=0., muC=0.):
         """ 
@@ -75,7 +75,7 @@ class idealGas:
         """
         entropy = sympy.diff(self.Psym, self.T, 1)
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return float(entropy.subs(values).evalf())
+        return np.float128(entropy.subs(values).evalf())
 
 #    def E(self, T, muB=0., muS=0., muQ=0., muC=0.):
 #        """
@@ -92,7 +92,7 @@ class idealGas:
         chi     = sympy.diff(chi      , self.muC, C_order)
         ddT_chi = sympy.diff(chi      , self.T  , 1      )
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return float(ddT_chi.subs(values).evalf())
+        return np.float128(ddT_chi.subs(values).evalf())
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         chi       = sympy.diff(self.Psym, self.muB, B_order)
@@ -101,5 +101,5 @@ class idealGas:
         chi       = sympy.diff(chi      , self.muC, C_order)
         d2dT2_chi = sympy.diff(chi      , self.T  , 2      )
         values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return float(d2dT2_chi.subs(values).evalf())
+        return np.float128(d2dT2_chi.subs(values).evalf())
 

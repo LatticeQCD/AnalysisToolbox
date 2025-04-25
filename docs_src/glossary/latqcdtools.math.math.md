@@ -11,12 +11,28 @@ Args:
 Returns:
     float: RMS of data 
 
+`TA(mat) -> numpy.ndarray`
+
+Make mat traceless and antihermitian
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: _description_
+
+`checkMatrix(mat)`
+
+
 `checkSquare(mat)`
 
 Make sure mat is a square np.ndarray object. 
 
 Args:
     mat (np.ndarray)
+
+`dagger(mat) -> numpy.ndarray`
+
 
 `fallFactorial(n, m) -> float`
 
@@ -32,6 +48,52 @@ Args:
     
 Returns:
     np.ndarray: mat^{-1} 
+
+`isAntihermitian(mat) -> bool`
+
+Antihermitian matrices satisfy dagger(M)=-M
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: True if antihermitian 
+
+`isHankel(mat) -> bool`
+
+Hankel matrices look like (3d example)
+a b c
+b c d
+c d e
+
+Args:
+    mat np.ndarray 
+
+Returns:
+    bool: True if Hankel 
+
+`isHermitian(mat) -> bool`
+
+Hermitian matrices satisfy dagger(M)=M
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: True if hermitian 
+
+`isMatrix(mat) -> bool`
+
+
+`isOrthogonal(mat) -> bool`
+
+Orthogonal matrices satisfy M^t M = id
+
+Args:
+    mat (np.ndarray)
+
+Returns:
+    bool: True if orthogonal 
 
 `isPositiveSemidefinite(mat, details=False, eps=1e-12) -> bool`
 Returns true if mat is positive semidefinite. Otherwise, if details=True,
@@ -53,6 +115,9 @@ Args:
 
 Returns:
     bool: True if special
+
+`isSquare(mat) -> bool`
+
 
 `isSymmetric(mat) -> bool`
 

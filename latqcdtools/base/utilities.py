@@ -89,6 +89,24 @@ def isHigherDimensional(obj) -> bool:
         return False
 
 
+def isIntType(obj) -> bool:
+    return isinstance(obj,(int, np.int8, np.int16, np.int32, np.int64))
+
+
+def isFloatType(obj) -> bool:
+    return isinstance(obj,(float,np.float16,np.float32,np.float64,np.float128))
+
+
+def isComplexType(obj) -> bool:
+    return isinstance(obj,(complex,np.complex64,np.complex128))
+
+
+def isScalar(obj) -> bool:
+    if (not isIntType(obj)) and (not isFloatType(obj)) and (not isComplexType(obj)):
+        return False
+    return True
+
+
 def unvector(obj):
     """ 
     Remove outermost brackets of array-like object with single element, if possible. This is needed

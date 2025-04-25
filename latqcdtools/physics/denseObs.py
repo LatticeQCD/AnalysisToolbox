@@ -108,22 +108,22 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         if len(cID) != len(cID.strip()):
             logger.TBRaise('confIDs must not have whitespace! This throws off the column indexing.')
 
-        trMdMl=opTable[cID][0] # tr M^-1 d M 
-        trMdMs=opTable[cID][1]
+        trMdMl=np.array(opTable[cID][0]) # tr M^-1 d M 
+        trMdMs=np.array(opTable[cID][1])
 
         if len(trMdMl) != len(trMdMs): 
             logger.warn("len(trMdMl) != len(trMdMs) cID = "+cID+"... skipping")
             continue
 
-        trMdMl2=opTable[cID][2]  # tr ( M^-1 d M )^2
-        trMdMs2=opTable[cID][3]
+        trMdMl2=np.array(opTable[cID][2])  # tr ( M^-1 d M )^2
+        trMdMs2=np.array(opTable[cID][3])
 
         if len(trMdMl2) != len(trMdMs2):
             logger.warn("len(trMdMl2) != len(trMdMs2) cID = "+cID+"... skipping")
             continue
 
-        trMd2Ml=opTable[cID][4] # tr ( M^-1 dd M )^2
-        trMd2Ms=opTable[cID][5]
+        trMd2Ml=np.array(opTable[cID][4]) # tr ( M^-1 dd M )^2
+        trMd2Ms=np.array(opTable[cID][5])
 
         if len(trMd2Ml) != len(trMd2Ms): 
             logger.warn("len(trMd2Ml) != len(trMd2Ms), cID = "+cID+"... skipping")
@@ -142,8 +142,8 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
         chi2l   = - vol4*( mean_square(trMdMl.imag) )/16 + vol4*np.mean(trMdMl.imag)**2/16 - np.mean(trMdMl2)/4 + np.mean(trMd2Ml)/4
         chi2s   = - vol4*( mean_square(trMdMs.imag) )/16 - np.mean(trMdMs2)/4 + np.mean(trMd2Ms)/4
         chi11ll = - vol4*( mean_square(trMdMl.imag) )/16 + 0*1j 
-#        chi11ls = - vol4*( np.mean(trMdMl.imag*trMdMs.imag) - np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
-        chi11ls = - vol4*( np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
+        chi11ls = - vol4*( np.mean(trMdMl.imag*trMdMs.imag) - np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
+#        chi11ls = - vol4*( np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
 
         # TODO: There seems to be a possibility for reuse of this number above 
         nl2  = - mean_square(trMdMl.imag)*vol4/16 + 0j
@@ -203,10 +203,6 @@ def op_to_obs(opTable,lp,obs=None,filename='denseObservables.d'):
     outHeader = []
     for observable in obs:
         outData += (outTable[observable],)
-        if isinstance(outTable[observable][0],complex):
-            outHeader.append('Re '+observable)
-            outHeader.append('Im '+observable)
-        else:
-            outHeader.append(observable)
+        outHeader.append(observable)
 
     writeTable(filename,*outData,header=outHeader)

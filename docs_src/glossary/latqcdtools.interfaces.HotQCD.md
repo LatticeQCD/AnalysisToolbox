@@ -16,7 +16,7 @@ latqcdtools.interfaces.HotQCD
 `loadDens(densFile, confID, lp, inTable=None) -> dict`
 
 Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
-relevant calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
+relevant for calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
 conveniently combine data when there are multiple dense files per configuration. Here we update the table
 inTable for the new read-in, which yields outTable. Only supports Nf=2+1 configurations for the time being.
 

@@ -40,7 +40,7 @@ def testDensObs():
     logger.info('Testing for mu=0...')
     for stream in [0, 1]:
 
-        directory = 'denseObs/str' + str(stream)
+        directory = f'denseObs/str{stream}'
 
         for filename in glob.iglob(f'{directory}/*'):
 

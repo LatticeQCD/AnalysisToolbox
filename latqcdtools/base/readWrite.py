@@ -11,7 +11,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.base.cleanData import clipRange, excludeAtCol 
-from latqcdtools.base.utilities import createFilePath
+from latqcdtools.base.utilities import createFilePath, isComplexType
 
 
 def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,excludeAtVal=None,**kwargs) -> np.ndarray:
@@ -84,41 +84,62 @@ def writeTable(filename,*args,**kwargs):
         del npkwargs['header']
         checkType(list,header=head)
         if len(head)!=len(args):
-            logger.TBRaise('Mismatch between header length and number of columns')
-        form = f'%{width}s'
-        temp = (head[0],)
-        for label in head[1:]:
-            form += f'  %{width}s'
-            temp += label,
-        head = form % temp
+            logger.TBRaise(f'Mismatch between header length ({len(head)}) and number of columns ({len(args)})')
     else:
-        head = ''
+        head = None
+
     data = ()
     dtypes = []
     form = ''
+    hform = ''
+    hstr = tuple()
     colno = 0
     ndat = len(args[0])
-    for col in args:
+
+    for i,col in enumerate(args):
+
         col_arr = np.array(col)
         if len(col_arr) != ndat:
             logger.TBRaise('Expected length',ndat,'for col',colno,'but found',len(col_arr))
-        if isinstance(col_arr[0],complex):
+
+        if isComplexType(col_arr[0]): 
             data += (col_arr.real,)
             data += (col_arr.imag,)
             form += f'  %{width}.{prec}e  %{width}.{prec}e'
             dtypes.append( (_lab(colno), float) )
             dtypes.append( (_lab(colno+1), float) )
             colno += 2
+            if head is not None:
+                hstr += ('Re '+head[i],'Im '+head[i],)
+                if hform=='':
+                    hform += f'%{width}s  %{width}s'
+                else:
+                    hform += f'  %{width}s  %{width}s'
         elif isinstance(col_arr[0],str):
             data += (col_arr,)
             form += f'  %{width}s'
-            dtypes.append( (_lab(colno), f'U{width}' ) ) # 15 characters
+            dtypes.append( (_lab(colno), f'U{width}' ) )
             colno += 1
+            if head is not None:
+                hstr += (head[i],)
+                if hform=='':
+                    hform += f'%{width}s'
+                else:
+                    hform += f'  %{width}s'
         else:
             data += (col_arr,)
             form += f'  %{width}.{prec}e'
             dtypes.append( (_lab(colno), float) )
             colno += 1
+            if head is not None:
+                hstr += (head[i],)
+                if hform=='':
+                    hform += f'%{width}s'
+                else:
+                    hform += f'  %{width}s'
+
+    if head is not None:
+        head = hform % hstr 
     ab = np.zeros(data[0].size, dtype=dtypes)
     for i in range(colno):
         ab[_lab(i)] = data[i]

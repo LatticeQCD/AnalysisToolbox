@@ -9,6 +9,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import envector
+from latqcdtools.base.check import checkEqualLengths
 from latqcdtools.math.math import rel_check
 from latqcdtools.statistics.statistics import gaudif
 from latqcdtools.base.printErrorBars import get_err_str
@@ -28,10 +29,17 @@ def print_results(res, res_true, res_err = None, res_err_true = None, text = "",
         abs_prec = 1e-14
 
     res, res_true = envector(res, res_true)
+    checkEqualLengths(res,res_true)
+
+    if (res_err is None) and (res_err_true is not None):
+        logger.TBRaise('res_err_true specified without res_err')
+    if (res_err is not None) and (res_err_true is None):
+        logger.TBRaise('res_err specified without res_err_true')
+
     if res_err is not None:
-        res_err = envector(res_err)
-    if res_err_true is not None:
+        res_err      = envector(res_err)
         res_err_true = envector(res_err_true)
+        checkEqualLengths(res_err,res_err_true)
 
     for i in range(len(res)):
         if not rel_check(res[i], res_true[i], prec, abs_prec):

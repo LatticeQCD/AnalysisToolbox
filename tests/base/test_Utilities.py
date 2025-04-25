@@ -9,7 +9,8 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import concludeTest
-from latqcdtools.base.utilities import comesBefore, naturalSort, envector, unvector, isArrayLike, toNumpy 
+from latqcdtools.base.utilities import comesBefore, naturalSort, envector, unvector, isArrayLike, \
+    toNumpy, isFloatType, isComplexType, isScalar, isHigherDimensional
 
 logger.set_log_level('INFO')
 
@@ -58,6 +59,8 @@ def testUtilities():
     x2 = [1,1,1,1,1]
     x3 = None 
 
+    lpass *= not isHigherDimensional(x1)
+
     r1, r2, r3, r4 = toNumpy(x1,x2,x3,x2)
 
     if not type(r1) == np.ndarray:
@@ -72,6 +75,16 @@ def testUtilities():
     if not type(r4) == np.ndarray:
         logger.TBFail('toNumpy r4')
         lpass=False
+
+    x1 = np.float128(1.)
+    x2 = np.complex128(1.)
+    lpass *= isFloatType(x1)
+    lpass *= not isFloatType(x2)
+    lpass *= isComplexType(x2)
+    lpass *= not isComplexType(x1)
+    lpass *= isScalar(x1)
+    lpass *= isScalar(x2)
+    lpass *= not isArrayLike(x1)
 
     concludeTest(lpass)
 

@@ -18,6 +18,7 @@ def testCheck():
     checkType(bool,test=True) 
     checkType(list,test=[1,'two',3])
     checkType("array",test=[1,'two',3])
+    checkType("array",test=[[1,'two',3],['a','b','c']])
     checkType("array",test=np.array([1,'two',3]))
     checkType("array",test=(None,None,1))
     checkType("scalar",test=1)

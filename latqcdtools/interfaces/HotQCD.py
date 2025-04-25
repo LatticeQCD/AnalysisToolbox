@@ -7,6 +7,8 @@
 #
 
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkType
+from latqcdtools.base.utilities import toNumpy
 from latqcdtools.math.math import rel_check
 from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params
 
@@ -233,13 +235,13 @@ def makeConfTag(conf,stream) -> str:
     ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in
     the denseObs module. 
     """
-    return str(stream)+':'+str(conf)
+    return f'{stream}:{conf}'
 
 
 def loadDens(densFile,confID,lp,inTable=None) -> dict:
     """ 
     Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
-    relevant calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
+    relevant for calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
     conveniently combine data when there are multiple dense files per configuration. Here we update the table
     inTable for the new read-in, which yields outTable. Only supports Nf=2+1 configurations for the time being.
 
@@ -264,13 +266,10 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
     if len(confID) != len(confID.strip()):
         logger.TBRaise('confID must not contain whitespace.')
 
-    logger.warn('This may be wrong. Do not use for now.')
-
     if inTable is None:
         outTable  = {}
-    elif not isinstance(inTable,dict):
-        logger.TBRaise("Must pass dict to inTable, or else pass None.")
     else:
+        checkType(dict,inTable=inTable)
         outTable = inTable
 
     try:
@@ -279,6 +278,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
         logger.warn("Unable to open file",densFile)
         raise e
 
+    logger.info("Loading file",densFile)
     Nc = lp.Nc
 
     # In the following light and strange quarks are indexed by l and s, respectively.
@@ -355,7 +355,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
         else:
             continue
 
-        outTable[confID] = [nlVec, nsVec, nl2Vec, ns2Vec, MddMlVec, MddMsVec, trMinvlVec, trMinvsVec]
+    outTable[confID] = [nlVec, nsVec, nl2Vec, ns2Vec, MddMlVec, MddMsVec, trMinvlVec, trMinvsVec]
 
     infile.close()
 

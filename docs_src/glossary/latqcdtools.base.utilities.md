@@ -100,6 +100,12 @@ Args:
 Returns:
     bool: True if there is at least one index, false otherwise. 
 
+`isComplexType(obj) -> bool`
+
+
+`isFloatType(obj) -> bool`
+
+
 `isHigherDimensional(obj) -> bool`
 
 Figure out whether obj has at least two indices.
@@ -109,6 +115,12 @@ Args:
 
 Returns:
     bool: True if there are at least two indices, false otherwise. 
+
+`isIntType(obj) -> bool`
+
+
+`isScalar(obj) -> bool`
+
 
 `naturalSort(l) -> list`
 
