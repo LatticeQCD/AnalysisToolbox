@@ -25,16 +25,17 @@ def getValuesFromErrStr(errStr):
     """
     checkType(str,errStr=errStr)
     try:
-        meanStr = errStr.split('(')[0]
-        mean    = float(meanStr)
-        err     = float(errStr.split('(')[1][:-1])
-        if get_exp(err)==0:
-            return mean, err
+        meanStr  = errStr.split('(')[0]
+        mean     = float(meanStr)
+        ebstr    = errStr.split('(')[1][:-1]
+        err      = float(ebstr)
         if not '.' in errStr:
             return mean, err
         dot_index = errStr.find('.')
         parenthesis_index = errStr.find('(')
         N = parenthesis_index - dot_index - 1
+        if get_exp(err)==0 and '.' in ebstr:
+            N -= 1
         err *= pow(10,-N)
         return mean, err        
     except:

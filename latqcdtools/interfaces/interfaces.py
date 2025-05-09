@@ -315,7 +315,7 @@ class redmineTable(markdownTable):
         return "redmineTable"
 
 
-def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
+def convertTable(source,target,sourceDelimiter='',targetDelimiter=''):
     r""" 
     Convert a source table into a target table. The assumption for the source file is that
     is that the only lines are table lines, i.e. there's no intervening \hline or something like that.
@@ -327,6 +327,8 @@ def convertTable(source,target,sourceDelimiter=None,targetDelimiter=None):
     """
     checkType(str,source=source)
     checkType(str,target=target)
+    checkType(str,sourceDelimiter=sourceDelimiter)
+    checkType(str,targetDelimiter=targetDelimiter)
     sourceType = source.split('.')[-1]
     targetType = target.split('.')[-1]
     inFile = open(source,'r')
