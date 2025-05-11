@@ -67,22 +67,23 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         logger.TBRaise('Passed plotting keywords without wanting to plot.')
     if savePlots and (plotNamePrefix is None):
         logger.TBRaise('Please specify a name prefix for the TS and histogram plots.')
+
     if savePlots or showPlots:
         if MClabel is None:
             logger.TBRaise('Plotting without an observable label.')
         checkType(str,MClabel=MClabel)
-
-    plot_lines(MCtime,measurements,marker=None,color='black')
-    set_params(xlabel=MClabel,ylabel=obslabel,**plotargs)
+        plot_lines(MCtime,measurements,marker=None,color='black')
+        set_params(xlabel=MClabel,ylabel=obslabel,**plotargs)
     if savePlots:
         checkType(str,plotNamePrefix=plotNamePrefix)
         saveFigure(plotNamePrefix+'TS.pdf')
     if showPlots:
         plt.show()
-    clearPlot()
 
-    plot_hist(measurements)
-    set_params(xlabel=obslabel,**plotargs)
+    if savePlots or showPlots:
+        clearPlot()
+        plot_hist(measurements)
+        set_params(xlabel=obslabel,**plotargs)
     if savePlots:
         saveFigure(plotNamePrefix+'hist.pdf')
     if showPlots:
