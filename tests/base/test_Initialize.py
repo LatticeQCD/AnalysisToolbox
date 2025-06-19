@@ -9,8 +9,7 @@
 from latqcdtools.base.initialize import initialize, finalize
 
 def testInitialize():
-    initialize()
-    finalize()
+    initialize(); finalize()
 
 if __name__ == '__main__':
     testInitialize()

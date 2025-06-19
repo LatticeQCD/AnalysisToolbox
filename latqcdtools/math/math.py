@@ -4,14 +4,15 @@
 # D. Clarke
 # 
 # Wrappers for some math functions, some math functions that I couldn't find in numpy or scipy, and some methods
-# for comparing math objects. 
+# for comparing math objects. Some functions already existing in numpy or scipy may be implemented when I want
+# to expose what those functions do under the hood.
 #
 
 
 import numpy as np
 import scipy as sp
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import isArrayLike, cleanOutput 
+from latqcdtools.base.utilities import isArrayLike, cleanOutput, isComplexType
 from latqcdtools.base.check import checkType
 
 
@@ -33,6 +34,16 @@ def checkMatrix(mat):
         logger.TBRaise('Expected matrix. Got shape',np.shape(mat))
 
 
+def isVector(vec) -> bool:
+    checkType(np.ndarray,mat=vec)
+    return vec.ndim==1
+
+
+def checkVector(vec):
+    if not isVector(vec):
+        logger.TBRaise('Expected vector. Got shape',np.shape(vec))
+
+
 def isSquare(mat) -> bool:
     checkMatrix(mat)
     return mat.shape[0] == mat.shape[1]
@@ -49,9 +60,11 @@ def checkSquare(mat):
         logger.TBRaise('Expected square matrix. Got shape',np.shape(mat))
 
 
-def dagger(mat) -> np.ndarray:
-    checkMatrix(mat)
-    return np.conjugate(mat).T
+def dagger(arr) -> np.ndarray:
+    checkType(np.ndarray,mat=arr)
+    if arr.ndim > 2:
+        logger.TBRaise('Expected ndim < 3. Got ndim =',arr.ndim) 
+    return np.conjugate(arr).T
 
 
 def isUnitary(mat) -> bool:
@@ -256,9 +269,56 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         logger.TBRaise('Unrecognized inverter',method)
 
 
-def normalize(arr):
+def pnorm(arr,p=2) -> float:
+    """
+    Returns p-norm of vector or matrix arr.
+
+    Args:
+        arr (np.ndarray)
+        p (float, optional): Defaults to 2.
+
+    Returns:
+        float: pnorm 
+    """
     checkType(np.ndarray,arr=arr)
-    return arr/np.sum(np.abs(arr))
+    checkType("real",p=p)
+    if p < 1:
+        logger.TBRaise('p-norm defined only for p>=1.')
+    if arr.ndim > 2: 
+        logger.TBRaise('Expected ndim < 3. Got ndim =',arr.ndim) 
+    if p==1:
+        if isMatrix(arr):
+            res = np.max(np.sum(np.abs(arr), axis=0))
+        elif isVector(arr):
+            res = np.sum(np.abs(arr))
+    elif p==2:
+        if isMatrix(arr):
+            res = np.sqrt(np.trace(dagger(arr) @ arr)).real
+        elif isVector(arr):
+            res = np.sqrt(         dagger(arr) @ arr).real
+    elif p==np.inf:
+        if isMatrix(arr):
+            res = np.max(np.sum(np.abs(arr), axis=1))
+        elif isVector(arr):
+            res = np.max(np.abs(arr))
+    else:
+        res = np.sum(np.abs(arr)**p)**(1./p) 
+    return res
+
+
+def normalize(arr,p=2) -> np.ndarray:
+    """
+    Normalize vector or matrix arr using p-norm.
+
+    Args:
+        arr (np.ndarray)
+        p (float, optional): Defaults to 2.
+
+    Returns:
+        np.ndarray: normalized array 
+    """
+    checkType(np.ndarray,arr=arr)
+    return arr/pnorm(arr,p)
 
 
 def fallFactorial(n,m) -> float:

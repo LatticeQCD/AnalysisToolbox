@@ -12,10 +12,9 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
-from latqcdtools.math.math import logDet, normalize, invert
+from latqcdtools.math.math import logDet, normalize, invert, isVector, checkVector
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND, plt
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy, appendToDocstring, unvector,\
-    createFilePath
+from latqcdtools.base.utilities import toNumpy, appendToDocstring, unvector, createFilePath
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
 from latqcdtools.base.readWrite import writeTable
@@ -146,9 +145,7 @@ def checkTS(ts):
     Args:
         ts (array-like): time series 
     """
-    checkType(np.ndarray,ts=ts)
-    if isHigherDimensional(ts):
-        logger.TBRaise('Expected 1-d time series.',frame=3)
+    checkVector(ts)
     if len(ts) < 2:
         logger.TBRaise('Time series needs at least two measurements.',frame=3)
 
@@ -548,14 +545,12 @@ def error_prop(func, means, errors, grad=None, args=()):
     Returns:
         np.ndarray, np.ndarray: f, f_err 
     """
-    checkType(np.ndarray,means=means)
     checkType(np.ndarray,errors=errors)
-    if isHigherDimensional(means):
-        logger.TBRaise('means must be 1-d array.',frame=3)
+    checkVector(means)
     mean = func(means, *args)
 
     # Test if we got a covariance matrix
-    if not isHigherDimensional(errors):
+    if isVector(errors): 
         errors = np.diag(errors**2)
 
     if type(mean) is tuple:
@@ -784,7 +779,7 @@ def getModelWeights(IC) -> np.ndarray:
         np.array: Probability weights 
     """
     checkType(np.ndarray,IC=IC)
-    return normalize(np.exp(-0.5*IC))
+    return normalize(np.exp(-0.5*IC),p=1)
 
 
 def modelAverage(data,err,IC,return_syst=False):

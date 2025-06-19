@@ -9,7 +9,8 @@ import numpy as np
 import math
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import fallFactorial, invert, RMS, isMatrix, isSquare, isUnitary, \
-    isSpecial, isSymmetric, isHermitian, isAntihermitian, isOrthogonal, isHankel, TA
+    isSpecial, isSymmetric, isHermitian, isAntihermitian, isOrthogonal, isHankel, TA, pnorm, \
+    normalize
 from latqcdtools.testing import print_results, concludeTest
 
 
@@ -42,6 +43,10 @@ hank = np.array([[1,2,3,4,5],
                  [4,5,6,7,8],
                  [5,6,7,8,9]])
 
+genmat = np.array([[1j,1j         ,np.pi+1j],
+                   [1 ,2+np.pi*1j ,3       ]])
+
+genvec = np.array([1,1+1j,np.pi])
 
 def testMath():
 
@@ -57,6 +62,16 @@ def testMath():
     lpass *= isAntihermitian(A)
     lpass *= isOrthogonal(O)
     lpass *= isHankel(hank)
+
+    lpass *= print_results( pnorm(genmat,2)     , np.linalg.norm(genmat,'fro') , text='2-norm mat' )
+    lpass *= print_results( pnorm(genvec,2)     , np.linalg.norm(genvec,None ) , text='2-norm vec' )
+    lpass *= print_results( pnorm(genmat,1)     , np.linalg.norm(genmat,1)     , text='1-norm mat' )
+    lpass *= print_results( pnorm(genvec,1)     , np.linalg.norm(genvec,1)     , text='1-norm vec' )
+    lpass *= print_results( pnorm(genvec,np.inf), np.linalg.norm(genvec,np.inf), text='inf-norm vec' )
+    lpass *= print_results( pnorm(genmat,np.inf), np.linalg.norm(genmat,np.inf), text='inf-norm mat' )
+
+    for p in [1,2,3,np.inf]:
+        lpass *= print_results( pnorm(normalize(genvec,p),p), 1, text=f'{p} vec normalize')
 
     testTA = TA(H)
     lpass *= isAntihermitian(testTA)

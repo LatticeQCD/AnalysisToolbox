@@ -16,7 +16,8 @@ from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, plot_bar, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy, createFilePath
-from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, isPositiveSemidefinite
+from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, isPositiveSemidefinite, \
+    isMatrix, isVector
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, cov_to_cor, chisquare, logGBF, DOF, \
@@ -207,10 +208,12 @@ class Fitter:
         # Check if we have the covariance matrix available. 
         if edata is not None:
             edata = np.array(edata)
-            if isHigherDimensional(edata): 
-                self._cov = edata
-            else: 
-                self._cov = np.diag(np.array(edata)**2)
+            if isMatrix(edata):
+                self._cov=edata
+            elif isVector(edata):
+                self._cov=np.diag(edata**2)
+            else:
+                logger.TBRaise('Expected ndim < 3. Got ndim =',edata.ndim)
         else: 
             # Initialize everything to one if we don't get error information. 
             self._cov = np.diag(np.ones(len(self._ydata)))
