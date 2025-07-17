@@ -65,7 +65,7 @@ plot_file("data3.txt", 0, 1, 2, 3, style="fill", alpha=0.9, label="linear 2", le
 # At the moment plot_func is inside the statistics.statistics module to allow for error propagation.
 plot_func(np.sin,domain=(-5,10))
 
-set_params(legendpos=9)
+set_params(legendpos=9,legendframeon=False)
 plt.show()
 clearPlot()
 

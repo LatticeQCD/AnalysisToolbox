@@ -103,8 +103,9 @@ default_params = {
                                  #   This is not my fault--this was a matplotlib design choice.
     'legend_ncol': 1,            # Number of columns in the legend.
     'legend_col_spacing': None,  # Spacing between columns in the legend.
-    'handletextpad': 0.2,        # Spacing between symbol and text in legend.
+    'legendframeon' : True,      # Thin border around the legend.
     'legend_title': None,        # Title of the legend.
+    'handletextpad': 0.2,        # Spacing between symbol and text in legend.
     'alpha_legend': 1,           # Transperancy for the legend.
 
     # Adjust special aspects of the plot's axes
@@ -328,7 +329,7 @@ def fill_param_dict(params):
         # When filling params, check if we show the legend. This is triggered by one of these keys
         # being different from the default value. 
         for key in ('legend_title', 'legendpos', 'legend_ncol', 'legendpos_col_spacing', 'label', 
-                    'alpha_legend', 'bbox_to_anchor'):
+                    'alpha_legend', 'bbox_to_anchor', 'legendframeon'):
             if key in params:
                 if params[key] != default_params[key]:
                     logger.debug('Found legend trigger',key)
@@ -439,7 +440,8 @@ def set_params(**params):
             logger.TBRaise('Legend for axis',ax,'was activated without any label.')
         leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
                         title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
-                        columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'])
+                        columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'],
+                        frameon = params['legendframeon'])
         leg.get_frame().set_alpha(params['alpha_legend'])
         leg.set_zorder(FOREGROUND)
 
