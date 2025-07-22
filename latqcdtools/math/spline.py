@@ -88,8 +88,8 @@ class TBSpline:
     def __repr__(self) -> str:
         return "TBSpline"
 
-    def __call__(self,x):
-        return splev(x,self.tck)
+    def __call__(self,x,der=0):
+        return splev(x,self.tck,der=der)
 
     def get_knots(self):
         return self.tck[0]
