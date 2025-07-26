@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorial &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="_static/doctools.js?v=9bcbadda"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -80,13 +79,13 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial">
-<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h1>
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
 <p>Here we walk through some examples found in the <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples</span></code>
 directory. We try to showcase the flexibility of things like the
 <a class="reference internal" href="dataAnalysis/bootstrap.html"><span class="doc std std-doc">bootstrap</span></a> routine, some convenience wrappers
 for plotting, and some pre-packaged physics analysis code.</p>
 <section id="hadron-resonance-gas-calculation">
-<h2>Hadron resonance gas calculation<a class="headerlink" href="#hadron-resonance-gas-calculation" title="Permalink to this headline"></a></h2>
+<h2>Hadron resonance gas calculation<a class="headerlink" href="#hadron-resonance-gas-calculation" title="Link to this heading"></a></h2>
 <p>The hadron resonance gas (HRG) model, and its implementation in the AnalysisToolbox,
 is described in some detail <a class="reference internal" href="physicsAnalysis/HRG.html"><span class="doc std std-doc">here</span></a>. Below is a small code
 that highlights some of the features of the AnalysisToolbox. For example
@@ -94,11 +93,11 @@ that highlights some of the features of the AnalysisToolbox. For example
 along with the git commit hash, so you can track down which version of the
 AnalysisToolbox you used.</p>
 <p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_HRG_simple.py</span></code></p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.physics.HRG</span> <span class="kn">import</span> <span class="n">HRG</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span><span class="p">,</span> <span class="n">writeTable</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.base.logger</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.physics.HRG</span><span class="w"> </span><span class="kn">import</span> <span class="n">HRG</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.readWrite</span><span class="w"> </span><span class="kn">import</span> <span class="n">readTable</span><span class="p">,</span> <span class="n">writeTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.initialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
 
 <span class="c1"># Write terminal output to log file. Includes git commit hash.</span>
 <span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;HRG.log&#39;</span><span class="p">)</span>
@@ -140,22 +139,22 @@ pressure and entropy.
 The results are saved in a table <code class="docutils literal notranslate"><span class="pre">chi2B.txt</span></code>.</p>
 </section>
 <section id="ising-model">
-<h2>Ising model<a class="headerlink" href="#ising-model" title="Permalink to this headline"></a></h2>
+<h2>Ising model<a class="headerlink" href="#ising-model" title="Link to this heading"></a></h2>
 <p>The AnalysisToolbox is equipped with a <code class="docutils literal notranslate"><span class="pre">Lattice</span></code> class. This class takes care of
 indexing, assumes you have periodic boundary conditions, and has iterators, i.e.
 functions that perform some operation on every site of a subset of the lattice.
 This allows you to write your own statistical mechanical simulations.</p>
 <p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_isingModel.py</span></code></p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.physics.lattice</span> <span class="kn">import</span> <span class="n">Lattice</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.plotting</span> <span class="kn">import</span> <span class="n">latexify</span><span class="p">,</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">set_params</span><span class="p">,</span> <span class="n">clearPlot</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.printErrorBars</span> <span class="kn">import</span> <span class="n">get_err_str</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.statistics.statistics</span> <span class="kn">import</span> <span class="n">std_mean</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.speedify</span> <span class="kn">import</span> <span class="n">parallel_function_eval</span><span class="p">,</span> <span class="n">DEFAULTTHREADS</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">writeTable</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.statistics.jackknife</span> <span class="kn">import</span> <span class="n">jackknife</span>
-<span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.physics.lattice</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lattice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.initialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">latexify</span><span class="p">,</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">set_params</span><span class="p">,</span> <span class="n">clearPlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.printErrorBars</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_err_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">std_mean</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.speedify</span><span class="w"> </span><span class="kn">import</span> <span class="n">parallel_function_eval</span><span class="p">,</span> <span class="n">DEFAULTTHREADS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.readWrite</span><span class="w"> </span><span class="kn">import</span> <span class="n">writeTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.jackknife</span><span class="w"> </span><span class="kn">import</span> <span class="n">jackknife</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.base.logger</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">logger</span>
 
 
 <span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;example_ising.log&#39;</span><span class="p">)</span>
@@ -191,7 +190,7 @@ This allows you to write your own statistical mechanical simulations.</p>
 <span class="c1"># We wrap our simulation inside a function. This allows us to trivially parallelize our run</span>
 <span class="c1"># over the temperatures using parallel_function_eval.</span>
 <span class="c1">#</span>
-<span class="k">def</span> <span class="nf">runIsingModel</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">runIsingModel</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
 
     <span class="n">beta</span>  <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">T</span>
  
@@ -205,7 +204,7 @@ This allows you to write your own statistical mechanical simulations.</p>
     <span class="c1"># Here each site has a scalar, so I just put in the number 1.</span>
     <span class="n">lat</span> <span class="o">=</span> <span class="n">Lattice</span><span class="p">(</span> <span class="p">(</span><span class="n">L</span><span class="p">,)</span><span class="o">*</span><span class="n">Nd</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">initialize_site</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_site</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
             <span class="n">lat</span><span class="o">.</span><span class="n">setElement</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">start</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
@@ -222,13 +221,13 @@ This allows you to write your own statistical mechanical simulations.</p>
     <span class="n">lat</span><span class="o">.</span><span class="n">iterateOverRandom</span><span class="p">(</span><span class="n">initialize_site</span><span class="p">)</span>
     
 
-    <span class="k">def</span> <span class="nf">getMagnetization</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Order parameter is |M|. &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getMagnetization</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Order parameter is |M|. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span><span class="o">/</span><span class="n">lat</span><span class="o">.</span><span class="n">vol</span><span class="p">)</span>
     
     
-    <span class="k">def</span> <span class="nf">mcLocal</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; The Markov step. </span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mcLocal</span><span class="p">(</span><span class="n">coord</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; The Markov step. </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            coord (array-like): local coordinate </span>
@@ -259,13 +258,13 @@ This allows you to write your own statistical mechanical simulations.</p>
     <span class="n">magnetizations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">magnetizations</span><span class="p">)</span> 
 
 
-    <span class="k">def</span> <span class="nf">chi_M</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Magnetic susceptibility. &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chi_M</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Magnetic susceptibility. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">lat</span><span class="o">.</span><span class="n">vol</span><span class="o">*</span><span class="p">(</span> <span class="n">std_mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">std_mean</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">binder</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Binder cumulant. For the ising model in 2d, this should tend to 2/3 below</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">binder</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Binder cumulant. For the ising model in 2d, this should tend to 2/3 below</span>
 <span class="sd">        Tc, while it should tend to 0 above Tc, in the thermodynamic limit. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
@@ -325,7 +324,7 @@ accessors <code class="docutils literal notranslate"><span class="pre">getElemen
 error, we use the <a class="reference internal" href="dataAnalysis/jackknife.html"><span class="doc std std-doc">jackknife</span></a> class.</p>
 </section>
 <section id="continuum-limit-extrapolation">
-<h2>Continuum-limit extrapolation<a class="headerlink" href="#continuum-limit-extrapolation" title="Permalink to this headline"></a></h2>
+<h2>Continuum-limit extrapolation<a class="headerlink" href="#continuum-limit-extrapolation" title="Link to this heading"></a></h2>
 <p>Suppose we want to perform a continuum-limit extrapolation to
 determine the deconfinement transition temperature <span class="math notranslate nohighlight">\(T_d\)</span> in pure SU(3). The order
 parameter for this phase transition is given by the Polyakov loop, <span class="math notranslate nohighlight">\(P\)</span>.
@@ -335,18 +334,18 @@ would jump discontinuously at <span class="math notranslate nohighlight">\(T_d\)
 At finite volume, this abrupt jump becomes smooth, and <span class="math notranslate nohighlight">\(T_d\)</span> is estimated by the
 inflection point of the curve.</p>
 <p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_continuumExtrapolate.py</span></code></p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">latqcdtools.base.logger</span> <span class="k">as</span> <span class="nn">logger</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.printErrorBars</span> <span class="kn">import</span> <span class="n">get_err_str</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.math.num_deriv</span> <span class="kn">import</span> <span class="n">diff_deriv</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.math.spline</span> <span class="kn">import</span> <span class="n">getSpline</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.statistics.statistics</span> <span class="kn">import</span> <span class="n">gaudif</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.statistics.bootstr</span> <span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.physics.continuumExtrap</span> <span class="kn">import</span> <span class="n">continuumExtrapolate</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.physics.constants</span> <span class="kn">import</span> <span class="n">r0_phys</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.physics.lattice_params</span> <span class="kn">import</span> <span class="n">latticeParams</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.base.logger</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.readWrite</span><span class="w"> </span><span class="kn">import</span> <span class="n">readTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.printErrorBars</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_err_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.initialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.math.num_deriv</span><span class="w"> </span><span class="kn">import</span> <span class="n">diff_deriv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.math.spline</span><span class="w"> </span><span class="kn">import</span> <span class="n">getSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaudif</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.bootstr</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.physics.continuumExtrap</span><span class="w"> </span><span class="kn">import</span> <span class="n">continuumExtrapolate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.physics.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">r0_phys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.physics.lattice_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">latticeParams</span>
 
 <span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;cont.log&#39;</span><span class="p">)</span>
 
@@ -368,7 +367,7 @@ inflection point of the curve.</p>
     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="mi">1001</span><span class="p">)</span>
 
     <span class="c1"># Extract Td from inflection point of &lt;|P|&gt; vs T using natural spline</span>
-    <span class="k">def</span> <span class="nf">getTd</span><span class="p">(</span><span class="n">pm</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getTd</span><span class="p">(</span><span class="n">pm</span><span class="p">):</span>
         <span class="n">spl</span>  <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">pm</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">dPdT</span> <span class="o">=</span> <span class="n">diff_deriv</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">spl</span><span class="p">)</span>
         <span class="n">maxIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dPdT</span><span class="p">)</span>
@@ -420,14 +419,14 @@ Finally we call <code class="docutils literal notranslate"><span class="pre">gau
 Z-test, which is implemented in our <a class="reference internal" href="dataAnalysis/statistics.html"><span class="doc std std-doc">statistics</span></a> module.</p>
 </section>
 <section id="statistical-bootstrap">
-<h2>Statistical bootstrap<a class="headerlink" href="#statistical-bootstrap" title="Permalink to this headline"></a></h2>
+<h2>Statistical bootstrap<a class="headerlink" href="#statistical-bootstrap" title="Link to this heading"></a></h2>
 <p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_bootstrap.py</span></code></p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.readWrite</span> <span class="kn">import</span> <span class="n">readTable</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.math.spline</span> <span class="kn">import</span> <span class="n">getSpline</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.plotting</span> <span class="kn">import</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">plot_band</span><span class="p">,</span> <span class="n">latexify</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.statistics.bootstr</span> <span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.initialize</span> <span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.readWrite</span><span class="w"> </span><span class="kn">import</span> <span class="n">readTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.math.spline</span><span class="w"> </span><span class="kn">import</span> <span class="n">getSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">plot_band</span><span class="p">,</span> <span class="n">latexify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.bootstr</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.initialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
 
 <span class="n">initialize</span><span class="p">(</span><span class="s1">&#39;example_bootstrap.log&#39;</span><span class="p">)</span>
 
@@ -440,8 +439,8 @@ Z-test, which is implemented in our <a class="reference internal" href="dataAnal
 <span class="c1"># We will interpolate to these x-values</span>
 <span class="n">xspline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">xdata</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xdata</span><span class="p">),</span><span class="mi">101</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">splineError</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; We assume no errors in the xdata. For the ydata, we will pass the bootstrap</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">splineError</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; We assume no errors in the xdata. For the ydata, we will pass the bootstrap</span>
 <span class="sd">    routine ydata along with the errors. The input to this function, data, will then</span>
 <span class="sd">    be generated in each bootstrap bin by drawing normally from ydata with a spread</span>
 <span class="sd">    of edata. In this example we simply get a spline, but you wrap anything you want</span>

@@ -17,9 +17,9 @@ def _best_h(x):
     if the step size is too small, the function may not change within machine precision eps, and hence the derivative
     will be incorrectly estimated.
 
-    Let M_0, M_3 > 0 s.t. |f| < M_0 and |f'''| < M_3. Let f_computed = f + f*eps, where eps is the machine precision.
+    Let M_0, M_3 > 0 s.t. |f| < M_0 and |f^(3)| < M_3. Let f_computed = f + f*eps, where eps is the machine precision.
     For central differences,
-        ( f(x+h) - f(x-h) )/2h - f' = h^3 f'''(x)/3.
+        ( f(x+h) - f(x-h) )/2h - f' = h^3 f^(3)(x)/3.
     Using the triangle inequality, one can construct an upper bound of the LHS (when calculated on a computer). The h
     which minimizes this upper bound is
         h = (3 eps M_0/M_3)^(1/3).

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.statistics.autocorrelation &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,57 +123,65 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-autocorrelation">
-<h1>latqcdtools.statistics.autocorrelation<a class="headerlink" href="#latqcdtools-statistics-autocorrelation" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">getTauInt(ts,</span> <span class="pre">nbins,</span> <span class="pre">tpickMax,</span> <span class="pre">acoutfileName='acor.d',</span> <span class="pre">showPlot=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Given a time series, return estimates for the integrated autocorrelation time and its error.
+<h1>latqcdtools.statistics.autocorrelation<a class="headerlink" href="#latqcdtools-statistics-autocorrelation" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getTauInt</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">tpickMax</span><span class="p">,</span> <span class="n">acoutfileName</span><span class="o">=</span><span class="s1">&#39;acor.d&#39;</span><span class="p">,</span> <span class="n">showPlot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Given a time series, return estimates for the integrated autocorrelation time and its error.</span>
 
-INPUT:
-     tpickMax--The largest nt where you think your estimate might become unreliable.
-        nbins--The number of jackknife bins (for estimating the error in tau_int)
-           ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
-               time translation invariance holds. List must be in order of markov chain generation
+<span class="sd">INPUT:</span>
+<span class="sd">     tpickMax--The largest nt where you think your estimate might become unreliable.</span>
+<span class="sd">        nbins--The number of jackknife bins (for estimating the error in tau_int)</span>
+<span class="sd">           ts--Time series array of measurements. Must be taken from equilibrium ensemble so that</span>
+<span class="sd">               time translation invariance holds. List must be in order of markov chain generation</span>
 
-OUTPUT:
-      tau_int--Estimate for integrated autocorrelation time.
-     tau_inte--Its (jackknife) error bar.
-       itpick--The Monte Carlo separation at which this method found its estimate for tau_int. 
+<span class="sd">OUTPUT:</span>
+<span class="sd">      tau_int--Estimate for integrated autocorrelation time.</span>
+<span class="sd">     tau_inte--Its (jackknife) error bar.</span>
+<span class="sd">       itpick--The Monte Carlo separation at which this method found its estimate for tau_int. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">remove1Jackknife(ts)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create remove-1 jackknife list from 1-d series.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">remove1Jackknife</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Create remove-1 jackknife list from 1-d series.</span>
 
-Args:
-    ts (array-like): time series 
+<span class="sd">Args:</span>
+<span class="sd">    ts (array-like): time series </span>
 
-Returns:
-    np.array: 1-d array of jackknife means 
+<span class="sd">Returns:</span>
+<span class="sd">    np.array: 1-d array of jackknife means </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">tauint(nt,</span> <span class="pre">ts,</span> <span class="pre">xhat=None)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tauint</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">xhat</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Given a time series, calculate estimators for its integrated autocorrelation time  at each Markov time separation.</span>
 
-INPUT:
-     nt--The largest you think tau_int could be.
-     ts--Time series array of measurments. Must be taken from equilibrium ensemble so that
-         time translation invariance holds. List must be in order of Markov chain generation.
-   xhat--True mean of time series (if you know it).
+<span class="sd">INPUT:</span>
+<span class="sd">     nt--The largest you think tau_int could be.</span>
+<span class="sd">     ts--Time series array of measurments. Must be taken from equilibrium ensemble so that</span>
+<span class="sd">         time translation invariance holds. List must be in order of Markov chain generation.</span>
+<span class="sd">   xhat--True mean of time series (if you know it).</span>
 
-OUTPUT:
-  acint--List of integrated autocorrelation times. 
+<span class="sd">OUTPUT:</span>
+<span class="sd">  acint--List of integrated autocorrelation times. </span>
+<span class="sd">  &#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">tauintj(nt,</span> <span class="pre">nbins,</span> <span class="pre">ts,</span> <span class="pre">xhat=None)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tauintj</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">xhat</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Given a time series, calculate jackknife bins of integrated autocorrelation time for each Markov time separation.</span>
 
-INPUT:
-      nt--The largest nt at which you think your estimate for tau_int could lie.
-   nbins--The number of jackknife bins.
-      ts--Time series array of measurements. Must be taken from equilibrium ensemble so that
-          time translation invariance holds. List must be in order of markov chain generation
-    xhat--True mean of time series (if you know it).
+<span class="sd">INPUT:</span>
+<span class="sd">      nt--The largest nt at which you think your estimate for tau_int could lie.</span>
+<span class="sd">   nbins--The number of jackknife bins.</span>
+<span class="sd">      ts--Time series array of measurements. Must be taken from equilibrium ensemble so that</span>
+<span class="sd">          time translation invariance holds. List must be in order of markov chain generation</span>
+<span class="sd">    xhat--True mean of time series (if you know it).</span>
 
-OUTPUT:
-  acintj--2D list indexed by time, then bin number acintj[it][ibin] 
+<span class="sd">OUTPUT:</span>
+<span class="sd">  acintj--2D list indexed by time, then bin number acintj[it][ibin] </span>
+<span class="sd">  &#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

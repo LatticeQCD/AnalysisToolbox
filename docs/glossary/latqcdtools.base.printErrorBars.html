@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.printErrorBars &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,40 +123,66 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-printerrorbars">
-<h1>latqcdtools.base.printErrorBars<a class="headerlink" href="#latqcdtools-base-printerrorbars" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">getValuesFromErrStr(errStr)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Convert A string of the form XX.XX(YY) into a float mean and error bar. Scientific notation not yet supported.
-Single digit errors not yet supported.
+<h1>latqcdtools.base.printErrorBars<a class="headerlink" href="#latqcdtools-base-printerrorbars" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getValuesFromErrStr</span><span class="p">(</span><span class="n">errStr</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Convert A string of the form XX.XX(YY) into a float mean and error bar. Scientific notation not yet supported.</span>
+<span class="sd">Single digit errors not yet supported.</span>
 
-Args:
-    errStr (str): string of the form XX.XXXX(YY).
+<span class="sd">Args:</span>
+<span class="sd">    errStr (str): string of the form XX.XXXX(YY).</span>
 
-Returns:
-    float, float: mean, error. 
+<span class="sd">Returns:</span>
+<span class="sd">    float, float: mean, error. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">get_err_str(param,</span> <span class="pre">param_err,</span> <span class="pre">numb_err_dig=2)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get the string of a number + error, e.g. 1.234567+-0.324456 --&gt; 12.34(33) (numb_err_dig = 2). 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_err_str</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_err</span><span class="p">,</span> <span class="n">numb_err_dig</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">rounding</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get the string of a number + error, e.g. 1.234567+-0.324456 --&gt; 12.34(33) (numb_err_dig = 2). </span>
+
+<span class="sd">Args:</span>
+<span class="sd">    param (float): _description_</span>
+<span class="sd">    param_err (float): _description_</span>
+<span class="sd">    numb_err_dig (int, optional): How many significant digits for your error? Defaults to 2.</span>
+<span class="sd">    rounding (str, optional): The strategy for rounding the last significant digit of the error.</span>
+<span class="sd">        The &#39;canonical&#39; strategy rounds how one learns in grade school, i.e. 44 gets rounded to 40.</span>
+<span class="sd">        The &#39;conservative&#39; strategy always rounds up, i.e. 44 gets rounded to 50. Defaults to</span>
+<span class="sd">        &#39;conservative&#39;. </span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    str: Error string. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">get_err_str_auto(param,</span> <span class="pre">param_err,</span> <span class="pre">numb_err_dig=1,</span> <span class="pre">mulicon='x')</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Automatically express the number with an exponent. The multiplication icon can be changed. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_err_str_auto</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_err</span><span class="p">,</span> <span class="n">numb_err_dig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mulicon</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Automatically express the number with an exponent. The multiplication icon can be changed. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">get_err_str_auto_tex(param,</span> <span class="pre">param_err,</span> <span class="pre">numb_err_dig=1)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Automatically express the number with an exponent in LaTeX. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_err_str_auto_tex</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_err</span><span class="p">,</span> <span class="n">numb_err_dig</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Automatically express the number with an exponent in LaTeX. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">get_err_str_exp(param,</span> <span class="pre">param_err,</span> <span class="pre">exp,</span> <span class="pre">numb_err_dig=1,</span> <span class="pre">multicon='x')</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Express the number with a exponent. The multiplication icon can be changed. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_err_str_exp</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_err</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">numb_err_dig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">multicon</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Express the number with a exponent. The multiplication icon can be changed. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">get_err_str_exp_tex(param,</span> <span class="pre">param_err,</span> <span class="pre">exp,</span> <span class="pre">numb_err_dig=1)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Express the number with an exponent in LaTeX. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_err_str_exp_tex</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_err</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">numb_err_dig</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Express the number with an exponent in LaTeX. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">get_exp(param)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get the exponent of a number to base 10. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_exp</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get the exponent of a number to base 10. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

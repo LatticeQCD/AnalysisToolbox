@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Statistics &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -87,20 +86,20 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="statistics">
-<h1>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline"></a></h1>
+<h1>Statistics<a class="headerlink" href="#statistics" title="Link to this heading"></a></h1>
 <p>A collection of useful methods for statistics calculations can be found in</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.statistics</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.statistics</span>
 </pre></div>
 </div>
 <section id="mean-median-and-standard-error">
-<h2>Mean, median, and standard error<a class="headerlink" href="#mean-median-and-standard-error" title="Permalink to this headline"></a></h2>
+<h2>Mean, median, and standard error<a class="headerlink" href="#mean-median-and-standard-error" title="Link to this heading"></a></h2>
 <p>There are wrappers for <code class="docutils literal notranslate"><span class="pre">np.mean</span></code> and <code class="docutils literal notranslate"><span class="pre">np.median</span></code> called <code class="docutils literal notranslate"><span class="pre">std_mean</span></code>
 and <code class="docutils literal notranslate"><span class="pre">std_median</span></code>. The advantage of using the wrappers is that you don’t have to specify the Axis.
 There is also a <code class="docutils literal notranslate"><span class="pre">std_err</span></code>, which calculates the error bar of the mean of the array, assuming
 the data are independent.</p>
 </section>
 <section id="error-propagation">
-<h2>Error propagation<a class="headerlink" href="#error-propagation" title="Permalink to this headline"></a></h2>
+<h2>Error propagation<a class="headerlink" href="#error-propagation" title="Link to this heading"></a></h2>
 <p>The function</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span>
 </pre></div>
@@ -110,7 +109,7 @@ is a variable the function depends on that does not have error. If you like, you
 of <code class="docutils literal notranslate"><span class="pre">func</span></code> yourself; otherwise this will be calculated numerically.</p>
 </section>
 <section id="gaussian-difference-test-z-test">
-<h2>Gaussian difference test (Z-test)<a class="headerlink" href="#gaussian-difference-test-z-test" title="Permalink to this headline"></a></h2>
+<h2>Gaussian difference test (Z-test)<a class="headerlink" href="#gaussian-difference-test-z-test" title="Link to this heading"></a></h2>
 <p>A Gaussian difference test can be used to check whether two
 measurements are statistically consistent with one another. Given are two measurements <code class="docutils literal notranslate"><span class="pre">x1</span></code>
 and <code class="docutils literal notranslate"><span class="pre">x2</span></code> drawn from Gaussian distributions with the same mean and respective error bars <code class="docutils literal notranslate"><span class="pre">e1</span></code>
@@ -122,7 +121,7 @@ and <code class="docutils literal notranslate"><span class="pre">e2</span></code
 was observed.</p>
 </section>
 <section id="student-different-test-t-test">
-<h2>Student different test (T-test)<a class="headerlink" href="#student-different-test-t-test" title="Permalink to this headline"></a></h2>
+<h2>Student different test (T-test)<a class="headerlink" href="#student-different-test-t-test" title="Link to this heading"></a></h2>
 <p>In the case you have a small number of data, a more correct measure of the tension between two means
 is given by the Student difference test. This can be called with</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">studif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">ndat1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">e2</span><span class="p">,</span><span class="n">ndat2</span><span class="p">)</span>
@@ -133,7 +132,7 @@ measurements leading to mean <code class="docutils literal notranslate"><span cl
 be similar to the Gaussian difference test.</p>
 </section>
 <section id="integrated-autocorrelation-time">
-<h2>Integrated autocorrelation time<a class="headerlink" href="#integrated-autocorrelation-time" title="Permalink to this headline"></a></h2>
+<h2>Integrated autocorrelation time<a class="headerlink" href="#integrated-autocorrelation-time" title="Link to this heading"></a></h2>
 <p>The integrated autocorrelation time is the ratio between
 the estimated variance of the sample mean and what this variance would have been if the data were
 independent; i.e. <span class="math notranslate nohighlight">\(\sigma^2_{\bar{X}}=\frac{\sigma^2}{N}\tau_{\text{int}}.\)</span>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.utilities &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,148 +123,249 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-utilities">
-<h1>latqcdtools.base.utilities<a class="headerlink" href="#latqcdtools-base-utilities" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_alphanum_key(key)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Splits the string `key` at any point where there is one or more consecutive digits. 
-The regular expression `([0-9]+)` is used to match one or more digits. The parentheses `()` 
-capture the matched digits as separate elements. For example, if `key` were 
-`&#39;abc123def456ghi&#39;`, the resulting list would be `[&#39;abc&#39;, &#39;123&#39;, &#39;def&#39;, &#39;456&#39;, &#39;ghi&#39;]`. 
+<h1>latqcdtools.base.utilities<a class="headerlink" href="#latqcdtools-base-utilities" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_alphanum_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Splits the string `key` at any point where there is one or more consecutive digits. </span>
+<span class="sd">The regular expression `([0-9]+)` is used to match one or more digits. The parentheses `()` </span>
+<span class="sd">capture the matched digits as separate elements. For example, if `key` were </span>
+<span class="sd">`&#39;abc123def456ghi&#39;`, the resulting list would be `[&#39;abc&#39;, &#39;123&#39;, &#39;def&#39;, &#39;456&#39;, &#39;ghi&#39;]`. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_convert(text)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_getPrefix(byteString)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">appendToDocstring(string=None,</span> <span class="pre">args=None,</span> <span class="pre">returns=None)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">byteConvert(x,</span> <span class="pre">b1,</span> <span class="pre">b2)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Convert between bytes given scientific prefixes.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_convert</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getPrefix</span><span class="p">(</span><span class="n">byteString</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">appendToDocstring</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">byteConvert</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Convert between bytes given scientific prefixes.</span>
 
-Args:
-    x (float): Bytes in original units. 
-    b1 (str): Original units. 
-    b2 (str): Target units.
+<span class="sd">Args:</span>
+<span class="sd">    x (float): Bytes in original units. </span>
+<span class="sd">    b1 (str): Original units. </span>
+<span class="sd">    b2 (str): Target units.</span>
 
-Returns:
-    float: Bytes in target units. 
+<span class="sd">Returns:</span>
+<span class="sd">    float: Bytes in target units. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">cleanOutput(*args,</span> <span class="pre">label=None)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This method takes a bunch of args and formats them automatically for output. The idea is
-that you can use this method to ensure that columns are well lined up.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cleanOutput</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This method takes a bunch of args and formats them automatically for output. The idea is</span>
+<span class="sd">that you can use this method to ensure that columns are well lined up.</span>
 
-Args:
-    *args: The numbers you want to output, separated by commas. 
-    label (str, optional): Put label to the left of your output. Defaults to None.
+<span class="sd">Args:</span>
+<span class="sd">    *args: The numbers you want to output, separated by commas. </span>
+<span class="sd">    label (str, optional): Put label to the left of your output. Defaults to None.</span>
 
-Returns:
-    str: formatted output string 
+<span class="sd">Returns:</span>
+<span class="sd">    str: formatted output string </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">comesBefore(date1,</span> <span class="pre">date2,</span> <span class="pre">format='%Y/%m/%d</span> <span class="pre">%H:%M:%S',</span> <span class="pre">beforeOrEqual=False)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check whether date1 comes before date2.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">comesBefore</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span> <span class="n">date2</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span> <span class="n">beforeOrEqual</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Check whether date1 comes before date2.</span>
 
-Args:
-    date1 (str)
-    date2 (str)
-    format (str): format for date strings. Defaults to &quot;%Y/%m/%d %H:%M:%S&quot;
-    beforeOrEqual (bool): also return True if date1 == date2
-    
-Returns:
-    bool: date1 &lt; date2 
+<span class="sd">Args:</span>
+<span class="sd">    date1 (str)</span>
+<span class="sd">    date2 (str)</span>
+<span class="sd">    format (str): format for date strings. Defaults to &quot;%Y/%m/%d %H:%M:%S&quot;</span>
+<span class="sd">    beforeOrEqual (bool): also return True if date1 == date2</span>
+<span class="sd">    </span>
+<span class="sd">Returns:</span>
+<span class="sd">    bool: date1 &lt; date2 </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">createFilePath(fullFileName)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create the directory path if it isn&#39;t there already. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">createFilePath</span><span class="p">(</span><span class="n">fullFileName</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Create the directory path if it isn&#39;t there already. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">deleteFile(target)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Delete the file at target, if it exists. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteFile</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Delete the file at target, if it exists. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">deleteFolder(target)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Delete the folder at target, if it exists. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteFolder</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Delete the folder at target, if it exists. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">envector(*args)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Change obj to a numpy array if it&#39;s a scalar. Sometimes required when, e.g., using np.vectorize. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">find_nearest_idx(array,</span> <span class="pre">value)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Find the index of the element of array nearest to value. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">getArgs(parser)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get arguments from the ArgumentParser. Complain if you don&#39;t get exactly the correct arguments. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">isArrayLike(obj)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Figure out whether obj is indexable.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">elapsedSeconds</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span> <span class="n">date2</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute elapsed time in seconds between date1 and date2. </span>
 
-Args:
-    obj (python object)
+<span class="sd">Args:</span>
+<span class="sd">    date1 (str)</span>
+<span class="sd">    date2 (str)</span>
+<span class="sd">    format (str): format for date strings. Defaults to &quot;%Y/%m/%d %H:%M:%S&quot;</span>
+<span class="sd">    </span>
+<span class="sd">Returns:</span>
+<span class="sd">    float: elapsed time in seconds </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">envector</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Change obj to a numpy array if it&#39;s a scalar. Sometimes required when, e.g., using np.vectorize. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">find_nearest_idx</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Find the index of the element of array nearest to value. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getArgs</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get arguments from the ArgumentParser. Complain if you don&#39;t get exactly the correct arguments. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isArrayLike</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Figure out whether obj is indexable.</span>
 
-Returns:
-    bool: True if there is at least one index, false otherwise. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">isHigherDimensional(obj)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Figure out whether obj has at least two indices.
+<span class="sd">Args:</span>
+<span class="sd">    obj (python object)</span>
 
-Args:
-    data (array-like)
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if there is at least one index, false otherwise. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isComplexType</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isFloatType</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isHigherDimensional</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Figure out whether obj has at least two indices.</span>
 
-Returns:
-    bool: True if there are at least two indices, false otherwise. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">naturalSort(l)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Sort list of strings so that, e.g. &#39;10&#39; comes after &#39;9&#39; rather than before it.
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">printArg(message,</span> <span class="pre">param)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Some arguments are None by default, and you only want to print them if they are set. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">printClean(*args,</span> <span class="pre">label=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for cleanOutput that prints to screen.
+<span class="sd">Args:</span>
+<span class="sd">    obj (array-like)</span>
 
-Args:
-    *args: The numbers you want to output, separated by commas. 
-    label (str, optional): Put label to the left of your output. Defaults to None.
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if there are at least two indices, false otherwise. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">printDict(dic)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Prints key, value pairs line by line. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isIntType</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">shell(*args)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Carry out the passed arguments args in the shell. Can be passed as a single
-string or as a list. Captures and returns output of shell command. E.g.
-    shell(&#39;ls -lah&#39;)
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isScalar</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">shellVerbose(*args)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Same as shell, but instead of capturing output, print it to screen. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">naturalSort</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Sort list of strings so that, e.g. &#39;10&#39; comes after &#39;9&#39; rather than before it.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">substringBetween(string,</span> <span class="pre">a,</span> <span class="pre">b)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Find the substring of string between a and b. If a==b, it looks between the
-first and second occurences of a. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">printArg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Some arguments are None by default, and you only want to print them if they are set. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">printClean</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper for cleanOutput that prints to screen.</span>
 
-Args:
-    string (str)
-    a (str): starting delimiter 
-    b (str): ending delimiter
+<span class="sd">Args:</span>
+<span class="sd">    *args: The numbers you want to output, separated by commas. </span>
+<span class="sd">    label (str, optional): Put label to the left of your output. Defaults to None.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">printDict</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Prints key, value pairs line by line. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Carry out the passed arguments args in the shell. Can be passed as a single</span>
+<span class="sd">string or as a list. Captures and returns output of shell command. E.g.</span>
+<span class="sd">    shell(&#39;ls -lah&#39;)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">shellVerbose</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Same as shell, but instead of capturing output, print it to screen. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">substringBetween</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Find the substring of string between a and b. If a==b, it looks between the</span>
+<span class="sd">first and second occurences of a. </span>
 
-Returns:
-    str: substring
+<span class="sd">Args:</span>
+<span class="sd">    string (str)</span>
+<span class="sd">    a (str): starting delimiter </span>
+<span class="sd">    b (str): ending delimiter</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    str: substring</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">toNumpy(*args)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">unvector(obj)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Remove outermost brackets of array-like object, if possible. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">toNumpy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">timer()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A class to facilitate doing rudimentary timings in the Toolbox. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unvector</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Remove outermost brackets of array-like object with single element, if possible. This is needed</span>
+<span class="sd">because sometimes different numpy methods give inconsistent outputs, like turning a scalar</span>
+<span class="sd">into a zero-dimensional array, a 1-dimensional array, or just the scalar itself.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    obj (python object)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    obj, obj[0], or obj.item() depending on obj</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">timer</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A class to facilitate doing rudimentary timings in the Toolbox. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

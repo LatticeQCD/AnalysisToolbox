@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.interfaces.interfaces &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,16 +13,15 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="latqcdtools.legacy" href="latqcdtools.legacy.html" />
+    <link rel="next" title="latqcdtools.interfaces.simulationManagement" href="latqcdtools.interfaces.simulationManagement.html" />
     <link rel="prev" title="latqcdtools.interfaces.confReader" href="latqcdtools.interfaces.confReader.html" /> 
 </head>
 
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,80 +123,118 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-interfaces">
-<h1>latqcdtools.interfaces.interfaces<a class="headerlink" href="#latqcdtools-interfaces-interfaces" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">convertTable(source,</span> <span class="pre">target,</span> <span class="pre">sourceDelimiter=None,</span> <span class="pre">targetDelimiter=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Convert a source table into a target table. The assumption for the source file is that
-is that the only lines are table lines, i.e. there&#39;s no intervening \hline or something like that.
-The table type is determined by the file extensions of source and target.
+<h1>latqcdtools.interfaces.interfaces<a class="headerlink" href="#latqcdtools-interfaces-interfaces" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">convertTable</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">sourceDelimiter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">targetDelimiter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Convert a source table into a target table. The assumption for the source file is that</span>
+<span class="sd">is that the only lines are table lines, i.e. there&#39;s no intervening \hline or something like that.</span>
+<span class="sd">The table type is determined by the file extensions of source and target.</span>
 
-Args:
-    source (str): source filename 
-    target (str): target filename 
+<span class="sd">Args:</span>
+<span class="sd">    source (str): source filename </span>
+<span class="sd">    target (str): target filename </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">paramFrom_HotQCD_MILC(ensemble)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">paramFrom_HotQCD_MILC</span><span class="p">(</span><span class="n">ensemble</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.</span>
 
-Args:
-    ensemble (str): ensemble label of the form l3216f3b6050m00394m1064
+<span class="sd">Args:</span>
+<span class="sd">    ensemble (str): ensemble label of the form l3216f3b6050m00394m1064</span>
 
-Returns:
-    tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string
+<span class="sd">Returns:</span>
+<span class="sd">    tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">readGPL(filename,</span> <span class="pre">discardTag=True,</span> <span class="pre">raggedWarn=True)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Load GPL files from Peter Lepage&#39;s g-2 tools as 2d array. Can also load GPL-like files, where one allows the
-tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way
-rather than using genfromtxt to allow the possibility of ragged tables. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">readGPL</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">discardTag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">raggedWarn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">floatT</span><span class="o">=&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">numpy</span><span class="o">.</span><span class="n">float64</span><span class="s1">&#39;&gt;):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Load GPL files from Peter Lepage&#39;s g-2 tools as 2d array. Can also load GPL-like files, where one allows the</span>
+<span class="sd">tag (column 0) on each line to be different. Optionally ignore tag, which is just a label. Implemented in this way</span>
+<span class="sd">rather than using genfromtxt to allow the possibility of ragged tables. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">readJSON(filename,</span> <span class="pre">ignoreExtension=False)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">readJSON</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ignoreExtension</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">readWML(filename)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Does its best to read a table from Wikipedia Markup Language. Returns a list of lists,
-where each row corresponds to either a line of the table or a line of markup code. You
-will have to do some processing by hand, since so many people edit Wikipedia and have
-inconsistent styles.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">readWML</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Does its best to read a table from Wikipedia Markup Language. Returns a list of lists,</span>
+<span class="sd">where each row corresponds to either a line of the table or a line of markup code. You</span>
+<span class="sd">will have to do some processing by hand, since so many people edit Wikipedia and have</span>
+<span class="sd">inconsistent styles.</span>
 
-Args:
-    filename (str): Name of file 
+<span class="sd">Args:</span>
+<span class="sd">    filename (str): Name of file </span>
 
-Returns:
-    list: list of rows and commands in markup table 
+<span class="sd">Returns:</span>
+<span class="sd">    list: list of rows and commands in markup table </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">readYAML(filename,</span> <span class="pre">ignoreExtension=False)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">readYAML</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ignoreExtension</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">writeJSON(data,</span> <span class="pre">filename)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Write dictionary to JSON file.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">writeJSON</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Write dictionary to JSON file.</span>
 
-Args:
-    data (dict)
-    filename (str)
+<span class="sd">Args:</span>
+<span class="sd">    data (dict)</span>
+<span class="sd">    filename (str)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">writeYAML(data,</span> <span class="pre">filename)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Write dictionary to YAML file.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">writeYAML</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Write dictionary to YAML file.</span>
 
-Args:
-    data (dict)
-    filename (str)
+<span class="sd">Args:</span>
+<span class="sd">    data (dict)</span>
+<span class="sd">    filename (str)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">HotQCD_MILC_Params(Nsigma,</span> <span class="pre">Ntau,</span> <span class="pre">coupling,</span> <span class="pre">mass1=None,</span> <span class="pre">mass2=None,</span> <span class="pre">mass3=None,</span> <span class="pre">scaleType='fk',</span> <span class="pre">paramYear=None,</span> <span class="pre">Nf='21',</span> <span class="pre">scaleYear=None,</span> <span class="pre">mu=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A class to handle and check the input parameters of a lattice run using conventions common to both the
-HotQCD and MILC collaborations. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">HotQCD_MILC_Params</span><span class="p">(</span><span class="n">Nsigma</span><span class="p">,</span> <span class="n">Ntau</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">mass1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scaleType</span><span class="o">=</span><span class="s1">&#39;fk&#39;</span><span class="p">,</span> <span class="n">paramYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="s1">&#39;21&#39;</span><span class="p">,</span> <span class="n">scaleYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A class to handle and check the input parameters of a lattice run using conventions common to both the</span>
+<span class="sd">HotQCD and MILC collaborations. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">csvTable(delimiter)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">genericTable(delimiter=None,</span> <span class="pre">pre='',</span> <span class="pre">post='')</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">latexTable()</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">markdownTable()</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">redmineTable()</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">csvTable</span><span class="p">(</span><span class="n">delimiter</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">genericTable</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">post</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">latexTable</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">markdownTable</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">redmineTable</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

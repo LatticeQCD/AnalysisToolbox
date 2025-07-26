@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.testing &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -63,6 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -122,19 +122,31 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-testing">
-<h1>latqcdtools.testing<a class="headerlink" href="#latqcdtools-testing" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">concludeTest(lpass)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">gaudif_results(res,</span> <span class="pre">res_err,</span> <span class="pre">res_true,</span> <span class="pre">res_err_true,</span> <span class="pre">text='',</span> <span class="pre">qcut=0.05)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks
-to see whether res and res_true are statistically compatible. 
+<h1>latqcdtools.testing<a class="headerlink" href="#latqcdtools-testing" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">concludeTest</span><span class="p">(</span><span class="n">lpass</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">print_results(res,</span> <span class="pre">res_true,</span> <span class="pre">res_err=None,</span> <span class="pre">res_err_true=None,</span> <span class="pre">text='',</span> <span class="pre">prec=1e-10,</span> <span class="pre">abs_prec=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
-if you like.) Carries out with precision prec. Use abs_prec for comparisons with zero. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err_true</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">qcut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks</span>
+<span class="sd">to see whether res and res_true are statistically compatible. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">print_results_iter(res,</span> <span class="pre">res_true,</span> <span class="pre">text)</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,</span>
+<span class="sd">if you like.) Carries out with precision prec. Use abs_prec for comparisons with zero. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results_iter</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

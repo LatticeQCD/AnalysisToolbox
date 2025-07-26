@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>latqcdtools.interfaces.confReader &mdash; AnalysisToolbox 1.2.2 documentation</title>
+  <title>latqcdtools.interfaces.simulationManagement &mdash; AnalysisToolbox 1.2.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="latqcdtools.interfaces.interfaces" href="latqcdtools.interfaces.interfaces.html" />
-    <link rel="prev" title="latqcdtools.interfaces.MILC" href="latqcdtools.interfaces.MILC.html" /> 
+    <link rel="next" title="latqcdtools.legacy" href="latqcdtools.legacy.html" />
+    <link rel="prev" title="latqcdtools.interfaces.interfaces" href="latqcdtools.interfaces.interfaces.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,9 +61,9 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.utilities.html">latqcdtools.base.utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.HotQCD.html">latqcdtools.interfaces.HotQCD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.interfaces.confReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -112,9 +112,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="glossary.html">Glossary</a> &raquo;</li>
-      <li>latqcdtools.interfaces.confReader</li>
+      <li>latqcdtools.interfaces.simulationManagement</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/glossary/latqcdtools.interfaces.confReader.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/glossary/latqcdtools.interfaces.simulationManagement.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -122,16 +122,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-confreader">
-<h1>latqcdtools.interfaces.confReader<a class="headerlink" href="#latqcdtools-interfaces-confreader" title="Link to this heading"></a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">NERSCReader</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-simulationmanagement">
+<h1>latqcdtools.interfaces.simulationManagement<a class="headerlink" href="#latqcdtools-interfaces-simulationmanagement" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analyzeChain</span><span class="p">(</span><span class="n">MCtime</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">obslabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MClabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KScutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">showPlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">savePlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotNamePrefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">plotargs</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Do some basic analysis of a MCMC time series of measurements. We check whether the data</span>
+<span class="sd">are distributed normally. Optionally you can plot the time series and/or a histogram.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    MCtime (array-like): Array indexing the MC time. </span>
+<span class="sd">    measurements (array-like): Time series of measurements.</span>
+<span class="sd">    obslabel (str, optional): Label for observable in plots. Defaults to None.</span>
+<span class="sd">    MClabel (str, optional): Label for x-axis of time series plot. Defaults to None.</span>
+<span class="sd">    KScutoff (float, optional): Threshold below which &quot;not normal enough&quot;. Defaults to 0.05.</span>
+<span class="sd">    showPlots (bool, optional): Defaults to False.</span>
+<span class="sd">    savePlots (bool, optional): Defaults to False.</span>
+<span class="sd">    plotNamePrefix (str, optional): Prefix of plot names. Defaults to None.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">confReader</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">countConfigurations</span><span class="p">(</span><span class="n">targetFolder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Base class for reading configurations. </span>
+<span class="sd">Count the number of configurations in the target folder.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    targetFolder (str)</span>
+<span class="sd">    name (str): Assume configuration name has form name.###. </span>
+<span class="sd">    delimiter (str, optional): The delimiter between name and ###. Defaults to &#39;.&#39;.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    int: number of configurations in targetFolder </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ensemble</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">An ensemble object. This is to help you organize where data are saved</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">repository</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This reposistory holds ensemble objects.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>

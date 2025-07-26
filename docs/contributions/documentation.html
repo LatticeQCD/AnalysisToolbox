@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Documenting your code &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -85,7 +84,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="documenting-your-code">
-<h1>Documenting your code<a class="headerlink" href="#documenting-your-code" title="Permalink to this headline"></a></h1>
+<h1>Documenting your code<a class="headerlink" href="#documenting-your-code" title="Link to this heading"></a></h1>
 <p>You have written some readable code and, crucially, you <a class="reference internal" href="testing.html"><span class="doc std std-doc">wrote a test for it</span></a>. There is only one thing
 left for you to do, to make sure your code can be easily used and adapted by future developers: You must document it!</p>
 <p>To create some documentation, please navigate to <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/doc_src/</span></code>, where you can find its source code. Our
@@ -94,7 +93,7 @@ with <a class="reference external" href="https://myst-parser.readthedocs.io/en/l
 <a class="reference external" href="https://daringfireball.net/projects/markdown/">Markdown</a>. You can follow those links to learn more in detail about
 this syntax. With this documentation, we just want to show you how to get started.</p>
 <section id="documentation-syntax">
-<h2>Documentation syntax<a class="headerlink" href="#documentation-syntax" title="Permalink to this headline"></a></h2>
+<h2>Documentation syntax<a class="headerlink" href="#documentation-syntax" title="Link to this heading"></a></h2>
 <p>You can <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Title</span> <span class="pre">Your</span> <span class="pre">Page</span></code> like so. Each <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">Heading</span></code> and <code class="docutils literal notranslate"><span class="pre">###</span> <span class="pre">Subheading</span></code> just requires more pound symbols #.</p>
 <p>Links to <code class="docutils literal notranslate"><span class="pre">[other</span> <span class="pre">documentation](path_to_documentation.md)</span></code> and to <code class="docutils literal notranslate"><span class="pre">[webpages](https://www.web_link.org)</span></code> are
 accomplished in the same way.</p>
@@ -115,7 +114,7 @@ highlighting. Possible languages include, but are not limited to, <code class="d
 the web links above, you can also see examples of the block code in action by looking into the documentation yourself.)</p>
 </section>
 <section id="compilation">
-<h2>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline"></a></h2>
+<h2>Compilation<a class="headerlink" href="#compilation" title="Link to this heading"></a></h2>
 <p>Once you have added a <code class="docutils literal notranslate"><span class="pre">.md</span></code> file for your file, incorporate it into the most appropriate overarching <code class="docutils literal notranslate"><span class="pre">.md</span></code> file. (For
 instance this one falls under <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/docs_src/01_contributions/contributions.md</span></code>.) You can see how you did by
 compiling your code using <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/docs_src/build/compile.sh</span></code>. If you want to see how it looks, you can open the
@@ -124,7 +123,7 @@ compiling your code using <code class="docutils literal notranslate"><span class
 can <a class="reference internal" href="git.html"><span class="doc std std-doc">commit your changes</span></a>.</p>
 </section>
 <section id="some-stylistic-guidelines-for-documentation">
-<h2>Some stylistic guidelines for documentation<a class="headerlink" href="#some-stylistic-guidelines-for-documentation" title="Permalink to this headline"></a></h2>
+<h2>Some stylistic guidelines for documentation<a class="headerlink" href="#some-stylistic-guidelines-for-documentation" title="Link to this heading"></a></h2>
 <p>The AnalysisToolbox is, at the moment, managed only by a handful of rather busy scientists. Nevertheless we would like
 to have our code and documentation look professional and polished. This is difficult to achieve without someone
 explicitly going through and checking for consistency; the best we can do is probably a bottom-up approach,

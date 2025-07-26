@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.plotting &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,201 +123,294 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-plotting">
-<h1>latqcdtools.base.plotting<a class="headerlink" href="#latqcdtools-base-plotting" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_add_optional(params)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Optional parameters not included in _fill_param_dict.
+<h1>latqcdtools.base.plotting<a class="headerlink" href="#latqcdtools-base-plotting" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_add_optional</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Optional parameters not included in _fill_param_dict.</span>
 
-Args:
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
 
-Returns:
-    dict: also optional parameters 
+<span class="sd">Returns:</span>
+<span class="sd">    dict: also optional parameters </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_getAxObject(params)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_initializePlt(params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
-so that this only gets called once per plot. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getAxObject</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_rescale(scale,</span> <span class="pre">data)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Rescale the data, taking into account there may be no data.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_initializePlt</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks</span>
+<span class="sd">so that this only gets called once per plot. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_rescale</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Rescale the data, taking into account there may be no data.</span>
 
-Args:
-    scale (float)
-    data (array-like or None)
+<span class="sd">Args:</span>
+<span class="sd">    scale (float)</span>
+<span class="sd">    data (array-like or None)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_set_xmax(ax,</span> <span class="pre">x_max=None)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_set_xmin(ax,</span> <span class="pre">x_min=None)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_set_ymax(ax,</span> <span class="pre">y_max=None)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_set_ymin(ax,</span> <span class="pre">y_min=None)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_update_handles(ax,</span> <span class="pre">handle)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_update_labels(ax,</span> <span class="pre">label)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">clearPlot()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_set_xmax</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fill_param_dict(params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with
-a default value.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_set_xmin</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x_min</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_set_ymax</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">y_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_set_ymin</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">y_min</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_update_handles</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_update_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">clearPlot</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Clears plot object, legend handles, and zorder. Useful if you want to do multiple plots in the same script. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fill_param_dict</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Collection of default parameters for plotting routines. If a key does not exist in params, it is defined with</span>
+<span class="sd">a default value.</span>
 
-Args:
-    params (dict): All parameters that are already set by the user
+<span class="sd">Args:</span>
+<span class="sd">    params (dict): All parameters that are already set by the user</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">getColorGradient(NUM_COLORS,</span> <span class="pre">map='viridis')</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Generate perceptually uniform set of colors. Useful when you need more than 8 colors.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getColorGradient</span><span class="p">(</span><span class="n">NUM_COLORS</span><span class="p">,</span> <span class="nb">map</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Generate perceptually uniform set of colors. Useful when you need more than 8 colors.</span>
 
-Args:
-    NUM_COLORS (int): number of colors you need 
-    map (str, optional): use custom colormap. Defaults to &#39;viridis&#39;.
+<span class="sd">Args:</span>
+<span class="sd">    NUM_COLORS (int): number of colors you need </span>
+<span class="sd">    map (str, optional): use custom colormap. Defaults to &#39;viridis&#39;.</span>
 
-Returns:
-    list: colors 
+<span class="sd">Returns:</span>
+<span class="sd">    list: colors </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">getSubplots(x,</span> <span class="pre">y)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get fig and axs objects when you want x figures across and y figures vertically.
-I wrapped this because matplotlib&#39;s convention for x and y is the opposite as their
-convention for figsize, which is so incredibly confusing. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSubplots</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get fig and axs objects when you want x figures across and y figures vertically.</span>
+<span class="sd">I wrapped this because matplotlib&#39;s convention for x and y is the opposite as their</span>
+<span class="sd">convention for figsize, which is so incredibly confusing. </span>
 
-Args:
-    x (int): number of panels in x-direction 
-    y (int): number of panels in y-direction 
+<span class="sd">Args:</span>
+<span class="sd">    x (int): number of panels in x-direction </span>
+<span class="sd">    y (int): number of panels in y-direction </span>
 
-Returns:
-    fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
+<span class="sd">Returns:</span>
+<span class="sd">    fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">latexify(bold=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Allows use of LaTeX symbols in plots. The physics package is included, allowing use of
-convenient functions like ev. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latexify</span><span class="p">(</span><span class="n">bold</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Allows use of LaTeX symbols in plots. The physics package is included, allowing use of</span>
+<span class="sd">convenient functions like ev. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_bar(xdata,</span> <span class="pre">ydata,</span> <span class="pre">width=None,</span> <span class="pre">align='edge',</span> <span class="pre">edgecolor='#666677',</span> <span class="pre">linewidth=0.2,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata as bars.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_bar</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;edge&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;#666677&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot ydata vs xdata as bars.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    width (float, optional): Width of bar. Defaults to xdata[1]-xdata[0].
-    align (str, optional): How to align the bars. Defaults to &#39;edge&#39;.
-    edgecolor (str, optional): Color of bar edges. Defaults to &#39;#666677&#39;.
-    linewidth (float, optional): Defaults to 0.2.
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    width (float, optional): Width of bar. Defaults to xdata[1]-xdata[0].</span>
+<span class="sd">    align (str, optional): How to align the bars. Defaults to &#39;edge&#39;.</span>
+<span class="sd">    edgecolor (str, optional): Color of bar edges. Defaults to &#39;#666677&#39;.</span>
+<span class="sd">    linewidth (float, optional): Defaults to 0.2.</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_dots(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata=None,</span> <span class="pre">xedata=None,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata as dots. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_dots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">yedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot ydata vs xdata as dots. </span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    yedata (array-like, optional): y error. Defaults to None.
-    xedata (array-like, optional): x error. Defaults to None.
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    yedata (array-like, optional): y error. Defaults to None.</span>
+<span class="sd">    xedata (array-like, optional): x error. Defaults to None.</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_file(filename,</span> <span class="pre">xcol=0,</span> <span class="pre">ycol=1,</span> <span class="pre">yecol=None,</span> <span class="pre">xecol=None,</span> <span class="pre">func=None,</span> <span class="pre">func_args=(),</span> <span class="pre">style='dots',</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot data in file. You can set the style with the style argument. Columns indexed from 0.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">xcol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ycol</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yecol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xecol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">func_args</span><span class="o">=</span><span class="p">(),</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;dots&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot data in file. You can set the style with the style argument. Columns indexed from 0.</span>
 
-Args:
-    filename (str)
-    xcol (int, optional): Which column is xdata. Defaults to 1.
-    ycol (int, optional): Which column is ydata. Defaults to 2.
-    yecol (int, optional): Which column has y error. Defaults to None.
-    xecol (int, optional): Which column has x error. Defaults to None.
-    func (function, optional): Apply this function to the data. Defaults to None.
-    func_args (tuple, optional): Arguments to func. Defaults to ().
-    style (str, optional): Choose from dots, lines, fill, and band. Defaults to &#39;dots&#39;.
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    filename (str)</span>
+<span class="sd">    xcol (int, optional): Which column is xdata. Defaults to 1.</span>
+<span class="sd">    ycol (int, optional): Which column is ydata. Defaults to 2.</span>
+<span class="sd">    yecol (int, optional): Which column has y error. Defaults to None.</span>
+<span class="sd">    xecol (int, optional): Which column has x error. Defaults to None.</span>
+<span class="sd">    func (function, optional): Apply this function to the data. Defaults to None.</span>
+<span class="sd">    func_args (tuple, optional): Arguments to func. Defaults to ().</span>
+<span class="sd">    style (str, optional): Choose from dots, lines, fill, and band. Defaults to &#39;dots&#39;.</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_fill(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata,</span> <span class="pre">xedata=None,</span> <span class="pre">center=True,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_fill</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">yedata</span><span class="p">,</span> <span class="n">xedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    yedata (array-like): y error 
-    xedata (array-like, optional): x error. Defaults to None.
-    center (bool): Do you show the central line? Defaults to True. 
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    yedata (array-like): y error </span>
+<span class="sd">    xedata (array-like, optional): x error. Defaults to None.</span>
+<span class="sd">    center (bool): Do you show the central line? Defaults to True. </span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_hist(data,</span> <span class="pre">bins=None,</span> <span class="pre">density=False,</span> <span class="pre">label=None,</span> <span class="pre">weights=None,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,
-simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_hist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Create a histogram of the array data. If you would like to plot multiple data sets in the same histogram,</span>
+<span class="sd">simply pass as a list or tuple of arrays of data, like data = [list1, list2, ...].</span>
 
-Args:
-    data (array-like)
-    bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like)</span>
+<span class="sd">    bins (int, optional): Number of bins. Defaults to None, which sets the number of bins automatically.</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_hline(y,</span> <span class="pre">minVal=None,</span> <span class="pre">maxVal=None,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a horizontal line at y. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_hline</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">minVal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxVal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a horizontal line at y. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_hspan(minVal,</span> <span class="pre">maxVal,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a horizontal band.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_hspan</span><span class="p">(</span><span class="n">minVal</span><span class="p">,</span> <span class="n">maxVal</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a horizontal band.</span>
 
-Args:
-    minVal (float)
-    maxVal (float)
+<span class="sd">Args:</span>
+<span class="sd">    minVal (float)</span>
+<span class="sd">    maxVal (float)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_lines(xdata,</span> <span class="pre">ydata,</span> <span class="pre">yedata=None,</span> <span class="pre">xedata=None,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot ydata vs xdata using lines.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_lines</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">yedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot ydata vs xdata using lines.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    yedata (array-like, optional): y error. Defaults to None.
-    xedata (array-like, optional): x error. Defaults to None.
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    yedata (array-like, optional): y error. Defaults to None.</span>
+<span class="sd">    xedata (array-like, optional): x error. Defaults to None.</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_vline(x,</span> <span class="pre">minVal=None,</span> <span class="pre">maxVal=None,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a vertical line at x. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_vspan(minVal,</span> <span class="pre">maxVal,</span> <span class="pre">**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a vertical band.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;Plot matrix as a heatmap.</span>
 
-Args:
-    minVal (float)
-    maxVal (float)
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray): correlation matrix</span>
+<span class="sd">    ax (matplotlib ax object): Defaults to plt.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">preliminary(x,</span> <span class="pre">y,</span> <span class="pre">text='PRELIMINARY',</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Generate a PRELIMINARY tag on the plot.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_vline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">minVal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxVal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a vertical line at x. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_vspan</span><span class="p">(</span><span class="n">minVal</span><span class="p">,</span> <span class="n">maxVal</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a vertical band.</span>
 
-Args:
-    x (float): x-position of bottom-left corner (in units of x-axis) 
-    y (float): y-position of bottom-left corner (in units of y-axis) 
-    text (str, optional): Text indicating result is preliminary. Defaults to &#39;PRELIMINARY&#39;.
+<span class="sd">Args:</span>
+<span class="sd">    minVal (float)</span>
+<span class="sd">    maxVal (float)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">resetLEGEND()</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">saveFigure(filename,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for plt.savefig that creates the directory path if it doesn&#39;t exist already.
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">set_default_param(**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Lets the user adjust the default parameter settings. 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">set_params(**params)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Set additional parameters to the plot. For example set a title or label.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">preliminary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;PRELIMINARY&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Generate a PRELIMINARY tag on the plot.</span>
 
-Args:
-    **params: Additional parameters that can be set.
+<span class="sd">Args:</span>
+<span class="sd">    x (float): x-position of bottom-left corner (in units of x-axis) </span>
+<span class="sd">    y (float): y-position of bottom-left corner (in units of y-axis) </span>
+<span class="sd">    text (str, optional): Text indicating result is preliminary. Defaults to &#39;PRELIMINARY&#39;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">set_xrange(xmin=None,</span> <span class="pre">xmax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/GitHub/AnalysisToolbox/venv/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">set_yrange(ymin=None,</span> <span class="pre">ymax=None,</span> <span class="pre">ax=&lt;module</span> <span class="pre">'matplotlib.pyplot'</span> <span class="pre">from</span> <span class="pre">'/home/dclarke/GitHub/AnalysisToolbox/venv/lib/python3.12/site-packages/matplotlib/pyplot.py'&gt;)</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">resetLEGEND</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">saveFigure</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper for plt.savefig that creates the directory path if it doesn&#39;t exist already.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_default_param</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Lets the user adjust the default parameter settings. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Set additional parameters to the plot. For example set a title or label.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    **params: Additional parameters that can be set.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_xrange</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">&#39;matplotlib.pyplot&#39;</span> <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py&#39;</span><span class="o">&gt;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_yrange</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">&#39;matplotlib.pyplot&#39;</span> <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py&#39;</span><span class="o">&gt;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.statistics.fitting &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,50 +123,64 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-fitting">
-<h1>latqcdtools.statistics.fitting<a class="headerlink" href="#latqcdtools-statistics-fitting" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">do_fit(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">start_params=None,</span> <span class="pre">priorval=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">algorithm='curve_fit',</span> <span class="pre">detailedInfo=False,</span> <span class="pre">show_results=False,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to fitter initialization and the fit in one step. See above for arguments. 
+<h1>latqcdtools.statistics.fitting<a class="headerlink" href="#latqcdtools-statistics-fitting" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">do_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">,</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper to fitter initialization and the fit in one step. See above for arguments. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">save_func(func,</span> <span class="pre">filename,</span> <span class="pre">domain,</span> <span class="pre">args=(),</span> <span class="pre">func_err=None,</span> <span class="pre">args_err=(),</span> <span class="pre">grad=None,</span> <span class="pre">header=None,</span> <span class="pre">npoints=1000,</span> <span class="pre">**kwargs)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">try_fit(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">start_params=None,</span> <span class="pre">priorval=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">algorithms=['curve_fit',</span> <span class="pre">'TNC',</span> <span class="pre">'Powell',</span> <span class="pre">'Nelder-Mead',</span> <span class="pre">'nonlin'],</span> <span class="pre">detailedInfo=False,</span> <span class="pre">show_results=False,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons
-algorithms has no default values here. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">save_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">unzipXYData(xydata)</span></code>
-Take a 2d xydata array, created by zipXYData, and extract xvalues and yvalues
-for use inside of a function of two variables.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Args:
-    xydata (np.ndarray): array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">try_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">,</span> <span class="s1">&#39;TNC&#39;</span><span class="p">,</span> <span class="s1">&#39;Powell&#39;</span><span class="p">,</span> <span class="s1">&#39;Nelder-Mead&#39;</span><span class="p">,</span> <span class="s1">&#39;nonlin&#39;</span><span class="p">],</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons</span>
+<span class="sd">algorithms has no default values here. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unzipXYData</span><span class="p">(</span><span class="n">xydata</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;Take a 2d xydata array, created by zipXYData, and extract xvalues and yvalues</span>
+<span class="sd">for use inside of a function of two variables.</span>
 
-Returns:
-    xvalues [x1, x2, ... , xN, x1, x2, ...],
-    yavlues [y1, y1, ... , y1, y2, y2, ...]
+<span class="sd">Args:</span>
+<span class="sd">    xydata (np.ndarray): array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    xvalues [x1, x2, ... , xN, x1, x2, ...],</span>
+<span class="sd">    yavlues [y1, y1, ... , y1, y2, y2, ...]</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">zipXYData(xdata,</span> <span class="pre">ydata)</span></code>
-Collect 1d xdata and ydata into an 2d xydata array. You can then use
-unzipXYData inside of some func(xydata), which represents some f(x,y), to
-separate the x part and y part.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Args:
-    xdata (array-like)
-    ydata (array-like)
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">zipXYData</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;Collect 1d xdata and ydata into an 2d xydata array. You can then use</span>
+<span class="sd">unzipXYData inside of some func(xydata), which represents some f(x,y), to</span>
+<span class="sd">separate the x part and y part.</span>
 
-Returns:
-    np.ndarray: array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Fitter(func,</span> <span class="pre">xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The :class:`Fitter`, contains all information necessary for fitting: The data, the function to be fitted, and
-optional the data for the errors. There are different minimization algorithms available. Many of them need the
-gradient or hessian of the chisquare. One way is to set the derivatives of the fitting function from outside.
-The derivatives of the actual chisquare are then computed via error propagation. Another way is to use numerical
-derivatives.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The :class:`Fitter`, contains all information necessary for fitting: The data, the function to be fitted, and</span>
+<span class="sd">optional the data for the errors. There are different minimization algorithms available. Many of them need the</span>
+<span class="sd">gradient or hessian of the chisquare. One way is to set the derivatives of the fitting function from outside.</span>
+<span class="sd">The derivatives of the actual chisquare are then computed via error propagation. Another way is to use numerical</span>
+<span class="sd">derivatives.</span>
 
-There are two ways to compute the derivatives of the chisqare numerically. Either compute the
-numerical derivative of the whole chisquare (error_strat=&#39;hessian&#39;) or compute the derivatives of the fitting
-function and use error propagation (error_strat=&#39;propagation&#39;). The latter is the default case.
+<span class="sd">There are two ways to compute the derivatives of the chisqare numerically. Either compute the</span>
+<span class="sd">numerical derivative of the whole chisquare (error_strat=&#39;hessian&#39;) or compute the derivatives of the fitting</span>
+<span class="sd">function and use error propagation (error_strat=&#39;propagation&#39;). The latter is the default case.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

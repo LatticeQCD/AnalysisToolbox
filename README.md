@@ -42,8 +42,11 @@ conveniently install it using
 ```bash
 pip install latqcdtools
 ```
-Besides this, there is a `latexify()` command you can use when plotting to make your
-plot font match typical LaTeX documents. In order for this command to work, you need
+If you would like alternative ways to set up the AnalysisToolbox, please see
+[the documentation](https://latticeqcd.github.io/AnalysisToolbox).
+
+Besides this basic install, there is a `latexify()` command you can use when plotting to 
+make your plot font match typical LaTeX documents. In order for this command to work, you need
 to have LaTeX installed on your system. The easiest is to install `texlive-full`, but
 if that is not possible, it may be enough to install `texlive-mathscience` in addition
 to the basic stuff.

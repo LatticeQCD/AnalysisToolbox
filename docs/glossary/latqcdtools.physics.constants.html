@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.physics.constants &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,88 +123,169 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-constants">
-<h1>latqcdtools.physics.constants<a class="headerlink" href="#latqcdtools-physics-constants" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">GeV_to_fminv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">GeVinv_to_fm(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">M_K0_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of K0 mass. 
+<h1>latqcdtools.physics.constants<a class="headerlink" href="#latqcdtools-physics-constants" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">GeV_to_fminv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">M_Kpm_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of K0 mass. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">GeVinv_to_fm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">M_mu_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the muon mass. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_K0_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2022</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of K0 mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">M_pi0_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the pi0 mass. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_Kpm_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2022</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of K0 mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">M_pipm_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the pi+/- mass. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_mu_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2022</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the muon mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">M_rho_phys(year=2022,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the rho mass. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_neutron_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2024</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the neutron mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">MeV_to_fminv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">MeVinv_to_fm(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">Rproton_phys(year=2018,</span> <span class="pre">units='fm',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of proton charge radius. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_pi0_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2022</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the pi0 mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_separatePrefix(units)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">alpha_e(year=2018,</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Fine structure constant. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_pipm_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2022</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the pi+/- mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">convert(x,</span> <span class="pre">unit1,</span> <span class="pre">unit2)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
-If the unit ends in &#39;inv&#39;, it is interpreted as 1/unit.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_proton_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2024</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the proton mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M_rho_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2022</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the rho mass. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">MeV_to_fminv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">MeVinv_to_fm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Rproton_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2018</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;fm&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of proton charge radius. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_separatePrefix</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">alpha_e</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2018</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Fine structure constant. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">convert</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">unit1</span><span class="p">,</span> <span class="n">unit2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.</span>
+<span class="sd">If the unit ends in &#39;inv&#39;, it is interpreted as 1/unit.</span>
 
-Args:
-    x (float): measurement in [unit1]. 
-    unit1 (str): Original units.
-    unit2 (str): Target units.
+<span class="sd">Args:</span>
+<span class="sd">    x (float): measurement in [unit1]. </span>
+<span class="sd">    unit1 (str): Original units.</span>
+<span class="sd">    unit2 (str): Target units.</span>
 
-Returns:
-    float: measurement in [unit2]. 
+<span class="sd">Returns:</span>
+<span class="sd">    float: measurement in [unit2]. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fk_phys(year=2019,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fk_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2019</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fm_to_GeVinv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">fm_to_MeVinv(x)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">fpi_phys(year=2018,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the pion decay constant, f_pi+/-. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fm_to_GeVinv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">frho_phys(year=2017,</span> <span class="pre">units='GeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of the rho decay constant. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fm_to_MeVinv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">lambda_MSbar_phys(year=2021,</span> <span class="pre">units='MeV',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of MS-bar lambda parameter. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fminv_to_MeV</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">r0_phys(year=2014,</span> <span class="pre">units='fm',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of Sommer scale r0. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fpi_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2018</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the pion decay constant, f_pi+/-. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">r1_phys(year=2010,</span> <span class="pre">units='fm',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Physical value of Sommer scale r1. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">frho_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;GeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of the rho decay constant. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">w0_phys(year=2013,</span> <span class="pre">units='fm',</span> <span class="pre">returnErr=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Gradient flow scale w0.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lambda_MSbar_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;MeV&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of MS-bar lambda parameter. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">physicalConstant(name,</span> <span class="pre">scale,</span> <span class="pre">units)</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">r0_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2014</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;fm&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of Sommer scale r0. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">r1_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2010</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;fm&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Physical value of Sommer scale r1. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">w0_phys</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2013</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;fm&#39;</span><span class="p">,</span> <span class="n">returnErr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Gradient flow scale w0.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">physicalConstant</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

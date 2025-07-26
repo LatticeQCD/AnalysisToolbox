@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.statistics.statistics &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,473 +123,601 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-statistics">
-<h1>latqcdtools.statistics.statistics<a class="headerlink" href="#latqcdtools-statistics-statistics" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">AIC(xdata,</span> <span class="pre">ydata,</span> <span class="pre">cov,</span> <span class="pre">func,</span> <span class="pre">args=(),</span> <span class="pre">params=(),</span> <span class="pre">prior=None,</span> <span class="pre">priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
-function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
-choose from,and hence different numbers of d.o.f. possible. It&#39;s also useful when you are worried about
-overfitting. The preferred model minimizes the AIC.
+<h1>latqcdtools.statistics.statistics<a class="headerlink" href="#latqcdtools-statistics-statistics" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">AIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood</span>
+<span class="sd">function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to</span>
+<span class="sd">choose from,and hence different numbers of d.o.f. possible. It&#39;s also useful when you are worried about</span>
+<span class="sd">overfitting. The preferred model minimizes the AIC.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    cov (array-like): covariance matrix 
-    func (func)
-    args (tuple, optional): arguments to func. Defaults to ().
-    params (tuple, optional): model parameters. Defaults to ().
-    prior (array-like, optional): Bayesian priors. Defaults to None.
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-Returns:
-    float: AIC
+<span class="sd">    Args:</span>
+<span class="sd">        xdata (array-like)</span>
+<span class="sd">        ydata (array-like)</span>
+<span class="sd">        cov (array-like): covariance matrix </span>
+<span class="sd">        func (func)</span>
+<span class="sd">        args (tuple, optional): arguments to func. Defaults to ().</span>
+<span class="sd">        params (tuple, optional): model parameters. Defaults to ().</span>
+<span class="sd">        prior (array-like, optional): Bayesian priors. Defaults to None.</span>
+<span class="sd">        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: AIC</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">AICc(xdata,</span> <span class="pre">ydata,</span> <span class="pre">cov,</span> <span class="pre">func,</span> <span class="pre">args=(),</span> <span class="pre">params=(),</span> <span class="pre">prior=None,</span> <span class="pre">priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
-many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
-infinity, one recovers the AIC.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">AICc</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too</span>
+<span class="sd">many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to</span>
+<span class="sd">infinity, one recovers the AIC.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    cov (array-like): covariance matrix 
-    func (func)
-    args (tuple, optional): arguments to func. Defaults to ().
-    params (tuple, optional): model parameters. Defaults to ().
-    prior (array-like, optional): Bayesian priors. Defaults to None.
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-Returns:
-    float: corrected AIC
+<span class="sd">    Args:</span>
+<span class="sd">        xdata (array-like)</span>
+<span class="sd">        ydata (array-like)</span>
+<span class="sd">        cov (array-like): covariance matrix </span>
+<span class="sd">        func (func)</span>
+<span class="sd">        args (tuple, optional): arguments to func. Defaults to ().</span>
+<span class="sd">        params (tuple, optional): model parameters. Defaults to ().</span>
+<span class="sd">        prior (array-like, optional): Bayesian priors. Defaults to None.</span>
+<span class="sd">        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: corrected AIC</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">BAIC(xdata,</span> <span class="pre">ydata,</span> <span class="pre">cov,</span> <span class="pre">func,</span> <span class="pre">args=(),</span> <span class="pre">params=(),</span> <span class="pre">Ncut=0,</span> <span class="pre">modelPrior=1)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bayesian Akaike information criterion of 2208.14983. It uses the chi^2 as its likelihood
-function and includes penalties for having many fit parameters and cutting many data from
-your original sample.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">BAIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">Ncut</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">modelPrior</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Bayesian Akaike information criterion of 2208.14983. It uses the chi^2 as its likelihood</span>
+<span class="sd">function and includes penalties for having many fit parameters and cutting many data from</span>
+<span class="sd">your original sample.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    cov (array-like): covariance matrix 
-    func (func)
-    args (tuple, optional): arguments to func. Defaults to ().
-    params (tuple, optional): model parameters. Defaults to ().
-    prior (array-like, optional): Bayesian priors. Defaults to None.
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-    Ncut (int, optional): The number of data trimmed from your fit. Defaults to 0.
-    modelPrior (float, optional): The prior probability of your model. Defaults to 1.
-    
-Returns:
-    float: Bayesian AIC 
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    cov (array-like): covariance matrix </span>
+<span class="sd">    func (func)</span>
+<span class="sd">    args (tuple, optional): arguments to func. Defaults to ().</span>
+<span class="sd">    params (tuple, optional): model parameters. Defaults to ().</span>
+<span class="sd">    prior (array-like, optional): Bayesian priors. Defaults to None.</span>
+<span class="sd">    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
+<span class="sd">    Ncut (int, optional): The number of data trimmed from your fit. Defaults to 0.</span>
+<span class="sd">    modelPrior (float, optional): The prior probability of your model. Defaults to 1.</span>
+<span class="sd">    </span>
+<span class="sd">Returns:</span>
+<span class="sd">    float: Bayesian AIC </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DOF(ndat,</span> <span class="pre">nparam,</span> <span class="pre">priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as
-initial guesses for the fit algorithm. If you would like parameters in the prior array to be treated as a 
-starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there
-are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">DOF</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">nparam</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as</span>
+<span class="sd">initial guesses for the fit algorithm. If you would like parameters in the prior array to be treated as a </span>
+<span class="sd">starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there</span>
+<span class="sd">are priors, the number of degrees of freedom equals the number of ydata, less the number of finite prior errors.</span>
 
-Args:
-    ndat (int): number of data 
-    nparam (int): number of model parameters 
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+<span class="sd">Args:</span>
+<span class="sd">    ndat (int): number of data </span>
+<span class="sd">    nparam (int): number of model parameters </span>
+<span class="sd">    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
 
-Returns:
-    int: number of degrees of freedom 
+<span class="sd">Returns:</span>
+<span class="sd">    int: number of degrees of freedom </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">KSTest_1side(data,</span> <span class="pre">cdf)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1-sided Kolmogorov test. Gives back the likelihood that the observed difference between
-data and cdf are at least as extreme as suggested by the Kolmogorov statistic.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">KSTest_1side</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">1-sided Kolmogorov test. Gives back the likelihood that the observed difference between</span>
+<span class="sd">data and cdf are at least as extreme as suggested by the Kolmogorov statistic.</span>
 
-Args:
-    data (array-like)
-    cdf (function)
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like)</span>
+<span class="sd">    cdf (function)</span>
 
-Returns:
-    float: 1-p 
+<span class="sd">Returns:</span>
+<span class="sd">    float: 1-p </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">KSTest_2side(data1,</span> <span class="pre">data2)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2-sided Kolmogorov test. Gives back the likelihood that the observed difference between
-data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">KSTest_2side</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">2-sided Kolmogorov test. Gives back the likelihood that the observed difference between</span>
+<span class="sd">data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.</span>
 
-Args:
-    data1 (array-like)
-    data2 (array-like)
+<span class="sd">Args:</span>
+<span class="sd">    data1 (array-like)</span>
+<span class="sd">    data2 (array-like)</span>
 
-Returns:
-    float: 1-p 
+<span class="sd">Returns:</span>
+<span class="sd">    float: 1-p </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">biased_sample_variance(data,</span> <span class="pre">err)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the biased weighted sample variance, i.e. the biased variance of an 
-individual measurement and not the variance of the mean.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">biased_sample_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the biased weighted sample variance, i.e. the biased variance of an </span>
+<span class="sd">individual measurement and not the variance of the mean.</span>
 
-Args:
-    data (array-like)
-    err (array-like)
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like)</span>
+<span class="sd">    err (array-like)</span>
 
-Returns:
-    float: sample variance 
+<span class="sd">Returns:</span>
+<span class="sd">    float: sample variance </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">binSeries(data,</span> <span class="pre">nbins)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Take a time series and bin it. Bin 0 is the average over the first binsize elements,
-bin 1 the average over the next binsize elements, and so on.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">binSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nbins</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Take a time series and bin it. Bin 0 is the average over the first binsize elements,</span>
+<span class="sd">bin 1 the average over the next binsize elements, and so on.</span>
 
-Args:
-    data (array-like)
-    nbins (int)
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like)</span>
+<span class="sd">    nbins (int)</span>
 
-Returns:
-    np.ndarray: Binned data
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: Binned data</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkDomain(domain)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Some methods require that you do something over an interval, which we refer to in this module as
-a &#39;domain&#39;. This checks the domain makes sense.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkDomain</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Some methods require that you do something over an interval, which we refer to in this module as</span>
+<span class="sd">a &#39;domain&#39;. This checks the domain makes sense.</span>
 
-Args:
-    domain (tuple)
+<span class="sd">Args:</span>
+<span class="sd">    domain (tuple)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkPrior(prior,</span> <span class="pre">priorsigma)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Make sure prior and priorsigma status are compatible. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkPrior</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">priorsigma</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Make sure prior and priorsigma status are compatible. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkProb(p)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">checkTS(ts)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Some methods require 1-d time series. This checks that the type, dimensionality,
-and length are appropriate.
-
-Args:
-    ts (array-like): time series 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkProb</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">chisquare(xdata,</span> <span class="pre">ydata,</span> <span class="pre">cov,</span> <span class="pre">func,</span> <span class="pre">args=(),</span> <span class="pre">params=(),</span> <span class="pre">prior=None,</span> <span class="pre">priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of
-10.1103/PhysRevD.90.054506. We assume priors are not correlated with data.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkTS</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Some methods require 1-d time series. This checks that the type, dimensionality,</span>
+<span class="sd">and length are appropriate.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    cov (array-like): covariance matrix 
-    func (func)
-    args (tuple, optional): arguments to func. Defaults to ().
-    params (tuple, optional): model parameters. Defaults to ().
-    prior (array-like, optional): Bayesian priors. Defaults to None.
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-
-Returns:
-    float: chi^2
+<span class="sd">Args:</span>
+<span class="sd">    ts (array-like): time series </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">confidence_ellipse(x,</span> <span class="pre">y,</span> <span class="pre">ax,</span> <span class="pre">color='r',</span> <span class="pre">CI=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
-assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures
-roughly 39% of the data.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">chisquare</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of</span>
+<span class="sd">10.1103/PhysRevD.90.054506. We assume priors are not correlated with data.</span>
 
-Args:
-    x (array-like)
-    y (array-like)
-    ax (matplotlib ax object)
-    color (str, optional): Color of the ellipse edge. Defaults to &#39;r&#39;.
-    C (float, optional): Desired confidence. Defaults to ~0.39.
-
-Returns:
-    float, float: semi-major and semi-minor lengths of drawn ellipse 
+<span class="sd">    Args:</span>
+<span class="sd">        xdata (array-like)</span>
+<span class="sd">        ydata (array-like)</span>
+<span class="sd">        cov (array-like): covariance matrix </span>
+<span class="sd">        func (func)</span>
+<span class="sd">        args (tuple, optional): arguments to func. Defaults to ().</span>
+<span class="sd">        params (tuple, optional): model parameters. Defaults to ().</span>
+<span class="sd">        prior (array-like, optional): Bayesian priors. Defaults to None.</span>
+<span class="sd">        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: chi^2</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">countParams(func,</span> <span class="pre">params)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Count number of model parameters. For a typical function without priors,
-we count the length of the params array. Otherwise we assume it&#39;s a spline.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">confidence_ellipse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">CI</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a confidence ellipse according to the data x, y. The confidence is only meaningful </span>
+<span class="sd">assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures</span>
+<span class="sd">roughly 39% of the data.</span>
 
-Args:
-    func (func)
-    params (array-like): model parameters.
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+<span class="sd">Args:</span>
+<span class="sd">    x (array-like)</span>
+<span class="sd">    y (array-like)</span>
+<span class="sd">    ax (matplotlib ax object)</span>
+<span class="sd">    color (str, optional): Color of the ellipse edge. Defaults to &#39;r&#39;.</span>
+<span class="sd">    C (float, optional): Desired confidence. Defaults to ~0.39.</span>
 
-Returns:
-    int: number of parameters. 
+<span class="sd">Returns:</span>
+<span class="sd">    float, float: semi-major and semi-minor lengths of drawn ellipse </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">countPriors(priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The number of priors is the number of finite prior error bars.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">countParams</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Count number of model parameters. For a typical function without priors,</span>
+<span class="sd">we count the length of the params array. Otherwise we assume it&#39;s a spline.</span>
 
-Args:
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+<span class="sd">Args:</span>
+<span class="sd">    func (func)</span>
+<span class="sd">    params (array-like): model parameters.</span>
+<span class="sd">    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
 
-Returns:
-    int: Number of priors 
+<span class="sd">Returns:</span>
+<span class="sd">    int: number of parameters. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">cov_to_cor(cov)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Normalize covariance matrix to create correlation matrix.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">countPriors</span><span class="p">(</span><span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The number of priors is the number of finite prior error bars.</span>
 
-Args:
-    cov (np.ndarray)
+<span class="sd">Args:</span>
+<span class="sd">    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
 
-Returns:
-    np.ndarray: correlation matrix 
+<span class="sd">Returns:</span>
+<span class="sd">    int: Number of priors </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">covariance(x,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Unbiased estimator of the covariance between the time series x and y.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cov_to_cor</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Normalize covariance matrix to create correlation matrix.</span>
 
-Args:
-    x (array-like)
-    y (array-like)
+<span class="sd">Args:</span>
+<span class="sd">    cov (np.ndarray)</span>
 
-Returns:
-    float: cov 
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: correlation matrix </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">dev_by_dist(data,</span> <span class="pre">axis=0,</span> <span class="pre">return_both_q=False,</span> <span class="pre">percentile=68)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Calculate the distance between the median and 68% quantiles. Returns the larger of the two 
-distances. This method is used sometimes to estimate error, for example in the bootstrap. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">covariance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Unbiased estimator of the covariance between the time series x and y.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    x (array-like)</span>
+<span class="sd">    y (array-like)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: cov </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">empiricalCDF(data)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create the x and y coordinates needed to plot the empirical CDF
-of a 1-d set of data.
-
-Args:
-    data (array-like): measurements 
-
-Returns:
-    func: CDF 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dev_by_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_both_q</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">percentile</span><span class="o">=</span><span class="mi">68</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Calculate the distance between the median and 68% quantiles. Returns the larger of the two </span>
+<span class="sd">distances. This method is used sometimes to estimate error, for example in the bootstrap. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">error_prop(func,</span> <span class="pre">means,</span> <span class="pre">errors,</span> <span class="pre">grad=None,</span> <span class="pre">args=())</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Use error propagation to propagate some errors through function func. The function should have the form
-    func( data ), 
-where data is a 1-d array of input variables. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">empiricalCDF</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Create the x and y coordinates needed to plot the empirical CDF</span>
+<span class="sd">of a 1-d set of data.</span>
 
-Args:
-    func (func)
-    means (array-like)
-    errors (array-like)
-    grad (func, optional): Gradient function. Defaults to None.
-    args (tuple, optional): Arguments of func. Defaults to ().
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like): measurements </span>
 
-Returns:
-    np.ndarray, np.ndarray: f, f_err 
+<span class="sd">Returns:</span>
+<span class="sd">    func: CDF </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">error_prop_func(x,</span> <span class="pre">func,</span> <span class="pre">params,</span> <span class="pre">params_err,</span> <span class="pre">grad=None,</span> <span class="pre">args=())</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Propagate error in f(x;params,params_err). This needs its own special treatment, since
-the error propagation method on its own only propagates params_err to f(params,params_err).
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Use error propagation to propagate some errors through function func. The function should have the form</span>
+<span class="sd">    func( data ), </span>
+<span class="sd">where data is a 1-d array of input variables. </span>
 
-Args:
-    x (array-like)
-    func (func)
-    params (array-like): Model parameters. 
-    params_err (array-like): Error in model parameters. 
-    grad (func, optional): Gradient function. Defaults to None.
-    args (tuple, optional): Arguments of func. Defaults to ().
+<span class="sd">Args:</span>
+<span class="sd">    func (func)</span>
+<span class="sd">    means (np.ndarray)</span>
+<span class="sd">    errors (np.ndarray)</span>
+<span class="sd">    grad (func, optional): Gradient function. Defaults to None.</span>
+<span class="sd">    args (tuple, optional): Arguments of func. Defaults to ().</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray, np.ndarray: f, f_err </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">expandArgs(func,</span> <span class="pre">x,</span> <span class="pre">params=(),</span> <span class="pre">args=())</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>In general we distinguish between parameters and arguments. Parameters should be passed
-together as a collection, e.g. as a tuple, list, or np.array. Other function arguments can
-be passed how you like and will be expanded here.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">params_err</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Propagate error in f(x;params,params_err). This needs its own special treatment, since</span>
+<span class="sd">the error propagation method on its own only propagates params_err to f(params,params_err).</span>
 
-Args:
-    func (func)
-    x (array-like)
-    params (tuple, optional): Model parameters. Defaults to ().
-    args (tuple, optional): Function arguments. Defaults to ().
-
-Returns:
-    func(x,params,args) 
+<span class="sd">Args:</span>
+<span class="sd">    x (array-like)</span>
+<span class="sd">    func (func)</span>
+<span class="sd">    params (array-like): Model parameters. </span>
+<span class="sd">    params_err (array-like): Error in model parameters. </span>
+<span class="sd">    grad (func, optional): Gradient function. Defaults to None.</span>
+<span class="sd">    args (tuple, optional): Arguments of func. Defaults to ().</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gaudif(x1,</span> <span class="pre">e1,</span> <span class="pre">x2,</span> <span class="pre">e2)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
-both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
-appropriate when one estimated x1 and x2 using ~30 or more measurements.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">expandArgs</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">In general we distinguish between parameters and arguments. Parameters should be passed</span>
+<span class="sd">together as a collection, e.g. as a tuple, list, or np.array. Other function arguments can</span>
+<span class="sd">be passed how you like and will be expanded here.</span>
 
-Args:
-    x1 (float): mean 1 
-    e1 (float): error 1
-    x2 (float): mean 2
-    e2 (float): error 2
+<span class="sd">Args:</span>
+<span class="sd">    func (func)</span>
+<span class="sd">    x (array-like)</span>
+<span class="sd">    params (tuple, optional): Model parameters. Defaults to ().</span>
+<span class="sd">    args (tuple, optional): Function arguments. Defaults to ().</span>
 
-Returns:
-    float: p-value 
+<span class="sd">Returns:</span>
+<span class="sd">    func(x,params,args) </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">getModelWeights(IC)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Convert information criteria IC to normalized probability weights.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">forcePositiveSemidefinite</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;Doctors a noisy correlation matrix mat to be positive semidefinite if it isn&#39;t already. </span>
+<span class="sd">Uses algorithm of Rebonato and Jaeckel, DOI: 10.2139/ssrn.1969689</span>
 
-Args:
-    IC (array-like): Array of information criteria 
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
 
-Returns:
-    np.array: Probability weights 
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: positive semidefinite matrix </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">goodnessOfFit(dof,</span> <span class="pre">chi2)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The q-value or goodness of fit.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are</span>
+<span class="sd">both drawn from a normal distribution with the same mean. A rule of thumb is that this is more</span>
+<span class="sd">appropriate when one estimated x1 and x2 using ~30 or more measurements.</span>
 
-Args:
-    dof (int): number of degrees of freedom 
-    chi2 (float): the chi2 
+<span class="sd">Args:</span>
+<span class="sd">    x1 (float): mean 1 </span>
+<span class="sd">    e1 (float): error 1</span>
+<span class="sd">    x2 (float): mean 2</span>
+<span class="sd">    e2 (float): error 2</span>
 
-Returns:
-    float: Q 
+<span class="sd">Returns:</span>
+<span class="sd">    float: p-value </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">logGBF(xdata,</span> <span class="pre">ydata,</span> <span class="pre">cov,</span> <span class="pre">func,</span> <span class="pre">args=(),</span> <span class="pre">params=(),</span> <span class="pre">prior=None,</span> <span class="pre">priorsigma=None)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>log P(data|model). This quantity is useful for comparing fits of the same data to different models that
-have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
-Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getModelWeights</span><span class="p">(</span><span class="n">IC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Convert information criteria IC to normalized probability weights.</span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    cov (array-like): covariance matrix 
-    func (func)
-    args (tuple, optional): arguments to func. Defaults to ().
-    params (tuple, optional): model parameters. Defaults to ().
-    prior (array-like, optional): Bayesian priors. Defaults to None.
-    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+<span class="sd">Args:</span>
+<span class="sd">    IC (array-like): Array of information criteria </span>
 
-Returns:
-    float: log( Gaussian Bayes factor )
+<span class="sd">Returns:</span>
+<span class="sd">    np.array: Probability weights </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">meanArgWrapper(func,</span> <span class="pre">used_data,</span> <span class="pre">args)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">modelAverage(data,</span> <span class="pre">err,</span> <span class="pre">IC,</span> <span class="pre">return_syst=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Given some fit results, corresponding error, and information criteria, compute
-a weighted model average.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">goodnessOfFit</span><span class="p">(</span><span class="n">dof</span><span class="p">,</span> <span class="n">chi2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The q-value or goodness of fit.</span>
 
-Args:
-    data (array-like): Fit results 
-    err (array-like): Result errors 
-    IC (array-like): Information criteria 
+<span class="sd">Args:</span>
+<span class="sd">    dof (int): number of degrees of freedom </span>
+<span class="sd">    chi2 (float): the chi2 </span>
 
-Returns:
-    tuple: Model average and error (optionally systematic error)
+<span class="sd">Returns:</span>
+<span class="sd">    float: Q </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">pearson(x,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get the Pearson correlation coefficient between the time series x and y.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">logGBF</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">log P(data|model). This quantity is useful for comparing fits of the same data to different models that</span>
+<span class="sd">have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.</span>
+<span class="sd">Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.</span>
 
-Args:
-    x (array-like)
-    y (array-like)
+<span class="sd">    Args:</span>
+<span class="sd">        xdata (array-like)</span>
+<span class="sd">        ydata (array-like)</span>
+<span class="sd">        cov (array-like): covariance matrix </span>
+<span class="sd">        func (func)</span>
+<span class="sd">        args (tuple, optional): arguments to func. Defaults to ().</span>
+<span class="sd">        params (tuple, optional): model parameters. Defaults to ().</span>
+<span class="sd">        prior (array-like, optional): Bayesian priors. Defaults to None.</span>
+<span class="sd">        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: log( Gaussian Bayes factor )</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">meanArgWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">used_data</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">modelAverage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">IC</span><span class="p">,</span> <span class="n">return_syst</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Given some fit results, corresponding error, and information criteria, compute</span>
+<span class="sd">a weighted model average.</span>
 
-Returns:
-    float: R 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">plot_func(func,</span> <span class="pre">domain,</span> <span class="pre">params=(),</span> <span class="pre">args=(),</span> <span class="pre">func_err=None,</span> <span class="pre">params_err=(),</span> <span class="pre">grad=None,</span> <span class="pre">swapXY=False,</span> <span class="pre">npoints=1000,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Plot a function along with its error bands.
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like): Fit results </span>
+<span class="sd">    err (array-like): Result errors </span>
+<span class="sd">    IC (array-like): Information criteria </span>
 
-Args:
-    func (func)
-    domain (tuple): Domain of function. 
-    params (tuple, optional): Model parameters. Defaults to ().
-    params_err (tuple, optional): Error in model parameters. Defaults to ().
-    args (tuple, optional): Optional function arguments. Defaults to ().
-    func_err (func, optional): Explicit error function. Defaults to None.
-    grad (func, optional): Explicit function gradient to compute error. Defaults to None.
-    swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
-    npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
+<span class="sd">Returns:</span>
+<span class="sd">    tuple: Model average and error (optionally systematic error)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">std_dev(data,</span> <span class="pre">axis=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Calculate unbiased (ddof = 1) estimator for the standard deviation. 
- 
-The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-something that is never needed in our context. Changing the default to axis=0 means
-applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">std_err(data,</span> <span class="pre">axis=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Standard deviation of the sample mean according to the CLT. 
- 
-The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-something that is never needed in our context. Changing the default to axis=0 means
-applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">std_mean(data,</span> <span class="pre">axis=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the mean. 
- 
-The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-something that is never needed in our context. Changing the default to axis=0 means
-applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">std_median(data,</span> <span class="pre">axis=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the median. 
- 
-The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-something that is never needed in our context. Changing the default to axis=0 means
-applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">std_var(data,</span> <span class="pre">axis=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Calculate unbiased (ddof = 1) estimator for the variance. 
- 
-The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-something that is never needed in our context. Changing the default to axis=0 means
-applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">studif(x1,</span> <span class="pre">e1,</span> <span class="pre">ndat1,</span> <span class="pre">x2,</span> <span class="pre">e2,</span> <span class="pre">ndat2)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
-both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
-appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pearson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get the Pearson correlation coefficient between the time series x and y.</span>
 
-Args:
-    x1  (float): mean 1 
-    e1  (float): error 1
-    ndat1 (int): number of measurements used to compute x1
-    x2  (float): mean 2
-    e2  (float): error 2
-    ndat2 (int): number of measurements used to compute x2
+<span class="sd">Args:</span>
+<span class="sd">    x (array-like)</span>
+<span class="sd">    y (array-like)</span>
 
-Returns:
-    float: p-value 
+<span class="sd">Returns:</span>
+<span class="sd">    float: R </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">symmetrizeError(lo,</span> <span class="pre">hi,</span> <span class="pre">central,</span> <span class="pre">method='conservative')</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">unbiased_mean_variance(data,</span> <span class="pre">err)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
-weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
-constructed using the deviations of the individual data points. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_correlation</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">&#39;matplotlib.pyplot&#39;</span> <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py&#39;</span><span class="o">&gt;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;Plot correlation matrix as a heatmap.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray): correlation matrix</span>
+<span class="sd">    ax (matplotlib ax object): Defaults to plt.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">unbiased_sample_variance(data,</span> <span class="pre">err)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
-the variance of the mean. Do not use this function if your weights are frequency weights. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">swapXY</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Plot a function along with its error bands.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    func (func)</span>
+<span class="sd">    domain (tuple): Domain of function. </span>
+<span class="sd">    params (tuple, optional): Model parameters. Defaults to ().</span>
+<span class="sd">    params_err (tuple, optional): Error in model parameters. Defaults to ().</span>
+<span class="sd">    args (tuple, optional): Optional function arguments. Defaults to ().</span>
+<span class="sd">    func_err (func, optional): Explicit error function. Defaults to None.</span>
+<span class="sd">    grad (func, optional): Explicit function gradient to compute error. Defaults to None.</span>
+<span class="sd">    swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.</span>
+<span class="sd">    npoints (int, optional): Number of points to use for plotting. Defaults to 1000.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">weighted_mean(data,</span> <span class="pre">err)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Compute the weighted mean. Here the weights are Gaussian error bars.
-See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">save_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;func.d&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Save a function along with its error bands.</span>
 
-Args:
-    data (array-like)
-    errcov (array-like): error if 1d or cov if 2d. 
-
-Returns:
-    float: weighted mean 
+<span class="sd">Args:</span>
+<span class="sd">    func (func)</span>
+<span class="sd">    domain (tuple): Domain of function. </span>
+<span class="sd">    params (tuple, optional): Model parameters. Defaults to ().</span>
+<span class="sd">    params_err (tuple, optional): Error in model parameters. Defaults to ().</span>
+<span class="sd">    args (tuple, optional): Optional function arguments. Defaults to ().</span>
+<span class="sd">    func_err (func, optional): Explicit error function. Defaults to None.</span>
+<span class="sd">    grad (func, optional): Explicit function gradient to compute error. Defaults to None.</span>
+<span class="sd">    swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.</span>
+<span class="sd">    npoints (int, optional): Number of points to use for plotting. Defaults to 1000.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">weighted_variance(err)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get variance of above weighted mean, when the weights are statistical errors. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_dev</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Calculate unbiased (ddof = 1) estimator for the standard deviation. </span>
+<span class="sd"> </span>
+<span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
+<span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
+<span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_err</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Standard deviation of the sample mean according to the CLT. </span>
+<span class="sd"> </span>
+<span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
+<span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
+<span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the mean. </span>
+<span class="sd"> </span>
+<span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
+<span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
+<span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the median. </span>
+<span class="sd"> </span>
+<span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
+<span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
+<span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Calculate unbiased (ddof = 1) estimator for the variance. </span>
+<span class="sd"> </span>
+<span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
+<span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
+<span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">studif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">ndat1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">ndat2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are</span>
+<span class="sd">both drawn from a normal distribution with the same mean. A rule of thumb is that this is more</span>
+<span class="sd">appropriate when one estimated x1 and x2 using ~30 or fewer measurements.</span>
 
-Args:
-    err (array-like)
+<span class="sd">Args:</span>
+<span class="sd">    x1  (float): mean 1 </span>
+<span class="sd">    e1  (float): error 1</span>
+<span class="sd">    ndat1 (int): number of measurements used to compute x1</span>
+<span class="sd">    x2  (float): mean 2</span>
+<span class="sd">    e2  (float): error 2</span>
+<span class="sd">    ndat2 (int): number of measurements used to compute x2</span>
 
-Returns:
-    float: weighted variance 
+<span class="sd">Returns:</span>
+<span class="sd">    float: p-value </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_mean_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency</span>
+<span class="sd">weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is</span>
+<span class="sd">constructed using the deviations of the individual data points. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_sample_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not</span>
+<span class="sd">the variance of the mean. Do not use this function if your weights are frequency weights. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute the weighted mean. Here the weights are Gaussian error bars.</span>
+<span class="sd">See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    data (array-like)</span>
+<span class="sd">    errcov (array-like): error if 1d or cov if 2d. </span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: weighted mean </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_variance</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get variance of above weighted mean, when the weights are statistical errors. </span>
+
+<span class="sd">Args:</span>
+<span class="sd">    err (array-like)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: weighted variance </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

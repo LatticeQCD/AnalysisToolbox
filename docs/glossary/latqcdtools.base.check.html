@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.check &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,63 +123,96 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-check">
-<h1>latqcdtools.base.check<a class="headerlink" href="#latqcdtools-base-check" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">checkDomain(obj,</span> <span class="pre">expectedDomain)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check that obj lies in expectedDomain.
+<h1>latqcdtools.base.check<a class="headerlink" href="#latqcdtools-base-check" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkDomain</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">expectedDomain</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Check that obj lies in expectedDomain.</span>
 
-Args:
-    obj (obj)
-    expectedDomain (array-like): collection of values obj is allowed to take
+<span class="sd">Args:</span>
+<span class="sd">    obj (obj)</span>
+<span class="sd">    expectedDomain (array-like): collection of values obj is allowed to take</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkEqualLengths(*args)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check that all array-like objects passed have the same length. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkEqualLengths</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Check that all array-like objects passed have the same length. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkExtension(filename,</span> <span class="pre">extension,</span> <span class="pre">ignoreExtension=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check the extension of a file
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkExtension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">extension</span><span class="p">,</span> <span class="n">ignoreExtension</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Check the extension of a file</span>
 
-Args:
-    filename (str)
-    extension (str)
-    ignoreExtension (bool, optional): Defaults to False.
+<span class="sd">Args:</span>
+<span class="sd">    filename (str)</span>
+<span class="sd">    extension (str)</span>
+<span class="sd">    ignoreExtension (bool, optional): Defaults to False.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkType(expectedType,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check the type of an object. If it thinks the type is wrong, it will tell you what the
-name of obj is (as you named it in your code) along with its type and what was expected.
-Grabbing the name doesn&#39;t work if you pass him a dictionary element like myDict[&#39;key&#39;];
-it can only tell the name myDict. One could use type hints, but at the time of writing,
-type hints will not necessarily crash the program, which I want.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkType</span><span class="p">(</span><span class="n">expectedType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Check the type of an object. If it thinks the type is wrong, it will tell you what the</span>
+<span class="sd">name of obj is (as you named it in your code) along with its type and what was expected.</span>
+<span class="sd">Grabbing the name doesn&#39;t work if you pass him a dictionary element like myDict[&#39;key&#39;];</span>
+<span class="sd">it can only tell the name myDict. One could use type hints, but at the time of writing,</span>
+<span class="sd">type hints will not necessarily crash the program, which I want.</span>
 
-Args:
-    obj (obj)
-    expectedType (type): what type do you expect? Also accepts &quot;array&quot;, &quot;real&quot;, &quot;int&quot;, and &quot;scalar&quot;.
+<span class="sd">Args:</span>
+<span class="sd">    obj (obj)</span>
+<span class="sd">    expectedType (type): what type do you expect? Also accepts &quot;array&quot;, &quot;real&quot;, &quot;int&quot;, and &quot;scalar&quot;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">err_handler(err,</span> <span class="pre">flag)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This method lets us control in detail how different types of errors are treated. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">err_handler</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This method lets us control in detail how different types of errors are treated. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ignoreDivideByZero()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn off zero division crashes. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreDivideByZero</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn off zero division crashes. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ignoreInvalidValue()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn off invalid value crashes. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreInvalidValue</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn off invalid value crashes. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ignoreOverflow()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn off overflow crashes. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreOverflow</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn off overflow crashes. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ignoreUnderflow()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn off underflow crashes. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreUnderflow</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn off underflow crashes. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DivideByZeroError</span> </code></p>
-<p><code class="docutils literal notranslate"><span class="pre">InvalidValueError</span> </code></p>
-<p><code class="docutils literal notranslate"><span class="pre">UnderflowError</span> </code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DivideByZeroError</span>
+<span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">InvalidValueError</span>
+<span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UnderflowError</span>
+<span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

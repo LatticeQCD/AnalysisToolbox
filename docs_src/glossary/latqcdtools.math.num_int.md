@@ -1,8 +1,9 @@
 latqcdtools.math.num_int
 =============
 
-`integrateData(xdata, ydata, method='trapezoid')`
-
+```Python
+integrateData(xdata, ydata, method='trapezoid'):
+'''
 Wrapper to integrate data. 
 
 Args:
@@ -14,9 +15,11 @@ Args:
 
 Returns:
     float: Area under ydata. 
-
-`integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08, floatT=<class 'numpy.float64'>)`
-
+'''
+```
+```Python
+integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08, floatT=<class 'numpy.float64'>):
+'''
 Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
 which otherwise does not like to handle numpy arrays.
 
@@ -36,9 +39,11 @@ Args:
 
 Returns:
     float: Integral of func from a to b. 
-
-`solveIVP(dydt, t0, tf, y0, method='RK45', args=(), epsrel=1.49e-08, epsabs=1.49e-08) -> numpy.ndarray`
-
+'''
+```
+```Python
+solveIVP(dydt, t0, tf, y0, method='RK45', args=(), epsrel=1.49e-08, epsabs=1.49e-08) -> numpy.ndarray:
+'''
 Wrapper to solve an initial value problem of the form
 
 dy/dt = dydt(t, y)
@@ -56,4 +61,5 @@ Args:
 
 Returns:
     array-like: y(tf) 
-
+'''
+```

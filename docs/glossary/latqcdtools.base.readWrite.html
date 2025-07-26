@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.readWrite &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,41 +123,50 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-readwrite">
-<h1>latqcdtools.base.readWrite<a class="headerlink" href="#latqcdtools-base-readwrite" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_lab(num)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Create a short string label for each column of a data table. Needed for writeTable. 
+<h1>latqcdtools.base.readWrite<a class="headerlink" href="#latqcdtools-base-readwrite" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_lab</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Create a short string label for each column of a data table. Needed for writeTable. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">readTable(filename,</span> <span class="pre">unpack=True,</span> <span class="pre">col=None,</span> <span class="pre">minVal=-inf,</span> <span class="pre">maxVal=inf,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally
-allows the user to restrict the table based on the range of one of the columns.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">readTable</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minVal</span><span class="o">=-</span><span class="n">inf</span><span class="p">,</span> <span class="n">maxVal</span><span class="o">=</span><span class="n">inf</span><span class="p">,</span> <span class="n">excludeAtVal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally</span>
+<span class="sd">allows the user to restrict the table based on the range of one of the columns.</span>
 
-Args:
-    filename (str):
-        Name of the file to open. 
-    unpack (bool, optional): 
-        If False, reads the table in a confusing, useless way. Defaults to True.
-    col (int, optional): 
-        Use this column to restrict the range of the rest of the table. Defaults to None.
-    minVal (float, optional): 
-        Minimum value for above restriction. Defaults to None.
-    maxVal (float, optional):
-        Maximum value for above restriction. Defaults to None.
-
-Returns:
-    np.array: Data table. 
+<span class="sd">Args:</span>
+<span class="sd">    filename (str):</span>
+<span class="sd">        Name of the file to open. </span>
+<span class="sd">    unpack (bool, optional): </span>
+<span class="sd">        If False, reads the table in a confusing, useless way. Defaults to True.</span>
+<span class="sd">    col (int, optional): </span>
+<span class="sd">        Use this column to restrict the range of the rest of the table. Defaults to None.</span>
+<span class="sd">    minVal (float, optional): </span>
+<span class="sd">        Minimum value for above restriction. Defaults to -np.inf.</span>
+<span class="sd">    maxVal (float, optional):</span>
+<span class="sd">        Maximum value for above restriction. Defaults to np.inf.</span>
+<span class="sd">    excludeAtVal (float, optional):</span>
+<span class="sd">        Throw out all rows for which column col has value excludeAtVal. Exclusion is</span>
+<span class="sd">        carried out after range restriction. </span>
+<span class="sd">        </span>
+<span class="sd">Returns:</span>
+<span class="sd">    np.array: Data table. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">writeTable(filename,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for np.savetxt. The idea is that you can use it like this:
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">writeTable</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper for np.savetxt. The idea is that you can use it like this:</span>
 
-writeTable(&#39;file.txt&#39;,col1,col2,header=[&#39;header1&#39;,&#39;header2])
+<span class="sd">writeTable(&#39;file.txt&#39;,col1,col2,header=[&#39;header1&#39;,&#39;header2])</span>
 
-This works for an arbitrary number of 1-d columns col. It seems much more intuitive to me 
-that you pass columns as arguments than whatever np.savetxt is doing.
+<span class="sd">This works for an arbitrary number of 1-d columns col. It seems much more intuitive to me </span>
+<span class="sd">that you pass columns as arguments than whatever np.savetxt is doing.</span>
 
-Args:
-    filename (str): output file name
+<span class="sd">Args:</span>
+<span class="sd">    filename (str): output file name</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

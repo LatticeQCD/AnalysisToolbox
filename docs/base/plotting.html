@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plotting &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -87,12 +86,12 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="plotting">
-<h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline"></a></h1>
+<h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h1>
 <section id="making-plots">
-<h2>Making Plots<a class="headerlink" href="#making-plots" title="Permalink to this headline"></a></h2>
+<h2>Making Plots<a class="headerlink" href="#making-plots" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox</span></code> also has some wrappers for Matplotlib, which allow you to make Matplotlib
 plots easily using python. All of them can be found in</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.plotting</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.base.plotting</span>
 </pre></div>
 </div>
 <p>We tried to write this module such that you can pass Matplotlib arguments to our custom wrappers
@@ -100,7 +99,7 @@ like <code class="docutils literal notranslate"><span class="pre">plot_file</spa
 Be sure to also check out the example in <code class="docutils literal notranslate"><span class="pre">examples/main_plotting.py</span></code>.</p>
 </section>
 <section id="the-basics">
-<h2>The basics<a class="headerlink" href="#the-basics" title="Permalink to this headline"></a></h2>
+<h2>The basics<a class="headerlink" href="#the-basics" title="Link to this heading"></a></h2>
 <p>You probably want to get started quickly, so here’s a minimal example. <strong>Please be mindful of the
 order of the commands.</strong></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latexify</span><span class="p">()</span>
@@ -161,9 +160,9 @@ before your code to generate <code class="docutils literal notranslate"><span cl
 to get you ready for your next figure.</p>
 </section>
 <section id="some-options-you-might-commonly-require">
-<h2>Some options you might commonly require<a class="headerlink" href="#some-options-you-might-commonly-require" title="Permalink to this headline"></a></h2>
+<h2>Some options you might commonly require<a class="headerlink" href="#some-options-you-might-commonly-require" title="Link to this heading"></a></h2>
 <section id="changing-axis-ranges">
-<h3>Changing axis ranges<a class="headerlink" href="#changing-axis-ranges" title="Permalink to this headline"></a></h3>
+<h3>Changing axis ranges<a class="headerlink" href="#changing-axis-ranges" title="Link to this heading"></a></h3>
 <p>The ranges of plots are chosen automatically, but this automatic choice may not always suit your
 purposes. To do some custom choice, use</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">set_params</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -171,7 +170,7 @@ purposes. To do some custom choice, use</p>
 </div>
 </section>
 <section id="changing-the-location-of-the-legend">
-<h3>Changing the location of the legend<a class="headerlink" href="#changing-the-location-of-the-legend" title="Permalink to this headline"></a></h3>
+<h3>Changing the location of the legend<a class="headerlink" href="#changing-the-location-of-the-legend" title="Link to this heading"></a></h3>
 <p>The legend position is normally chosen automatically, but you may have other ideas. The
 <code class="docutils literal notranslate"><span class="pre">legendpos</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">set_params</span></code> can be used to adjust the position of the legend.
 For example</p>
@@ -188,7 +187,7 @@ legend outside of the plot. In that case use</p>
 coordinate to put the legend higher up.</p>
 </section>
 <section id="vertical-and-horizontal-lines-bands">
-<h3>Vertical and horizontal lines; bands<a class="headerlink" href="#vertical-and-horizontal-lines-bands" title="Permalink to this headline"></a></h3>
+<h3>Vertical and horizontal lines; bands<a class="headerlink" href="#vertical-and-horizontal-lines-bands" title="Link to this heading"></a></h3>
 <p>Sometimes you may wish to add a vertical or horizontal line to indicate the position of some
 important quantity. These can be created with, for example</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -211,7 +210,7 @@ error bands, you can use</p>
 <p>as an argument to your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> command.</p>
 </section>
 <section id="printing-only-an-inset-to-pdf">
-<h3>Printing only an inset to pdf<a class="headerlink" href="#printing-only-an-inset-to-pdf" title="Permalink to this headline"></a></h3>
+<h3>Printing only an inset to pdf<a class="headerlink" href="#printing-only-an-inset-to-pdf" title="Link to this heading"></a></h3>
 <p>When you use <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> to look at your figure, a small region in the graph may catch your
 interest, and you might zoom in on that. It is possible to print this inset to pdf.
 Use</p>
@@ -223,7 +222,7 @@ Use</p>
 <p>Note that the relative order of <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.savefig()</span></code> has changed.</p>
 </section>
 <section id="adding-preliminary">
-<h3>Adding PRELIMINARY<a class="headerlink" href="#adding-preliminary" title="Permalink to this headline"></a></h3>
+<h3>Adding PRELIMINARY<a class="headerlink" href="#adding-preliminary" title="Link to this heading"></a></h3>
 <p>Do you have a preliminary result, which requires you to write PRELIMINARY in? You can accomplish
 this with</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">preliminary</span><span class="p">(</span><span class="n">xcoordinate</span><span class="p">,</span> <span class="n">ycoordinate</span><span class="p">)</span> 
@@ -233,12 +232,12 @@ this with</p>
 my x-axis is temperature and I want to put the text at 150 MeV, I just set <code class="docutils literal notranslate"><span class="pre">xcoordinate=150</span></code>.</p>
 </section>
 <section id="rescaling-an-axis">
-<h3>Rescaling an axis<a class="headerlink" href="#rescaling-an-axis" title="Permalink to this headline"></a></h3>
+<h3>Rescaling an axis<a class="headerlink" href="#rescaling-an-axis" title="Link to this heading"></a></h3>
 <p>We need to do this pretty often, for example when changing from lattice units to physical units. To
 rescale the x-axis by a factor 2, pass to your <code class="docutils literal notranslate"><span class="pre">plot_</span></code> command <code class="docutils literal notranslate"><span class="pre">xscale=2</span></code>. <code class="docutils literal notranslate"><span class="pre">yscale</span></code> rescales the y-axis.</p>
 </section>
 <section id="having-nice-colors">
-<h3>Having nice colors<a class="headerlink" href="#having-nice-colors" title="Permalink to this headline"></a></h3>
+<h3>Having nice colors<a class="headerlink" href="#having-nice-colors" title="Link to this heading"></a></h3>
 <p>There is a set of eight base colors that the AnalysisToolbox automatically cycles through. When plotting more
 eight things, for example a range of temperatures, it may be useful to generate a graded scale of colors.
 For this you can create your own list of <code class="docutils literal notranslate"><span class="pre">ncolors</span></code> colors <code class="docutils literal notranslate"><span class="pre">myColors</span></code> with</p>
@@ -247,7 +246,7 @@ For this you can create your own list of <code class="docutils literal notransla
 </div>
 </section>
 <section id="having-one-script-generate-multiple-plots">
-<h3>Having one script generate multiple plots<a class="headerlink" href="#having-one-script-generate-multiple-plots" title="Permalink to this headline"></a></h3>
+<h3>Having one script generate multiple plots<a class="headerlink" href="#having-one-script-generate-multiple-plots" title="Link to this heading"></a></h3>
 <p>By default, the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> module and its associated methods like <code class="docutils literal notranslate"><span class="pre">plot_dots</span></code> uses the axis object <code class="docutils literal notranslate"><span class="pre">plt</span></code>.
 Hence if you are having one script generate multiple plots, it may happen that labels or data from a previous
 plot carry over to the next one. You can clear all plot labels, options, and data by calling</p>

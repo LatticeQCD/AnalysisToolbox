@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.physics.continuumExtrap &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,23 +123,31 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-continuumextrap">
-<h1>latqcdtools.physics.continuumExtrap<a class="headerlink" href="#latqcdtools-physics-continuumextrap" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_powerSeries(x,</span> <span class="pre">coeffs)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The default fit form for a continuum extrapolation is a power series in a^2.
+<h1>latqcdtools.physics.continuumExtrap<a class="headerlink" href="#latqcdtools-physics-continuumextrap" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_powerSeries</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The default fit form for a continuum extrapolation is a power series in a^2.</span>
 
-Args:
-    x (array-like): a^2 or 1/Nt^2 
-    coeffs (array-like): power series coefficients 
+<span class="sd">Args:</span>
+<span class="sd">    x (array-like): a^2 or 1/Nt^2 </span>
+<span class="sd">    coeffs (array-like): power series coefficients </span>
 
-Returns:
-    array-like: power series in x 
+<span class="sd">Returns:</span>
+<span class="sd">    array-like: power series in x </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">continuumExtrapolate(x,</span> <span class="pre">obs,</span> <span class="pre">obs_err,</span> <span class="pre">order=1,</span> <span class="pre">show_results=False,</span> <span class="pre">plot_results=False,</span> <span class="pre">prior=None,</span> <span class="pre">start_coeffs=None,</span> <span class="pre">priorsigma=None,</span> <span class="pre">error_strat='propagation',</span> <span class="pre">xtype='a',</span> <span class="pre">nproc=6,</span> <span class="pre">detailedInfo=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A convenience wrapper for the Extrapolator. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">continuumExtrapolate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A convenience wrapper for the Extrapolator. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Extrapolator(x,</span> <span class="pre">obs,</span> <span class="pre">obs_err,</span> <span class="pre">order=1,</span> <span class="pre">xtype='a',</span> <span class="pre">error_strat='propagation',</span> <span class="pre">ansatz=None,</span> <span class="pre">nproc=6)</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">ansatz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">max_fev</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

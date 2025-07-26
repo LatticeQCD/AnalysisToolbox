@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.math.spline &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,50 +123,60 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-spline">
-<h1>latqcdtools.math.spline<a class="headerlink" href="#latqcdtools-math-spline" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_even_knots(xdata,</span> <span class="pre">nknots)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return a list of nknots evenly spaced knots. 
+<h1>latqcdtools.math.spline<a class="headerlink" href="#latqcdtools-math-spline" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_even_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Return a list of nknots evenly spaced knots. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_random_knots(xdata,</span> <span class="pre">nknots,</span> <span class="pre">randomization_factor=1,</span> <span class="pre">SEED=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return a list of nknots randomly spaced knots. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_random_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">,</span> <span class="n">randomization_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SEED</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Return a list of nknots randomly spaced knots. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">getSpline(xdata,</span> <span class="pre">ydata,</span> <span class="pre">num_knots=None,</span> <span class="pre">edata=None,</span> <span class="pre">order=3,</span> <span class="pre">rand=False,</span> <span class="pre">fixedKnots=None,</span> <span class="pre">getAICc=False,</span> <span class="pre">natural=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally
-this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will
-use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a
-smoothing spline that attempts to force no curvature at the endpoints, based on the penultimate points. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getAICc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally</span>
+<span class="sd">this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will</span>
+<span class="sd">use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a</span>
+<span class="sd">smoothing spline that attempts to force no curvature at the endpoints, based on the penultimate points. </span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    num_knots (int):
-        The number of knots.
-    edata (array-like, optional): 
-        Error data. Defaults to None.
-    order (int, optional):
-        Order of the spline. Defaults to 3.
-    rand (bool, optional): 
-        Use randomly placed knots? Defaults to False.
-    fixedKnots (array-like, optional):
-        List of user-specified knots. Defaults to None.
-    getAICc (bool, optional): 
-        Return corrected Aikake information criterion? Defaults to False.
-    natural (bool, optional): 
-        Try a natural (no change in slope at the endpoints) cubic spline. Defaults to False. 
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    num_knots (int):</span>
+<span class="sd">        The number of knots.</span>
+<span class="sd">    edata (array-like, optional): </span>
+<span class="sd">        Error data. Defaults to None.</span>
+<span class="sd">    order (int, optional):</span>
+<span class="sd">        Order of the spline. Defaults to 3.</span>
+<span class="sd">    rand (bool, optional): </span>
+<span class="sd">        Use randomly placed knots? Defaults to False.</span>
+<span class="sd">    fixedKnots (array-like, optional):</span>
+<span class="sd">        List of user-specified knots. Defaults to None.</span>
+<span class="sd">    getAICc (bool, optional): </span>
+<span class="sd">        Return corrected Aikake information criterion? Defaults to False.</span>
+<span class="sd">    natural (bool, optional): </span>
+<span class="sd">        Try a natural (no change in slope at the endpoints) cubic spline. Defaults to False. </span>
 
-Returns:
-    callable spline object
-    AICc (optionally)
+<span class="sd">Returns:</span>
+<span class="sd">    callable spline object</span>
+<span class="sd">    AICc (optionally)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">getSplineErr(xdata,</span> <span class="pre">xspline,</span> <span class="pre">ydata,</span> <span class="pre">ydatae,</span> <span class="pre">num_knots=None,</span> <span class="pre">order=3,</span> <span class="pre">rand=False,</span> <span class="pre">fixedKnots=None,</span> <span class="pre">natural=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSplineErr</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">xspline</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">ydatae</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">TBSpline(xdata,</span> <span class="pre">ydata,</span> <span class="pre">edata=None,</span> <span class="pre">knots=None,</span> <span class="pre">order=3,</span> <span class="pre">naturalLike=False)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A class that prepares a splrep and wraps it with splev.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TBSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">naturalLike</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A class that prepares a splrep and wraps it with splev.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

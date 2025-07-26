@@ -1,8 +1,9 @@
 latqcdtools.physics.runningCoupling
 =============
 
-`CA(Nc) -> float`
-
+```Python
+CA(Nc) -> float:
+'''
 Casimir operator of adjoint representation of SU(Nc).
 
 Args:
@@ -10,9 +11,11 @@ Args:
 
 Returns:
     float : CA 
-
-`CF(Nc) -> float`
-
+'''
+```
+```Python
+CF(Nc) -> float:
+'''
 Casimir operator of defining representation of SU(Nc).
 
 Args:
@@ -20,9 +23,11 @@ Args:
 
 Returns:
     float : CF 
-
-`b0(Nf, Nc=3) -> float`
-
+'''
+```
+```Python
+b0(Nf, Nc=3) -> float:
+'''
 Universal one-loop beta coefficient for SU(Nc), expansion in g.  
 
 Args:
@@ -31,9 +36,11 @@ Args:
 
 Returns:
     float : b0 
-
-`b1(Nf, Nc=3) -> float`
-
+'''
+```
+```Python
+b1(Nf, Nc=3) -> float:
+'''
 Universal two-loop beta coefficient for SU(Nc), expansion in g. 
 
 Args:
@@ -42,9 +49,11 @@ Args:
 
 Returns:
     float : b1 
-
-`b2_dimreg_MSbar(Nf, Nc=3) -> float`
-
+'''
+```
+```Python
+b2_dimreg_MSbar(Nf, Nc=3) -> float:
+'''
 Three-loop beta coefficient for SU(Nc) using dimensional regularization in MS-bar scheme. 
 
 Args:
@@ -53,9 +62,11 @@ Args:
 
 Returns:
     float : b2_MS-bar (dim reg) 
-
-`b3_dimreg_MSbar(Nf, Nc=3) -> float`
-
+'''
+```
+```Python
+b3_dimreg_MSbar(Nf, Nc=3) -> float:
+'''
 Four-loop beta coefficient for SU(Nc) using dimensional regularization in MS-bar scheme. 
 
 Args:
@@ -64,9 +75,11 @@ Args:
 
 Returns:
     float : b3_MS-bar (dim reg) 
-
-`beta_func(beta, Nf=3) -> float`
-
+'''
+```
+```Python
+beta_func(beta, Nf=3) -> float:
+'''
 QCD asymptotic scaling relation to two loops.
 
 Args:
@@ -75,4 +88,5 @@ Args:
 
 Returns:
     float: f_as(beta) 
-
+'''
+```

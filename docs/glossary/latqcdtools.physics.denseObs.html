@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.physics.denseObs &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,34 +123,40 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-denseobs">
-<h1>latqcdtools.physics.denseObs<a class="headerlink" href="#latqcdtools-physics-denseobs" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">mean_square(vec)</span></code>
-Unbiased calculation of &lt; vec**2 &gt;.
-<code class="docutils literal notranslate"><span class="pre">op_to_obs(opTable,</span> <span class="pre">lp,</span> <span class="pre">obs=None,</span> <span class="pre">filename='denseObservables.d')</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:
-    l--light
-    s--strange
-    B--baryon number
-    Q--electric charge
-    I--isospin
-    S--strangeness
-
-Parameters
-----------
-opTable : dict
-    A table indexed by confID. Its values are a list of operators that have been measured.
-lp : latticeParams
-    Parameters for the ensemle the configuration belongs to.
-obs : observablesOfInterest, optional
-    A list of the observables you want to compute.
-filename : str, optional
-    Name for output table.
+<h1>latqcdtools.physics.denseObs<a class="headerlink" href="#latqcdtools-physics-denseobs" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">mean_square</span><span class="p">(</span><span class="n">vec</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;Unbiased calculation of &lt; vec**2 &gt;. &#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">observablesOfInterest(iterable=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A class to specify the dense observables you want to look at. It contains some consistency checks, like making
-sure that you don&#39;t add an observable that is not yet computable. It also has some attributes that help streamline
-using methods like np.genfromtxt. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">op_to_obs</span><span class="p">(</span><span class="n">opTable</span><span class="p">,</span> <span class="n">lp</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;denseObservables.d&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:</span>
+<span class="sd">    l--light</span>
+<span class="sd">    s--strange</span>
+<span class="sd">    B--baryon number</span>
+<span class="sd">    Q--electric charge</span>
+<span class="sd">    I--isospin</span>
+<span class="sd">    S--strangeness</span>
+
+<span class="sd">Parameters</span>
+<span class="sd">----------</span>
+<span class="sd">opTable : dict</span>
+<span class="sd">    A table indexed by confID. Its values are numpy arrays of operators that have been measured.</span>
+<span class="sd">lp : latticeParams</span>
+<span class="sd">    Parameters for the ensemle the configuration belongs to.</span>
+<span class="sd">obs : observablesOfInterest, optional</span>
+<span class="sd">    A list of the observables you want to compute.</span>
+<span class="sd">filename : str, optional</span>
+<span class="sd">    Name for output table.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">observablesOfInterest</span><span class="p">(</span><span class="n">iterable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A class to specify the dense observables you want to look at. It contains some consistency checks, like making</span>
+<span class="sd">sure that you don&#39;t add an observable that is not yet computable. It also has some attributes that help streamline</span>
+<span class="sd">using methods like np.genfromtxt. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

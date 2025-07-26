@@ -1,16 +1,21 @@
 latqcdtools.math.spline
 =============
 
-`_even_knots(xdata, nknots)`
-
+```Python
+_even_knots(xdata, nknots):
+'''
 Return a list of nknots evenly spaced knots. 
-
-`_random_knots(xdata, nknots, randomization_factor=1, SEED=None)`
-
+'''
+```
+```Python
+_random_knots(xdata, nknots, randomization_factor=1, SEED=None):
+'''
 Return a list of nknots randomly spaced knots. 
-
-`getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False)`
-
+'''
+```
+```Python
+getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, getAICc=False, natural=False):
+'''
 This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally
 this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will
 use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a
@@ -37,12 +42,17 @@ Args:
 Returns:
     callable spline object
     AICc (optionally)
-
-`getSplineErr(xdata, xspline, ydata, ydatae, num_knots=None, order=3, rand=False, fixedKnots=None, natural=False)`
-
+'''
+```
+```Python
+getSplineErr(xdata, xspline, ydata, ydatae, num_knots=None, order=3, rand=False, fixedKnots=None, natural=False):
+'''
 Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. 
-
-`TBSpline(xdata, ydata, edata=None, knots=None, order=3, naturalLike=False)`
-
+'''
+```
+```Python
+class TBSpline(xdata, ydata, edata=None, knots=None, order=3, naturalLike=False):
+'''
 A class that prepares a splrep and wraps it with splev.
-
+'''
+```

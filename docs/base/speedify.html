@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Speedify &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -85,9 +84,9 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="speedify">
-<h1>Speedify<a class="headerlink" href="#speedify" title="Permalink to this headline"></a></h1>
+<h1>Speedify<a class="headerlink" href="#speedify" title="Link to this heading"></a></h1>
 <p>The module</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.base.speedify</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.base.speedify</span>
 </pre></div>
 </div>
 <p>includes methods for easily making your Python scripts faster. In particular we would like
@@ -101,11 +100,11 @@ one compiles a method may depend on the context, e.g. how many times that method
 Hence we have implemented the <code class="docutils literal notranslate"><span class="pre">&#64;compile</span></code> decorator. All methods in a module using <code class="docutils literal notranslate"><span class="pre">&#64;compile</span></code>
 can be flagged to compile or not using <code class="docutils literal notranslate"><span class="pre">numbaON()</span></code> and <code class="docutils literal notranslate"><span class="pre">numbaOFF()</span></code>. This allows you to
 do targeted compilation in your code; for instance</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">latqcdtools.base.speedify</span> <span class="kn">import</span> <span class="n">numbaON</span><span class="p">,</span> <span class="n">numbaOFF</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.speedify</span><span class="w"> </span><span class="kn">import</span> <span class="n">numbaON</span><span class="p">,</span> <span class="n">numbaOFF</span>
 <span class="n">numbaON</span><span class="p">()</span>
 <span class="c1"># gaugeField contains some methods that can be compiled. If the lattice is small enough,</span>
 <span class="c1"># this compilation may not be worth your time.</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.physics.gauge</span> <span class="kn">import</span> <span class="n">gaugeField</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.physics.gauge</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaugeField</span>
 <span class="n">numbaOFF</span><span class="p">()</span>
 </pre></div>
 </div>

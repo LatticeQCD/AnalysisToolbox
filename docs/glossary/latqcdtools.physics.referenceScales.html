@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.physics.referenceScales &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,70 +123,106 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-referencescales">
-<h1>latqcdtools.physics.referenceScales<a class="headerlink" href="#latqcdtools-physics-referencescales" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_betaRangeWarn(beta,</span> <span class="pre">beta_range)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Many of these ansätze a(beta) have coefficients that were determined by performing a fit within a certain
-beta range. This warning flashes whenever you are using information outside of that range, where the ansatz
-is less likely be to reliable.
+<h1>latqcdtools.physics.referenceScales<a class="headerlink" href="#latqcdtools-physics-referencescales" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_betaRangeWarn</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">beta_range</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Many of these ansätze a(beta) have coefficients that were determined by performing a fit within a certain</span>
+<span class="sd">beta range. This warning flashes whenever you are using information outside of that range, where the ansatz</span>
+<span class="sd">is less likely be to reliable.</span>
 
-Args:
-    beta (float) or numpy array
-    beta_range (array-like): min and max beta of range, in that order 
+<span class="sd">Args:</span>
+<span class="sd">    beta (float) or numpy array</span>
+<span class="sd">    beta_range (array-like): min and max beta of range, in that order </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">a_div_r1(beta,</span> <span class="pre">year)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get a/r_1(beta).
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a_div_r1</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get a/r_1(beta).</span>
 
-Args:
-    beta (float)
-    year (int/str): year that parameterization was determined 
+<span class="sd">Args:</span>
+<span class="sd">    beta (float)</span>
+<span class="sd">    year (int/str): year that parameterization was determined </span>
 
-Returns:
-    float: a/r_1
+<span class="sd">Returns:</span>
+<span class="sd">    float: a/r_1</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">a_times_fk(beta,</span> <span class="pre">year)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get a*f_k(beta).
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a_times_fk</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get a*f_k(beta).</span>
 
-Args:
-    beta (float)
-    year (int/str): year that parameterization was determined 
+<span class="sd">Args:</span>
+<span class="sd">    beta (float)</span>
+<span class="sd">    year (int/str): year that parameterization was determined </span>
 
-Returns:
-    float: a*f_k 
+<span class="sd">Returns:</span>
+<span class="sd">    float: a*f_k </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">a_times_ms_2014(beta)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">allton_type_ansatz(beta,</span> <span class="pre">c0,</span> <span class="pre">c2,</span> <span class="pre">d2)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">fit_2014Eos_eqB2(beta,</span> <span class="pre">c0,</span> <span class="pre">c2,</span> <span class="pre">d2)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">fit_tayloraLambda(beta,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">c)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">ignoreBetaRange()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn off the beta range warnings. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a_times_ms_2014</span><span class="p">(</span><span class="n">beta</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">r0_div_a(beta,</span> <span class="pre">year)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get r0/a(beta).
-
-Args:
-    beta (float)
-    year (int/str): year that parameterization was determined 
-
-Returns:
-    float: r0/a 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">allton_type_ansatz</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">r1_times_ms_2014(beta)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">sqrtt0_div_a(beta)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Get sqrt(t0/a)(beta)
-
-Args:
-    beta (float)
-
-Returns:
-    float: sqrt(t0/a) 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_2014Eos_eqB2</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">wuppertal_type_ansatz(beta,</span> <span class="pre">c1,</span> <span class="pre">c2,</span> <span class="pre">c3,</span> <span class="pre">c4)</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_tayloraLambda</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreBetaRange</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn off the beta range warnings. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">r0_div_a</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get r0/a(beta).</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    beta (float)</span>
+<span class="sd">    year (int/str): year that parameterization was determined </span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: r0/a </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">r1_times_ms_2014</span><span class="p">(</span><span class="n">beta</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sqrtt0_div_a</span><span class="p">(</span><span class="n">beta</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get sqrt(t0/a)(beta)</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    beta (float)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: sqrt(t0/a) </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">wuppertal_type_ansatz</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

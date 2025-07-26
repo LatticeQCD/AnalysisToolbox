@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.math.math &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.math.math</a></li>
@@ -123,87 +123,270 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-math">
-<h1>latqcdtools.math.math<a class="headerlink" href="#latqcdtools-math-math" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">RMS(data)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Root-mean-square of data
+<h1>latqcdtools.math.math<a class="headerlink" href="#latqcdtools-math-math" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">RMS</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Root-mean-square of data</span>
 
-Args:
-    data (np.ndarray)
+<span class="sd">Args:</span>
+<span class="sd">    data (np.ndarray)</span>
 
-Returns:
-    float: RMS of data 
+<span class="sd">Returns:</span>
+<span class="sd">    float: RMS of data </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">checkSquare(mat)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Make sure mat is a square np.ndarray object. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">TA</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Make mat traceless and antihermitian</span>
 
-Args:
-    mat (np.ndarray)
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: _description_</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fallFactorial(n,</span> <span class="pre">m)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Falling factorial n fall to m. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkMatrix</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">invert(mat,</span> <span class="pre">method='scipy',</span> <span class="pre">svdcut=1e-12)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Invert matrix.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkSquare</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Make sure mat is a square np.ndarray object. </span>
 
-Args:
-    mat (np.ndarray): to-be-inverted matrix 
-    method (str): algorithm for inverting the matrix
-    
-Returns:
-    np.ndarray: mat^{-1} 
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">isPositiveSemidefinite(mat)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">isSymmetric(mat)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">logDet(mat)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Logarithm of determinant. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkVector</span><span class="p">(</span><span class="n">vec</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">normalize(arr)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">quadrature(data)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Add data in quadrature
-
-Args:
-    data (np.ndarray)
-
-Returns:
-    float: data added in quadrature 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dagger</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">regulate(mat,</span> <span class="pre">svdcut=1e-12)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>If a matrix&#39;s singular values are too small, it will be ill-conditioned,
-making it difficult to invert and hence reducing numerical stability. This method
-extracts its singular values using SVD, then doctors the singular values to reduce
-the condition number. In the context of applying an SVD cut to a covariance 
-matrix, see e.g. Appendix D of 10.1103/PhysRevD.100.094508.
-
-Args:
-    mat (np.ndarray)
-    svdcut (float, optional): condition number threshold. Defaults to 1e-12.
-
-Returns:
-    np.ndarray: regulated matrix 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fallFactorial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Falling factorial n fall to m. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">rel_check(a,</span> <span class="pre">b,</span> <span class="pre">prec=1e-06,</span> <span class="pre">abs_prec=1e-14)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
-and b are array-like, we check that they are element-wise equal within the tolerance. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">invert</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Invert matrix.</span>
 
-Args:
-    a (obj)
-    b (obj)
-    prec (float, optional): Relative precision. Defaults to 1e-6.
-    abs_prec (float, optional): Absolute precision. Defaults to 1e-14.
-
-Returns:
-    bool: True if a and b are equal. 
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray): to-be-inverted matrix </span>
+<span class="sd">    method (str): algorithm for inverting the matrix</span>
+<span class="sd">    </span>
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: mat^{-1} </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">riseFactorial(n,</span> <span class="pre">m)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Rising factorial n rise to m. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isAntihermitian</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Antihermitian matrices satisfy dagger(M)=-M</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if antihermitian </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isHankel</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Hankel matrices look like (3d example)</span>
+<span class="sd">a b c</span>
+<span class="sd">b c d</span>
+<span class="sd">c d e</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat np.ndarray </span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if Hankel </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isHermitian</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Hermitian matrices satisfy dagger(M)=M</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if hermitian </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isMatrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isOrthogonal</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Orthogonal matrices satisfy M^t M = id</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if orthogonal </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isPositiveSemidefinite</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">details</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;Returns true if mat is positive semidefinite. Otherwise, if details=True,</span>
+<span class="sd">list the eigenvalues that are not &gt;=0.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+<span class="sd">    details (bool, optional): If true, report problematic eigenvalues. Defaults to False.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if positive semidefinite </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isSpecial</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Special matrices M satisfy det(M) = 1.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if special</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isSquare</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isSymmetric</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Symmetric matrices satisfy M^t = M.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if symmetric</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isUnitary</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Unitary matrices U satisfy U^dag U = 1.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if unitary</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isVector</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">logDet</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Logarithm of determinant. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">normalize</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Normalize vector or matrix arr using p-norm.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    arr (np.ndarray)</span>
+<span class="sd">    p (float, optional): Defaults to 2.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: normalized array </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pnorm</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Returns p-norm of vector or matrix arr.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    arr (np.ndarray)</span>
+<span class="sd">    p (float, optional): Defaults to 2.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: pnorm </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">quadrature</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Add data in quadrature</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    data (np.ndarray)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float: data added in quadrature </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">regulate</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">If a matrix&#39;s singular values are too small, it will be ill-conditioned,</span>
+<span class="sd">making it difficult to invert and hence reducing numerical stability. This method</span>
+<span class="sd">extracts its singular values using SVD, then doctors the singular values to reduce</span>
+<span class="sd">the condition number. In the context of applying an SVD cut to a covariance </span>
+<span class="sd">matrix, see e.g. Appendix D of 10.1103/PhysRevD.100.094508.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    mat (np.ndarray)</span>
+<span class="sd">    svdcut (float, optional): condition number threshold. Defaults to 1e-12.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: regulated matrix </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rel_check</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a</span>
+<span class="sd">and b are array-like, we check that they are element-wise equal within the tolerance. </span>
+
+<span class="sd">Args:</span>
+<span class="sd">    a (obj)</span>
+<span class="sd">    b (obj)</span>
+<span class="sd">    prec (float, optional): Relative precision. Defaults to 1e-6.</span>
+<span class="sd">    abs_prec (float, optional): Absolute precision. Defaults to 1e-14.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True if a and b are equal. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">riseFactorial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Rising factorial n rise to m. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

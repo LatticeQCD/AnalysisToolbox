@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jackknife &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -87,9 +86,9 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="jackknife">
-<h1>Jackknife<a class="headerlink" href="#jackknife" title="Permalink to this headline"></a></h1>
+<h1>Jackknife<a class="headerlink" href="#jackknife" title="Link to this heading"></a></h1>
 <p>To generate jackknife error bars, please use the module</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.jackknife</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.jackknife</span>
 </pre></div>
 </div>
 <p>The central method of this file is the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> method. A call to</p>
@@ -108,7 +107,7 @@ code is to “write your function the way it appears using math symbols”. For 
 susceptibility one calculates <span class="math notranslate nohighlight">\(\chi_P=N_\sigma^3\left(\langle P^2\rangle - \langle P\rangle\right)\)</span>,
 so one correspondingly defines</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Ns</span><span class="o">=</span><span class="mi">32</span>
-<span class="k">def</span> <span class="nf">susc</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">susc</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
   <span class="k">return</span> <span class="n">Ns</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
 </pre></div>
 </div>
@@ -119,7 +118,7 @@ so one correspondingly defines</p>
 <p>Sometimes your function may depend on multiple observables; for instance one may be interested in
 the susceptibility of <span class="math notranslate nohighlight">\(|P|\)</span>, for which one needs the real and imaginary parts of <span class="math notranslate nohighlight">\(P\)</span>. One can
 accomplish this using 32 jackknife blocks with, for instance,</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">suscA</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">suscA</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
   <span class="n">ReP</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
   <span class="n">ImP</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
   <span class="k">return</span> <span class="n">Ns</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ReP</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ImP</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ReP</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>

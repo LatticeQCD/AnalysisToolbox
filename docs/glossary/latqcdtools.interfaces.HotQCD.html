@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.interfaces.HotQCD &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,62 +123,46 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-hotqcd">
-<h1>latqcdtools.interfaces.HotQCD<a class="headerlink" href="#latqcdtools-interfaces-hotqcd" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_badNf(Nf)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_badNt(Nt,</span> <span class="pre">Nf)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_badbeta(beta,</span> <span class="pre">msml,</span> <span class="pre">Nt,</span> <span class="pre">Nf)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">_badmsml(msml,</span> <span class="pre">Nt,</span> <span class="pre">Nf)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">loadDens(densFile,</span> <span class="pre">confID,</span> <span class="pre">lp,</span> <span class="pre">inTable=None)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Allows reading of output from C. Schmidt&#39;s Dense code. The Dense code produces measurements of various operators
-relevant calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us
-conveniently combine data when there are multiple dense files per configuration. Here we update the table
-inTable for the new read-in, which yields outTable. Only supports Nf=2+1 configurations for the time being.
+<h1>latqcdtools.interfaces.HotQCD<a class="headerlink" href="#latqcdtools-interfaces-hotqcd" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">loadDens</span><span class="p">(</span><span class="n">densFile</span><span class="p">,</span> <span class="n">confID</span><span class="p">,</span> <span class="n">lp</span><span class="p">,</span> <span class="n">inTable</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Allows reading of output from C. Schmidt&#39;s Dense code. The Dense code produces measurements of various operators</span>
+<span class="sd">relevant for calculating conserved charge fluctuations. We store as a dictionary indexed by confID, which lets us</span>
+<span class="sd">conveniently combine data when there are multiple dense files per configuration. Here we update the table</span>
+<span class="sd">inTable for the new read-in, which yields outTable. Only supports Nf=2+1 configurations for the time being.</span>
 
-Parameters
-----------
-densFile : str
-    Name of the Dense code file to be read.
-confID : str
-    A unique identifier for the configuration on which dense calculation was performed. Every person seems to have a
-    different scheme for labelling configurations, so this needs to be a string to be as flexible as possible.
-lp : latticeParams
-    Parameters for the ensemle the configuration belongs to.
-inTable : dict
-    A table indexed by confID. Its values are a list of operators that have been measured.
+<span class="sd">Parameters</span>
+<span class="sd">----------</span>
+<span class="sd">densFile : str</span>
+<span class="sd">    Name of the Dense code file to be read.</span>
+<span class="sd">confID : str</span>
+<span class="sd">    A unique identifier for the configuration on which dense calculation was performed. Every person seems to have a</span>
+<span class="sd">    different scheme for labelling configurations, so this needs to be a string to be as flexible as possible.</span>
+<span class="sd">lp : latticeParams</span>
+<span class="sd">    Parameters for the ensemle the configuration belongs to.</span>
+<span class="sd">inTable : dict</span>
+<span class="sd">    A table indexed by confID. Its values are a list of operators that have been measured.</span>
 
-Returns
--------
-outTable : dict
-    A table indexed by confID. Its values are a list of operators that have been measured.
+<span class="sd">Returns</span>
+<span class="sd">-------</span>
+<span class="sd">outTable : dict</span>
+<span class="sd">    A table indexed by confID. Its values are a list of operators that have been measured.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">makeConfTag(conf,</span> <span class="pre">stream)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This takes a configuration number conf and stream label stream to make a tag labelling a configuration.
-Implementing this as a function makes sure everyone using the Toolbox as the same convention and, more importantly,
-ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in
-the denseObs module. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">makeConfTag</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This takes a configuration number conf and stream label stream to make a tag labelling a configuration.</span>
+<span class="sd">Implementing this as a function makes sure everyone using the Toolbox as the same convention and, more importantly,</span>
+<span class="sd">ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in</span>
+<span class="sd">the denseObs module. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">massRatioToMasses(msml,</span> <span class="pre">Nt,</span> <span class="pre">cbeta,</span> <span class="pre">Nf='21')</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>This is a way to get either the light+strange masses or quark+preconditioner masses
-given the ratio ms/ml or mpre/mf. This uses HotQCD ensembles, listed in tables below.
-
-Args:
-    msml (int)
-    Nt (int)
-    cbeta (str): Beta as a character. e.g. 6.345 is 6345 
-    Nf (str): Number of dynamical fermions. Defaults to &#39;21&#39;.
-
-Returns:
-    str, str: either (ml, ms) or (mf, mpre) 
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">quarkMassTableHISQ(Nf,</span> <span class="pre">Nt,</span> <span class="pre">msml)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Lookup tables for HotQCD HISQ runs.
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">HotQCDParams(Nsigma,</span> <span class="pre">Ntau,</span> <span class="pre">coupling,</span> <span class="pre">mass1=None,</span> <span class="pre">mass2=None,</span> <span class="pre">mass3=None,</span> <span class="pre">scaleType='fk',</span> <span class="pre">paramYear=None,</span> <span class="pre">Nf='21',</span> <span class="pre">scaleYear=None,</span> <span class="pre">mu=0)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A class to handle and check the input parameters of a lattice run, especially for HotQCD.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">HotQCDParams</span><span class="p">(</span><span class="n">Nsigma</span><span class="p">,</span> <span class="n">Ntau</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">mass1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scaleType</span><span class="o">=</span><span class="s1">&#39;fk&#39;</span><span class="p">,</span> <span class="n">paramYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="s1">&#39;21&#39;</span><span class="p">,</span> <span class="n">scaleYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A class to handle and check the input parameters of a lattice run, especially for HotQCD.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

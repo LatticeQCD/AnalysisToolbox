@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.speedify &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,48 +123,66 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-speedify">
-<h1>latqcdtools.base.speedify<a class="headerlink" href="#latqcdtools-base-speedify" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">compile(func)</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">numbaList(inList)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn a list into List that numba can parse. 
+<h1>latqcdtools.base.speedify<a class="headerlink" href="#latqcdtools-base-speedify" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">compile</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">numbaOFF()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Turn off numba compilation for small functions. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaList</span><span class="p">(</span><span class="n">inList</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn a list into List that numba can parse. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">numbaON()</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Use numba wherever possible. By default it is turned off, since compilation takes some time,
-and hence you will only see a performance boost for particularly long-running functions. Must be
-called at the beginning of your code. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaOFF</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Turn off numba compilation for small functions. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">parallel_function_eval(function,</span> <span class="pre">input_array,</span> <span class="pre">args=(),</span> <span class="pre">nproc=6,</span> <span class="pre">parallelizer='pathos.pools')</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Parallelize a function over an input_array. Effectively this can replace a loop over an array and should
-lead to a performance boost.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaON</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Use numba wherever possible. By default it is turned off, since compilation takes some time,</span>
+<span class="sd">and hence you will only see a performance boost for particularly long-running functions. Must be</span>
+<span class="sd">called at the beginning of your code. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_function_eval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Parallelize a function over an input_array. Effectively this can replace a loop over an array and should</span>
+<span class="sd">lead to a performance boost.</span>
 
-Args:
-    function (func): to-be-parallelized function 
-    input_array (array-like): array over which it should run 
-    nproc (int): number of processes 
+<span class="sd">Args:</span>
+<span class="sd">    function (func): to-be-parallelized function </span>
+<span class="sd">    input_array (array-like): array over which it should run </span>
+<span class="sd">    nproc (int): number of processes </span>
 
-Returns:
-    array-like: func(input_array)
+<span class="sd">Returns:</span>
+<span class="sd">    array-like: func(input_array)</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">parallel_reduce(function,</span> <span class="pre">input_array,</span> <span class="pre">args=(),</span> <span class="pre">nproc=6,</span> <span class="pre">parallelizer='pathos.pools')</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Parallelize a function over an input_array, then sum over the input_array elements. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Parallelize a function over an input_array, then sum over the input_array elements. </span>
 
-Args:
-    function (func): to-be-parallelized function 
-    input_array (array-like): array over which it should run 
-    nproc (int): number of processes 
+<span class="sd">Args:</span>
+<span class="sd">    function (func): to-be-parallelized function </span>
+<span class="sd">    input_array (array-like): array over which it should run </span>
+<span class="sd">    nproc (int): number of processes </span>
 
-Returns:
-    float
+<span class="sd">Returns:</span>
+<span class="sd">    float</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ComputationClass(function,</span> <span class="pre">input_array,</span> <span class="pre">args,</span> <span class="pre">nproc,</span> <span class="pre">parallelizer)</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ComputationClass</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">parallelizer</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 </section>
 
 

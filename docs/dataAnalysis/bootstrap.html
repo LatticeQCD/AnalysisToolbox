@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bootstrapping routines &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -87,19 +86,19 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="bootstrapping-routines">
-<h1>Bootstrapping routines<a class="headerlink" href="#bootstrapping-routines" title="Permalink to this headline"></a></h1>
+<h1>Bootstrapping routines<a class="headerlink" href="#bootstrapping-routines" title="Link to this heading"></a></h1>
 <p>Given a set of <span class="math notranslate nohighlight">\(N\)</span> measurements <span class="math notranslate nohighlight">\(\{x_1,...,x_N\}\)</span>, the statistical bootstrap allows one to estimate the error in
 some function of the measurements <span class="math notranslate nohighlight">\(f\)</span>. Sometimes this is advantageous to error propagation, since analytically
 calculating the error in the original function is too complicated. In the context of lattice
 field theory, this happens e.g. when fitting correlators and trying to get the error from a fit parameter.
 In the Analysistoolbox, these methods can be found in</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.bootstr</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.bootstr</span>
 </pre></div>
 </div>
 <p>Just as with the <a class="reference internal" href="jackknife.html"><span class="doc std std-doc">jackknife</span></a>, we stress that an advantage of the bootstrapping routines is that
 you can pass them arbitrary functions.</p>
 <section id="ordinary-bootstrap">
-<h2>Ordinary bootstrap<a class="headerlink" href="#ordinary-bootstrap" title="Permalink to this headline"></a></h2>
+<h2>Ordinary bootstrap<a class="headerlink" href="#ordinary-bootstrap" title="Link to this heading"></a></h2>
 <p>Starting with our original measurements, one builds a bootstrap sample by drawing <span class="math notranslate nohighlight">\(N\)</span> data from the original sample
 with replacement. One repeats this process <span class="math notranslate nohighlight">\(K\)</span> times. From bootstrap sample <span class="math notranslate nohighlight">\(i\)</span>, one gets an estimate of the mean
 of interest. Averaging the <span class="math notranslate nohighlight">\(K\)</span> means from each bootstrap sample gives a bootstrap mean.
@@ -115,7 +114,7 @@ By default the bootstrap is <a class="reference internal" href="../base/speedify
 processes. Set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> if you want to turn off parallelization.</p>
 </section>
 <section id="gaussian-bootstrap">
-<h2>Gaussian bootstrap<a class="headerlink" href="#gaussian-bootstrap" title="Permalink to this headline"></a></h2>
+<h2>Gaussian bootstrap<a class="headerlink" href="#gaussian-bootstrap" title="Link to this heading"></a></h2>
 <p>The Gaussian bootstrap method,</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">same_rand_for_obs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                    <span class="n">return_sample</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">useCovariance</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>

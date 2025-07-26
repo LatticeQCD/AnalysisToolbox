@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.statistics.jackknife &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,35 +123,41 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-jackknife">
-<h1>latqcdtools.statistics.jackknife<a class="headerlink" href="#latqcdtools-statistics-jackknife" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">_pareAxis(data,</span> <span class="pre">axis,</span> <span class="pre">nblocks)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>In order to ensure that all jackknife blocks have the same length, we pare the data along
-the conf_axis, so that nblocks divides the length of data along conf_axis.
+<h1>latqcdtools.statistics.jackknife<a class="headerlink" href="#latqcdtools-statistics-jackknife" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_pareAxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">In order to ensure that all jackknife blocks have the same length, we pare the data along</span>
+<span class="sd">the conf_axis, so that nblocks divides the length of data along conf_axis.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">_pseudobins(jackknifeBins,</span> <span class="pre">avg)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Calculate the &#39;pseudovalue&#39; from the ith jackknife estimator. The pseudovalue is unbiased
-up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudobins</span><span class="p">(</span><span class="n">jackknifeBins</span><span class="p">,</span> <span class="n">avg</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Calculate the &#39;pseudovalue&#39; from the ith jackknife estimator. The pseudovalue is unbiased</span>
+<span class="sd">up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">jackknife(f,</span> <span class="pre">data,</span> <span class="pre">numb_blocks=20,</span> <span class="pre">conf_axis=1,</span> <span class="pre">nproc=1,</span> <span class="pre">return_sample=False,</span> <span class="pre">args=())</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Carry out a jackknife of an arbitrary function f of some data.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Carry out a jackknife of an arbitrary function f of some data.</span>
 
-Args:
-    f (func)
-    data (array-like)
-    numb_blocks (int, optional): Number of jackknife blocks. Defaults to 20.
-    conf_axis (int, optional): The axis that represents the configuration axis, i.e., measurements
-      are along this axis. Defaults to 1 when data has dimension of at least 2; else defaults to 0.
-    nproc (int, optional): Number of threads to use. Defaults to 1. Increasing nproc is likely to
-      have a deleterious impact on performance when f is a fast function. When f is slower, for
-      example if you are doing curve fits or integrating in the block, increasing nproc may
-      improve performance. Feel free to benchmark it for your use-case. 
-    return_sample (bool, optional): Return pseudovalues? Defaults to False.
-    args (tuple, optional)
+<span class="sd">Args:</span>
+<span class="sd">    f (func)</span>
+<span class="sd">    data (array-like)</span>
+<span class="sd">    numb_blocks (int, optional): Number of jackknife blocks. Defaults to 20.</span>
+<span class="sd">    conf_axis (int, optional): The axis that represents the configuration axis, i.e., measurements</span>
+<span class="sd">      are along this axis. Defaults to 1 when data has dimension of at least 2; else defaults to 0.</span>
+<span class="sd">    nproc (int, optional): Number of threads to use. Defaults to 1. Increasing nproc is likely to</span>
+<span class="sd">      have a deleterious impact on performance when f is a fast function. When f is slower, for</span>
+<span class="sd">      example if you are doing curve fits or integrating in the block, increasing nproc may</span>
+<span class="sd">      improve performance. Feel free to benchmark it for your use-case. </span>
+<span class="sd">    return_sample (bool, optional): Return pseudovalues? Defaults to False.</span>
+<span class="sd">    args (tuple, optional)</span>
 
-Returns:
-    jackknife mean and error (optionally pseudovalues) 
+<span class="sd">Returns:</span>
+<span class="sd">    jackknife mean and error (optionally pseudovalues) </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

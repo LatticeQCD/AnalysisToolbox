@@ -1,8 +1,9 @@
 latqcdtools.math.math
 =============
 
-`RMS(data) -> float`
-
+```Python
+RMS(data) -> float:
+'''
 Root-mean-square of data
 
 Args:
@@ -10,9 +11,11 @@ Args:
 
 Returns:
     float: RMS of data 
-
-`TA(mat) -> numpy.ndarray`
-
+'''
+```
+```Python
+TA(mat) -> numpy.ndarray:
+'''
 Make mat traceless and antihermitian
 
 Args:
@@ -20,26 +23,41 @@ Args:
 
 Returns:
     bool: _description_
-
-`checkMatrix(mat)`
-
-
-`checkSquare(mat)`
-
+'''
+```
+```Python
+checkMatrix(mat):
+'''
+'''
+```
+```Python
+checkSquare(mat):
+'''
 Make sure mat is a square np.ndarray object. 
 
 Args:
     mat (np.ndarray)
-
-`dagger(mat) -> numpy.ndarray`
-
-
-`fallFactorial(n, m) -> float`
-
+'''
+```
+```Python
+checkVector(vec):
+'''
+'''
+```
+```Python
+dagger(arr) -> numpy.ndarray:
+'''
+'''
+```
+```Python
+fallFactorial(n, m) -> float:
+'''
 Falling factorial n fall to m. 
-
-`invert(mat, method='scipy', svdcut=1e-12) -> numpy.ndarray`
-
+'''
+```
+```Python
+invert(mat, method='scipy', svdcut=1e-12) -> numpy.ndarray:
+'''
 Invert matrix.
 
 Args:
@@ -48,9 +66,11 @@ Args:
     
 Returns:
     np.ndarray: mat^{-1} 
-
-`isAntihermitian(mat) -> bool`
-
+'''
+```
+```Python
+isAntihermitian(mat) -> bool:
+'''
 Antihermitian matrices satisfy dagger(M)=-M
 
 Args:
@@ -58,9 +78,11 @@ Args:
 
 Returns:
     bool: True if antihermitian 
-
-`isHankel(mat) -> bool`
-
+'''
+```
+```Python
+isHankel(mat) -> bool:
+'''
 Hankel matrices look like (3d example)
 a b c
 b c d
@@ -71,9 +93,11 @@ Args:
 
 Returns:
     bool: True if Hankel 
-
-`isHermitian(mat) -> bool`
-
+'''
+```
+```Python
+isHermitian(mat) -> bool:
+'''
 Hermitian matrices satisfy dagger(M)=M
 
 Args:
@@ -81,12 +105,16 @@ Args:
 
 Returns:
     bool: True if hermitian 
-
-`isMatrix(mat) -> bool`
-
-
-`isOrthogonal(mat) -> bool`
-
+'''
+```
+```Python
+isMatrix(mat) -> bool:
+'''
+'''
+```
+```Python
+isOrthogonal(mat) -> bool:
+'''
 Orthogonal matrices satisfy M^t M = id
 
 Args:
@@ -94,9 +122,11 @@ Args:
 
 Returns:
     bool: True if orthogonal 
-
-`isPositiveSemidefinite(mat, details=False, eps=1e-12) -> bool`
-Returns true if mat is positive semidefinite. Otherwise, if details=True,
+'''
+```
+```Python
+isPositiveSemidefinite(mat, details=False, eps=1e-12) -> bool:
+'''Returns true if mat is positive semidefinite. Otherwise, if details=True,
 list the eigenvalues that are not >=0.
 
 Args:
@@ -105,9 +135,11 @@ Args:
 
 Returns:
     bool: True if positive semidefinite 
-
-`isSpecial(mat) -> bool`
-
+'''
+```
+```Python
+isSpecial(mat) -> bool:
+'''
 Special matrices M satisfy det(M) = 1.
 
 Args:
@@ -115,12 +147,16 @@ Args:
 
 Returns:
     bool: True if special
-
-`isSquare(mat) -> bool`
-
-
-`isSymmetric(mat) -> bool`
-
+'''
+```
+```Python
+isSquare(mat) -> bool:
+'''
+'''
+```
+```Python
+isSymmetric(mat) -> bool:
+'''
 Symmetric matrices satisfy M^t = M.
 
 Args:
@@ -128,9 +164,11 @@ Args:
 
 Returns:
     bool: True if symmetric
-
-`isUnitary(mat) -> bool`
-
+'''
+```
+```Python
+isUnitary(mat) -> bool:
+'''
 Unitary matrices U satisfy U^dag U = 1.
 
 Args:
@@ -138,16 +176,48 @@ Args:
 
 Returns:
     bool: True if unitary
-
-`logDet(mat) -> float`
-
+'''
+```
+```Python
+isVector(vec) -> bool:
+'''
+'''
+```
+```Python
+logDet(mat) -> float:
+'''
 Logarithm of determinant. 
+'''
+```
+```Python
+normalize(arr, p=2) -> numpy.ndarray:
+'''
+Normalize vector or matrix arr using p-norm.
 
-`normalize(arr)`
+Args:
+    arr (np.ndarray)
+    p (float, optional): Defaults to 2.
 
+Returns:
+    np.ndarray: normalized array 
+'''
+```
+```Python
+pnorm(arr, p=2) -> float:
+'''
+Returns p-norm of vector or matrix arr.
 
-`quadrature(data) -> float`
+Args:
+    arr (np.ndarray)
+    p (float, optional): Defaults to 2.
 
+Returns:
+    float: pnorm 
+'''
+```
+```Python
+quadrature(data) -> float:
+'''
 Add data in quadrature
 
 Args:
@@ -155,9 +225,11 @@ Args:
 
 Returns:
     float: data added in quadrature 
-
-`regulate(mat, svdcut=1e-12) -> numpy.ndarray`
-
+'''
+```
+```Python
+regulate(mat, svdcut=1e-12) -> numpy.ndarray:
+'''
 If a matrix's singular values are too small, it will be ill-conditioned,
 making it difficult to invert and hence reducing numerical stability. This method
 extracts its singular values using SVD, then doctors the singular values to reduce
@@ -170,9 +242,11 @@ Args:
 
 Returns:
     np.ndarray: regulated matrix 
-
-`rel_check(a, b, prec=1e-06, abs_prec=1e-14) -> bool`
-
+'''
+```
+```Python
+rel_check(a, b, prec=1e-06, abs_prec=1e-14) -> bool:
+'''
 Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
 and b are array-like, we check that they are element-wise equal within the tolerance. 
 
@@ -184,8 +258,11 @@ Args:
 
 Returns:
     bool: True if a and b are equal. 
-
-`riseFactorial(n, m) -> float`
-
+'''
+```
+```Python
+riseFactorial(n, m) -> float:
+'''
 Rising factorial n rise to m. 
-
+'''
+```

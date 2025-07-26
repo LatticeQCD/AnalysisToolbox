@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.physics.staticPotential &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,35 +123,77 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-staticpotential">
-<h1>latqcdtools.physics.staticPotential<a class="headerlink" href="#latqcdtools-physics-staticpotential" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">V_Teq0(r)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Zero temperature quark potential in [MeV], takes r in [fm]. The parameters a, b, and c come from
-a Levenberg-Marquardt fit of the data in Fig 14 of Phys. Rev. D90 (2014) 094503. These numbers can
-be obtained again by running analysistoolbox/hisq_potential/fit_hisq_pot.py. 
+<h1>latqcdtools.physics.staticPotential<a class="headerlink" href="#latqcdtools-physics-staticpotential" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">V_Teq0</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Zero temperature quark potential in [MeV], takes r in [fm]. The parameters a, b, and c come from</span>
+<span class="sd">a Levenberg-Marquardt fit of the data in Fig 14 of Phys. Rev. D90 (2014) 094503. These numbers can</span>
+<span class="sd">be obtained again by running analysistoolbox/hisq_potential/fit_hisq_pot.py. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fitV_Teq0(r,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">c)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Fit form of standard Cornell potential. Fit to be done in lattice units.
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">fitV_Teq0_oneloop(r,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Including one-loop corrections to Coulomb. See Nucl. Phys. B 129 (1977) and Phys. Lett B 92 (1980).
-Fit to be done in lattice units.
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">fitV_Teq0_twoloop(r,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Including two-loop corrections to Coulomb. See Nucl. Phys. B 501 (1997). Fit to be done in lattice units.
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">impdist(Ns,</span> <span class="pre">r2max,</span> <span class="pre">improvedAction=True)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Calculation of tree-level improved distances. Follows eq. (3) of 10.1103/PhysRevD.90.074038,
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_cpu_impdist</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">r2max</span><span class="p">,</span> <span class="n">improvedAction</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">CPU implementation of improved distances calculation.</span>
+<span class="sd">Used as fallback when CUDA is not available.</span>
 
-INPUT:
-       Ns--spatial extension of lattice
-    r2max--maximum squared distance to improve
+<span class="sd">Args:</span>
+<span class="sd">    Ns: Spatial extension of lattice</span>
+<span class="sd">    r2max: Maximum squared distance to improve</span>
+<span class="sd">    improvedAction: Whether to use improved action</span>
+<span class="sd">    </span>
+<span class="sd">Returns:</span>
+<span class="sd">    List of improved distances</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fitV_Teq0</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Fit form of standard Cornell potential. Fit to be done in lattice units.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fitV_Teq0_oneloop</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Including one-loop corrections to Coulomb. See Nucl. Phys. B 129 (1977) and Phys. Lett B 92 (1980).</span>
+<span class="sd">Fit to be done in lattice units.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fitV_Teq0_twoloop</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Including two-loop corrections to Coulomb. See Nucl. Phys. B 501 (1997). Fit to be done in lattice units.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_optimal_block_size</span><span class="p">():</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Returns an optimal block size based on the current CUDA device.</span>
+<span class="sd">Defaults to 256 if device information cannot be obtained.</span>
 
-OUTPUT:
-    rimp--list of improved distances
+<span class="sd">Returns:</span>
+<span class="sd">    int: Optimal threads per block</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">impdist</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">r2max</span><span class="p">,</span> <span class="n">improvedAction</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">GPU-accelerated calculation of tree-level improved distances.</span>
+
+<span class="sd">Follows equation (3) of 10.1103/PhysRevD.90.074038.</span>
+<span class="sd">Falls back to CPU implementation if CUDA is unavailable.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    Ns: Spatial extension of lattice</span>
+<span class="sd">    r2max: Maximum squared distance to improve</span>
+<span class="sd">    improvedAction: Whether to use improved action (default: True)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    rimp: List of improved distances</span>
+
+<span class="sd">Raises:</span>
+<span class="sd">    ValueError: If Ns &lt;= 0 or r2max is too large</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

@@ -58,7 +58,7 @@ for importer, module_name, ispkg in pkgutil.walk_packages(path=[LIBRARY_PATH], p
             doc = func_doc
             if func_doc is None:
                 doc = "\n"
-            mdfile.write(f"`{func_name}{sig}`\n{doc}\n")
+            mdfile.write(f"```Python\n{func_name}{sig}:\n'''{doc}'''\n```\n")
 
         for func_name, func_sig, func_doc in get_classes_with_docs(module):
             doc = func_doc
@@ -67,7 +67,7 @@ for importer, module_name, ispkg in pkgutil.walk_packages(path=[LIBRARY_PATH], p
             sig = func_sig
             if func_sig is None:
                 sig = "\n"
-            mdfile.write(f"`{func_name}{sig}`\n{doc}\n")
+            mdfile.write(f"```Python\nclass {func_name}{sig}:\n'''{doc}'''\n```\n")
         
         mdfile.close()
 

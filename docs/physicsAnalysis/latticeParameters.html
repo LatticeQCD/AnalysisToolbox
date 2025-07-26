@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Handling Lattice Parameters &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -92,14 +91,14 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="handling-lattice-parameters">
-<h1>Handling Lattice Parameters<a class="headerlink" href="#handling-lattice-parameters" title="Permalink to this headline"></a></h1>
+<h1>Handling Lattice Parameters<a class="headerlink" href="#handling-lattice-parameters" title="Link to this heading"></a></h1>
 <p>In lattice calculations we are always analyzing configurations, which depends on <span class="math notranslate nohighlight">\(m_l\)</span>, <span class="math notranslate nohighlight">\(m_s\)</span>,
 <span class="math notranslate nohighlight">\(\beta\)</span>, <span class="math notranslate nohighlight">\(N_\sigma\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>. Usually the parameter combination is succinctly incorporated
 into the parameter name as, e.g. <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code>.</p>
 <section id="lattice-parameters">
-<h2>Lattice parameters<a class="headerlink" href="#lattice-parameters" title="Permalink to this headline"></a></h2>
+<h2>Lattice parameters<a class="headerlink" href="#lattice-parameters" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">latticeParams</span></code> class</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.physics.lattice_params</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.physics.lattice_params</span>
 </pre></div>
 </div>
 <p>collects all this information into one object, and contains some useful
@@ -122,11 +121,11 @@ Finally <code class="docutils literal notranslate"><span class="pre">paramSummar
 to the screen.</p>
 </section>
 <section id="hotqcd-parameter-tables">
-<h2>HotQCD parameter tables<a class="headerlink" href="#hotqcd-parameter-tables" title="Permalink to this headline"></a></h2>
+<h2>HotQCD parameter tables<a class="headerlink" href="#hotqcd-parameter-tables" title="Link to this heading"></a></h2>
 <p>Generally when HotQCD does their lattice calculations, they move along a line of constant physics where the ratio
 <span class="math notranslate nohighlight">\(m_s/m_l\)</span> is fixed, and <span class="math notranslate nohighlight">\(m_s\)</span> is fixed at its physical value. Hence if you know this ratio, <span class="math notranslate nohighlight">\(\beta\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>,
 both quark masses are determined. Lookup tables for this can be found in</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.physics.HotQCD</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.physics.HotQCD</span>
 </pre></div>
 </div>
 <p>and one can access them through e.g.</p>

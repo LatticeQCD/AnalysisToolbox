@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.math.optimize &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,46 +123,52 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-optimize">
-<h1>latqcdtools.math.optimize<a class="headerlink" href="#latqcdtools-math-optimize" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">minimize(func,</span> <span class="pre">jac=None,</span> <span class="pre">hess=None,</span> <span class="pre">start_params=None,</span> <span class="pre">tol=1e-12,</span> <span class="pre">maxiter=10000,</span> <span class="pre">algorithm=None)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.
+<h1>latqcdtools.math.optimize<a class="headerlink" href="#latqcdtools-math-optimize" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.</span>
 
-Args:
-    func: to-be-minimized function 
-    jac (func, optional): Explicit Jacobian. Defaults to None.
-    hess (func, optional): Explicit Hessian. Defaults to None.
-    start_params (array-like, optional): Starting guess. Defaults to None.
-    tol (float, optional): Solve tolerance. Defaults to 1e-12.
-    maxiter (int, optional): Maximum number of solve iterations. Defaults to 10000.
-    algorithm (str, optional): Solve algorithm. Defaults to Scipy default, usually BFGS.
+<span class="sd">Args:</span>
+<span class="sd">    func: to-be-minimized function </span>
+<span class="sd">    jac (func, optional): Explicit Jacobian. Defaults to None.</span>
+<span class="sd">    hess (func, optional): Explicit Hessian. Defaults to None.</span>
+<span class="sd">    start_params (array-like, optional): Starting guess. Defaults to None.</span>
+<span class="sd">    tol (float, optional): Solve tolerance. Defaults to 1e-12.</span>
+<span class="sd">    maxiter (int, optional): Maximum number of solve iterations. Defaults to 10000.</span>
+<span class="sd">    algorithm (str, optional): Solve algorithm. Defaults to Scipy default, usually BFGS.</span>
 
-Raises:
-    e: scipy.optimize exception 
-    ValueError: minimizer fails to converge
+<span class="sd">Raises:</span>
+<span class="sd">    e: scipy.optimize exception </span>
+<span class="sd">    ValueError: minimizer fails to converge</span>
 
-Returns:
-    array-like: solution vector 
+<span class="sd">Returns:</span>
+<span class="sd">    array-like: solution vector </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">persistentSolve(LHS,</span> <span class="pre">guess,</span> <span class="pre">tol=1e-08,</span> <span class="pre">maxiter=300)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Attempt to solve LHS==0 using, in this order, SciPy&#39;s newton_krylov, fsolve, and root.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">persistentSolve</span><span class="p">(</span><span class="n">LHS</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Attempt to solve LHS==0 using, in this order, SciPy&#39;s newton_krylov, fsolve, and root.</span>
 
-Args:
-    LHS (func)
-    guess: initial guess for solution 
-    tol (real, optional): Solve tolerance. Defaults to 1e-8.
-    maxiter (int, optional): Maximum iterations. Defaults to 300.
+<span class="sd">Args:</span>
+<span class="sd">    LHS (func)</span>
+<span class="sd">    guess: initial guess for solution </span>
+<span class="sd">    tol (real, optional): Solve tolerance. Defaults to 1e-8.</span>
+<span class="sd">    maxiter (int, optional): Maximum iterations. Defaults to 300.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">solve(LHS,</span> <span class="pre">guess,</span> <span class="pre">tol=1e-08,</span> <span class="pre">maxiter=300,</span> <span class="pre">method='newton_krylov')</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper for various methods to solve LHS==0. This is to simplify the interface.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">solve</span><span class="p">(</span><span class="n">LHS</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;newton_krylov&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper for various methods to solve LHS==0. This is to simplify the interface.</span>
 
-Args:
-    LHS (func)
-    guess: initial guess for solution 
-    tol (real, optional): Solve tolerance. Defaults to 1e-8.
-    maxiter (int, optional): Maximum iterations. Defaults to 300.
-    method (str, optional): Defaults to &#39;newton_krylov&#39;.
+<span class="sd">Args:</span>
+<span class="sd">    LHS (func)</span>
+<span class="sd">    guess: initial guess for solution </span>
+<span class="sd">    tol (real, optional): Solve tolerance. Defaults to 1e-8.</span>
+<span class="sd">    maxiter (int, optional): Maximum iterations. Defaults to 300.</span>
+<span class="sd">    method (str, optional): Defaults to &#39;newton_krylov&#39;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

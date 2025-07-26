@@ -65,7 +65,7 @@ STRATEGY = "VENV"
 ```
 then run
 ```Bash
-./configureToolbox.py
+python3 configureToolbox.py
 ```
 This will create a `venv` folder containing all the information about your virtual environment. Every time you open a new
 terminal, if you want to use the AnalysisToolbox, you will need to 

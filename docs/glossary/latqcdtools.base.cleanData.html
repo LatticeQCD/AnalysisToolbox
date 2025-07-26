@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.base.cleanData &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,50 +123,64 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-cleandata">
-<h1>latqcdtools.base.cleanData<a class="headerlink" href="#latqcdtools-base-cleandata" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">clipRange(array,</span> <span class="pre">col=None,</span> <span class="pre">minVal=-inf,</span> <span class="pre">maxVal=inf)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this
-renders arrays finite. 
+<h1>latqcdtools.base.cleanData<a class="headerlink" href="#latqcdtools-base-cleandata" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">clipRange</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minVal</span><span class="o">=-</span><span class="n">inf</span><span class="p">,</span> <span class="n">maxVal</span><span class="o">=</span><span class="n">inf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this</span>
+<span class="sd">renders arrays finite. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">deleteCol(array,</span> <span class="pre">col)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Remove a column of a 2d np.ndarray.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteCol</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Remove a column of a 2d np.ndarray.</span>
 
-Args:
-    array (np.ndarray)
-    col (int): Remove this column 
+<span class="sd">Args:</span>
+<span class="sd">    array (np.ndarray)</span>
+<span class="sd">    col (int): Remove this column </span>
 
-Returns:
-    np.ndarray: array with row removed
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: array with row removed</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">deleteRow(array,</span> <span class="pre">row)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Remove a row of a 2d np.ndarray.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteRow</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Remove a row of a 2d np.ndarray.</span>
 
-Args:
-    array (np.ndarray)
-    row (int): Remove this row 
+<span class="sd">Args:</span>
+<span class="sd">    array (np.ndarray)</span>
+<span class="sd">    row (int): Remove this row </span>
 
-Returns:
-    np.ndarray: array with row removed
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: array with row removed</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">excludeAtCol(table,</span> <span class="pre">col=None,</span> <span class="pre">atVal=inf)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return everything except those rows of table where col has exactly the value atVal. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">excludeAtCol</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atVal</span><span class="o">=</span><span class="n">inf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Return everything except those rows of table where col has exactly the value atVal. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">intersectAtCol(table1,</span> <span class="pre">table2,</span> <span class="pre">col)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return only those rows of table1 and table2 that have identical elements in column col. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">intersectAtCol</span><span class="p">(</span><span class="n">table1</span><span class="p">,</span> <span class="n">table2</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Return only those rows of table1 and table2 that have identical elements in column col. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">restrictAtCol(table,</span> <span class="pre">col,</span> <span class="pre">atVal,</span> <span class="pre">rtol=None,</span> <span class="pre">atol=None)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Return only those rows of table where col has exactly the value atVal. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">restrictAtCol</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">atVal</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Return only those rows of table where col has exactly the value atVal. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">spliceAtCol(table1,</span> <span class="pre">table2,</span> <span class="pre">col,</span> <span class="pre">atVal)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Assuming two tables table1 and table2 have common values in column col, create a new
-table, where table1 has corresponding entries less than atVal in col, and table 2
-has corresponding entries greater than atVal. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">spliceAtCol</span><span class="p">(</span><span class="n">table1</span><span class="p">,</span> <span class="n">table2</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">atVal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Assuming two tables table1 and table2 have common values in column col, create a new</span>
+<span class="sd">table, where table1 has corresponding entries less than atVal in col, and table 2</span>
+<span class="sd">has corresponding entries greater than atVal. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

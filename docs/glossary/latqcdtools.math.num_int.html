@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.math.num_int &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,61 +123,67 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-num-int">
-<h1>latqcdtools.math.num_int<a class="headerlink" href="#latqcdtools-math-num-int" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">integrateData(xdata,</span> <span class="pre">ydata,</span> <span class="pre">method='trapezoid')</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to integrate data. 
+<h1>latqcdtools.math.num_int<a class="headerlink" href="#latqcdtools-math-num-int" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateData</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;trapezoid&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper to integrate data. </span>
 
-Args:
-    xdata (array-like)
-    ydata (array-like)
-    method (str, optional): Integration method. Defaults to &#39;trapezoid&#39;. Possibilities include:
-                            &gt; &#39;simpson&#39; : Simpson rule.
-                            &gt; &#39;trapezoid&#39; : Trapezoidal rule.
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    method (str, optional): Integration method. Defaults to &#39;trapezoid&#39;. Possibilities include:</span>
+<span class="sd">                            &gt; &#39;simpson&#39; : Simpson rule.</span>
+<span class="sd">                            &gt; &#39;trapezoid&#39; : Trapezoidal rule.</span>
 
-Returns:
-    float: Area under ydata. 
+<span class="sd">Returns:</span>
+<span class="sd">    float: Area under ydata. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">integrateFunction(func,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">method='persistent',</span> <span class="pre">args=(),</span> <span class="pre">stepsize=None,</span> <span class="pre">limit=1000,</span> <span class="pre">epsrel=1.49e-08,</span> <span class="pre">epsabs=1.49e-08)</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
-which otherwise does not like to handle numpy arrays.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateFunction</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;persistent&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">stepsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">floatT</span><span class="o">=&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">numpy</span><span class="o">.</span><span class="n">float64</span><span class="s1">&#39;&gt;):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, </span>
+<span class="sd">which otherwise does not like to handle numpy arrays.</span>
 
-Args:
-    func (func): Integrand. 
-    a (float): Lower integration limit.
-    b (float): Upper integration limit.
-    method (str,optional): Integration method. Defaults to &#39;persistent_quad_trap&#39;. Possibilities are:
-                            &gt; &#39;persistent&#39; : Try various methods until something works. 
-                            &gt; &#39;quad&#39; : Gaussian quadrature.
-                            &gt; &#39;trapezoid&#39; : Trapezoidal rule.
-    args (tuple, optional): Arguments to func. Defaults to ().
-    stepsize (float, optional): _description_. Defaults to None.
-    limit (int, optional): Upper bound on number of subintervals used in the adaptive algorithm. Defaults to 1000.
-    epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.
-    epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.
+<span class="sd">Args:</span>
+<span class="sd">    func (func): Integrand. </span>
+<span class="sd">    a (float): Lower integration limit.</span>
+<span class="sd">    b (float): Upper integration limit.</span>
+<span class="sd">    method (str,optional): Integration method. Defaults to &#39;persistent_quad_trap&#39;. Possibilities are:</span>
+<span class="sd">                            &gt; &#39;persistent&#39; : Try various methods until something works. </span>
+<span class="sd">                            &gt; &#39;quad&#39; : Gaussian quadrature.</span>
+<span class="sd">                            &gt; &#39;trapezoid&#39; : Trapezoidal rule.</span>
+<span class="sd">    args (tuple, optional): Arguments to func. Defaults to ().</span>
+<span class="sd">    stepsize (float, optional): _description_. Defaults to None.</span>
+<span class="sd">    limit (int, optional): Upper bound on number of subintervals used in the adaptive algorithm. Defaults to 1000.</span>
+<span class="sd">    epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.</span>
+<span class="sd">    epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.</span>
 
-Returns:
-    float: Integral of func from a to b. 
+<span class="sd">Returns:</span>
+<span class="sd">    float: Integral of func from a to b. </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">solveIVP(dydt,</span> <span class="pre">t0,</span> <span class="pre">tf,</span> <span class="pre">y0,</span> <span class="pre">method='RK45',</span> <span class="pre">args=(),</span> <span class="pre">epsrel=1.49e-08,</span> <span class="pre">epsabs=1.49e-08)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Wrapper to solve an initial value problem of the form
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">solveIVP</span><span class="p">(</span><span class="n">dydt</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;RK45&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Wrapper to solve an initial value problem of the form</span>
 
-dy/dt = dydt(t, y)
-y(t0) = y0
+<span class="sd">dy/dt = dydt(t, y)</span>
+<span class="sd">y(t0) = y0</span>
 
-Args:
-    dydt (func): RHS of IVP. Must have signature dydt(t,y).
-    t0 (float): initial time 
-    tf (float): final time 
-    y0 (array-like): y(t0)
-    method (str, optional): Integration method. Defaults to &#39;RK45&#39;.
-    args (tuple, optional): Arguments to dydt. Defaults to ().
-    epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.
-    epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.
+<span class="sd">Args:</span>
+<span class="sd">    dydt (func): RHS of IVP. Must have signature dydt(t,y).</span>
+<span class="sd">    t0 (float): initial time </span>
+<span class="sd">    tf (float): final time </span>
+<span class="sd">    y0 (array-like): y(t0)</span>
+<span class="sd">    method (str, optional): Integration method. Defaults to &#39;RK45&#39;.</span>
+<span class="sd">    args (tuple, optional): Arguments to dydt. Defaults to ().</span>
+<span class="sd">    epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.</span>
+<span class="sd">    epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.</span>
 
-Returns:
-    array-like: y(tf) 
+<span class="sd">Returns:</span>
+<span class="sd">    array-like: y(tf) </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

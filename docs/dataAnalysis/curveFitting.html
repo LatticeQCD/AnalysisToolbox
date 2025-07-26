@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Curve fitting and splines &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,14 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -87,7 +86,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="curve-fitting-and-splines">
-<h1>Curve fitting and splines<a class="headerlink" href="#curve-fitting-and-splines" title="Permalink to this headline"></a></h1>
+<h1>Curve fitting and splines<a class="headerlink" href="#curve-fitting-and-splines" title="Link to this heading"></a></h1>
 <p>There are many ways to fit a curve. There are strategies that minimize <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span>
 for when you know the functional form ahead of time, splines for when you don’t, and other methods.
 The AnalysisToolbox includes some routines that are helpful for this purpose.
@@ -95,9 +94,9 @@ By default the <code class="docutils literal notranslate"><span class="pre">Fitt
 processes. Set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> if you want to turn off parallelization.
 Splines are not parallelized in this way, but should be fast because they wrap SciPy methods.</p>
 <section id="chi-2-minimization">
-<h2><span class="math notranslate nohighlight">\(\chi^2\)</span> minimization<a class="headerlink" href="#chi-2-minimization" title="Permalink to this headline"></a></h2>
+<h2><span class="math notranslate nohighlight">\(\chi^2\)</span> minimization<a class="headerlink" href="#chi-2-minimization" title="Link to this heading"></a></h2>
 <p>In the module</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">latqcdtools.statistics.fitting</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.fitting</span>
 </pre></div>
 </div>
 <p>one finds a <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> class for carrying out fits. The <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> class encapsulates all information
@@ -105,10 +104,10 @@ relevant to a fit, like its <span class="math notranslate nohighlight">\(x\)</sp
 After constructing a <code class="docutils literal notranslate"><span class="pre">fitter</span></code> object, one can then use associated
 methods to try various kinds of fits. These are generally wrappers from <code class="docutils literal notranslate"><span class="pre">scipy.optimize</span></code>.
 An easy example is given in  <code class="docutils literal notranslate"><span class="pre">testing/fitting/simple_example.py</span></code>, shown below.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.statistics.fitting</span> <span class="kn">import</span> <span class="n">Fitter</span>
-<span class="kn">from</span> <span class="nn">latqcdtools.base.logger</span> <span class="kn">import</span> <span class="n">set_log_level</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fitter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_log_level</span>
 
 <span class="n">set_log_level</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 
@@ -116,7 +115,7 @@ An easy example is given in  <code class="docutils literal notranslate"><span cl
 
 <span class="c1"># Here we define our fit function. we pass it its independent variable followed by the fit parameters we are</span>
 <span class="c1"># trying to determine.</span>
-<span class="k">def</span> <span class="nf">fit_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -172,7 +171,7 @@ conservative, or for comparison with <code class="docutils literal notranslate">
 <code class="docutils literal notranslate"><span class="pre">norm_err_chi2=True</span></code> to your <code class="docutils literal notranslate"><span class="pre">try_fit</span></code> or <code class="docutils literal notranslate"><span class="pre">do_fit</span></code> call.</p>
 </section>
 <section id="splines">
-<h2>Splines<a class="headerlink" href="#splines" title="Permalink to this headline"></a></h2>
+<h2>Splines<a class="headerlink" href="#splines" title="Link to this heading"></a></h2>
 <p>There are several methods in the toolbox to fit a 1D spline to some <code class="docutils literal notranslate"><span class="pre">xdata</span></code> and <code class="docutils literal notranslate"><span class="pre">ydata</span></code>.
 These can be found in <code class="docutils literal notranslate"><span class="pre">latcqdtools.math.spline.py</span></code>. The basic method is <code class="docutils literal notranslate"><span class="pre">getSpline</span></code></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>

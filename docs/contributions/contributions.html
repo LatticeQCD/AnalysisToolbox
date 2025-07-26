@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contributions &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -84,7 +83,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="contributions">
-<h1>Contributions<a class="headerlink" href="#contributions" title="Permalink to this headline"></a></h1>
+<h1>Contributions<a class="headerlink" href="#contributions" title="Link to this heading"></a></h1>
 <p>Here are a few basic guidelines to follow when making a contribution to the AnalysisToolbox:</p>
 <ul>
 <li><p>Please <strong>write documentation</strong> (like this one) for any new module that you make.</p></li>
@@ -112,7 +111,7 @@ to me its docstring, which I find helpful.</p></li>
 function methods are truly coming from. The problem with modules is just that other people may want to use them and add to them,
 and for that they need to understand where all the methods are defined. This syntax also confuses IDEs.</p></li>
 <li><p>Please wrap all your <code class="docutils literal notranslate"><span class="pre">main_*</span></code> applications and <code class="docutils literal notranslate"><span class="pre">test*</span></code> tests like so:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">myMainOrTest</span><span class="p">():</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">myMainOrTest</span><span class="p">():</span>
    <span class="o">...</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -124,11 +123,11 @@ functions without running anything; (2) the logger will give more meaningful out
 weirdly this seems to help some of our parallelizers run on some Macs.</p>
 </li>
 <li><p>Please <strong>include a <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> function for all your classes</strong>. For instance</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CAT</span><span class="p">():</span>
-      <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-          <span class="sd">&quot;&quot;&quot; A class for cats. &quot;&quot;&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CAT</span><span class="p">():</span>
+      <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">          </span><span class="sd">&quot;&quot;&quot; A class for cats. &quot;&quot;&quot;</span>
           <span class="o">...</span>
-      <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+      <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
           <span class="k">return</span> <span class="s2">&quot;CAT&quot;</span>
 </pre></div>
 </div>

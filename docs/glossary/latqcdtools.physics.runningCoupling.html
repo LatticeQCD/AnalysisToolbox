@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>latqcdtools.physics.runningCoupling &mdash; AnalysisToolbox 1.2.2 documentation</title>
@@ -13,11 +13,10 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -64,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
@@ -123,80 +123,94 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-runningcoupling">
-<h1>latqcdtools.physics.runningCoupling<a class="headerlink" href="#latqcdtools-physics-runningcoupling" title="Permalink to this headline"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">CA(Nc)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Casimir operator of adjoint representation of SU(Nc).
+<h1>latqcdtools.physics.runningCoupling<a class="headerlink" href="#latqcdtools-physics-runningcoupling" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">CA</span><span class="p">(</span><span class="n">Nc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Casimir operator of adjoint representation of SU(Nc).</span>
 
-Args:
-    Nc (int): Number of colors.
+<span class="sd">Args:</span>
+<span class="sd">    Nc (int): Number of colors.</span>
 
-Returns:
-    float : CA 
+<span class="sd">Returns:</span>
+<span class="sd">    float : CA </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">CF(Nc)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Casimir operator of defining representation of SU(Nc).
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">CF</span><span class="p">(</span><span class="n">Nc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Casimir operator of defining representation of SU(Nc).</span>
 
-Args:
-    Nc (int): Number of colors.
+<span class="sd">Args:</span>
+<span class="sd">    Nc (int): Number of colors.</span>
 
-Returns:
-    float : CF 
+<span class="sd">Returns:</span>
+<span class="sd">    float : CF </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">b0(Nf,</span> <span class="pre">Nc=3)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Universal one-loop beta coefficient for SU(Nc), expansion in g.  
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">b0</span><span class="p">(</span><span class="n">Nf</span><span class="p">,</span> <span class="n">Nc</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Universal one-loop beta coefficient for SU(Nc), expansion in g.  </span>
 
-Args:
-    Nf (int): Number of active quark flavors. 
-    Nc (int): Number of colors.
+<span class="sd">Args:</span>
+<span class="sd">    Nf (int): Number of active quark flavors. </span>
+<span class="sd">    Nc (int): Number of colors.</span>
 
-Returns:
-    float : b0 
+<span class="sd">Returns:</span>
+<span class="sd">    float : b0 </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">b1(Nf,</span> <span class="pre">Nc=3)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Universal two-loop beta coefficient for SU(Nc), expansion in g. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">b1</span><span class="p">(</span><span class="n">Nf</span><span class="p">,</span> <span class="n">Nc</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Universal two-loop beta coefficient for SU(Nc), expansion in g. </span>
 
-Args:
-    Nf (int): Number of active quark flavors.
-    Nc (int): Number of colors.
+<span class="sd">Args:</span>
+<span class="sd">    Nf (int): Number of active quark flavors.</span>
+<span class="sd">    Nc (int): Number of colors.</span>
 
-Returns:
-    float : b1 
+<span class="sd">Returns:</span>
+<span class="sd">    float : b1 </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">b2_dimreg_MSbar(Nf,</span> <span class="pre">Nc=3)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Three-loop beta coefficient for SU(Nc) using dimensional regularization in MS-bar scheme. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">b2_dimreg_MSbar</span><span class="p">(</span><span class="n">Nf</span><span class="p">,</span> <span class="n">Nc</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Three-loop beta coefficient for SU(Nc) using dimensional regularization in MS-bar scheme. </span>
 
-Args:
-    Nf (int): Number of active quark flavors.
-    Nc (int): Number of colors.
+<span class="sd">Args:</span>
+<span class="sd">    Nf (int): Number of active quark flavors.</span>
+<span class="sd">    Nc (int): Number of colors.</span>
 
-Returns:
-    float : b2_MS-bar (dim reg) 
+<span class="sd">Returns:</span>
+<span class="sd">    float : b2_MS-bar (dim reg) </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">b3_dimreg_MSbar(Nf,</span> <span class="pre">Nc=3)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Four-loop beta coefficient for SU(Nc) using dimensional regularization in MS-bar scheme. 
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">b3_dimreg_MSbar</span><span class="p">(</span><span class="n">Nf</span><span class="p">,</span> <span class="n">Nc</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Four-loop beta coefficient for SU(Nc) using dimensional regularization in MS-bar scheme. </span>
 
-Args:
-    Nf (int): Number of active quark flavors.
-    Nc (int): Number of colors.
+<span class="sd">Args:</span>
+<span class="sd">    Nf (int): Number of active quark flavors.</span>
+<span class="sd">    Nc (int): Number of colors.</span>
 
-Returns:
-    float : b3_MS-bar (dim reg) 
+<span class="sd">Returns:</span>
+<span class="sd">    float : b3_MS-bar (dim reg) </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">beta_func(beta,</span> <span class="pre">Nf=3)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>QCD asymptotic scaling relation to two loops.
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">beta_func</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">QCD asymptotic scaling relation to two loops.</span>
 
-Args:
-    beta (float-like)
-    Nf (int, optional): Number of active quark flavors. Defaults to 3.
+<span class="sd">Args:</span>
+<span class="sd">    beta (float-like)</span>
+<span class="sd">    Nf (int, optional): Number of active quark flavors. Defaults to 3.</span>
 
-Returns:
-    float: f_as(beta) 
+<span class="sd">Returns:</span>
+<span class="sd">    float: f_as(beta) </span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>
