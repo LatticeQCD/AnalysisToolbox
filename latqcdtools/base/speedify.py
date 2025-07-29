@@ -11,9 +11,13 @@ import numpy as np
 import concurrent.futures
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
-from numba import njit
-from numba.typed import List
 
+HAVENUMBA=True
+try:
+    from numba import njit
+    from numba.typed import List
+except ModuleNotFoundError:
+    HAVENUMBA=False
 
 # Resolve parallelizer dependencies
 DEFAULTPARALLELIZER = 'pathos.pools'
@@ -50,7 +54,8 @@ def numbaOFF():
 
 def compile(func):
     global COMPILENUMBA
-    if COMPILENUMBA:
+    global HAVENUMBA
+    if COMPILENUMBA and HAVENUMBA:
         logger.info('Compiling',func.__name__+'.')
         return njit(func)
     else:
@@ -62,7 +67,8 @@ def numbaList(inList):
     Turn a list into List that numba can parse. 
     """ 
     global COMPILENUMBA
-    if COMPILENUMBA:
+    global HAVENUMBA
+    if COMPILENUMBA and HAVENUMBA:
         nList = List()
         [nList.append(x) for x in inList]
         return nList 

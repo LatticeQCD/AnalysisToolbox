@@ -16,14 +16,16 @@ from latqcdtools.base.check import checkEqualLengths, checkType
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector, createFilePath
 from latqcdtools.base.readWrite import readTable
 
-
-if 'DISPLAY' not in os.environ:
-    # Check if there's no display (headless environment)
-    matplotlib.use('Agg')
-else:
-    # This is to avoid possible problems with colors and themes. As far as I can tell,
-    # everything works with PyQt5. 
-    matplotlib.use('Qt5Agg') 
+try:
+    if 'DISPLAY' not in os.environ:
+        # Check if there's no display (headless environment)
+        matplotlib.use('Agg')
+    else:
+        # This is to avoid possible problems with colors and themes. As far as I can tell,
+        # everything works with PyQt5. 
+        matplotlib.use('Qt5Agg') 
+except ModuleNotFoundError:
+    pass
 
 
 ZOD        = 10     # Orders different layers 
