@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Handling Lattice Parameters &mdash; AnalysisToolbox 1.2.2 documentation</title>
+  <title>Handling Lattice Parameters &mdash; AnalysisToolbox 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,13 +13,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -90,10 +88,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="handling-lattice-parameters">
+  <section id="handling-lattice-parameters">
 <h1>Handling Lattice Parameters<a class="headerlink" href="#handling-lattice-parameters" title="Link to this heading"></a></h1>
-<p>In lattice calculations we are always analyzing configurations, which depends on <span class="math notranslate nohighlight">\(m_l\)</span>, <span class="math notranslate nohighlight">\(m_s\)</span>,
-<span class="math notranslate nohighlight">\(\beta\)</span>, <span class="math notranslate nohighlight">\(N_\sigma\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>. Usually the parameter combination is succinctly incorporated
+<p>In lattice calculations we are always analyzing configurations, which depends on $m_l$, $m_s$,
+$\beta$, $N_\sigma$, and $N_\tau$. Usually the parameter combination is succinctly incorporated
 into the parameter name as, e.g. <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code>.</p>
 <section id="lattice-parameters">
 <h2>Lattice parameters<a class="headerlink" href="#lattice-parameters" title="Link to this heading"></a></h2>
@@ -113,7 +111,7 @@ then, for instance get the float value corresponding to the string <code class="
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">scaleType</span></code> argument lets you choose what reference scale to use. How these scales vary in lattice units
-as a function of <span class="math notranslate nohighlight">\(\beta\)</span> has been calculated by the HotQCD collaboration; the <code class="docutils literal notranslate"><span class="pre">paramYear</span></code> option lets you
+as a function of $\beta$ has been calculated by the HotQCD collaboration; the <code class="docutils literal notranslate"><span class="pre">paramYear</span></code> option lets you
 pick the year this function was computed. You can specify the number of flavors with <code class="docutils literal notranslate"><span class="pre">Nf</span></code>.</p>
 <p>There is also a method to get the <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code> string, <code class="docutils literal notranslate"><span class="pre">getcparams</span></code>. You can also get
 the lattice spacing in [fm] and temperature in [MeV] using <code class="docutils literal notranslate"><span class="pre">geta</span></code> and <code class="docutils literal notranslate"><span class="pre">getT</span></code>, respectively.
@@ -123,7 +121,7 @@ to the screen.</p>
 <section id="hotqcd-parameter-tables">
 <h2>HotQCD parameter tables<a class="headerlink" href="#hotqcd-parameter-tables" title="Link to this heading"></a></h2>
 <p>Generally when HotQCD does their lattice calculations, they move along a line of constant physics where the ratio
-<span class="math notranslate nohighlight">\(m_s/m_l\)</span> is fixed, and <span class="math notranslate nohighlight">\(m_s\)</span> is fixed at its physical value. Hence if you know this ratio, <span class="math notranslate nohighlight">\(\beta\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>,
+$m_s/m_l$ is fixed, and $m_s$ is fixed at its physical value. Hence if you know this ratio, $\beta$, and $N_\tau$,
 both quark masses are determined. Lookup tables for this can be found in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.physics.HotQCD</span>
 </pre></div>
@@ -143,7 +141,7 @@ both quark masses are determined. Lookup tables for this can be found in</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, LatticeQCD.</p>
+    <p>&#169; Copyright 2025, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

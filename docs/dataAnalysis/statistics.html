@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Statistics &mdash; AnalysisToolbox 1.2.2 documentation</title>
+  <title>Statistics &mdash; AnalysisToolbox 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,13 +13,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -85,7 +83,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="statistics">
+  <section id="statistics">
 <h1>Statistics<a class="headerlink" href="#statistics" title="Link to this heading"></a></h1>
 <p>A collection of useful methods for statistics calculations can be found in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.statistics</span>
@@ -135,13 +133,13 @@ be similar to the Gaussian difference test.</p>
 <h2>Integrated autocorrelation time<a class="headerlink" href="#integrated-autocorrelation-time" title="Link to this heading"></a></h2>
 <p>The integrated autocorrelation time is the ratio between
 the estimated variance of the sample mean and what this variance would have been if the data were
-independent; i.e. <span class="math notranslate nohighlight">\(\sigma^2_{\bar{X}}=\frac{\sigma^2}{N}\tau_{\text{int}}.\)</span>
+independent; i.e. $\sigma^2_{\bar{X}}=\frac{\sigma^2}{N}\tau_{\text{int}}.$
 A call to</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getTauInt</span><span class="p">(</span><span class="n">timeSeries</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">tpickMax</span><span class="p">,</span> <span class="n">acoutfileName</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>returns an estimate for <span class="math notranslate nohighlight">\(\tau_{\text{int}}\)</span>, its error bar, its bias, and the Monte Carlo time
-separation at which it found this <span class="math notranslate nohighlight">\(\tau_{\text{int}}\)</span>. It takes a time series <code class="docutils literal notranslate"><span class="pre">timeSeries</span></code>, a
+<p>returns an estimate for $\tau_{\text{int}}$, its error bar, its bias, and the Monte Carlo time
+separation at which it found this $\tau_{\text{int}}$. It takes a time series <code class="docutils literal notranslate"><span class="pre">timeSeries</span></code>, a
 number of jackknife bins needed for the calculation <code class="docutils literal notranslate"><span class="pre">nbins</span></code>, and an estimate for the largest that
 the autocorrelation time could be. (You can play around with this latter variable a bit if you
 are having trouble to get it to run. Usually I pick a little less than half the size of the series.)
@@ -157,7 +155,7 @@ The results are saved by default in <code class="docutils literal notranslate"><
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, LatticeQCD.</p>
+    <p>&#169; Copyright 2025, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
