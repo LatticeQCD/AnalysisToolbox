@@ -94,7 +94,7 @@
 <p>It is sometimes convenient to have the ability to read these configurations in Python. For instance lots of
 machine learning code is in Python. It may also be easier to use Python to write short scripts to convert between
 one format and another. To this end, we have implemented <code class="docutils literal notranslate"><span class="pre">latqcdtools/interfaces/confReader.py</span></code>.</p>
-<p>At the moment it only reads NERSC format, but one can easily extend this, by following the example of
+<p>At the moment it only reads NERSC and ILDG format, but one can easily extend this, by following the example of e.g.
 the <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> class, which inherits from a more general <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class. If you want to implement your own class,
 please have it inherit from <code class="docutils literal notranslate"><span class="pre">confReader</span></code> as well.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> object is easily instantiated with just information about <span class="math notranslate nohighlight">\(N_s\)</span> and <span class="math notranslate nohighlight">\(N_\tau\)</span> as</p>

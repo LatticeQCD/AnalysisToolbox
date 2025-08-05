@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>latqcdtools.base.readWrite &mdash; AnalysisToolbox 1.2.2 documentation</title>
+  <title>latqcdtools.interfaces.lime &mdash; AnalysisToolbox 1.2.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="latqcdtools.base.speedify" href="latqcdtools.base.speedify.html" />
-    <link rel="prev" title="latqcdtools.base.printErrorBars" href="latqcdtools.base.printErrorBars.html" /> 
+    <link rel="next" title="latqcdtools.interfaces.simulationManagement" href="latqcdtools.interfaces.simulationManagement.html" />
+    <link rel="prev" title="latqcdtools.interfaces.interfaces" href="latqcdtools.interfaces.interfaces.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,14 +56,14 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.plotting.html">latqcdtools.base.plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.printErrorBars.html">latqcdtools.base.printErrorBars</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.base.readWrite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.readWrite.html">latqcdtools.base.readWrite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.speedify.html">latqcdtools.base.speedify</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.utilities.html">latqcdtools.base.utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.HotQCD.html">latqcdtools.interfaces.HotQCD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.MILC.html">latqcdtools.interfaces.MILC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.lime.html">latqcdtools.interfaces.lime</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.interfaces.lime</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
@@ -113,9 +113,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="glossary.html">Glossary</a> &raquo;</li>
-      <li>latqcdtools.base.readWrite</li>
+      <li>latqcdtools.interfaces.lime</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/glossary/latqcdtools.base.readWrite.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/glossary/latqcdtools.interfaces.lime.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -123,50 +123,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-readwrite">
-<h1>latqcdtools.base.readWrite<a class="headerlink" href="#latqcdtools-base-readwrite" title="Link to this heading"></a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_lab</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-lime">
+<h1>latqcdtools.interfaces.lime<a class="headerlink" href="#latqcdtools-interfaces-lime" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">limeHeader</span><span class="p">(</span><span class="n">mbeg</span><span class="p">,</span> <span class="n">mend</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Create a short string label for each column of a data table. Needed for writeTable. </span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">readTable</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minVal</span><span class="o">=-</span><span class="n">inf</span><span class="p">,</span> <span class="n">maxVal</span><span class="o">=</span><span class="n">inf</span><span class="p">,</span> <span class="n">excludeAtVal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Wrapper for np.loadtxt. It unpacks by default to prevent transposition errors, and also optionally</span>
-<span class="sd">allows the user to restrict the table based on the range of one of the columns.</span>
+<span class="sd">Get the header for a LIME record.</span>
 
 <span class="sd">Args:</span>
-<span class="sd">    filename (str):</span>
-<span class="sd">        Name of the file to open. </span>
-<span class="sd">    unpack (bool, optional): </span>
-<span class="sd">        If False, reads the table in a confusing, useless way. Defaults to True.</span>
-<span class="sd">    col (int, optional): </span>
-<span class="sd">        Use this column to restrict the range of the rest of the table. Defaults to None.</span>
-<span class="sd">    minVal (float, optional): </span>
-<span class="sd">        Minimum value for above restriction. Defaults to -np.inf.</span>
-<span class="sd">    maxVal (float, optional):</span>
-<span class="sd">        Maximum value for above restriction. Defaults to np.inf.</span>
-<span class="sd">    excludeAtVal (float, optional):</span>
-<span class="sd">        Throw out all rows for which column col has value excludeAtVal. Exclusion is</span>
-<span class="sd">        carried out after range restriction. </span>
-<span class="sd">        </span>
+<span class="sd">    mbeg (bool): start flag </span>
+<span class="sd">    mend (bool): end flag </span>
+<span class="sd">    size (int): data length in bytes </span>
+<span class="sd">    type (bytes): description of data entry </span>
+
 <span class="sd">Returns:</span>
-<span class="sd">    np.array: Data table. </span>
+<span class="sd">    bytes: LIME header byte sequence </span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">writeTable</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">printLimeHeaders</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Wrapper for np.savetxt. The idea is that you can use it like this:</span>
-
-<span class="sd">writeTable(&#39;file.txt&#39;,col1,col2,header=[&#39;header1&#39;,&#39;header2])</span>
-
-<span class="sd">This works for an arbitrary number of 1-d columns col. It seems much more intuitive to me </span>
-<span class="sd">that you pass columns as arguments than whatever np.savetxt is doing.</span>
+<span class="sd">Print the headers of a file in LIME format.</span>
 
 <span class="sd">Args:</span>
-<span class="sd">    filename (str): output file name</span>
+<span class="sd">    filename (str)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">scidacChecksum</span><span class="p">(</span><span class="n">latdata</span><span class="p">,</span> <span class="n">vol</span><span class="p">,</span> <span class="n">sitesize</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Compute SciDAC checksum for lattice data</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    latdata (bytes)</span>
+<span class="sd">    vol (int): number of sites on lattice </span>
+<span class="sd">    sitesize (int): size in bytes of data at each site </span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    checksum values (suma, sumb) </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">trimNull</span><span class="p">(</span><span class="n">byteString</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Remove null byte and everything after it from a byte string.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    byteString (bytes)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bytes: trimmed byte string </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">xmlFind</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">xmlTag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Find substring in byte string s between xmlTags.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    s (bytes)</span>
+<span class="sd">    xmlTag (bytes)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bytes: byte string between tags </span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>

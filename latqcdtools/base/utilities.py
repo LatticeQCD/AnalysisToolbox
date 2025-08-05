@@ -239,7 +239,7 @@ def printClean(*args,label=None):
         *args: The numbers you want to output, separated by commas. 
         label (str, optional): Put label to the left of your output. Defaults to None.
     """
-    logger.info(cleanOutput(*args,label))
+    logger.info(cleanOutput(*args,label).strip())
 
 
 def printDict(dic,level=0):

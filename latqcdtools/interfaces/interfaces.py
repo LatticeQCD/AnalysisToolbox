@@ -13,6 +13,7 @@ from latqcdtools.base.check import checkType, checkExtension
 from latqcdtools.base.utilities import substringBetween
 import latqcdtools.base.logger as logger
 
+
 class HotQCD_MILC_Params(latticeParams):
     """ 
     A class to handle and check the input parameters of a lattice run using conventions common to both the

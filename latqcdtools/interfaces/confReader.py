@@ -4,15 +4,17 @@
 # D. Clarke
 # 
 # Tools for reading and writing gauge configurations in Python. To interact with binary configurations, we can use
-# Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html. Inspired by
-# QCDUtils https://github.com/mdipierro/qcdutils.
+# Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html. NERSC reader inspired
+# by https://github.com/mdipierro/qcdutils. ILDG reader from https://github.com/nftqcd/nthmc/blob/master/lib/fieldio.py
 #
 
-import struct
+import numpy as np
+import struct, os
 import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import numbaON,DEFAULTTHREADS
 from latqcdtools.math.math import rel_check
 from latqcdtools.base.check import checkType
+from latqcdtools.interfaces.lime import LIMEMAGIC,trimNull,xmlFind,scidacChecksum
 numbaON()
 from latqcdtools.math.SU3 import SU3
 from latqcdtools.physics.gauge import gaugeField
@@ -35,6 +37,8 @@ class confReader:
         """        
         self.Ns = Ns
         self.Nt = Nt
+        self.Nd = 4
+        self.Nc = 3
         checkType(int,Ns=Ns)
         checkType(int,Nt=Nt)
         if nproc==None:
@@ -69,14 +73,6 @@ class confReader:
         return link
 
 
-    def pack(self, items):
-        """ 
-        Packs an SU3 object into a string of bytes. 
-        """
-        numData = len(items)
-        return struct.pack(self.endianness + str(numData) + self.precision, *items)
-
-
     def getByteSize(self):
         if self.precision == 'f':
             return 4
@@ -84,6 +80,17 @@ class confReader:
             return 8
         else:
             logger.TBRaise('Unknown precision',self.precision,'(expected f or d)')
+
+
+    def checkLatDims(self, Nx, Ny, Nz, Nt):
+        if Nx != self.Ns:
+            logger.TBRaise('Read Nx =',Nx,'. Expected ',self.Ns)
+        if Ny != self.Ns:
+            logger.TBRaise('Read Ny =',Ny,'. Expected ',self.Ns)
+        if Nz != self.Ns:
+            logger.TBRaise('Read Nz =',Nz,'. Expected ',self.Ns)
+        if Nt != self.Nt:
+            logger.TBRaise('Read Nt =',Nt,'. Expected ',self.Nt)
 
 
 
@@ -126,14 +133,7 @@ class NERSCReader(confReader):
         Ny = int(metaData[b'DIMENSION_2'])
         Nz = int(metaData[b'DIMENSION_3'])
         Nt = int(metaData[b'DIMENSION_4'])
-        if Nx != self.Ns:
-            logger.TBRaise('Read Nx =',Nx,'. Expected ',self.Ns)
-        if Ny != self.Ns:
-            logger.TBRaise('Read Ny =',Ny,'. Expected ',self.Ns)
-        if Nz != self.Ns:
-            logger.TBRaise('Read Nz =',Nz,'. Expected ',self.Ns)
-        if Nt != self.Nt:
-            logger.TBRaise('Read Nt =',Nt,'. Expected ',self.Nt)
+        self.checkLatDims(Nx, Ny, Nz, Nt)
 
         # Extract endianness
         if metaData[b'FLOATING_POINT'].endswith(b'SMALL'):
@@ -183,13 +183,13 @@ class NERSCReader(confReader):
             for z in range(self.Ns):
                 for y in range(self.Ns):
                     for x in range(self.Ns):
-                        for mu in range(4):
+                        for mu in range(self.Nd):
                             byteIndex = self.offset + bytesPerLink*( mu + 4*( x + self.Ns*( y + self.Ns*( z + self.Ns*t ) ) ) )
                             self.file.seek(byteIndex)
                             data = self.file.read(bytesPerLink)
                             link = self.unpack(data)
-                            link.su3unitarize()
                             self.gauge.setLink(link,x,y,z,t,mu)
+        self.file.close()
         logger.details('Loaded conf into gaugeField.')
 
         # Check <tr U>
@@ -207,3 +207,146 @@ class NERSCReader(confReader):
             logger.details('Configuration', fileName, 'has correct <tr U_plaq>.')
 
         return self.gauge
+
+
+
+class ILDGReader(confReader):
+
+    def readConf(self,fileName):
+        """ 
+        Read in the configuration. Check the checksums if they exist. Ignore spin. 
+        """
+
+        self.file       = open(fileName,'rb')
+        self.nrows      = 3
+        self.offset     = 144
+        self.endianness = '>'
+
+        latsize = -1
+        bytesPerLink = -1
+        latdatacount = -1
+        latdims = []
+        latnc = -1
+        latprec = -1
+        lattype = b'Unknown'
+
+        while True:
+
+            header = self.file.read(self.offset)
+            if not header:
+                break
+
+            magi, vers, mbeg_end_res, size, type = struct.unpack('>ihHq128s',header)
+            if magi!=LIMEMAGIC:
+                logger.TBRaise(f'lime magic number does not match, got {magi}')
+            type = trimNull(type)
+
+            if type==b'scidac-binary-data' or type==b'ildg-binary-data':
+                lattype = type
+                latsize = size
+                latdata = self.file.read(size)
+                next = 7-(size+7)%8
+            else:
+                data = self.file.read(size)
+                data = trimNull(data)
+                if type==b'scidac-private-file-xml':
+                    spacetime = int(xmlFind(data,'spacetime'))
+                    latdims = [int(x) for x in xmlFind(data,'dims').strip().split()]
+                    if len(latdims)!=spacetime:
+                        logger.TBRaise(f'got spacetime {spacetime} but dims {latdims}')
+                elif type==b'scidac-file-xml':
+                    logger.info(f'file metadata: {data}')
+                elif type==b'scidac-private-record-xml':
+                    logger.info('date: ',xmlFind(data,'date'))
+                    logger.info('recordtype: ',xmlFind(data,'recordtype'))
+                    logger.info('datatype: ',xmlFind(data,'datatype'))
+                    precision = xmlFind(data,'precision').lower()
+                    if precision==b'f':
+                        latprec = 8    # complex float
+                    elif precision==b'd':
+                        latprec = 16   # complex double
+                    else:
+                        logger.TBRaise(f'unknown precision {precision}')
+                    latnc = int(xmlFind(data,'colors'))
+                    bytesPerLink = int(xmlFind(data,'typesize'))
+                    latdatacount = int(xmlFind(data,'datacount'))
+                elif type==b'scidac-record-xml':
+                    logger.info(f'record metadata: {data}')
+                elif type==b'scidac-checksum':
+                    latsuma = int(xmlFind(data,'suma'),16)
+                    latsumb = int(xmlFind(data,'sumb'),16)
+                    pass
+                elif type==b'ildg-format':
+                    field = xmlFind(data,'field')
+                    if field!=b'su3gauge':
+                        logger.TBRaise(f'unsupported ildg field type {field}')
+                    precision = int(xmlFind(data,'precision'))
+                    if precision==32:
+                        latprec = 8    # complex float
+                    elif precision==64:
+                        latprec = 16   # complex double
+                    else:
+                        logger.TBRaise(f'unknown precision {precision}')
+                    lx = int(xmlFind(data,'lx'))
+                    ly = int(xmlFind(data,'ly'))
+                    lz = int(xmlFind(data,'lz'))
+                    lt = int(xmlFind(data,'lt'))
+                    latdims = [lx,ly,lz,lt]
+                    latnc = self.Nc
+                    bytesPerLink = latnc*latnc*latprec
+                    latdatacount = self.Nd
+                else:
+                    logger.info(f'unused type: {type}  data: {data}')
+                next = 7-(size+7)%8
+            self.file.seek(next,os.SEEK_CUR)
+        self.file.close()
+        ndim = len(latdims)
+
+        # Carry out some checks on the read-in data.
+        if latsize<=0 or bytesPerLink<=0 or latdatacount<=0 or ndim==0 or latnc<0 or latprec<0 or lattype==b'Unknown':
+            logger.TBRaise(f'unsupported file: {fileName}')
+        if latprec==8:
+            self.precision = 'f'
+        elif latprec==16:
+            self.precision = 'd'
+        else:
+            logger.TBRaise(f'unknown complex precision {latprec}')
+        if latnc != self.Nc:
+            logger.TBRaise(f'unsupported number of colors: {latnc}')
+        if latdatacount != ndim:
+            logger.TBRaise(f'There should be one link per direction, but header suggests {latdatacount} links.')
+        self.checkLatDims(*latdims)
+        if ndim!=self.Nd:
+            logger.TBRaise(f'unsupported number of dimensions: {ndim}.')
+        vol = self.Ns**3 * self.Nt 
+        if latsize != vol*self.Nd*bytesPerLink:
+            logger.TBRaise(f'incorrect lattice size, expect {vol*ndim*bytesPerLink}, but got {latsize}')
+        if bytesPerLink != latprec*latnc*latnc:
+            logger.TBRaise(f'incorrect bytes per link, expected {latprec*latnc*latnc}, but got {bytesPerLink}')
+        if not (lattype==b'scidac-binary-data' or lattype==b'ildg-binary-data'):
+            logger.TBRaise(f'unknown lattice format: {lattype}')
+
+        # Check checksums
+        if lattype==b'scidac-binary-data':
+            if latsuma is None or latsumb is None:
+                logger.TBRaise(f'No SciDAC checksum.')
+            suma,sumb = scidacChecksum(latdata, vol, ndim*bytesPerLink)
+            if suma!=latsuma or sumb!=latsumb:
+                logger.TBRaise(f'Checksum error: expected {latsuma:x} {latsumb:x}, computed {suma:x} {sumb:x}')
+            logger.info('SciDAC checksum OK.')
+
+        # Convert from bytes to numpy array.
+        lat = np.frombuffer(latdata,dtype='>c'+str(latprec),count=vol*ndim*latnc*latnc)
+        lat = np.reshape(lat,latdims[::-1]+[ndim,latnc,latnc])
+        
+        # Load into gaugeField.
+        for t in range(self.Nt):
+            for z in range(self.Ns):
+                for y in range(self.Ns):
+                    for x in range(self.Ns):
+                        for mu in range(self.Nd):
+                            link = lat[t,z,y,x,mu]
+                            self.gauge.setLink(link,x,y,z,t,mu)
+        logger.details('Loaded conf into gaugeField.')
+
+        return self.gauge 
