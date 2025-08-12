@@ -10,7 +10,7 @@ import math
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import fallFactorial, invert, RMS, isMatrix, isSquare, isUnitary, \
     isSpecial, isSymmetric, isHermitian, isAntihermitian, isOrthogonal, isHankel, TA, pnorm, \
-    normalize
+    normalize, exp, pow, log, ze
 from latqcdtools.testing import print_results, concludeTest
 
 
@@ -32,7 +32,7 @@ H = np.array([[ 0.17036869            ,  0.03794601-0.13535497j,  0.28004516-0.0
 
 A = np.array([[  1j                    ,   0.03794601+0.13535497j,  0.28004516+0.098896j  ],
               [ -0.03794601+0.13535497j,   1j                    ,  0.35911944-0.71267198j],
-              [ -0.28004516+0.098896j  ,  -0.35911944-0.71267198j,  1j             ] ])
+              [ -0.28004516+0.098896j  ,  -0.35911944-0.71267198j,  1j                    ] ])
 
 O = np.array([[ np.cos(1.23), np.sin(1.23)],
               [-np.sin(1.23), np.cos(1.23)]])
@@ -47,6 +47,7 @@ genmat = np.array([[1j,1j         ,np.pi+1j],
                    [1 ,2+np.pi*1j ,3       ]])
 
 genvec = np.array([1,1+1j,np.pi])
+
 
 def testMath():
 
@@ -69,6 +70,12 @@ def testMath():
     lpass *= print_results( pnorm(genvec,1)     , np.linalg.norm(genvec,1)     , text='1-norm vec' )
     lpass *= print_results( pnorm(genvec,np.inf), np.linalg.norm(genvec,np.inf), text='inf-norm vec' )
     lpass *= print_results( pnorm(genmat,np.inf), np.linalg.norm(genmat,np.inf), text='inf-norm mat' )
+
+    test = ze(3) 
+    for i in range(30):
+        test += (1/math.factorial(i))*pow(A,i)
+    lpass *= print_results( test, exp(A)     , text='matrix exponential' )
+    lpass *= print_results( A   , log(exp(A)), text='matrix logarithm' )
 
     for p in [1,2,3,np.inf]:
         lpass *= print_results( pnorm(normalize(genvec,p),p), 1, text=f'{p} vec normalize')

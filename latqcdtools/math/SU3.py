@@ -8,11 +8,8 @@
 # 
 
 import numpy as np
-from numpy.linalg import det
-import latqcdtools.base.logger as logger
-from latqcdtools.math.math import id_3, ze_3, isUnitary, isSpecial, dagger
+from latqcdtools.math.math import SUN
 from latqcdtools.base.speedify import compile
-from latqcdtools.base.check import checkType
 
 
 # Eventually we would like to use default_rng here too, but it doesn't compile straightforwardly
@@ -64,98 +61,19 @@ def fastRandomize(self):
             self[i,j] = complex( 1 - 2*rng.uniform(0,1), 1 - 2*rng.uniform(0,1) )
 
 
-class SU3(np.ndarray):
-
-    """ 
-    A member of the Lie group SU(3). Implemented as a subclass of the np.ndarray class. This gives us access already
-    to all the nice features of np.ndarray and lets us leverage the speed of numpy.
-        g.trace()
-        g.det()
-        g.dagger()
-        g[i,j], which can be used to access and assign
-        g + h
-        g*h = g@h
-        2*g
-    """
+class SU3(SUN):
 
     def __new__(cls, mat=None):
-        if mat is None:
-            mat = ze_3 
-        obj = np.asarray(mat, dtype=complex)
-        if obj.shape != (3, 3):
-            logger.TBRaise("SU(3) matrices must have shape (3,3).")
-        return np.copy(obj).view(cls)
-
+        return super(SU3, cls).__new__(cls, N=3, mat=mat)
 
     def __repr__(self) -> str:
         return "SU(3)"
-
-
-    def __mul__(self, other):
-        # Perform matrix multiplication instead of element-wise multiplication
-        return np.dot(self, other)
-
-
-    def __pow__(self,power):
-        # Perform matrix power instead of element-wise power
-        checkType(int,power=power)
-        return np.linalg.matrix_power(self, power)
-
-
-    def trace(self):
-        """ 
-        Trace. In np.matrix, this returns a 2d object for some reason. 
-        """
-        return super().trace().item()
-
-
-    def dagger(self):
-        return dagger(self) 
-
-
-    def det(self):
-        """ 
-        Determinant. 
-        """
-        return det(self)
-
-
-    def isSU3(self) -> bool:
-        """ 
-        Check that I have det=1 and am unitary. 
-        """
-        if not (isSpecial(self) and isUnitary(self)):
-            return False
-        return True
-
 
     def su3unitarize(self):
         """ 
         Project to SU(3) using information from the first two rows. 
         """
         fastUnitarize(self)
-
-
-    def setToMatrix(self,other):
-        """ 
-        Turn into RHS link. 
-        """
-        np.copyto(self,np.asarray(other,dtype=complex))
-
-
-    def setToZero(self):
-        """ 
-        Turn into zero matrix. 
-        """
-        self.setToMatrix(ze_3)
-
-
-    def setToIdentity(self):
-        """ 
-        Turn into identity matrix. 
-        """
-        self.setToMatrix(id_3) 
-
 
     def setToRandom(self):
         """ 

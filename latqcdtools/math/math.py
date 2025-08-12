@@ -12,16 +12,27 @@
 import numpy as np
 import scipy as sp
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import isArrayLike, cleanOutput, isComplexType
+from latqcdtools.base.utilities import isArrayLike, cleanOutput
 from latqcdtools.base.check import checkType
 
 
-id_2 = np.eye(2,dtype=complex)
-id_3 = np.eye(3,dtype=complex)
-id_4 = np.eye(4,dtype=complex)
-ze_2 = np.zeros((3,3), dtype=complex)
-ze_3 = np.zeros((3,3), dtype=complex)
-ze_4 = np.zeros((3,3), dtype=complex)
+# ----------------------------------------------------------------- MATRICES
+
+
+def id(N) -> np.ndarray:
+    """ 
+    NxN complex identity matrix
+    """
+    checkType(int,N=N)
+    return np.eye(N,dtype=complex)
+
+
+def ze(N) -> np.ndarray:
+    """ 
+    NxN complex zero matrix
+    """
+    checkType(int,N=N)
+    return np.zeros((N,N), dtype=complex)
 
 
 def isMatrix(mat) -> bool:
@@ -78,8 +89,8 @@ def isUnitary(mat) -> bool:
         bool: True if unitary
     """
     checkMatrix(mat)
-    id_N = np.diag(np.ones(len(mat[0])))
-    return rel_check(id_N,mat @ dagger(mat))
+    N = len(mat[0])
+    return rel_check(id(N),mat @ dagger(mat))
 
 
 def isSpecial(mat) -> bool:
@@ -149,8 +160,8 @@ def isOrthogonal(mat) -> bool:
         bool: True if orthogonal 
     """
     checkSquare(mat)
-    id_N = np.diag(np.ones(len(mat[0])))
-    return np.allclose(mat@mat.T, id_N)
+    N = len(mat[0])
+    return np.allclose(mat@mat.T, id(N))
 
 
 def isHankel(mat) -> bool:
@@ -269,6 +280,127 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         logger.TBRaise('Unrecognized inverter',method)
 
 
+def logDet(mat) -> float:
+    """ 
+    Logarithm of determinant. 
+    """
+    checkType(np.ndarray,mat=mat)
+    checkSquare(mat)
+    _, ans = np.linalg.slogdet(mat)
+    return ans
+
+
+def exp(mat) -> np.ndarray:
+    """
+    Exponential of square matrix.
+    """
+    checkSquare(mat) 
+    return sp.linalg.expm(mat)
+
+
+def log(mat) -> np.ndarray:
+    """
+    Natural logarithm of square matrix.
+    """
+    checkSquare(mat)
+    return sp.linalg.logm(mat)
+
+
+def pow(mat,power) -> np.ndarray:
+    """
+    Matrix power. 
+    """
+    checkSquare(mat)
+    checkType(int,power=power)
+    return np.linalg.matrix_power(mat, power)
+
+
+class SUN(np.ndarray):
+
+    """ 
+    A member of the Lie group SU(N). Implemented as a subclass of the np.ndarray class. This gives us access already
+    to all the nice features of np.ndarray and lets us leverage the speed of numpy.
+        g.trace()
+        g.det()
+        g.dagger()
+        g[i,j], which can be used to access and assign
+        g + h
+        g*h = g@h
+        2*g
+    """
+
+    def __new__(cls, N=None, mat=None):
+        if N is None:
+            logger.TBRaise('Must specify N')
+        if mat is None:
+            mat = ze(N) 
+        obj = np.asarray(mat, dtype=complex)
+        if obj.shape != (N, N):
+            logger.TBRaise(f"SU({N}) matrices must have shape ({N},{N})")
+        return np.copy(obj).view(cls)
+
+
+    def __repr__(self) -> str:
+        return "SU(N)"
+
+
+    def __mul__(self, other):
+        # Perform matrix multiplication instead of element-wise multiplication
+        return np.dot(self, other)
+
+
+    def __pow__(self,power):
+        # Perform matrix power instead of element-wise power
+        return pow(self, power)
+
+
+    def trace(self):
+        return super().trace().item()
+
+
+    def dagger(self):
+        return dagger(self) 
+
+
+    def det(self):
+        return np.linalg.det(self)
+
+
+    def isSUN(self) -> bool:
+        """ 
+        Check that I have det=1 and am unitary. 
+        """
+        if not (isSpecial(self) and isUnitary(self)):
+            return False
+        return True
+
+
+    def setToMatrix(self,other):
+        """ 
+        Turn into RHS link. 
+        """
+        np.copyto(self,np.asarray(other,dtype=complex))
+
+
+    def setToZero(self):
+        """ 
+        Turn into zero matrix. 
+        """
+        N = len(self)
+        self.setToMatrix(ze(N))
+
+
+    def setToIdentity(self):
+        """ 
+        Turn into identity matrix. 
+        """
+        N = len(self)
+        self.setToMatrix(id(N)) 
+
+
+# --------------------------------------------------------------- OTHER MATH
+
+
 def pnorm(arr,p=2) -> float:
     """
     Returns p-norm of vector or matrix arr.
@@ -341,16 +473,6 @@ def riseFactorial(n,m) -> float:
     if n>m:
         logger.TBRaise("n>m.")
     return sp.special.poch(n,m)
-
-
-def logDet(mat) -> float:
-    """ 
-    Logarithm of determinant. 
-    """
-    checkType(np.ndarray,mat=mat)
-    checkSquare(mat)
-    _, ans = np.linalg.slogdet(mat)
-    return ans
 
 
 def RMS(data) -> float:

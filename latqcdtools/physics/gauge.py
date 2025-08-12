@@ -10,7 +10,7 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.math.SU3 import SU3
-from latqcdtools.math.math import id_3
+from latqcdtools.math.math import id
 from latqcdtools.base.speedify import compile, parallel_reduce, parallel_function_eval
 from latqcdtools.base.check import checkType
 
@@ -164,7 +164,7 @@ class gaugeField:
                 for y in range(self.Ns):
                     for x in range(self.Ns):
                         for mu in range(4):
-                            self.setLink(id_3,x,y,z,t,mu)
+                            self.setLink(id(3),x,y,z,t,mu)
 
 
     def checkSU3(self):
@@ -177,5 +177,5 @@ class gaugeField:
             for y in range(self.Ns):
                 for x in range(self.Ns):
                     for mu in range(4):
-                        if not self.getLink(x,y,z,t,mu).isSU3():
+                        if not self.getLink(x,y,z,t,mu).isSUN():
                             logger.TBRaise(f'Link at ({x},{y},{z},{t}) in direction {mu} is not SU(3).')
