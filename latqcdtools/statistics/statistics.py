@@ -13,7 +13,8 @@ import numpy as np
 import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet, normalize, invert, isVector, checkVector
-from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, FOREGROUND, plt
+from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, plt, _initializePlt,\
+    _add_optional, _getAxObject, ZOD, _update_handles, _update_labels, set_params
 from latqcdtools.base.utilities import toNumpy, appendToDocstring, unvector, createFilePath
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
@@ -435,7 +436,7 @@ def cov_to_cor(cov) -> np.ndarray:
     return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
 
 
-def confidence_ellipse(x,y,ax,color='r',CI=None):
+def confidence_ellipse(x,y,CI=None,**params):
     """ 
     Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
     assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures
@@ -454,12 +455,32 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
     checkType(np.ndarray,x=x)
     checkType(np.ndarray,y=y)
     checkEqualLengths(x,y)
+
+    _initializePlt(params)
+    optional = _add_optional(params)
+    ax = _getAxObject(params)
+
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+
+    if params['color'] is not None:
+        color=params['color']
+    else:
+        color='r'
+
+    if params['markerfill']:
+        markerfill=params['color']
+    else:
+        markerfill="None"
+
     if CI is None:
         s = 1
     else:
         if CI<0 or CI>1:
             logger.TBRaise('Confidence limits are between 0 and 1.') 
         s = np.sqrt(-2*np.log(1-CI))
+
     data = np.vstack((x, y))
     cov  = np.cov(data)
     eigvals, eigvecs = np.linalg.eig(cov)
@@ -468,8 +489,17 @@ def confidence_ellipse(x,y,ax,color='r',CI=None):
     a = s*np.sqrt(np.max(eigvals))
     b = s*np.sqrt(np.min(eigvals))
     ellipse = matplotlib.patches.Ellipse((std_mean(x), std_mean(y)), width = 2*a, height = 2*b, angle = theta,
-                                          edgecolor=color, fc='None', zorder=FOREGROUND)
+                                          edgecolor=color, fc=markerfill, zorder=ZOD, alpha=params['alpha'],
+                                          **optional)
     ax.add_patch(ellipse)
+
+    if params['label'] is not None:
+        _update_labels(ax,params['label'])
+        _update_handles(ax,ellipse)
+        set_params(**params) # Needed to put in labels
+
+    globals()['ZOD'] += 1
+
     return a, b, theta 
 
 
