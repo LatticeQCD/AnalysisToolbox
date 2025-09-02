@@ -4,14 +4,14 @@
 # D. Clarke
 # 
 # A gauge field class. We try to implement various functions as static methods so that we can compile
-# them with numba to speed them up.
+# them with numba to speed them up. We assume periodic boundary conditions.
 # 
 
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.math.SU3 import SU3
-from latqcdtools.math.math import id_3
-from latqcdtools.base.speedify import compile, parallel_reduce
+from latqcdtools.math.math import id
+from latqcdtools.base.speedify import compile, parallel_reduce, parallel_function_eval
 from latqcdtools.base.check import checkType
 
 
@@ -79,25 +79,18 @@ class gaugeField:
         self.Nt    = Nt
         self.nproc = nproc
         self.field = np.zeros(shape=(self.Nt,self.Ns,self.Ns,self.Ns,4,3,3),dtype=complex)
-        for t in range(self.Nt):
-            for z in range(self.Ns):
-                for y in range(self.Ns):
-                    for x in range(self.Ns):
-                        for mu in range(1,4):
-                            U = SU3()
-                            self.field[t,z,y,x,mu] = U
 
 
     def __repr__(self) -> str:
         return "gaugeField"
 
 
-    def getLink(self,x,y,z,t,mu):
+    def getLink(self,x,y,z,t,mu) -> SU3:
         """ 
         Link accessor. 
         """
         X, Y, Z, T = respectBCs(x,y,z,t,self.Ns,self.Nt)
-        return self.field[T][Z][Y][X][mu]
+        return SU3(self.field[T][Z][Y][X][mu])
 
 
     def setLink(self, other, x, y, z, t, mu):
@@ -171,4 +164,18 @@ class gaugeField:
                 for y in range(self.Ns):
                     for x in range(self.Ns):
                         for mu in range(4):
-                            self.setLink(id_3,x,y,z,t,mu)
+                            self.setLink(id(3),x,y,z,t,mu)
+
+
+    def checkSU3(self):
+        parallel_function_eval(self._checkSU3_timeslice, range(self.Nt), nproc=self.nproc)
+        logger.info('All links are SU(3).')
+
+
+    def _checkSU3_timeslice(self,t):
+        for z in range(self.Ns):
+            for y in range(self.Ns):
+                for x in range(self.Ns):
+                    for mu in range(4):
+                        if not self.getLink(x,y,z,t,mu).isSUN():
+                            logger.TBRaise(f'Link at ({x},{y},{z},{t}) in direction {mu} is not SU(3).')

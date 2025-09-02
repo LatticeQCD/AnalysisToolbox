@@ -20,6 +20,7 @@ latqcdtools.interfaces.HotQCD.md
 latqcdtools.interfaces.MILC.md
 latqcdtools.interfaces.confReader.md
 latqcdtools.interfaces.interfaces.md
+latqcdtools.interfaces.lime.md
 latqcdtools.interfaces.simulationManagement.md
 latqcdtools.legacy.md
 latqcdtools.math.SU3.md

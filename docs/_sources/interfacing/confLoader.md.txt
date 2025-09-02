@@ -9,7 +9,7 @@ It is sometimes convenient to have the ability to read these configurations in P
 machine learning code is in Python. It may also be easier to use Python to write short scripts to convert between
 one format and another. To this end, we have implemented `latqcdtools/interfaces/confReader.py`.
 
-At the moment it only reads NERSC format, but one can easily extend this, by following the example of
+At the moment it only reads NERSC and ILDG format, but one can easily extend this, by following the example of e.g.
 the `NERSCReader` class, which inherits from a more general `confReader` class. If you want to implement your own class,
 please have it inherit from `confReader` as well.
 

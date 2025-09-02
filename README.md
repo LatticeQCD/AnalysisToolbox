@@ -109,6 +109,10 @@ us out by citing
 
 - We acknowledge support by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) through the CRC-TR 211 'Strong-interaction matter under extreme conditions'– project number 315477589 – TRR 211.
 - This work was partly performed in the framework of the PUNCH4NFDI consortium supported by DFG fund "NFDI 39/1", Proj.No. 460248186 (PUNCH4NFDI).
-- DAC acknowledges helpful discussions with [C. DeTar](https://github.com/detar), S. Lahert, 
-[G. P. LePage](https://github.com/gplepage), and [C. Rohde](https://github.com/rohdog2003).
+- DAC acknowledges helpful discussions with 
+[C. DeTar](https://github.com/detar),
+[X.-Y. Jin](https://github.com/jxy),
+[S. Lahert](https://github.com/Shaun252), 
+[G. P. LePage](https://github.com/gplepage), 
+and [C. Rohde](https://github.com/rohdog2003).
 

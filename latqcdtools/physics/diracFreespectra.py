@@ -8,7 +8,7 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.math.math import id_4
+from latqcdtools.math.math import id
 import itertools
 
 logger.warn('This might be broken... Use with caution.')
@@ -106,8 +106,8 @@ class DiracOp(GammaMatrix):
         """
         gamma = np.array([self.g(1), self.g(2), self.g(3), self.g(4)])
         term = sum(1j * np.sin(p[i]) * gamma[i] +
-                   (1 - np.cos(p[i])) * id_4 for i in range(len(gamma)))
-        massterm = mass * id_4
+                   (1 - np.cos(p[i])) * id(4) for i in range(len(gamma)))
+        massterm = mass * id(4)
         return term + massterm
 
     def DWMobius4D(self, p, mass, M=1, b=1.5, c=0.5, Ls=12):
@@ -125,11 +125,11 @@ class DiracOp(GammaMatrix):
         """
         gamma_5 = self.g5()
         hkNum = (b + c) * self.WilsonOp(p, -M)
-        hkDen = 2 * id_4 + (b - c) * self.WilsonOp(p, -M)
+        hkDen = 2 * id(4) + (b - c) * self.WilsonOp(p, -M)
         hk = gamma_5 @ hkNum @ np.linalg.inv(hkDen)
-        sgnHk = np.matmul((np.linalg.matrix_power(id_4 + hk, Ls) - np.linalg.matrix_power(id_4 - hk, Ls)),
-                          np.linalg.inv(np.linalg.matrix_power(id_4 + hk, Ls) + np.linalg.matrix_power(id_4 - hk, Ls)))
-        Ddw = (1 + mass) / 2 * id_4 + (1 - mass) / 2 * np.matmul(gamma_5, sgnHk)
+        sgnHk = np.matmul((np.linalg.matrix_power(id(4) + hk, Ls) - np.linalg.matrix_power(id(4) - hk, Ls)),
+                          np.linalg.inv(np.linalg.matrix_power(id(4) + hk, Ls) + np.linalg.matrix_power(id(4) - hk, Ls)))
+        Ddw = (1 + mass) / 2 * id(4) + (1 - mass) / 2 * np.matmul(gamma_5, sgnHk)
         return Ddw
 
     def eigvalues(self, mass, M=1, b=1.5, c=0.5, Ls=12):

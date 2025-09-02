@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The zero-temperature static potential &mdash; AnalysisToolbox 1.2.2 documentation</title>
+  <title>The zero-temperature static potential &mdash; AnalysisToolbox 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,13 +13,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -90,16 +88,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="the-zero-temperature-static-potential">
+  <section id="the-zero-temperature-static-potential">
 <h1>The zero-temperature static potential<a class="headerlink" href="#the-zero-temperature-static-potential" title="Link to this heading"></a></h1>
 <p>In this module are methods related to the zero-temperature static potential. This potential is sometimes used to
-renormalize Polyakov-loop observables, to extract reference scales like <span class="math notranslate nohighlight">\(r_0\)</span>, or to improve short-distance
+renormalize Polyakov-loop observables, to extract reference scales like $r_0$, or to improve short-distance
 lattice spacings at tree-level.</p>
 <section id="tree-level-improved-distances">
 <h2>Tree-level improved distances<a class="headerlink" href="#tree-level-improved-distances" title="Link to this heading"></a></h2>
 <p>Short distances calculated directly from multiplying the separation by the lattice
-spacing are plagued by lattice artifacts. Therefore if one is interested in how an observable depends on <span class="math notranslate nohighlight">\(r\)</span>, they
-should use tree-level improved distances for small <span class="math notranslate nohighlight">\(r\)</span>. This calculation depends on <span class="math notranslate nohighlight">\(N_s\)</span>. Given a maximum
+spacing are plagued by lattice artifacts. Therefore if one is interested in how an observable depends on $r$, they
+should use tree-level improved distances for small $r$. This calculation depends on $N_s$. Given a maximum
 squared distance to improve <code class="docutils literal notranslate"><span class="pre">r2max</span></code>, the method</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">impdist</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span><span class="n">r2max</span><span class="p">)</span>
 </pre></div>
@@ -112,9 +110,9 @@ squared distance to improve <code class="docutils literal notranslate"><span cla
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">V_Teq0</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>takes a distance <span class="math notranslate nohighlight">\(r\)</span> in fm and returns <span class="math notranslate nohighlight">\(V\)</span> in MeV. The potential comes from a three-parameter Levenberg-Marquardt
+<p>takes a distance $r$ in fm and returns $V$ in MeV. The potential comes from a three-parameter Levenberg-Marquardt
 fit of the data in Fig. 14 <a class="reference external" href="https://journals.aps.org/prd/abstract/10.1103/PhysRevD.90.094503">here</a> to the
-form <span class="math notranslate nohighlight">\(V(r)=a/r+b*r+c\)</span>, which is the Cornell parameterization.</p>
+form $V(r)=a/r+b*r+c$, which is the Cornell parameterization.</p>
 <p>There are also fit functions like <code class="docutils literal notranslate"><span class="pre">fitV_Teq0</span></code>, which can be used to extract fit parameters using a Cornell ansatz.
 Other possibilities include a parameterization including one-loop and two-loop corrections to the Coulomb part.</p>
 </section>
@@ -128,7 +126,7 @@ Other possibilities include a parameterization including one-loop and two-loop c
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, LatticeQCD.</p>
+    <p>&#169; Copyright 2025, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

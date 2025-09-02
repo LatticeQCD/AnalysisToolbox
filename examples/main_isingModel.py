@@ -58,7 +58,7 @@ def runIsingModel(T):
     beta  = 1/T
     logger.info('T =',T)
 
-    # Initialize the random number generator. When carrying out a statistical physic MCMC, it's
+    # Initialize the random number generator. When carrying out a statistical physics MCMC, it's
     # crucially important that you pick a good one. The default_rng() constructor is what
     # numpy recommends, which at the time of writing utilizes O'Neill's PCG algorithm. 
     rng = np.random.default_rng()

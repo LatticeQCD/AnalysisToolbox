@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Applications &mdash; AnalysisToolbox 1.2.2 documentation</title>
+  <title>Applications &mdash; AnalysisToolbox 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,13 +13,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -78,13 +76,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="applications">
+  <section id="applications">
 <h1>Applications<a class="headerlink" href="#applications" title="Link to this heading"></a></h1>
 <p>We have a few ready-to-use applications for some basic physics calculations. If you make a new application,
 please make sure it starts with <code class="docutils literal notranslate"><span class="pre">main_</span></code>.</p>
 <section id="main-getbeta-py">
 <h2>main_getBeta.py<a class="headerlink" href="#main-getbeta-py" title="Link to this heading"></a></h2>
-<p>Given a reference scale, <span class="math notranslate nohighlight">\(N_\tau\)</span>, and <span class="math notranslate nohighlight">\(T\)</span> in [MeV], this script calculates the corresponding <span class="math notranslate nohighlight">\(\beta\)</span>. An
+<p>Given a reference scale, $N_\tau$, and $T$ in [MeV], this script calculates the corresponding $\beta$. An
 example calling is</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py<span class="w"> </span>--Nt<span class="w"> </span><span class="m">8</span><span class="w"> </span>--scale<span class="w"> </span>r0<span class="w"> </span>--T<span class="w"> </span><span class="m">300</span><span class="w"> </span>
 </pre></div>
@@ -92,18 +90,18 @@ example calling is</p>
 </section>
 <section id="main-gettempandspacing-py">
 <h2>main_getTempAndSpacing.py<a class="headerlink" href="#main-gettempandspacing-py" title="Link to this heading"></a></h2>
-<p>Given a reference scale, <span class="math notranslate nohighlight">\(N_\tau\)</span>, and <span class="math notranslate nohighlight">\(\beta\)</span> value, this script calculates <span class="math notranslate nohighlight">\(T\)</span> in [MeV] and <span class="math notranslate nohighlight">\(a\)</span> in [fm]. An
+<p>Given a reference scale, $N_\tau$, and $\beta$ value, this script calculates $T$ in [MeV] and $a$ in [fm]. An
 example calling is</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_getTempandSpacing.py<span class="w"> </span>--Nt<span class="w"> </span><span class="m">8</span><span class="w"> </span>--beta<span class="w"> </span><span class="m">6</span>.285<span class="w"> </span>--scale<span class="w"> </span>fk
 </pre></div>
 </div>
 <p>For more details about the scale setting, please look into the
-<a class="reference internal" href="../physicsAnalysis/referenceScales.html"><span class="doc std std-doc">reference scales</span></a> article.</p>
+<a class="reference internal" href="../physicsAnalysis/referenceScales.html"><span class="std std-doc">reference scales</span></a> article.</p>
 </section>
 <section id="main-hrg-measure-py">
 <h2>main_HRG_measure.py<a class="headerlink" href="#main-hrg-measure-py" title="Link to this heading"></a></h2>
-<p>The goal of this script is to calculate some observables in the <a class="reference internal" href="../physicsAnalysis/HRG.html"><span class="doc std std-doc">HRG model</span></a> given some
-external control parameters, like a range of temperatures with fixed <span class="math notranslate nohighlight">\(\mu_B/T\)</span>. By default, this program uses
+<p>The goal of this script is to calculate some observables in the <a class="reference internal" href="../physicsAnalysis/HRG.html"><span class="std std-doc">HRG model</span></a> given some
+external control parameters, like a range of temperatures with fixed $\mu_B/T$. By default, this program uses
 a list of hadrons and resonances created by the HotQCD collaboration called QMHRG2020. You can find this list here:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>latqcdtools/physics/HRGtables/hadron_list_ext_strange_2020.txt
 </pre></div>
@@ -115,7 +113,7 @@ a list of hadrons and resonances created by the HotQCD collaboration called QMHR
 <p>You can choose your hadron list with the <code class="docutils literal notranslate"><span class="pre">--hadron_file</span></code> argument. It is also up to you to choose a model; at the moment
 the only possibilities are the typical HRG <code class="docutils literal notranslate"><span class="pre">QM</span></code> or an excluded volume HRG model <code class="docutils literal notranslate"><span class="pre">EV</span></code>. This is specified with
 the argument <code class="docutils literal notranslate"><span class="pre">--model</span></code>. Finally you need to specify your observable <code class="docutils literal notranslate"><span class="pre">--obs</span></code>. If you specify a generalized
-susceptibility <code class="docutils literal notranslate"><span class="pre">chi</span></code>, you must also pass the <span class="math notranslate nohighlight">\(B\)</span>, <span class="math notranslate nohighlight">\(Q\)</span>, <span class="math notranslate nohighlight">\(S\)</span>, and <span class="math notranslate nohighlight">\(C\)</span> chemical potential derivative orders.
+susceptibility <code class="docutils literal notranslate"><span class="pre">chi</span></code>, you must also pass the $B$, $Q$, $S$, and $C$ chemical potential derivative orders.
 A straightforward usage of this script is, for instance,</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_measure.py<span class="w"> </span>--obs<span class="w"> </span>chi<span class="w"> </span>--bqsc<span class="w"> </span><span class="m">1100</span><span class="w"> </span>--temperature_range<span class="w"> </span><span class="m">130</span>:180:0.5<span class="w"> </span>--muB<span class="w"> </span><span class="m">0</span>.0
 </pre></div>
@@ -124,9 +122,9 @@ A straightforward usage of this script is, for instance,</p>
 <section id="main-hrg-lcp-py">
 <h2>main_HRG_LCP.py<a class="headerlink" href="#main-hrg-lcp-py" title="Link to this heading"></a></h2>
 <p>In the context of QCD at finite chemical potential, it is interesting to examine systems following a few lines
-of constant physics (LCPs). The HotQCD collaboration has focused on strangeness-neutral systems, with <span class="math notranslate nohighlight">\(n_Q/n_B=0.4\)</span>
-(corresponding to gold-gold collisions at RHIC) and <span class="math notranslate nohighlight">\(n_Q/n_B=0.5\)</span> (corresponding to the isospin-symmetric case).
-This script creates tables of <span class="math notranslate nohighlight">\(\mu_B/T\)</span>, <span class="math notranslate nohighlight">\(\mu_Q/T\)</span>, and <span class="math notranslate nohighlight">\(\mu_S/T\)</span> (<span class="math notranslate nohighlight">\(\mu_C=0\)</span>) that lie on <span class="math notranslate nohighlight">\(n_S=0\)</span> LCPs like the ones
+of constant physics (LCPs). The HotQCD collaboration has focused on strangeness-neutral systems, with $n_Q/n_B=0.4$
+(corresponding to gold-gold collisions at RHIC) and $n_Q/n_B=0.5$ (corresponding to the isospin-symmetric case).
+This script creates tables of $\mu_B/T$, $\mu_Q/T$, and $\mu_S/T$ ($\mu_C=0$) that lie on $n_S=0$ LCPs like the ones
 mentioned above.
 A straightforward usage of this script is, for instance,</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HRG_LCP.py<span class="w"> </span>--r<span class="w"> </span><span class="m">0</span>.4<span class="w"> </span>--models<span class="w"> </span>QM<span class="w"> </span>--T<span class="w"> </span><span class="m">150</span>
@@ -151,7 +149,7 @@ and a strange quark mass of 0.01.</p>
 </section>
 <section id="main-hotqcdeos-py">
 <h2>main_HotQCDEoS.py<a class="headerlink" href="#main-hotqcdeos-py" title="Link to this heading"></a></h2>
-<p>The paramterization for HotQCD equation of state at  <span class="math notranslate nohighlight">\(\mu_B/T = 0\)</span>, <span class="math notranslate nohighlight">\(\mu_Q/T = 0\)</span>, and <span class="math notranslate nohighlight">\(\mu_S/T = 0\)</span> are given in “Equation of state in ( 2+1 )-flavor QCD, Phys.Rev.D 90 (2014) 094503, (HotQCD Collaboration) A. Bazavov et al.”. The pressure (<span class="math notranslate nohighlight">\(P\)</span>), energy density (<span class="math notranslate nohighlight">\(\epsilon\)</span>) and entropy density (<span class="math notranslate nohighlight">\(s\)</span>) can be obtained from the thermodynamic relations.</p>
+<p>The paramterization for HotQCD equation of state at  $\mu_B/T = 0$, $\mu_Q/T = 0$, and $\mu_S/T = 0$ are given in “Equation of state in ( 2+1 )-flavor QCD, Phys.Rev.D 90 (2014) 094503, (HotQCD Collaboration) A. Bazavov et al.”. The pressure ($P$), energy density ($\epsilon$) and entropy density ($s$) can be obtained from the thermodynamic relations.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./main_HotQCDEoS.py<span class="w"> </span>--EosType<span class="w"> </span><span class="s2">&quot;fixedmuB&quot;</span><span class="w"> </span>--muBdivT<span class="w"> </span><span class="m">0</span>.0
 </pre></div>
 </div>
@@ -166,7 +164,7 @@ and a strange quark mass of 0.01.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, LatticeQCD.</p>
+    <p>&#169; Copyright 2025, LatticeQCD.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -144,7 +144,10 @@ def writeTable(filename,*args,**kwargs):
     for i in range(colno):
         ab[_lab(i)] = data[i]
     createFilePath(filename)
-    np.savetxt(filename, ab, fmt=form, header=head, **kwargs)
+    if head is None:
+        np.savetxt(filename, ab, fmt=form, **kwargs)
+    else:
+        np.savetxt(filename, ab, fmt=form, header=head, **kwargs)
 
 
 def _lab(num) -> str:

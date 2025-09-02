@@ -239,7 +239,7 @@ def printClean(*args,label=None):
         *args: The numbers you want to output, separated by commas. 
         label (str, optional): Put label to the left of your output. Defaults to None.
     """
-    logger.info(cleanOutput(*args,label))
+    logger.info(cleanOutput(*args,label).strip())
 
 
 def printDict(dic,level=0):
@@ -347,6 +347,27 @@ def substringBetween(string,a,b) -> str:
     start_index = string.index(a) + len(a)
     end_index   = string[start_index:].index(b) + start_index
     return string[start_index:end_index]
+
+
+def deleteLine(target,line_number):
+    """
+    Delete line line_number from file target.
+
+    Args:
+        target (str)
+        line_number (int)
+    """
+    if os.path.isfile(target):
+        with open(target, 'r') as file:
+            lines = file.readlines()
+        if 0 < line_number <= len(lines):
+            lines.pop(line_number - 1)  # line_number is 1-based
+            with open(target, 'w') as file:
+                file.writelines(lines)
+        else:
+            logger.TBRaise("Line number is out of range.")
+        return
+    logger.warn(f"{target} does not exist.")
 
 
 def deleteFile(target):

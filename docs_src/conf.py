@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'AnalysisToolbox'
-copyright = '2024, LatticeQCD'
+copyright = '2025, LatticeQCD'
 author = 'LatticeQCD'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.2'
+release = '1.3.0'
 
 
 # -- General configuration ---------------------------------------------------
