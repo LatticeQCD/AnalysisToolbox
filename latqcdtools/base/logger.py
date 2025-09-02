@@ -135,9 +135,10 @@ def info(*args):
 def warn(*args,frame=2):
     global CURRENT_LEVEL
     if CURRENT_LEVEL <= 5:
-        args   = [str(s) for s in args]
-        output = _getTimeStamp()+_WARNING+' WARNING: '+_getCallerName(frame)+(' '.join(args))+_ENDC
-        print(output)
+        args    = [str(s) for s in args]
+        output  = _getTimeStamp()+' WARNING: '+_getCallerName(frame)+(' '.join(args))
+        outputc = _getTimeStamp()+_WARNING+' WARNING: '+_getCallerName(frame)+(' '.join(args))+_ENDC
+        print(outputc)
         _log(output+'\n')
 
 
@@ -145,9 +146,10 @@ def warn(*args,frame=2):
 
 
 def TBFail(*args):
-    args   = [str(s) for s in args]
-    output = _getTimeStamp()+_FAIL+' FAIL: '+(' '.join(args))+_ENDC
-    print(output)
+    args    = [str(s) for s in args]
+    output  = _getTimeStamp()+' FAIL: '+(' '.join(args))
+    outputc = _getTimeStamp()+_FAIL+' FAIL: '+(' '.join(args))+_ENDC
+    print(outputc)
     _log(output + '\n')
 
 
@@ -158,9 +160,10 @@ def TBError(*args,frame=2):
     Args:
         frame (int, optional): Controls the name of the caller. Defaults to method that called TBError.
     """
-    args   = [str(s) for s in args]
-    output = _getTimeStamp()+_FAIL+' ERROR: '+_getCallerName(frame)+(' '.join(args))+_ENDC
-    print(output)
+    args    = [str(s) for s in args]
+    output  = _getTimeStamp()+' ERROR: '+_getCallerName(frame)+(' '.join(args))
+    outputc = _getTimeStamp()+_FAIL+' ERROR: '+_getCallerName(frame)+(' '.join(args))+_ENDC
+    print(outputc)
     _log(output + '\n')
     sys.exit(-1)
 
@@ -172,14 +175,17 @@ def TBRaise(*args,frame=2):
     Args:
         frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
     """
-    args   = [str(s) for s in args]
-    output = _FAIL+_getCallerName(frame)+(' '.join(args))+_ENDC
+    args    = [str(s) for s in args]
+    output  = _getCallerName(frame)+(' '.join(args))
+    outputc = _FAIL+_getCallerName(frame)+(' '.join(args))+_ENDC
     _log(output + '\n')
     raise ToolboxException(output) 
 
 
 def TBPass(*args):
-    args   = [str(s) for s in args]
-    output = _getTimeStamp()+_PASS+' SUCCESS: '+(' '.join(args))+_ENDC
-    print(output)
+    args    = [str(s) for s in args]
+    output  = _getTimeStamp()+' SUCCESS: '+(' '.join(args))
+    outputc = _getTimeStamp()+_PASS+' SUCCESS: '+(' '.join(args))+_ENDC
+    print(outputc)
     _log(output + '\n')
+
