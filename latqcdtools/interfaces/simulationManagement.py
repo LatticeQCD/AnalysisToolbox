@@ -14,6 +14,7 @@ from latqcdtools.base.plotting import plt, plot_lines, plot_hist, set_params, cl
 from latqcdtools.statistics.statistics import std_mean, std_err, checkTS, KSTest_1side
 import scipy as sp
 from latqcdtools.base.utilities import naturalSort
+from latqcdtools.math.math import rel_check
 
 def countConfigurations(targetFolder,name,delimiter='.'):
     """
@@ -99,7 +100,7 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
 
 
 
-_allowedEnsKinds = ['conf','meas','conf/meas']
+_allowedEnsKinds = ['conf','meas','conf/meas','seed','seed/meas']
 _allowedEnsKeys  = ['kind',  # configurations? measurements?
                     'date',  # last date you checked it
                     'Nt',
@@ -140,7 +141,8 @@ class ensemble:
             'ms'      :None, 
             'mc'      :None, 
             'mf'      :None, 
-            'mpre'    :None, 
+            'mpre'    :None,
+            'ml/ms'   :None, 
             'location':None, 
             'folder'  :None, 
             'notes'   :None,
@@ -156,14 +158,12 @@ class ensemble:
             lcomplete = False
         if self._ens['Nt'] is None:
             lcomplete = False
-        if self._ens['Ns'] is None:
-            lcomplete = False
         if self._ens['Nf'] is None:
             lcomplete = False
         if self._ens['beta'] is None:
             lcomplete = False
         if not lcomplete:
-            logger.TBRaise('Must minimally specify Nt, Nf, Ns, beta, and kind.')
+            logger.TBRaise('Must minimally specify Nt, Nf, beta, and kind.')
         if self._ens['kind'] not in _allowedEnsKinds: 
             logger.TBRaise('Unrecognized kind',self._ens['kind'])
         if self._ens['Nf'] not in _allowedEnsNf: 
@@ -177,9 +177,18 @@ class ensemble:
         if self._ens['mc'] is not None:
             if self._ens['Nf']!='2+1+1':
                 logger.TBRaise('Specified charm mass without Nf=2+1+1')
+        if (self._ens['ms'] is not None) and (self._ens['ml'] is not None):
+            msml = self._ens['ms']/self._ens['ml']
+            if rel_check(msml,27,0.01):
+                self._ens['ml/ms'] = 'phys'
+            if rel_check(msml,80,0.01):
+                self._ens['ml/ms'] = '1/80'
 
     def get(self,key):
-        return self._ens[key]
+        if self._ens[key] is not None:
+            return self._ens[key]
+        else:
+            return '-'
 
     def accessor(self) -> dict:
         return self._ens
@@ -230,22 +239,29 @@ class repository():
         return set(ret)
 
     def table(self):
+        logger.info(f'{"Nf":<6} {"ml/ms":<6} {"Nt":<4} {"beta":<8} {"Ns":<4} {"ml (mf)":<12} {"ms (mpre)":<10} {"mc":<8} {"kind":<12} {"location":<10} folder')
+        logger.info()
+
+        # This loop controls the order in which entries appear in the table.
         Nfs = self.findUniqueKeys('Nf') 
         for Nf in naturalSort(Nfs):
             repoNf = self.search('Nf',Nf,verbose=False)
-            Nts = repoNf.findUniqueKeys('Nt') 
-            for Nt in sorted(Nts):
-                repoNt = repoNf.search('Nt',Nt,verbose=False)
-                betas = repoNt.findUniqueKeys('beta')
-                for beta in sorted(betas):
-                    repoBeta = repoNt.search('beta',beta,verbose=False)
-                    Nss = repoBeta.findUniqueKeys('Ns')
-                    for Ns in sorted(Nss):
-                        repoNs = repoBeta.search('Ns',Ns,verbose=False)
-                        for ens in repoNs.accessor():
-                            if Nf=='2+1':
-                                logger.info(Nf,Nt,beta,Ns,ens.get('ml'),ens.get('ms'),ens.get('location'),ens.get('folder'))
-                            elif Nf=='2+1+1':
-                                logger.info(Nf,Nt,beta,Ns,ens.get('ml'),ens.get('ms'),ens.get('mc'),ens.get('location'),ens.get('folder'))
-                            elif Nf=='3' or Nf=='5':
-                                logger.info(Nf,Nt,beta,Ns,ens.get('mf'),ens.get('mpre'),ens.get('location'),ens.get('folder'))
+            mqs = repoNf.findUniqueKeys('ml/ms')
+            for mq in mqs:
+                repomq = repoNf.search('ml/ms',mq,verbose=False)
+                Nts = repomq.findUniqueKeys('Nt') 
+                for Nt in sorted(Nts):
+                    repoNt = repomq.search('Nt',Nt,verbose=False)
+                    betas = repoNt.findUniqueKeys('beta')
+                    for beta in sorted(betas):
+                        repoBeta = repoNt.search('beta',beta,verbose=False)
+                        Nss = repoBeta.findUniqueKeys('Ns')
+                        for Ns in sorted(Nss):
+                            repoNs = repoBeta.search('Ns',Ns,verbose=False)
+                            for ens in repoNs.accessor():
+                                if Nf=='2+1':
+                                    logger.info(f'{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('ml'):<12} {ens.get('ms'):<10} {'-':<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}')
+                                elif Nf=='2+1+1':
+                                    logger.info(f'{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('ml'):<12} {ens.get('ms'):<10} {ens.get('mc'):<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}')
+                                elif Nf=='3' or Nf=='5':
+                                    logger.info(f'{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('mf'):<12} {ens.get('mpre'):<10} {'-':<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}')
