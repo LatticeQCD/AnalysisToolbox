@@ -141,7 +141,7 @@ def runIsingModel(T):
 
     def chi_M(M):
         """ Magnetic susceptibility. """
-        return lat.vol*( std_mean(M**2)-std_mean(M)**2 )
+        return (lat.vol/T)*( std_mean(M**2)-std_mean(M)**2 )
 
 
     def binder(M):
