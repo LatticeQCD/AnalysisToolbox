@@ -28,9 +28,10 @@ except:
     pass
 
 
-ZOD        = 10     # Orders different layers 
-INITIALIZE = True   # A global flag to ensure we only initialize once
-LEGEND     = False  # A global flag to apply legend attributes when we have one
+ZOD        = 10     # Global, Orders different layers 
+INITIALIZE = True   # Global, flag to ensure we only initialize once
+LEGEND     = False  # Global, flag to apply legend attributes when we have one
+TWINX      = None   # Global, legend info is accumulated in this axis 
 FOREGROUND = 99999  # zorder = FOREGROUND to put something in plot on top of everything else 
 BACKGROUND = 0      # zorder = BACKGROUND to put something in plot behind everything else 
 
@@ -153,8 +154,9 @@ def latexify(bold=False):
 
 
 def resetLEGEND():
-    global LEGEND
+    global LEGEND, TWINX
     LEGEND = False
+    TWINX = None
 
 
 def clearPlot():
@@ -163,7 +165,7 @@ def clearPlot():
     """
     logger.debug('Reset plot defaults.')
     global INITIALIZE, ZOD, LEGEND, legend_labels, legend_handles
-    ZOD        = 10
+    ZOD = 10
     INITIALIZE = True
     resetLEGEND() 
     legend_handles = { plt : [] }
@@ -229,6 +231,19 @@ def getSubplots(x,y):
     fig, axs = plt.subplots(y,x,figsize=(4*x,4*y))
     return fig, axs
 
+
+def getTwinAxes():
+    """
+    Get two axes objects ax1 and ax2 that share the same x-axis. Useful for graphing two functions
+    on the same plot with different scales.
+    """
+    global TWINX
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    TWINX = ax2
+    return ax1, ax2
+
+
 # ---------------------------------------------------------------------------------------------- SOME INTERNAL FUNCTIONS
 
 
@@ -257,19 +272,41 @@ def _initializePlt(params):
 
 def _update_labels(ax,label):
     checkType(str,label=label)
-    global legend_labels
+    global legend_labels, TWINX
     if ax in legend_labels:
         legend_labels[ax].append(label)
     else:
         legend_labels[ax] = [label]
+    if (TWINX is not None) and (ax != TWINX): 
+        if TWINX in legend_labels:
+            legend_labels[TWINX].append(label)
+        else:
+            legend_labels[TWINX] = [label]
 
 
 def _update_handles(ax,handle):
-    global legend_handles
+    global legend_handles, TWINX
     if ax in legend_handles:
         legend_handles[ax].append(handle)
     else:
         legend_handles[ax] = [handle]
+    if (TWINX is not None) and (ax != TWINX): 
+        if TWINX in legend_handles:
+            legend_handles[TWINX].append(handle)
+        else:
+            legend_handles[TWINX] = [handle]
+
+
+def _prepare_legend(ax,params):
+    """
+    Calls set_params, which adds labels and prepares the plot for display.
+    """
+    global TWINX
+    if TWINX is None:
+        set_params(**params)
+    else:
+        if ax==TWINX:
+            set_params(**params)
 
 
 def _getAxObject(params):
@@ -277,6 +314,13 @@ def _getAxObject(params):
         return plt.gca()
     else:
         return params['ax']
+
+
+def _getZOD(params):
+    ZOD = params['ZOD']
+    if ZOD is None:
+        ZOD = globals()['ZOD']
+    return ZOD
 
 
 def _set_xmin(ax,x_min=None):
@@ -315,6 +359,18 @@ def _set_ymax(ax,y_max=None):
             ax.set_ylim([y1,y_max])
         except AttributeError:
             logger.TBRaise('Must set x/y min/max after plotting data.')
+
+
+def _rescale(scale,data):
+    """ 
+    Rescale the data, taking into account there may be no data.
+
+    Args:
+        scale (float)
+        data (array-like or None)
+    """
+    if data is not None:
+        return np.copy(data*scale)
 
 
 def fill_param_dict(params):
@@ -370,11 +426,7 @@ def set_params(**params):
     global LEGEND
 
     fill_param_dict(params)
-    ax  = _getAxObject(params)
-    ZOD = params['ZOD']
-
-    if ZOD is None:
-        ZOD = globals()['ZOD']
+    ax = _getAxObject(params)
 
     # Check for some contradictory settings.
     if (params['xlabelpos'] is not None) and (params['xlabel'] is None):
@@ -547,18 +599,6 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         logger.TBRaise("Unknown style",style)
 
 
-def _rescale(scale,data):
-    """ 
-    Rescale the data, taking into account there may be no data.
-
-    Args:
-        scale (float)
-        data (array-like or None)
-    """
-    if data is not None:
-        return np.copy(data*scale)
-
-
 def plot_vspan(minVal,maxVal,**params):
     """ 
     Plot a vertical band.
@@ -569,15 +609,13 @@ def plot_vspan(minVal,maxVal,**params):
     """
     _initializePlt(params)
     optional = _add_optional(params)
-    ax = _getAxObject(params)
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
-    handle = ax.axvspan(xmin=minVal, xmax=maxVal,color=params['color'],alpha=params['alpha'],zorder=ZOD,**optional)
+    ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
+    handle   = ax.axvspan(xmin=minVal, xmax=maxVal,color=params['color'],alpha=params['alpha'],zorder=ZOD,**optional)
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-        set_params(**params) # Needed to put in labels
+        _prepare_legend(ax,params)
     globals()['ZOD'] += 1
 
 
@@ -591,15 +629,13 @@ def plot_hspan(minVal,maxVal,**params):
     """
     _initializePlt(params)
     optional = _add_optional(params)
-    ax = _getAxObject(params)
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
-    handle = ax.axhspan(ymin=minVal, ymax=maxVal,color=params['color'],alpha=params['alpha'],zorder=ZOD,**optional)
+    ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
+    handle   = ax.axhspan(ymin=minVal, ymax=maxVal,color=params['color'],alpha=params['alpha'],zorder=ZOD,**optional)
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-        set_params(**params) # Needed to put in labels
+        _prepare_legend(ax,params)
     globals()['ZOD'] += 1
 
 
@@ -609,11 +645,9 @@ def plot_hline(y,minVal=None,maxVal=None,**params):
     """
     _initializePlt(params)
     optional = _add_optional(params)
-    ax = _getAxObject(params)
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
-    x1, x2 = ax.get_xlim()
+    ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
+    x1, x2   = ax.get_xlim()
     if minVal is not None:
         x1=minVal
     if maxVal is not None:
@@ -622,14 +656,14 @@ def plot_hline(y,minVal=None,maxVal=None,**params):
     # The matplotlib people are psychopaths. I couldn't get this to work in any other
     # way. Yes, the comma after handle in the else branch is mandatory. 
     if (minVal is None) and (maxVal is None):
-        handle = ax.axhline(y=y,color=params['color'], **optional) 
+        handle = ax.axhline(y=y,color=params['color'],zorder=ZOD,alpha=params['alpha'] **optional) 
     else:
-        handle, = ax.plot([x1, x2], [y, y], color=params['color'], **optional) 
+        handle, = ax.plot([x1, x2], [y, y], color=params['color'],zorder=ZOD,alpha=params['alpha'] **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-        set_params(**params)
+        _prepare_legend(ax,params)
 
 
 def plot_vline(x,minVal=None,maxVal=None,**params):
@@ -638,25 +672,23 @@ def plot_vline(x,minVal=None,maxVal=None,**params):
     """
     _initializePlt(params)
     optional = _add_optional(params)
-    ax = _getAxObject(params)
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
-    y1, y2 = ax.get_ylim()
+    ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
+    y1, y2   = ax.get_ylim()
     if minVal is not None:
         y1=minVal
     if maxVal is not None:
         y2=maxVal
     logger.debug('y1, y2 = ',y1,y2)
     if (minVal is None) and (maxVal is None):
-        handle = ax.axvline(x=x,color=params['color'], **optional) 
+        handle = ax.axvline(x=x,color=params['color'],zorder=ZOD,alpha=params['alpha'] **optional) 
     else:
-        handle, = ax.plot([x, x], [y1, y2], color=params['color'], **optional) 
+        handle, = ax.plot([x, x], [y1, y2], color=params['color'], zorder=ZOD, alpha=params['alpha'], **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-        set_params(**params)
+        _prepare_legend(ax,params)
 
 
 def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
@@ -690,14 +722,10 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
         logger.warn('Ignoring linestyle',optional['linestyle'])
         del optional['linestyle']
 
-    ax = _getAxObject(params)
-
+    ax     = _getAxObject(params)
     xedata = _rescale(abs(params['xscale']),xedata)
     yedata = _rescale(abs(params['yscale']),yedata)
-
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
+    ZOD    = _getZOD(params)
 
     marker = params['marker']
     if marker == "iter":
@@ -722,7 +750,7 @@ def plot_dots(xdata, ydata, yedata = None, xedata = None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,handle)
-        set_params(**params) # Needed to put in labels
+        _prepare_legend(ax,params)
 
     globals()['ZOD'] += 1
 
@@ -745,13 +773,10 @@ def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewid
     _initializePlt(params) 
     optional = _add_optional(params)
     ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
 
     if width is None:
         width = xdata[1] - xdata[0]
-
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
 
     if params['color'] is not None:
         bar = ax.bar(xdata, ydata, color=params['color'], zorder=ZOD, width=width, align=align, edgecolor=edgecolor,
@@ -763,8 +788,7 @@ def plot_bar(xdata, ydata, width=None, align='edge', edgecolor='#666677',linewid
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,bar)
-        set_params(**params) # Needed to put in labels
-
+        _prepare_legend(ax,params)
     globals()['ZOD'] += 1
 
 
@@ -811,14 +835,11 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     xdata, ydata, xedata, yedata = toNumpy(xdata, ydata, xedata, yedata)
     _initializePlt(params)
     optional = _add_optional(params)
-    ax  = _getAxObject(params)
+    ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
 
     xedata = _rescale(params['xscale'],xedata)
     yedata = _rescale(params['yscale'],yedata)
-
-    ZOD = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
 
     marker = params['marker']
     if marker == "iter":
@@ -851,7 +872,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(line,handle))
-        set_params(**params) # Needed to put in labels
+        _prepare_legend(ax,params)
 
 
 def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
@@ -879,11 +900,8 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
 
     _initializePlt(params) 
     optional = _add_optional(params)
-
-    ax     = _getAxObject(params)
-    ZOD    = params['ZOD']
-    if ZOD is None:
-        ZOD = globals()['ZOD']
+    ax       = _getAxObject(params)
+    ZOD      = _getZOD(params)
 
     if center :
         if params['color'] is not None:
@@ -925,7 +943,7 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
     if params['label'] is not None:
         _update_labels(ax,params['label'])
         _update_handles(ax,(handle,pl))
-        set_params(**params) # Needed to put in labels
+        _prepare_legend(ax,params)
 
 
 def plot_matrix(mat,vmin=None,vmax=None):
