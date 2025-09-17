@@ -133,7 +133,7 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
     return acintj
 
 
-def getTauInt(ts, nbins, tpickMax, acoutfileName = 'acor.d', showPlot = False):
+def getTauInt(ts, nbins, tpickMax, acoutfileName = None, showPlot = False):
     """ 
     Given a time series, return estimates for the integrated autocorrelation time and its error.
 
