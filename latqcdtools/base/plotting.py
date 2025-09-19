@@ -656,9 +656,9 @@ def plot_hline(y,minVal=None,maxVal=None,**params):
     # The matplotlib people are psychopaths. I couldn't get this to work in any other
     # way. Yes, the comma after handle in the else branch is mandatory. 
     if (minVal is None) and (maxVal is None):
-        handle = ax.axhline(y=y,color=params['color'],zorder=ZOD,alpha=params['alpha'] **optional) 
+        handle = ax.axhline(y=y,color=params['color'],zorder=ZOD,alpha=params['alpha'], **optional) 
     else:
-        handle, = ax.plot([x1, x2], [y, y], color=params['color'],zorder=ZOD,alpha=params['alpha'] **optional) 
+        handle, = ax.plot([x1, x2], [y, y], color=params['color'],zorder=ZOD,alpha=params['alpha'], **optional) 
     globals()['ZOD'] += 1
     if params['label'] is not None:
         _update_labels(ax,params['label'])
@@ -681,7 +681,7 @@ def plot_vline(x,minVal=None,maxVal=None,**params):
         y2=maxVal
     logger.debug('y1, y2 = ',y1,y2)
     if (minVal is None) and (maxVal is None):
-        handle = ax.axvline(x=x,color=params['color'],zorder=ZOD,alpha=params['alpha'] **optional) 
+        handle = ax.axvline(x=x,color=params['color'],zorder=ZOD,alpha=params['alpha'], **optional) 
     else:
         handle, = ax.plot([x, x], [y1, y2], color=params['color'], zorder=ZOD, alpha=params['alpha'], **optional) 
     globals()['ZOD'] += 1

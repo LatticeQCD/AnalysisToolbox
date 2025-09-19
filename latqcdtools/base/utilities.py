@@ -10,6 +10,7 @@ from subprocess import run, PIPE
 import numpy as np
 import time, re, datetime, os, shutil
 import latqcdtools.base.logger as logger
+import glob
 
 
 # For byte conversions
@@ -410,6 +411,10 @@ def createFilePath(fullFileName):
         dir_path = os.path.dirname(fullFileName)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path,exist_ok=True)
+
+
+def ls(filePath) -> list:
+    return naturalSort(list(glob.iglob(filePath)))
 
 
 def byteConvert(x,b1,b2):

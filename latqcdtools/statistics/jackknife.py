@@ -67,7 +67,7 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
         conf_axis=0
     data = np.array(data)
     if numb_blocks > np.size(data,axis=conf_axis):
-        logger.TBRaise('Need numb_blocks <= ndata.')
+        logger.TBRaise(f'Need numb_blocks <= ndata. numb_blocks, ndata = {numb_blocks}, {np.size(data,axis=conf_axis)}')
     data = _pareAxis(data,conf_axis,numb_blocks)
     n = data.shape[conf_axis]
     total = f(data, *args)

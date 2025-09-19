@@ -6,7 +6,7 @@
 # Test to see if we can read in some dense files and compute observables from that.
 # 
 
-import glob, pytest
+import pytest
 import numpy as np
 from latqcdtools.interfaces.HotQCD import HotQCDParams, loadDens
 from latqcdtools.physics.denseObs import op_to_obs, observablesOfInterest
@@ -15,7 +15,7 @@ from latqcdtools.base.cleanData import restrictAtCol
 from latqcdtools.math.math import rel_check
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest
-from latqcdtools.base.utilities import unvector
+from latqcdtools.base.utilities import unvector, ls
 from latqcdtools.base.printErrorBars import get_err_str
 from latqcdtools.statistics.statistics import std_mean, std_err
 
@@ -42,7 +42,7 @@ def testDensObs():
 
         directory = f'denseObs/str{stream}'
 
-        for filename in glob.iglob(f'{directory}/*'):
+        for filename in ls(f'{directory}/*'):
 
             logger.details('Process file', filename)
             confID = filename.split('_')[1]

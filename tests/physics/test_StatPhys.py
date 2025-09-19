@@ -9,11 +9,11 @@
 
 from latqcdtools.physics.statisticalPhysics import O2_3d, O3_3d, O4_3d, Z2_3d, Z2_2d, S3_2d, S4_2d, reweight
 import latqcdtools.base.logger as logger
+from latqcdtools.base.utilities import ls
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest, gaudif_results
 from latqcdtools.statistics.statistics import std_mean
 from latqcdtools.statistics.jackknife import jackknife
-import glob
 import numpy as np
 
 
@@ -54,7 +54,7 @@ def testStatPhys():
         Y = data[1]
         return reweight(X,xRW,x0,Y)
     
-    for filename in glob.iglob('RWcontrol/T*.d'):
+    for filename in ls('RWcontrol/T*.d'):
     
         T          = float(filename[11:-2])
         pRW        = 1/T

@@ -639,9 +639,9 @@ def gaudif(x1,e1,x2,e2) -> float:
 
     Args:
         x1 (float): mean 1 
-        e1 (float): error 1
+        e1 (float): standard error 1
         x2 (float): mean 2
-        e2 (float): error 2
+        e2 (float): standard error 2
 
     Returns:
         float: p-value 
@@ -657,14 +657,15 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
     """ 
     Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
     both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
-    appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
+    appropriate when one estimated x1 and x2 using ~30 or fewer measurements. Of course, you can
+    always compare this with gaudif to get a better idea.
 
     Args:
         x1  (float): mean 1 
-        e1  (float): error 1
+        e1  (float): standard error 1
         ndat1 (int): number of measurements used to compute x1
         x2  (float): mean 2
-        e2  (float): error 2
+        e2  (float): standard error 2
         ndat2 (int): number of measurements used to compute x2
 
     Returns:
@@ -672,7 +673,7 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
     """
     if e1<0 or e2<0:
         logger.TBRaise('Error bars should be non-negative. Got',e1,e2)
-    if ndat1<1 or ndat2 <1:
+    if ndat1<2 or ndat2 <2:
         logger.TBRaise('Need at least 2 data. Got',ndat1,ndat2)
     dof   = ndat1 + ndat2 - 2
     var12 = ndat1*e1**2
