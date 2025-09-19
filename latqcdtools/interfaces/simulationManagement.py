@@ -6,14 +6,13 @@
 # This is some Python code to help assist with managing lattice simulations. 
 # 
 
-import glob
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import plt, plot_lines, plot_hist, set_params, clearPlot,\
     saveFigure
 from latqcdtools.statistics.statistics import std_mean, std_err, checkTS, KSTest_1side
 import scipy as sp
-from latqcdtools.base.utilities import naturalSort
+from latqcdtools.base.utilities import ls, naturalSort
 from latqcdtools.math.math import rel_check
 
 def countConfigurations(targetFolder,name,delimiter='.'):
@@ -32,7 +31,7 @@ def countConfigurations(targetFolder,name,delimiter='.'):
     checkType(str,name=name)
     checkType(str,delimiter=delimiter)
     confs=[]
-    files=list(glob.iglob(f'{targetFolder}/{name}*'))
+    files=ls(f'{targetFolder}/{name}*')
     for f in files:
         try:
             _, confno = f.rsplit(delimiter,1)

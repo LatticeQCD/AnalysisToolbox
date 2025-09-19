@@ -639,9 +639,9 @@ def gaudif(x1,e1,x2,e2) -> float:
 
     Args:
         x1 (float): mean 1 
-        e1 (float): error 1
+        e1 (float): standard error 1
         x2 (float): mean 2
-        e2 (float): error 2
+        e2 (float): standard error 2
 
     Returns:
         float: p-value 
@@ -662,10 +662,10 @@ def studif(x1,e1,ndat1,x2,e2,ndat2) -> float:
 
     Args:
         x1  (float): mean 1 
-        e1  (float): error 1
+        e1  (float): standard error 1
         ndat1 (int): number of measurements used to compute x1
         x2  (float): mean 2
-        e2  (float): error 2
+        e2  (float): standard error 2
         ndat2 (int): number of measurements used to compute x2
 
     Returns:
