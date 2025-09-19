@@ -212,8 +212,8 @@ def DOF(ndat,nparam,priorsigma=None) -> int:
     Returns:
         int: number of degrees of freedom 
     """
-    checkType(int,ndat=ndat)
-    checkType(int,nparam=nparam)
+    checkType('int',ndat=ndat)
+    checkType('int',nparam=nparam)
     nprior = countPriors(priorsigma) 
     dof = ndat + nprior - nparam 
     logger.debug('dof =',dof,'ndat =',ndat,'nparam =',nparam,'nprior =',nprior)
@@ -700,7 +700,7 @@ def goodnessOfFit(dof, chi2) -> float:
     Returns:
         float: Q 
     """
-    checkType(int,dof=dof)
+    checkType("int",dof=dof)
     return sp.special.gammaincc(dof/2,chi2/2)
 
 
@@ -721,7 +721,7 @@ def plot_func(func, domain, params=(), args=(), func_err=None, params_err=(),
         npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
     """
     checkDomain(domain)
-    checkType(int,npoints=npoints)
+    checkType('int',npoints=npoints)
     fill_param_dict(kwargs)
     kwargs['marker'] = None
     xmin = domain[0] 
@@ -774,7 +774,7 @@ def save_func(func, domain, params=(), args=(), func_err=None, params_err=(),
         npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
     """
     checkDomain(domain)
-    checkType(int,npoints=npoints)
+    checkType('int',npoints=npoints)
     checkType(str,filename=filename)
     xmin = domain[0] 
     xmax = domain[1] 
@@ -903,7 +903,7 @@ def binSeries(data,nbins) -> np.ndarray:
         np.ndarray: Binned data
     """
     checkTS(data)
-    checkType(int,nbins=nbins)
+    checkType('int',nbins=nbins)
     ndat=len(data)
     binsize=int(ndat/nbins)
     reshaped_data = data[:binsize * nbins].reshape(nbins, binsize)

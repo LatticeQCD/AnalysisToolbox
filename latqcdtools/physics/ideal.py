@@ -23,8 +23,8 @@ class idealGas:
     """
 
     def __init__(self,Nc,Nf): 
-        checkType(int,Nc=Nc)
-        checkType(int,Nf=Nf)
+        checkType('int',Nc=Nc)
+        checkType('int',Nf=Nf)
         if Nf >= 4:
             logger.TBRaise('Only B, Q, S, C explicitly coded in.')
         if Nc < 1:

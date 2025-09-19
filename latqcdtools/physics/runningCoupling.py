@@ -28,7 +28,7 @@ def CF(Nc) -> float:
     Returns:
         float : CF 
     """
-    checkType(int,Nc=Nc)
+    checkType('int',Nc=Nc)
     return (Nc**2-1)/(2*Nc)
 
 
@@ -42,7 +42,7 @@ def CA(Nc) -> float:
     Returns:
         float : CA 
     """
-    checkType(int,Nc=Nc)
+    checkType('int',Nc=Nc)
     return Nc 
 
 
@@ -58,7 +58,7 @@ def b0(Nf,Nc=3) -> float:
     Returns:
         float : b0 
     """
-    checkType(int,Nf=Nf)
+    checkType('int',Nf=Nf)
     return ( 11*CA(Nc)/3 - 2*Nf/3 )
 
 
@@ -73,7 +73,7 @@ def b1(Nf,Nc=3) -> float:
     Returns:
         float : b1 
     """
-    checkType(int,Nf=Nf)
+    checkType('int',Nf=Nf)
     return ( 34*CA(Nc)**2/3 - 2*CF(Nc)*Nf - 10*CA(Nc)*Nf/3 )
 
 
@@ -89,7 +89,7 @@ def b2_dimreg_MSbar(Nf,Nc=3) -> float:
     Returns:
         float : b2_MS-bar (dim reg) 
     """
-    checkType(int,Nf=Nf)
+    checkType('int',Nf=Nf)
     return ( 2857*CA(Nc)**3/54 + Nf   *(CF(Nc)**2-205*CF(Nc)*CA(Nc)/18-1415*CA(Nc)**2/54)
                                + Nf**2*(11*CF(Nc)/9+79*CA(Nc)/54)
             )
@@ -107,7 +107,7 @@ def b3_dimreg_MSbar(Nf,Nc=3) -> float:
     Returns:
         float : b3_MS-bar (dim reg) 
     """
-    checkType(int,Nf=Nf)
+    checkType('int',Nf=Nf)
     return ( CA(Nc)**4*(150653/486-44*ZETA_3/9) + Nc**2*(Nc**2+36)/24*(704*ZETA_3/3-80/9)
                 + Nf   *(CA(Nc)**3/2*(136*ZETA_3/3-39143/81) 
                           + CA(Nc)**2*CF(Nc)/2*(7073/243-656*ZETA_3/9) 
@@ -136,7 +136,7 @@ def beta_func(beta,Nf=3) -> float:
     Returns:
         float: f_as(beta) 
     """
-    checkType(int,Nf=Nf)
+    checkType('int',Nf=Nf)
     B0 = b0(Nf)/(4*np.pi)**2
     B1 = b1(Nf)/(4*np.pi)**4
     return (B0*10/beta)**(-B1/(2*B0**2)) * np.exp(-beta/(20*B0))

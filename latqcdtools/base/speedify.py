@@ -90,7 +90,7 @@ class ComputationClass:
             parallelizer (str): Which library should I use to parallelize?
             *add_param: Pass any additional parameters as you would to the function
         """
-        checkType(int,nproc=nproc)
+        checkType('int',nproc=nproc)
         checkType("array",input_array=input_array)
         checkType(str,parallelizer=parallelizer)
         self._input_array  = input_array
