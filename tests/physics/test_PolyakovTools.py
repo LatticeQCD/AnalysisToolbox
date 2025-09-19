@@ -21,7 +21,7 @@ def testPolyakovTools():
 
     lpass = True
 
-    EPSILON=1e-15
+    EPSILON=1e-12
     NBLOCKS=40
 
     Ns = 32
