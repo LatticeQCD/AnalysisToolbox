@@ -27,7 +27,7 @@ class HotQCD_MILC_Params(latticeParams):
     def getcgeom(self):
         return 'l'+str(self.Ns)+str(self.Nt)
     def getcparams(self):
-        if self.Nf=='211':
+        if self.Nf=='211' or self.Nf=='111':
             return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2+'m'+self.cm3
         else:
             return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2

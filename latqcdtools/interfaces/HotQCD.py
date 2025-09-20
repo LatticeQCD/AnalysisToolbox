@@ -8,7 +8,6 @@
 
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
-from latqcdtools.base.utilities import toNumpy
 from latqcdtools.math.math import rel_check
 from latqcdtools.interfaces.interfaces import HotQCD_MILC_Params
 
