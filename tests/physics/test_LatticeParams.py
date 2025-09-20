@@ -39,6 +39,11 @@ def testLatticeParams():
     logger.info('MILC:',lp.getcparams())
     del lp
 
+    lp = MILCParams(24, 8, '35500','00239954','00499905','100481', Nf='111')
+    logger.info('MILC Nf=1+1+1:',lp.getcparams())
+    lp.paramSummary()
+    del lp
+
     import params_r0
 
     lp = latticeParams(params_r0.Ns, params_r0.Nt, params_r0.cbeta, scaleType='r0', paramYear=2017)

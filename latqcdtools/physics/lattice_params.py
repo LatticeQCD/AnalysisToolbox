@@ -24,8 +24,11 @@ class latticeParams:
     A class to handle and check the input parameters of a lattice run.
     """
 
-    # If doing Nf=2+1 physics, we interpret mass1 and mass2 as light and strange masses, respectively. If doing
-    # degenerate Nf physics, we interpret mass1 and mass2 as the quark mass and preconditioner, respectively.
+    #           mass1  mass2  mass3
+    # Nf=1+1+1     mu     md     ms
+    # Nf=2+1       ml     ms
+    # Nf=X         ml   mpre
+    # Nf=2+1+1     ml     ms     mc
     def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None,
                  Nf='21', scaleYear=None, mu=0):
         """ 
@@ -78,24 +81,42 @@ class latticeParams:
             self.cbeta = str(coupling).replace('.','')
         self.Nc   = 3
         self.mu   = mu
-        self.cm1  = mass1
-        self.cm2  = mass2
-        self.cm3  = mass3
         self.Ns   = Nsigma
         self.Nt   = Ntau
         self.Nf   = Nf
         self.vol4 = self.Ns**3 * self.Nt
-        if Nf=='21':
+        self.cm1  = mass1
+        self.cm2  = mass2
+        self.cm3  = mass3
+        self.cml  = None 
+        self.cmu  = None 
+        self.cmd  = None 
+        self.cms  = None 
+        self.ml   = None 
+        self.mu   = None 
+        self.md   = None 
+        self.ms   = None 
+        self.cm   = None
+        self.cpre = None
+        self.m    = None
+        self.pre  = None
+        self.msml = None
+        self.msmu = None
+        self.mdmu = None
+        if Nf == '21':
             if mass3 is not None:
                 logger.TBRaise('Nf=2+1 expects only 2 mass parameters.')
             self.cml  = mass1
             self.cms  = mass2
             self.ml   = _massStringToFloat(mass1)
             self.ms   = _massStringToFloat(mass2)
-            self.cm   = None
-            self.cpre = None
-            self.m    = None
-            self.pre  = None
+        elif Nf == '111':
+            self.cmu  = mass1 
+            self.cmd  = mass2 
+            self.cms  = mass3
+            self.mu   = _massStringToFloat(mass1)
+            self.md   = _massStringToFloat(mass2)
+            self.ms   = _massStringToFloat(mass3)
         elif Nf == '211':
             self.cml  = mass1
             self.cms  = mass2
@@ -103,27 +124,23 @@ class latticeParams:
             self.ml   = _massStringToFloat(mass1)
             self.ms   = _massStringToFloat(mass2)
             self.mc   = _massStringToFloat(mass3)
-            self.cm   = None
-            self.cpre = None
-            self.m    = None
-            self.pre  = None
         elif Nf=='3' or Nf=='5':
             if mass3 is not None:
                 logger.TBRaise('Degenerate Nf expects only 2 mass parameters.')
-            self.cml  = None
-            self.cms  = None
-            self.ml   = None
-            self.ms   = None
             self.cm   = mass1
             self.cpre = mass2
             self.m    = _massStringToFloat(mass1)
             self.pre  = _massStringToFloat(mass2)
+        else:
+            logger.TBRaise("Unsupported Nf",Nf)
         if (self.ml is not None) and (self.ms is not None):
             self.msml=int(round(self.ms/self.ml))
+        if (self.mu is not None) and (self.md is not None):
+            self.mdmu=int(round(self.md/self.mu))
+        if (self.mu is not None) and (self.ms is not None):
+            self.msmu=int(round(self.ms/self.mu))
         if (self.beta<1.) or (10.<self.beta):
             logger.TBRaise("Invalid beta =",self.beta)
-        if (scaleType!='fk') and (scaleType!='r0') and (scaleType!='r1'):
-            logger.TBRaise("Unknown reference scale",scaleType)
 
 
     def __repr__(self) -> str:
@@ -172,14 +189,22 @@ class latticeParams:
         logger.info("    Nt = ",self.Nt)
         if self.ml is not None:
             logger.info("    ml = ",self.ml)
+        if self.mu is not None:
+            logger.info("    mu = ",self.mu)
+        if self.md is not None:
+            logger.info("    md = ",self.md)
         if self.ms is not None:
             logger.info("    ms = ",self.ms)
         if self.m is not None:
             logger.info("     m = ",self.m)
         if self.pre is not None:
             logger.info("   pre = ",self.pre)
-        if (self.ml is not None) and (self.ms is not None): 
+        if self.msml is not None: 
             logger.info(" ms/ml = ",self.msml)
+        if self.msmu is not None: 
+            logger.info(" ms/mu = ",self.msmu)
+        if self.mdmu is not None: 
+            logger.info(" md/mu = ",self.mdmu)
         logger.info("    T  = ",round(self.getT(),2), "[MeV]")
         logger.info("    a  = ",round(self.geta(),4), "[fm]")
         if self.Ns is not None:
