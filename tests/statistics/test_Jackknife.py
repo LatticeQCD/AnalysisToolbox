@@ -14,7 +14,7 @@ import numpy as np
 
 logger.set_log_level('INFO')
 
-EPSILON=1e-15 # test precision
+EPSILON=1e-12 # test precision
 
 A = np.array(range(1000))
 

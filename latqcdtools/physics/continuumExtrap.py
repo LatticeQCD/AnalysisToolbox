@@ -7,10 +7,9 @@
 # 
 
 import numpy as np
-from latqcdtools.base.printErrorBars import get_err_str
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import plt
-from latqcdtools.statistics.fitting import Fitter, std_algs, bayes_algs
+from latqcdtools.statistics.fitting import Fitter
 from latqcdtools.base.speedify import DEFAULTTHREADS
 from latqcdtools.base.check import checkType
 
@@ -52,7 +51,7 @@ class Extrapolator(Fitter):
             tol (float, optional): tolerance for the minimization. Defaults to 1e-12
             max_fev (int, optional): maximum number of iterations. Defaults to 10000
         """
-        checkType(int,order=order)
+        checkType('int',order=order)
         checkType(np.ndarray,x=x)
         checkType(np.ndarray,obs=obs)
         checkType(np.ndarray,obs_err=obs_err)

@@ -23,7 +23,7 @@ def id(N) -> np.ndarray:
     """ 
     NxN complex identity matrix
     """
-    checkType(int,N=N)
+    checkType('int',N=N)
     return np.eye(N,dtype=complex)
 
 
@@ -31,7 +31,7 @@ def ze(N) -> np.ndarray:
     """ 
     NxN complex zero matrix
     """
-    checkType(int,N=N)
+    checkType('int',N=N)
     return np.zeros((N,N), dtype=complex)
 
 
@@ -311,7 +311,7 @@ def pow(mat,power) -> np.ndarray:
     Matrix power. 
     """
     checkSquare(mat)
-    checkType(int,power=power)
+    checkType('int',power=power)
     return np.linalg.matrix_power(mat, power)
 
 

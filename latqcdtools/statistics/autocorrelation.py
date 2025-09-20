@@ -90,8 +90,8 @@ def tauintj(nt,nbins,ts,xhat = None) -> np.ndarray:
     OUTPUT:
       acintj--2D list indexed by time, then bin number acintj[it][ibin] 
       """
-    checkType(int,nt=nt)
-    checkType(int,nbins=nbins)
+    checkType('int',nt=nt)
+    checkType('int',nbins=nbins)
     checkTS(ts)
     ndat=len(ts)
     if not 1<nbins<ndat:

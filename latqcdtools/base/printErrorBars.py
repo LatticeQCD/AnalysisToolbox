@@ -71,7 +71,7 @@ def get_err_str(param, param_err, numb_err_dig=2, rounding='conservative') -> st
     """
     checkType('real',param=param)
     checkType('real',param_err=param_err)
-    checkType(int,numb_err_dig=numb_err_dig)
+    checkType('int',numb_err_dig=numb_err_dig)
     checkType(str,rounding=rounding)
 
     if param_err<=0:

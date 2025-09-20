@@ -185,7 +185,7 @@ def getColorGradient(NUM_COLORS,map='viridis') -> list:
     Returns:
         list: colors 
     """
-    checkType(int,NUM_COLORS=NUM_COLORS)
+    checkType('int',NUM_COLORS=NUM_COLORS)
     checkType(str,map=map)
     cm = plt.get_cmap(map)
     gradColors=[]
@@ -226,8 +226,8 @@ def getSubplots(x,y):
     Returns:
         fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
     """
-    checkType(int,x=x)
-    checkType(int,y=y)
+    checkType('int',x=x)
+    checkType('int',y=y)
     fig, axs = plt.subplots(y,x,figsize=(4*x,4*y))
     return fig, axs
 
@@ -561,8 +561,8 @@ def plot_file(filename, xcol=0, ycol=1, yecol=None, xecol=None, func = None, fun
         style (str, optional): Choose from dots, lines, fill, and band. Defaults to 'dots'.
         **params: Additional parameters that can be set.
     """
-    checkType(int,xcol=xcol)
-    checkType(int,ycol=ycol)
+    checkType('int',xcol=xcol)
+    checkType('int',ycol=ycol)
     _initializePlt(params)
     data   = readTable(filename,dtype=str)
     xdata  = data[xcol].astype(float)

@@ -72,9 +72,9 @@ class gaugeField:
             nproc (int, 1): Number of proccesors for parallelization. Defaults to 1.
         """
         logger.details('Initialize gaugeField object...')
-        checkType(int,Ns=Ns)
-        checkType(int,Nt=Nt)
-        checkType(int,nproc=nproc)
+        checkType('int',Ns=Ns)
+        checkType('int',Nt=Nt)
+        checkType('int',nproc=nproc)
         self.Ns    = Ns
         self.Nt    = Nt
         self.nproc = nproc

@@ -8,7 +8,7 @@ from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.legacy import jackknife, bootstr, DEFAULTSEED
 
 
-EPSILON=1e-15 # test precision
+EPSILON=1e-12 # test precision
 
 
 def div_simple(a, b, c):

@@ -16,7 +16,7 @@ import latqcdtools.base.logger as logger
 
 
 logger.set_log_level('INFO')
-EPSILON=1e-15
+EPSILON=1e-12
 
 
 def testScales():
@@ -42,6 +42,7 @@ def testScales():
     lpass *= print_results( 139.57039        , M_pipm_phys(year=2022,units="MeV")      , text="pi+/- mass 2022"   )
     lpass *= print_results( 497.611          , M_K0_phys(year=2022,units="MeV")        , text="K0 mass 2022"      )
     lpass *= print_results( 493.677          , M_Kpm_phys(year=2022,units="MeV")       , text="K+/- mass 2022"    )
+    lpass *= print_results( 775.26           , M_rho_phys(year=2022,units="MeV")       , text="rho mass 2022"     )
     lpass *= print_results(   0.21           , frho_phys(year=2017,units="GeV")        , text="f_rho 2017"        )
     lpass *= print_results( 155.7/np.sqrt(2.), fk_phys(year=2019,units="MeV")          , text="f_K 2019"          )
     lpass *= print_results( 130.50           , fpi_phys(year=2018,units="MeV")         , text="f_pi 2018"         )

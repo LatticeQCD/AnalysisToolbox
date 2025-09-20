@@ -284,7 +284,7 @@ class physicalConstant():
             returnErr (bool): Return both mean and uncertainty as tuple.
             normalize (real): Return scale/normalize. Defaults to 1.
         """
-        checkType(int,year=year)
+        checkType('int',year=year)
         if units is not None:
             checkType(str,units=units)
         checkType(bool,returnErr=returnErr)

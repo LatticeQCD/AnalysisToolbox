@@ -39,12 +39,12 @@ class confReader:
         self.Nt = Nt
         self.Nd = 4
         self.Nc = 3
-        checkType(int,Ns=Ns)
-        checkType(int,Nt=Nt)
+        checkType('int',Ns=Ns)
+        checkType('int',Nt=Nt)
         if nproc==None:
             self.nproc=min(self.Nt,DEFAULTTHREADS)
         else:
-            checkType(int,nproc=nproc)
+            checkType('int',nproc=nproc)
             self.nproc=nproc
         self.offset = None     # How many bytes is the header?
         self.endianness = '>'  # Big endian by default
