@@ -600,7 +600,7 @@ class Fitter:
         try:
             _test = self.wrap_func(self._xdata, self._saved_params)
         except Exception as e:
-            logger.TBRaise('Fit function must have signature func(xdata,params,args). Got exception:',e)
+            logger.TBRaise('Fit function must have signature func(xdata,params,args).',exception=e)
         checkEqualLengths(_test, self._xdata)
 
         resultSummary  = parallel_function_eval( self._tryAlgorithm, algorithms, nproc=self._nproc )

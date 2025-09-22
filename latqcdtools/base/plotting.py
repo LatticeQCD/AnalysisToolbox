@@ -331,7 +331,7 @@ def _set_xmin(ax,x_min=None):
         except AttributeError:
             # The issue here is that the get_xlim() won't know what x2
             # is without having seen the data first.
-            logger.TBRaise('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.',exception=AttributeError)
 
 
 def _set_xmax(ax,x_max=None):
@@ -340,7 +340,7 @@ def _set_xmax(ax,x_max=None):
             x1, x2 = ax.get_xlim()
             ax.set_xlim([x1,x_max])
         except AttributeError:
-            logger.TBRaise('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.',exception=AttributeError)
 
 
 def _set_ymin(ax,y_min=None):
@@ -349,7 +349,7 @@ def _set_ymin(ax,y_min=None):
             y1, y2 = ax.get_ylim()
             ax.set_ylim([y_min,y2])
         except AttributeError:
-            logger.TBRaise('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.',exception=AttributeError)
 
 
 def _set_ymax(ax,y_max=None):
@@ -358,7 +358,7 @@ def _set_ymax(ax,y_max=None):
             y1, y2 = ax.get_ylim()
             ax.set_ylim([y1,y_max])
         except AttributeError:
-            logger.TBRaise('Must set x/y min/max after plotting data.')
+            logger.TBRaise('Must set x/y min/max after plotting data.',exception=AttributeError)
 
 
 def _rescale(scale,data):

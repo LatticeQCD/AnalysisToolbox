@@ -6,7 +6,7 @@
 # Some common classes and functions that may be shared among multiple interfaces modules.
 #
 
-import yaml, json
+import yaml, json, pickle
 import numpy as np
 from latqcdtools.physics.lattice_params import latticeParams
 from latqcdtools.base.check import checkType, checkExtension
@@ -94,17 +94,32 @@ def readGPL(filename,discardTag=True,raggedWarn=True,floatT=np.float64):
         return np.array(data,dtype=object)
 
 
+def readPickle(filename):
+    """
+    Load a Pickle file.
+
+    Args:
+        filename (str)
+    """
+    checkType(str,filename=filename)
+    try:
+        with open(filename, 'rb') as file:
+            data = pickle.load(file)
+    except Exception as e:
+        logger.warn('Is',filename,'actually a pickle file?')
+        raise e 
+    return data
+
+
 def readYAML(filename,ignoreExtension=False) -> dict:
     """ 
     Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. 
     """
     checkType(str,filename=filename)
-    checkExtension(filename,'yaml',ignoreExtension)
+    if not ignoreExtension:
+        checkExtension(filename,'yaml')
     with open(filename, 'r') as file:
-        try:
-            return yaml.safe_load(file)
-        except yaml.YAMLError as e:
-            logger.TBRaise('Encountered exception:',e)
+        return yaml.safe_load(file)
 
 
 def readJSON(filename,ignoreExtension=False) -> dict:
@@ -112,7 +127,8 @@ def readJSON(filename,ignoreExtension=False) -> dict:
     Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. 
     """
     checkType(str,filename=filename)
-    checkExtension(filename,'json',ignoreExtension)
+    if not ignoreExtension:
+        checkExtension(filename,'json')
     with open(filename, 'r') as file:
         return json.load(file)
 
@@ -174,10 +190,7 @@ def writeYAML(data,filename):
     checkType(dict,data=data)
     checkType(str,filename=filename)
     with open(filename, 'w') as file:
-        try:
-            yaml.safe_dump(data, file) 
-        except yaml.YAMLError as e:
-            logger.TBRaise('Encountered exception:',e)
+        yaml.safe_dump(data, file) 
 
 
 def writeJSON(data,filename):

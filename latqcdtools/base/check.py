@@ -192,14 +192,13 @@ def checkEqualLengths(*args):
                 logger.TBRaise(f'Array length mismatch detected on array {i}. len, len[i] = {length}, {len_i}',frame=3)
 
 
-def checkExtension(filename,extension,ignoreExtension=False):
+def checkExtension(filename,extension):
     """ 
     Check the extension of a file
 
     Args:
         filename (str)
         extension (str)
-        ignoreExtension (bool, optional): Defaults to False.
     """
-    if not filename.endswith(extension) and not ignoreExtension:
+    if not filename.endswith(extension):
         logger.TBRaise('Expected a',extension,'file.')
