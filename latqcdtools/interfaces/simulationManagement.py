@@ -259,8 +259,8 @@ class repository():
                             repoNs = repoBeta.search('Ns',Ns,verbose=False)
                             for ens in repoNs.accessor():
                                 if Nf=='2+1':
-                                    logger.info(f'{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('ml'):<12} {ens.get('ms'):<10} {'-':<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}')
+                                    logger.info(f"{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('ml'):<12} {ens.get('ms'):<10} {'-':<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}")
                                 elif Nf=='2+1+1':
-                                    logger.info(f'{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('ml'):<12} {ens.get('ms'):<10} {ens.get('mc'):<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}')
+                                    logger.info(f"{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('ml'):<12} {ens.get('ms'):<10} {ens.get('mc'):<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}")
                                 elif Nf=='3' or Nf=='5':
-                                    logger.info(f'{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('mf'):<12} {ens.get('mpre'):<10} {'-':<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}')
+                                    logger.info(f"{Nf:<6} {ens.get('ml/ms'):<6} {Nt:<4} {beta:<8} {Ns:<4} {ens.get('mf'):<12} {ens.get('mpre'):<10} {'-':<8} {ens.get('kind'):<12} {ens.get('location'):<10} {ens.get('folder')}")
