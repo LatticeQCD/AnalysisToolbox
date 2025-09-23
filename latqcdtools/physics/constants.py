@@ -308,10 +308,49 @@ class physicalConstant():
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
 
 
+def M_u_phys(year=2024,units="MeV",returnErr=False):
+    scale = {
+        2024: (2.16, 0.07), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_u",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_d_phys(year=2024,units="MeV",returnErr=False):
+    scale = {
+        2024: (4.7, 0.07), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_d",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_s_phys(year=2024,units="MeV",returnErr=False):
+    scale = {
+        2024: (93.5, 0.8), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_s",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_c_phys(year=2024,units="GeV",returnErr=False):
+    scale = {
+        2024: (1.273,0.0046), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_c",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_b_phys(year=2024,units="GeV",returnErr=False):
+    scale = {
+        2024: (4.183,0.007), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_b",scale,"MeV").getValue(year,units,returnErr) 
+
+
+def M_t_phys(year=2024,units="GeV",returnErr=False):
+    scale = {
+        2024: (172.57,0.29), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001. direct measurement
+    }
+    return physicalConstant("M_t",scale,"MeV").getValue(year,units,returnErr) 
+
+
 def M_mu_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of the muon mass. 
-    """
     scale = {
         2022: (105.6583755, 0.0000023), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
         2020: (105.6583745, 0.0000024)  # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
@@ -320,9 +359,6 @@ def M_mu_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_pi0_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of the pi0 mass. 
-    """
     scale = {
         2022: (134.9768, 0.0005), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
         2014: (134.9766, 0.0006)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
@@ -331,9 +367,6 @@ def M_pi0_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_pipm_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of the pi+/- mass. 
-    """
     scale = {
         2022: (139.57039, 0.00018), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
         2014: (139.57018, 0.00035)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
@@ -342,9 +375,6 @@ def M_pipm_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_K0_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of K0 mass. 
-    """
     scale = {
         2022: (497.611, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
     }
@@ -352,9 +382,6 @@ def M_K0_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_Kpm_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of K0 mass. 
-    """
     scale = {
         2022: (493.677, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
     }
@@ -362,9 +389,6 @@ def M_Kpm_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_rho_phys(year=2022,units="MeV",returnErr=False):
-    """ 
-    Physical value of the rho mass. 
-    """
     scale = {
         2022: (775.26, 0.23), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
         2014: (775.26, 0.25)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
@@ -373,9 +397,6 @@ def M_rho_phys(year=2022,units="MeV",returnErr=False):
 
 
 def M_proton_phys(year=2024,units="MeV",returnErr=False):
-    """ 
-    Physical value of the proton mass. 
-    """
     scale = {
         2024: (938.27208816, 0.00000029), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
     }
@@ -383,9 +404,6 @@ def M_proton_phys(year=2024,units="MeV",returnErr=False):
 
 
 def M_neutron_phys(year=2024,units="MeV",returnErr=False):
-    """ 
-    Physical value of the neutron mass. 
-    """
     scale = {
         2024: (939.56542052, 0.00000054), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
     }
@@ -399,7 +417,7 @@ def M_neutron_phys(year=2024,units="MeV",returnErr=False):
 
 def fk_phys(year=2019,units="MeV",returnErr=False):
     """ 
-    Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.), which is what HotQCD usually does. 
+    Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.). 
     """
     scale = {
         2019: (155.7 , 0.7),                     # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6, Nf=2+1.

@@ -33,31 +33,39 @@ class HotQCD_MILC_Params(latticeParams):
             return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2
 
 
-def paramFrom_HotQCD_MILC(ensemble):
+def paramFromEnsLabel(ensemble,format='MILC'):
     """ 
-    Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.
+    Given an ensemble string, get the parameters out of it. 
 
     Args:
-        ensemble (str): ensemble label of the form l3216f3b6050m00394m1064
+        ensemble (str): ensemble label
 
     Returns:
-        tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string
+        tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string, mass3 string
     """
     checkType(str,ensemble=ensemble)
-    NsNt = substringBetween(ensemble,'l','f') 
-    if len(NsNt)==3:
-        Ns=NsNt[:2]
-        Nt=NsNt[-1]
-    elif len(NsNt)==4:
-        Ns=NsNt[:2]
-        Nt=NsNt[2:]
+    checkType(str,format=format)
+    Ns, Nt, Nf, cbeta, cm1, cm2, cm3 = None, None, None, None, None, None, None
+    if format=='MILC':
+        NsNt = substringBetween(ensemble,'l','f') 
+        if len(NsNt)==3:
+            Ns=NsNt[:2]
+            Nt=NsNt[-1]
+        elif len(NsNt)==4:
+            Ns=NsNt[:2]
+            Nt=NsNt[2:]
+        else:
+            logger.TBRaise('I assume Ns has 2 digits and Nt has 1-2 digits.') 
+        Nf    = substringBetween(ensemble,'f','b') 
+        cbeta = substringBetween(ensemble,'b','m') 
+        cm1   = ensemble.split('m')[1].strip()
+        if len(Nf)>1:
+            cm2 = ensemble.split('m')[2].strip()
+        if len(Nf)>2:
+            cm3 = ensemble.split('m')[3].strip()
     else:
-        logger.TBRaise('I do not know how to handle an ensemble name of this form.')
-    Nf    = substringBetween(ensemble,'f','b') 
-    cbeta = substringBetween(ensemble,'b','m') 
-    cm1   = ensemble.split('m')[1].strip()
-    cm2   = ensemble.split('m')[2].strip()
-    return int(Ns), int(Nt), Nf, cbeta, cm1, cm2 
+        logger.TBRaise('Unsupported format',format)
+    return int(Ns), int(Nt), Nf, cbeta, cm1, cm2, cm3 
 
 
 def readGPL(filename,discardTag=True,raggedWarn=True,floatT=np.float64):
