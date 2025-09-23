@@ -38,8 +38,8 @@ def getValuesFromErrStr(errStr):
             N -= 1
         err *= pow(10,-N)
         return mean, err        
-    except:
-        logger.TBRaise('Expected string of form XX.XXXX(YY). Got',errStr)
+    except Exception as e:
+        logger.TBRaise('Expected string of form XX.XXXX(YY). Got',errStr,exception=e)
 
 
 def get_exp(param):

@@ -168,18 +168,23 @@ def TBError(*args,frame=2):
     sys.exit(-1)
 
 
-def TBRaise(*args,frame=2):
+def TBRaise(*args,frame=2,exception=None):
     """
-    Print error message and raise ToolboxException. 
+    Add custom text to exceptions, which can be useful for debugging sometimes. 
 
     Args:
         frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
+        exception (Exception, optional): If None, raise generic ToolboxException. Otherwise raise exception.
     """
     args    = [str(s) for s in args]
     output  = _getCallerName(frame)+(' '.join(args))
-    outputc = _FAIL+_getCallerName(frame)+(' '.join(args))+_ENDC
+    outputc = _WARNING+_getCallerName(frame)+(' '.join(args))+_ENDC
     _log(output + '\n')
-    raise ToolboxException(output) 
+    if exception is None:
+        raise ToolboxException(output) 
+    else:
+        print(outputc)
+        raise exception 
 
 
 def TBPass(*args):

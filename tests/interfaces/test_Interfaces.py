@@ -7,7 +7,7 @@
 # 
 
 from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML, \
-    writeJSON, readJSON, convertTable, csvTable
+    writeJSON, readJSON, convertTable, csvTable, paramFromEnsLabel
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import deleteFile
 import latqcdtools.base.logger as logger
@@ -80,7 +80,12 @@ def testInterfaces():
     deleteFile('test.json') 
     deleteFile('testInterface.tex') 
     deleteFile('testInterface.redmine') 
-    deleteFile('testInterface.csv') 
+    deleteFile('testInterface.csv')
+
+    param = paramFromEnsLabel('l248f111b37000m00139736m00291117m0585145',format='MILC')
+    if param != (24, 8, '111', '37000', '00139736', '00291117', '0585145'):
+        logger.TBFail('paramFromEnsLabel')
+        lpass = False
 
     concludeTest(lpass) 
 

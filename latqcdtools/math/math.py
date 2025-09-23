@@ -527,4 +527,4 @@ def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:
         try:
             return np.isclose( a, b, rtol = prec, atol = abs_prec)
         except TypeError:
-            logger.TBRaise('Expected reals, complexes, or array-like. Received a, b types =',type(a),',',type(b))
+            logger.TBRaise('Expected reals, complexes, or array-like. Received a, b types =',type(a),',',type(b),exception=TypeError)
