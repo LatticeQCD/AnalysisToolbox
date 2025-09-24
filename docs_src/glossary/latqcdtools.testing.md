@@ -2,9 +2,7 @@ latqcdtools.testing
 =============
 
 ```Python
-concludeTest(lpass):
-'''
-'''
+concludeTest(lpass)
 ```
 ```Python
 gaudif_results(res, res_err, res_true, res_err_true, text='', qcut=0.05):
@@ -21,7 +19,5 @@ if you like.) Carries out with precision prec. Use abs_prec for comparisons with
 '''
 ```
 ```Python
-print_results_iter(res, res_true, text):
-'''
-'''
+print_results_iter(res, res_true, text)
 ```

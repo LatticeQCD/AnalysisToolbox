@@ -56,7 +56,5 @@ Hessian using difference quotient.
 '''
 ```
 ```Python
-diff_jac(params, func, args=(), h=None) -> numpy.ndarray:
-'''
-'''
+diff_jac(params, func, args=(), h=None) -> numpy.ndarray
 ```

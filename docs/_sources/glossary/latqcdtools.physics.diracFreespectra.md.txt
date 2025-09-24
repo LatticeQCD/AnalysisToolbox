@@ -3,8 +3,6 @@ latqcdtools.physics.diracFreespectra
 
 ```Python
 class DiracOp(Lx, Ly, Lz, Lt, fermion='Wilson'):
-'''
-'''
 ```
 ```Python
 class GammaMatrix():

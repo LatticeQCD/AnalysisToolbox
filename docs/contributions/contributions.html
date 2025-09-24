@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contributions &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>Contributions &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,7 +13,7 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
@@ -82,14 +82,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="contributions">
+  <section class="tex2jax_ignore mathjax_ignore" id="contributions">
 <h1>Contributions<a class="headerlink" href="#contributions" title="Link to this heading"></a></h1>
 <p>Here are a few basic guidelines to follow when making a contribution to the AnalysisToolbox:</p>
 <ul>
 <li><p>Please <strong>write documentation</strong> (like this one) for any new module that you make.</p></li>
 <li><p>Please <strong>write a test for each new feature you implement</strong>. We keep our tests in <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/testing</span></code>.</p></li>
 <li><p>Make sure you <strong>run all the tests</strong> when you’re done to check that nothing was broken. You can find more information
-about the tests <a class="reference internal" href="testing.html"><span class="std std-doc">here</span></a>.</p></li>
+about the tests <a class="reference internal" href="testing.html"><span class="doc std std-doc">here</span></a>.</p></li>
 <li><p>For all screen output and for terminating your program because of errors: Please try to use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/logger.py</span></code>.
 This has the advantage that all scripts are terminated in the same way. Also you can have your program make little log files in
 addition to the terminal output, in case you want that! Finally in the case of error, warning, and debug messages, the logger will
@@ -132,7 +132,7 @@ weirdly this seems to help some of our parallelizers run on some Macs.</p>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> function is a special method that provides a string representation of an instance of the class. This is used by
-for instance the <a class="reference internal" href="logging.html"><span class="std std-doc">logger</span></a>, which when printing e.g. <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> messages, will report what method (or class if applicable)
+for instance the <a class="reference internal" href="logging.html"><span class="doc std std-doc">logger</span></a>, which when printing e.g. <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> messages, will report what method (or class if applicable)
 called it.</p>
 </li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">str</span></code> syntax in the above example indicates that we expect a string as a return value. I don’t think this is used by the Python

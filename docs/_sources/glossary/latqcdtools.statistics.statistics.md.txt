@@ -157,9 +157,7 @@ Make sure prior and priorsigma status are compatible.
 '''
 ```
 ```Python
-checkProb(p):
-'''
-'''
+checkProb(p)
 ```
 ```Python
 checkTS(ts):
@@ -192,7 +190,7 @@ Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of
 '''
 ```
 ```Python
-confidence_ellipse(x, y, ax, color='r', CI=None):
+confidence_ellipse(x, y, CI=None, **params):
 '''
 Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
 assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures
@@ -352,9 +350,9 @@ appropriate when one estimated x1 and x2 using ~30 or more measurements.
 
 Args:
     x1 (float): mean 1 
-    e1 (float): error 1
+    e1 (float): standard error 1
     x2 (float): mean 2
-    e2 (float): error 2
+    e2 (float): standard error 2
 
 Returns:
     float: p-value 
@@ -407,9 +405,7 @@ Differences in logGBF smaller than 1 are not very significant. Gaussian statisti
 '''
 ```
 ```Python
-meanArgWrapper(func, used_data, args):
-'''
-'''
+meanArgWrapper(func, used_data, args)
 ```
 ```Python
 modelAverage(data, err, IC, return_syst=False):
@@ -537,14 +533,15 @@ studif(x1, e1, ndat1, x2, e2, ndat2) -> float:
 '''
 Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are
 both drawn from a normal distribution with the same mean. A rule of thumb is that this is more
-appropriate when one estimated x1 and x2 using ~30 or fewer measurements.
+appropriate when one estimated x1 and x2 using ~30 or fewer measurements. Of course, you can
+always compare this with gaudif to get a better idea.
 
 Args:
     x1  (float): mean 1 
-    e1  (float): error 1
+    e1  (float): standard error 1
     ndat1 (int): number of measurements used to compute x1
     x2  (float): mean 2
-    e2  (float): error 2
+    e2  (float): standard error 2
     ndat2 (int): number of measurements used to compute x2
 
 Returns:
@@ -552,9 +549,7 @@ Returns:
 '''
 ```
 ```Python
-symmetrizeError(lo, hi, central, method='conservative') -> float:
-'''
-'''
+symmetrizeError(lo, hi, central, method='conservative') -> float
 ```
 ```Python
 unbiased_mean_variance(data, err) -> float:

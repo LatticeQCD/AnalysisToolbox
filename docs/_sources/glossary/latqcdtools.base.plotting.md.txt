@@ -14,15 +14,22 @@ Returns:
 '''
 ```
 ```Python
-_getAxObject(params):
-'''
-'''
+_getAxObject(params)
+```
+```Python
+_getZOD(params)
 ```
 ```Python
 _initializePlt(params):
 '''
 Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
 so that this only gets called once per plot. 
+'''
+```
+```Python
+_prepare_legend(ax, params):
+'''
+Calls set_params, which adds labels and prepares the plot for display.
 '''
 ```
 ```Python
@@ -36,34 +43,22 @@ Args:
 '''
 ```
 ```Python
-_set_xmax(ax, x_max=None):
-'''
-'''
+_set_xmax(ax, x_max=None)
 ```
 ```Python
-_set_xmin(ax, x_min=None):
-'''
-'''
+_set_xmin(ax, x_min=None)
 ```
 ```Python
-_set_ymax(ax, y_max=None):
-'''
-'''
+_set_ymax(ax, y_max=None)
 ```
 ```Python
-_set_ymin(ax, y_min=None):
-'''
-'''
+_set_ymin(ax, y_min=None)
 ```
 ```Python
-_update_handles(ax, handle):
-'''
-'''
+_update_handles(ax, handle)
 ```
 ```Python
-_update_labels(ax, label):
-'''
-'''
+_update_labels(ax, label)
 ```
 ```Python
 clearPlot():
@@ -107,6 +102,13 @@ Args:
 
 Returns:
     fig, axs: fig object, list (if 1-d) of ax objects or tuple (if 2-d)
+'''
+```
+```Python
+getTwinAxes():
+'''
+Get two axes objects ax1 and ax2 that share the same x-axis. Useful for graphing two functions
+on the same plot with different scales.
 '''
 ```
 ```Python
@@ -253,9 +255,7 @@ Args:
 '''
 ```
 ```Python
-resetLEGEND():
-'''
-'''
+resetLEGEND()
 ```
 ```Python
 saveFigure(filename, **kwargs):
@@ -279,12 +279,8 @@ Args:
 '''
 ```
 ```Python
-set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>):
-'''
-'''
+set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>)
 ```
 ```Python
-set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>):
-'''
-'''
+set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>)
 ```

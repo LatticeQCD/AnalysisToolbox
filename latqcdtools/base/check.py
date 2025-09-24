@@ -78,6 +78,11 @@ def err_handler(err, flag):
             raise OverflowError(err)
         else:
             pass
+    elif flag == 12:
+        if CATCHUNDERFLOW: 
+            raise UnderflowError(err)
+        else:
+            pass
     else:
         logger.TBRaise('Encountered unknown exception',err,'with flag',flag)
 

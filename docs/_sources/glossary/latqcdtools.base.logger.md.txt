@@ -11,22 +11,19 @@ Args:
 '''
 ```
 ```Python
-TBFail(*args):
-'''
-'''
+TBFail(*args)
 ```
 ```Python
-TBPass(*args):
-'''
-'''
+TBPass(*args)
 ```
 ```Python
-TBRaise(*args, frame=2):
+TBRaise(*args, frame=2, exception=None):
 '''
-Print error message and raise ToolboxException. 
+Add custom text to exceptions, which can be useful for debugging sometimes. 
 
 Args:
     frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
+    exception (Exception, optional): If None, raise generic ToolboxException. Otherwise raise exception.
 '''
 ```
 ```Python
@@ -42,9 +39,7 @@ Get HH:MM:SS
 '''
 ```
 ```Python
-_log(outString):
-'''
-'''
+_log(outString)
 ```
 ```Python
 createLogFile(filename='Toolbox.log'):
@@ -54,38 +49,23 @@ logging module because it knows how to handle multiple processes writing to the 
 '''
 ```
 ```Python
-debug(*args, frame=2):
-'''
-'''
+debug(*args, frame=2)
 ```
 ```Python
-details(*args):
-'''
-'''
+details(*args)
 ```
 ```Python
-info(*args):
-'''
-'''
+info(*args)
 ```
 ```Python
-progress(*args):
-'''
-'''
+progress(*args)
 ```
 ```Python
-set_log_level(level):
-'''
-'''
+set_log_level(level)
 ```
 ```Python
-warn(*args, frame=2):
-'''
-'''
+warn(*args, frame=2)
 ```
 ```Python
-class ToolboxException
-:
-'''
-'''
+class ToolboxException:
 ```

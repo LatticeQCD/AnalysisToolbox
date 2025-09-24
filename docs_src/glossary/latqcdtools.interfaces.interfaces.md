@@ -14,15 +14,15 @@ Args:
 '''
 ```
 ```Python
-paramFrom_HotQCD_MILC(ensemble):
+paramFromEnsLabel(ensemble, format='MILC'):
 '''
-Given an ensemble string of the form used by HotQCD and MILC, get all the parameters.
+Given an ensemble string, get the parameters out of it. 
 
 Args:
-    ensemble (str): ensemble label of the form l3216f3b6050m00394m1064
+    ensemble (str): ensemble label
 
 Returns:
-    tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string
+    tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string, mass3 string
 '''
 ```
 ```Python
@@ -37,6 +37,15 @@ rather than using genfromtxt to allow the possibility of ragged tables.
 readJSON(filename, ignoreExtension=False) -> dict:
 '''
 Load a JSON file. Returns a dict, where each key level corresponds to an organizational level of the JSON. 
+'''
+```
+```Python
+readPickle(filename):
+'''
+Load a Pickle file.
+
+Args:
+    filename (str)
 '''
 ```
 ```Python
@@ -89,26 +98,16 @@ HotQCD and MILC collaborations.
 ```
 ```Python
 class csvTable(delimiter):
-'''
-'''
 ```
 ```Python
 class genericTable(delimiter=None, pre='', post=''):
-'''
-'''
 ```
 ```Python
 class latexTable():
-'''
-'''
 ```
 ```Python
 class markdownTable():
-'''
-'''
 ```
 ```Python
 class redmineTable():
-'''
-'''
 ```

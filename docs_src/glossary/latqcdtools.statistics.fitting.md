@@ -8,9 +8,7 @@ Wrapper to fitter initialization and the fit in one step. See above for argument
 '''
 ```
 ```Python
-save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad=None, header=None, npoints=1000, **kwargs):
-'''
-'''
+save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad=None, header=None, npoints=1000, **kwargs)
 ```
 ```Python
 try_fit(func, xdata, ydata, edata=None, start_params=None, priorval=None, priorsigma=None, algorithms=['curve_fit', 'TNC', 'Powell', 'Nelder-Mead', 'nonlin'], detailedInfo=False, show_results=False, **kwargs):

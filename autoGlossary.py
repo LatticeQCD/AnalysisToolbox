@@ -56,19 +56,24 @@ for importer, module_name, ispkg in pkgutil.walk_packages(path=[LIBRARY_PATH], p
 
         for func_name, sig, func_doc in get_functions_with_docs(module):
             doc = func_doc
-            if func_doc is None:
-                doc = "\n"
-            mdfile.write(f"```Python\n{func_name}{sig}:\n'''{doc}'''\n```\n")
+            if func_doc is not None:
+                mdfile.write(f"```Python\n{func_name}{sig}:\n'''{doc}'''\n```\n")
+            else:
+                mdfile.write(f"```Python\n{func_name}{sig}\n```\n")
 
-        for func_name, func_sig, func_doc in get_classes_with_docs(module):
+        for func_name, sig, func_doc in get_classes_with_docs(module):
             doc = func_doc
-            if func_doc is None:
-                doc = "\n"
-            sig = func_sig
-            if func_sig is None:
-                sig = "\n"
-            mdfile.write(f"```Python\nclass {func_name}{sig}:\n'''{doc}'''\n```\n")
-        
+            if sig is not None:
+                if func_doc is not None:
+                    mdfile.write(f"```Python\nclass {func_name}{sig}:\n'''{doc}'''\n```\n")
+                else:
+                    mdfile.write(f"```Python\nclass {func_name}{sig}:\n```\n")
+            else:
+                if func_doc is not None:
+                    mdfile.write(f"```Python\nclass {func_name}:\n'''{doc}'''\n```\n")
+                else:
+                    mdfile.write(f"```Python\nclass {func_name}:\n```\n")
+
         mdfile.close()
 
 glossary.write("```\n")

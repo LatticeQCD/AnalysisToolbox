@@ -23,6 +23,7 @@ latqcdtools.interfaces.interfaces.md
 latqcdtools.interfaces.lime.md
 latqcdtools.interfaces.simulationManagement.md
 latqcdtools.legacy.md
+latqcdtools.math.SU2.md
 latqcdtools.math.SU3.md
 latqcdtools.math.math.md
 latqcdtools.math.num_deriv.md

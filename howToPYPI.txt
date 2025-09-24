@@ -1,12 +1,17 @@
-- Update setup.py
-- (Maybe) update docs_src/conf.py and recompile documentation
-- (Maybe) python -m pip install --upgrade setuptools wheel
-- (Maybe) python -m pip install --upgrade twine
-- python setup.py sdist bdist_wheel
-- If you need API token, it's saved in personal account area
-- twine upload dist/*
-- make sure you have a .pypirc in your home directory like this:
-- python3 -m build
+
+1.  Update setup.py
+2.  (Maybe) python autoglossary.py
+3.  (Maybe) update docs_src/conf.py and recompile documentation
+4.  (Maybe) python -m pip install --upgrade setuptools wheel
+5.  (Maybe) python -m pip install --upgrade twine
+6.  pytest
+7.  git add .
+8.  git commit -m "getting ready for vX.X.X"
+6.  python setup.py sdist bdist_wheel
+7.  If you need API token, it's saved in personal account area
+8.  twine upload dist/*
+9.  make sure you have a .pypirc in your home directory like below
+10. python3 -m build
 
 [distutils]
 index-servers =

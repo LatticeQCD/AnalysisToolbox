@@ -2,9 +2,7 @@ latqcdtools.base.speedify
 =============
 
 ```Python
-compile(func):
-'''
-'''
+compile(func)
 ```
 ```Python
 numbaList(inList):
@@ -57,6 +55,4 @@ Returns:
 ```
 ```Python
 class ComputationClass(function, input_array, args, nproc, parallelizer):
-'''
-'''
 ```

@@ -2,7 +2,7 @@ latqcdtools.statistics.autocorrelation
 =============
 
 ```Python
-getTauInt(ts, nbins, tpickMax, acoutfileName='acor.d', showPlot=False):
+getTauInt(ts, nbins, tpickMax, acoutfileName=None, showPlot=False):
 '''
 Given a time series, return estimates for the integrated autocorrelation time and its error.
 

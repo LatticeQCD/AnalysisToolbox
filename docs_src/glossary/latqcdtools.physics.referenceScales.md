@@ -40,24 +40,16 @@ Returns:
 '''
 ```
 ```Python
-a_times_ms_2014(beta):
-'''
-'''
+a_times_ms_2014(beta)
 ```
 ```Python
-allton_type_ansatz(beta, c0, c2, d2):
-'''
-'''
+allton_type_ansatz(beta, c0, c2, d2)
 ```
 ```Python
-fit_2014Eos_eqB2(beta, c0, c2, d2):
-'''
-'''
+fit_2014Eos_eqB2(beta, c0, c2, d2)
 ```
 ```Python
-fit_tayloraLambda(beta, a, b, c):
-'''
-'''
+fit_tayloraLambda(beta, a, b, c)
 ```
 ```Python
 ignoreBetaRange():
@@ -79,9 +71,7 @@ Returns:
 '''
 ```
 ```Python
-r1_times_ms_2014(beta):
-'''
-'''
+r1_times_ms_2014(beta)
 ```
 ```Python
 sqrtt0_div_a(beta):
@@ -96,7 +86,5 @@ Returns:
 '''
 ```
 ```Python
-wuppertal_type_ansatz(beta, c1, c2, c3, c4):
-'''
-'''
+wuppertal_type_ansatz(beta, c1, c2, c3, c4)
 ```
