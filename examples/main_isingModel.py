@@ -167,10 +167,10 @@ def runIsingModel(T):
 data = parallel_function_eval(runIsingModel,Tlist)
 
 
-res_M, res_E, res_chi, res_chie, res_B, res_Be = [], [], [], [], [], []
+res_M, res_Me, res_chi, res_chie, res_B, res_Be = [], [], [], [], [], []
 for i in range(len(Tlist)):
     res_M.append(   data[i][0])
-    res_E.append(   data[i][1])
+    res_Me.append(   data[i][1])
     res_chi.append( data[i][2])
     res_chie.append(data[i][3])
     res_B.append(   data[i][4])
@@ -178,7 +178,7 @@ for i in range(len(Tlist)):
 
 
 # Plot the magnetization.
-plot_dots(Tlist,res_M,res_E)
+plot_dots(Tlist,res_M,res_Me)
 set_params(xlabel='$T$',ylabel='$\\ev{|M|}$',title='$V='+str(L)+'^'+str(Nd)+'$ Ising model',alpha_xlabel=0)
 plt.show()
 clearPlot()

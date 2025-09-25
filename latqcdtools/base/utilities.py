@@ -38,7 +38,9 @@ def _getPrefix(byteString):
 
 def _convert(text):
     if text.isdigit():
-        return int(text)
+        # For strings with leading zeros, we want them to sort before strings without
+        # Use the original string for lexicographic ordering
+        return text
     else:
         return text.lower()
 
