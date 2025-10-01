@@ -33,9 +33,12 @@ def testHRG():
     
     def comparisonPlot(testQuantity, testLabel, controlFile, controlLabel):
         if SHOW_PLOTS:
-            set_params(xlabel="$T$",ylabel=testLabel)
-            plot_lines(T,testQuantity,xmax=175,marker=None,color=colors[0])
+            plot_lines(T,testQuantity,marker=None,color=colors[0],label='Toolbox')
+            _, y = readTable(controlFile,col=0,maxVal=176)
+            ymax = np.max(y)+0.5
             plot_file(controlFile,style="lines",marker=None,label=controlLabel,color=colors[1])
+            set_params(xlabel="$T$",ylabel=testLabel,xmax=175,ymax=ymax)
+            plt.savefig(f'{controlFile}.pdf')
             plt.show()
             clearPlot()
     

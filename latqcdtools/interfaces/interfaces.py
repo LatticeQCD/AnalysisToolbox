@@ -253,7 +253,7 @@ class genericTable(list):
         while len(self)>0:
             self.pop()
 
-    def outputTable(self,filename=None):
+    def writeTable(self,filename=None):
         """ 
         Lets you output a table.
 
@@ -388,5 +388,5 @@ def convertTable(source,target,sourceDelimiter='',targetDelimiter=''):
         else:
             items = items.split(sourceTable.delimiter)
         targetTable.append(items)
-    targetTable.outputTable(target)
+    targetTable.writeTable(target)
     inFile.close()

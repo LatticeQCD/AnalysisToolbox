@@ -110,6 +110,14 @@ def isScalar(obj) -> bool:
     return True
 
 
+def isReal(obj) -> bool:
+    if not isScalar(obj): 
+        return False
+    if obj.imag != 0:
+        return False
+    return True
+
+
 def unvector(obj):
     """ 
     Remove outermost brackets of array-like object with single element, if possible. This is needed

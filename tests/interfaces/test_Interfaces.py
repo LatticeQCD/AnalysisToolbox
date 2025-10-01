@@ -49,7 +49,7 @@ def testInterfaces():
     ref.append(['1','2','3'])
     ref.append(['1','2','3'])
     ref.append(['1','2','3'])
-    ref.outputTable('testInterface.tex')
+    ref.writeTable('testInterface.tex')
     test = latexTable()
     test.readTable('testInterface.tex')
     lpass *= test==ref
@@ -58,7 +58,7 @@ def testInterfaces():
     ref.append(['1','2','3'])
     ref.append(['1','2','3'])
     ref.append(['1','2','3'])
-    ref.outputTable('testInterface.redmine')
+    ref.writeTable('testInterface.redmine')
     test = redmineTable()
     test.readTable('testInterface.redmine')
     lpass *= test==ref
