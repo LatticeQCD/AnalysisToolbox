@@ -13,6 +13,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.math.math import quadrature
+from latqcdtools.statistics.statistics import error_prop
 
 
 # Base constants for unit conversions
@@ -88,7 +89,10 @@ _baseUnits = [
 
 def _separatePrefix(units):
     checkType(str,units=units)
-    if units in _baseUnits: 
+    unitNoInverse=units
+    if units.endswith('inv'):
+        unitNoInverse=units[:-3]
+    if unitNoInverse in _baseUnits: 
         prefix=1
         baseUnit=units
     else:
@@ -205,7 +209,11 @@ def convert(x,unit1,unit2) -> float:
     elif u1u2==('eV','J'): # [J] = [V C]
         result = x*eC 
     elif u1u2==('J','eV'):
-        result = x/eC 
+        result = x/eC
+    elif u1u2==('eVinv','Jinv'):
+        result = x/eC
+    elif u1u2==('Jinv','eVinv'):
+        result = x*eC 
 
     # natural units
     elif u1u2==('m','eVinv'):
@@ -220,6 +228,10 @@ def convert(x,unit1,unit2) -> float:
         result = convert(x,'eV','J')/kBJdivK
     elif u1u2==('K','eV'):
         result = convert(x*kBJdivK,'J','eV')
+    elif u1u2==('s','m'):
+        result = x*cms 
+    elif u1u2==('m','s'):
+        result = x/cms
 
     else:
         logger.TBRaise('No rule for conversion of ['+u1+'] to ['+u2+']') 
@@ -252,7 +264,9 @@ class physicalConstant():
 
     def __init__(self,name,scale,units):
         """
-        Wrap a dictionary of scale values in physical units.
+        Wrap a dictionary of scale values in physical units. It expects units to be
+        expressible in terms of _baseUnits and their inverses, with prefixes. Higher
+        powers of units are not yet supported.
 
         Args:
             name (str)
@@ -306,6 +320,13 @@ class physicalConstant():
 
 
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
+
+
+def M_e_phys(year=2024,units="MeV",returnErr=False):
+    scale = {
+        2024: (0.51099895000, 0.00000000015), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("M_e",scale,"MeV").getValue(year,units,returnErr) 
 
 
 def M_u_phys(year=2024,units="MeV",returnErr=False):
@@ -482,6 +503,17 @@ def r0_phys(year=2014,units="fm",returnErr=False):
 
 
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
+
+
+def sqrtG(year=2024,units="GeVinv",returnErr=False):
+    """
+    Square root of Newton's gravitational constant
+    """
+    m2024, e2024 = error_prop(np.sqrt,np.array([6.70883e-39]),np.array([0.00014e-39]))
+    scale = {
+        2024: ( m2024, e2024), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+    }
+    return physicalConstant("sqrtG",scale,"GeVinv").getValue(year,units,returnErr) 
 
 
 def alpha_e(year=2018,returnErr=False):

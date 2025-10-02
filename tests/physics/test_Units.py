@@ -6,9 +6,10 @@
 # Check some of the unit conversion methods. 
 # 
 
+import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import convert, fm_to_MeVinv, MeVinv_to_fm, fm_to_GeVinv, GeVinv_to_fm, \
-    M_mu_phys, M_pi0_phys, M_pipm_phys, fk_phys, frho_phys, lambda_MSbar_phys, cms
+    M_mu_phys, M_pi0_phys, M_pipm_phys, fk_phys, frho_phys, lambda_MSbar_phys, cms, sqrtG
 from latqcdtools.testing import print_results, concludeTest
 
 logger.set_log_level('INFO')
@@ -71,6 +72,13 @@ def testUnits():
     lpass *= print_results(lambda_MSbar_phys(2021,"GeV"), 0.339,text="lambda_MSbar [GeV]")
     lpass *= print_results(lambda_MSbar_phys(2021,"MeV"), 339,text="lambda_MSbar [MeV]")
     lpass *= print_results(lambda_MSbar_phys(2021,"fminv"), 1.7179607272231752,text="lambda_MSbar [1/fm]")
+
+    # Compute G_N two ways
+    Gm = 6.67430e-11    # Units: m^3 kg^-1 s^-2
+    for i in range(4):
+        Gm = convert(Gm,"m","s") 
+    Gm = convert( convert(Gm,"m","GeVinv"), "Jinv", "GeVinv" )
+    lpass *= print_results(sqrtG(2024,"GeVinv")**2, Gm,text="G_B [1/GeV^2]")
 
     concludeTest(lpass)
 

@@ -46,7 +46,7 @@ def checkMatrix(mat):
 
 
 def isVector(vec) -> bool:
-    checkType(np.ndarray,mat=vec)
+    checkType(np.ndarray,vec=vec)
     return vec.ndim==1
 
 
