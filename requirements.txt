@@ -1,4 +1,5 @@
 colorama
+gvar
 matplotlib
 numba
 numpy

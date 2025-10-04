@@ -3,21 +3,57 @@
 # 
 # D. Clarke
 # 
-# A collection of methods relevant for statistical physics calculations.
+# A collection of methods relevant for statistical physics calculations. This includes
+# tables for critical exponents and temperatures from the literature. We assume that
+# estimates for multiple critical parameters coming from the same paper have correctly
+# accounted for correlations; i.e. we do not here account for the fact that e.g. nu and
+# eta coming from the same Markov chain are correlated.
 #
 
 
 import numpy as np
+import gvar as gv
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
-from latqcdtools.statistics.statistics import std_mean, weighted_mean, weighted_variance
-from latqcdtools.base.printErrorBars import getValuesFromErrStr
-from latqcdtools.base.utilities import toNumpy
+from latqcdtools.statistics.statistics import gaudif 
 
 
 def _printExponent(prefix, exponent):
     if exponent is not None:
-        logger.info(prefix, round(exponent, 4))
+        logger.info(prefix, exponent)
+
+
+def _getParameter(parameterInfo):
+    """ 
+    Give the weighted average of literature values of some parameter. These are 
+    in units with k_B=J=1 and no magnetic field. If there is only one known value, 
+    give that back. 
+    """
+    if len(parameterInfo)==1:
+        for key in parameterInfo:
+            return parameterInfo[key]
+    else:
+        _params = []
+        for key in parameterInfo:
+            _params.append(parameterInfo[key])
+        _params = np.array(_params)
+        return np.mean(_params) 
+
+
+def _statisticalConsistencyCheck(parameterInfo):
+    for key1 in parameterInfo:
+        for key2 in parameterInfo:
+            m1 = gv.mean(parameterInfo[key1])
+            e1 = gv.sdev(parameterInfo[key1])
+            m2 = gv.mean(parameterInfo[key2])
+            e2 = gv.sdev(parameterInfo[key2])
+            if gaudif(m1,e1,m2,e2)<0.05:
+                logger.warn("Statistical tension between",key1,key2)
+
+
+def _compareWithZero(err,tol) -> bool:
+    return ( np.abs(gv.mean(err))<=gv.sdev(err) ) or (err<tol)
+
 
 
 class UniversalityClass:
@@ -28,6 +64,16 @@ class UniversalityClass:
 
     symm  = None
     d     = None
+
+    alphas = {} 
+    betas  = {} 
+    gammas = {} 
+    deltas = {} 
+    nus    = {} 
+    etas   = {} 
+    omegas = {} 
+    Tcs    = {}
+
     alpha = None
     beta  = None
     gamma = None
@@ -35,7 +81,7 @@ class UniversalityClass:
     nu    = None
     eta   = None
     omega = None
-    Tcs   = {} # J=1, no magnetic field
+    Tc    = None
 
     def __repr__(self) -> str:
         return "UniversalityClass"
@@ -54,139 +100,146 @@ class UniversalityClass:
         _printExponent("    nu =",self.nu)
         logger.info()
 
-    def hyperscalingCheck(self, tol=1e-6) -> bool:
+    def hyperscalingCheck(self, tol=1e-12) -> bool:
+        lpass = True
         err1 = 2*self.beta+self.gamma-2+self.alpha
         err2 = 2*self.beta*self.delta-self.gamma-2+self.alpha
         err3 = self.nu*self.d-2+self.alpha
-        if err1 > tol:
-            logger.TBFail(self.name(),"fails hyperscaling check 1, err =",err1)
-            return False
-        if err2 > tol:
-            logger.TBFail(self.name(),"fails hyperscaling check 2. err =",err2)
-            return False
-        if err3 > tol:
-            logger.TBFail(self.name(),"fails hyperscaling check 3. err =",err3)
-            return False
-        return True
-
-    def Tc(self,paper=None):
-        """ Give the weighted average of literature values of Tc. These are in units with
-        k_B=J=1 and no magnetic field. If there is only one known value, give that back.
-        The 2d, Z(2) univerality class just gives back the Onsager solution. If you want
-        to access a particular result, you can pass the DOI of the paper. """ 
-        if len(self.Tcs)==0:
-            logger.TBRaise('No Tc data for this universality class.')
-        elif paper is not None:
-            return getValuesFromErrStr(self.Tcs[paper])
-        elif (self.symm=="Z_2") and (self.d==2):
-            return self.Tcs['Onsager']
-        elif len(self.Tcs)==1:
-            for key in self.Tcs:
-                return getValuesFromErrStr(self.Tcs[key])
-        else:
-            _Tcs, _Tces = [],[]
-            for key in self.Tcs:
-                m, e = getValuesFromErrStr(self.Tcs[key])
-                _Tcs.append(m)
-                _Tces.append(e)
-            _Tcs, _Tces = toNumpy(_Tcs,_Tces)
-            return weighted_mean(_Tcs, _Tces), np.sqrt(weighted_variance(_Tces))
+        lpass *= _compareWithZero(err1,tol) 
+        lpass *= _compareWithZero(err2,tol) 
+        lpass *= _compareWithZero(err3,tol) 
+        if not lpass:
+            logger.TBFail(f"{self.name()} fails at least one hypersclaing relation")
+            logger.TBFail(f"err1 = {err1}, err2 = {err2}, err3 = {err3}")
+        return lpass 
 
 
 # 3d XY model
 class O2_3d(UniversalityClass):
-    """ 
-    3d O(2) critical exponents from JHEP08 (2016) 036 
-    """
-    symm  = "O(2)"
-    d     = 3
-    eta   = 0.03852
-    nu    = 0.6719
+    symm = "O(2)"
+    d    = 3
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
+    etas = {
+        '10.1007/JHEP08(2016)036' : gv.gvar('0.03852(64)'),
+    }
+    nus  = {
+        '10.1007/JHEP08(2016)036' : gv.gvar('0.6719(11)'),
+    }
+
+    eta   = _getParameter(etas)
+    nu    = _getParameter(nus)
     gamma = nu*(2-eta)
     beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
     delta = (gamma+2*alpha)/(2*beta)
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
 
 
 # 3d Heisenberg model
 class O3_3d(UniversalityClass):
-    """ 
-    3d O(3) critical exponents from JHEP08 (2016) 036 
-    """
-    symm  = "O(3)"
-    d     = 3
-    eta   = 0.0386 
-    nu    = 0.7121 
+    symm = "O(3)"
+    d    = 3
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
+    etas = {
+        '10.1007/JHEP08(2016)036'  : gv.gvar('0.0386(12)'),
+    }
+    nus  = {
+        '10.1007/JHEP08(2016)036'  : gv.gvar('0.7121(28)'),
+    }
+    Tcs  = {
+        '10.1103/PhysRevB.43.6087' : gv.gvar('1.44321(21)'),
+        '10.1103/PhysRevB.48.936'  : gv.gvar('1.44300(21)')
+    }
+    _statisticalConsistencyCheck(Tcs)
+
+    Tc    = _getParameter(Tcs)
+    eta   = _getParameter(etas)
+    nu    = _getParameter(nus)
     gamma = nu*(2-eta)
     beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
     delta = (gamma+2*alpha)/(2*beta)
-    Tcs = {
-        '10.1103/PhysRevB.43.6087' : '1.44321(21)',
-        '10.1103/PhysRevB.48.936'  : '1.44300(21)'
-    }
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
 
 
 class O4_3d(UniversalityClass):
-    """ 
-    3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). 
-    """
-    symm  = "O(4)"
-    d     = 3
-    beta  = 0.380
-    delta = 4.824
-    alpha = 2.-beta*(1.+delta)
-    gamma = beta*(delta-1.)
-    nu    = (beta/d)*(1+delta)
+    symm = "O(4)"
+    d    = 3
     def __repr__(self) -> str:
         return super().__repr__()+':'+self.name
+
+    nus    = {
+        '10.1103/PhysRevD.51.2404'         : gv.gvar('0.7479(90)')
+    }
+    betas  = {
+        '10.1103/PhysRevD.51.2404'         : gv.gvar('0.3836(46)')
+    }
+    gammas = {
+        '10.1103/PhysRevD.51.2404'         : gv.gvar('1.477(18)')
+    }
+    deltas = {
+        '10.1016/j.nuclphysb.2003.09.060'  : gv.gvar('4.824(9)'),
+    }
+
+    beta  = _getParameter(betas) 
+    delta = _getParameter(deltas) 
+    gamma = _getParameter(gammas) 
+    nu    = _getParameter(nus) 
+    alpha = 2.-beta*(1.+delta)
 
 
 # 3d Ising model
 class Z2_3d(UniversalityClass):
-    """ 
-    3d Z_2 critical exponents from J. Stat. Phys. 157. 869-914 (2014). 
-    """
-    symm  = "Z_2"
-    d     = 3
-    nu    = 0.62999
-    eta   = 0.03631
+    symm = "Z_2"
+    d    = 3
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
+    etas = {
+        '10.1007/s10955-014-1042-7'    : gv.gvar('0.03631(3)'),
+        '10.1007/JHEP08(2016)036'      : gv.gvar('0.0362978(20)'),
+    }
+    nus  = {
+        '10.1007/s10955-014-1042-7'    : gv.gvar('0.62999(5)'),
+        '10.1007/JHEP08(2016)036'      : gv.gvar('0.629971(4)'),
+    }
+    Tcs  = {
+        '10.1103/PhysRevB.29.4030'     : gv.gvar('4.51154(13)'),
+        '10.1103/PhysRevB.32.1720'     : gv.gvar('4.51162(11)'),
+        '10.1016/0378-4371(94)90490-1' : gv.gvar('4.511463(45)'),
+        '10.1103/PhysRevB.82.174433'   : gv.gvar('4.5115232(17)')
+    }
+    _statisticalConsistencyCheck(etas)
+    _statisticalConsistencyCheck(nus)
+    _statisticalConsistencyCheck(Tcs)
+
+    eta   = _getParameter(etas)
+    nu    = _getParameter(nus)
     alpha = 2 - nu*d
     gamma = nu*(2 - eta)
     beta  = (nu*d -gamma)/2
     delta = nu*d/beta-1.
-    Tcs = {
-        '10.1103/PhysRevB.29.4030'     : '4.51154(13)',
-        '10.1103/PhysRevB.32.1720'     : '4.51162(11)',
-        '10.1016/0378-4371(94)90490-1' : '4.511463(45)',
-        '10.1103/PhysRevB.82.174433'   : '4.5115232(17)'
-    }
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
 
 
 # 2d Ising model
 class Z2_2d(UniversalityClass):
     """ 
-    Exact solution for 2d Z_2 class. 
+    Onsager solution for 2d Z_2 class. 
     """
-    symm  = "Z_2"
-    d     = 2
+    symm = "Z_2"
+    d    = 2
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
     alpha = 0
     beta  = 1/8
     gamma = 7/4
     delta = 15
     nu    = 1
     eta   = 1/4
-    Tcs = {
-        'Onsager' : 2/np.log(1+np.sqrt(2))
-    }
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
+    Tc    = 2/np.log(1+np.sqrt(2))
 
 
 # 2d Potts q=3/ hard hexagon model 
@@ -194,16 +247,17 @@ class S3_2d(UniversalityClass):
     """ 
     Exact solution for 2d S_3 class from Baxter "Exactly Solved Models in Statistical Mechanics"
     """
-    symm  = "S_3"
-    d     = 2
+    symm = "S_3"
+    d    = 2
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
     alpha = 1/3 
     beta  = 1/9
     gamma = 13/9 
     delta = 14
     nu    = 5/6
     eta   = 4/15
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
 
 
 # 2d Potts q=4/ Ashkin-Teller model
@@ -211,16 +265,17 @@ class S4_2d(UniversalityClass):
     """ 
     Exact solution for 2d S_4 class from Baxter, "Exactly Solved Models in Statistical Mechanics"
     """
-    symm  = "S_4"
-    d     = 2
+    symm = "S_4"
+    d    = 2
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+
     alpha = 2/3 
     beta  = 1/12
     gamma = 7/6
     delta = 15
     nu    = 2/3
     eta   = 1/4
-    def __repr__(self) -> str:
-        return super().__repr__()+':'+self.name
 
 
 def reweight(X, pRW, p0, S):
