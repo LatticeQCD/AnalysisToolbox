@@ -37,6 +37,7 @@ def Test_Bootstrap():
 
     # Test that the bootstrap distribution is reasonable
     normalCDF = sp.stats.norm(loc=REFm,scale=REFe).cdf
+    samp = np.array(samp)
     if KSTest_1side(samp,normalCDF) < 0.05:
         lpass = False
         logger.TBFail('Significant KS tension')
