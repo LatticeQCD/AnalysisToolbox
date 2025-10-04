@@ -25,7 +25,7 @@ def div(a):
 A =  np.array(range(1000))
 
 
-def Test_Bootstrap():
+def testBootstrap():
 
     lpass = True
 
@@ -37,7 +37,6 @@ def Test_Bootstrap():
 
     # Test that the bootstrap distribution is reasonable
     normalCDF = sp.stats.norm(loc=REFm,scale=REFe).cdf
-    samp = np.array(samp)
     if KSTest_1side(samp,normalCDF) < 0.05:
         lpass = False
         logger.TBFail('Significant KS tension')
@@ -60,4 +59,4 @@ def Test_Bootstrap():
 
 
 if __name__ == '__main__':
-    Test_Bootstrap()
+    testBootstrap()

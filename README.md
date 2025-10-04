@@ -82,6 +82,7 @@ If none of the above cases apply, you may also send an email to clarke(dot)david
 [K. Ebira](https://github.com/kaiebira),
 [J. Goswami](https://github.com/jishnuxx),
 [O. Kaczmarek](https://github.com/olaf-kaczmarek),
+[G. Liu](https://github.com/iXhong),
 [L. Mazur](https://github.com/lukas-mazur),
 [H. Sandmeyer](https://github.com/hsandmeyer),
 [M. Sarkar](https://github.com/mugdhasarkar),

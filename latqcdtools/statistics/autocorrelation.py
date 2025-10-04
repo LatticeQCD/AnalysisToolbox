@@ -180,5 +180,6 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = None, showPlot = False):
         plot_dots(its,acint,ace,color='black',marker=None)
         set_params(xlabel='conf', ylabel='$\\tau_{\\rm int}$')
         plt.show()
+        clearPlot()
 
     return tau_int, tau_inte, itpick
