@@ -867,15 +867,14 @@ def KSTest_2side(data1,data2) -> float:
     data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.
 
     Args:
-        data1 (array-like)
-        data2 (array-like)
+        data1 (np.ndarray)
+        data2 (np.ndarray)
 
     Returns:
         float: 1-p 
     """
     checkType(np.ndarray,data1=data1)
     checkType(np.ndarray,data2=data2)
-    data1,data2 = toNumpy(data1,data2)
     return 1 - sp.stats.kstest(data1, data2).pvalue 
 
 
@@ -885,7 +884,7 @@ def KSTest_1side(data,cdf) -> float:
     data and cdf are at least as extreme as suggested by the Kolmogorov statistic.
 
     Args:
-        data (array-like)
+        data (np.ndarray)
         cdf (function)
 
     Returns:
@@ -907,6 +906,7 @@ def binSeries(data,nbins) -> np.ndarray:
     Returns:
         np.ndarray: Binned data
     """
+    logger.TBError('Actually this should take a function as argument and apply that function in the bin.')
     checkTS(data)
     checkType('int',nbins=nbins)
     ndat=len(data)

@@ -6,6 +6,7 @@
 # Some routines to set up the toolbox, especially for keeping a record of what you did. 
 # 
 
+import numpy as np
 import os, sys, warnings
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import shell, createFilePath
@@ -13,6 +14,10 @@ from latqcdtools.base.utilities import shell, createFilePath
 
 INITIALIZED = False     # Global flag to check if initialization has already occurred.
 DEFAULTSEED = 7271978   # Default seed for reproducibility (needed in testing). Do not Google this date.
+
+# The default_rng() constructor is what numpy recommends, which at the time of writing 
+# utilizes O'Neill's PCG algorithm. 
+rng = np.random.default_rng()
 
 
 def gitHash() -> str:
