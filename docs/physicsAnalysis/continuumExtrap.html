@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Continuum-limit extrapolation &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>Continuum-limit extrapolation &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,11 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -88,21 +90,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="continuum-limit-extrapolation">
+  <section class="tex2jax_ignore mathjax_ignore" id="continuum-limit-extrapolation">
 <h1>Continuum-limit extrapolation<a class="headerlink" href="#continuum-limit-extrapolation" title="Link to this heading"></a></h1>
 <p>Eventually we will have to take a continuum limit. The class for this is in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">continuumExtrap</span>
 </pre></div>
 </div>
 <p>It is the <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> class, which inherits from the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>,
-described <a class="reference internal" href="../dataAnalysis/curveFitting.html"><span class="std std-doc">here</span></a>. You instantiate an <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> with</p>
+described <a class="reference internal" href="../dataAnalysis/curveFitting.html"><span class="doc std std-doc">here</span></a>. You instantiate an <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> with</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ext</span> <span class="o">=</span> <span class="n">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">x</span></code> either denotes lattice spacing data or $N_\tau$ data, which you can specify with the <code class="docutils literal notranslate"><span class="pre">xtype</span></code>.
-We do power series extrapolations, with the <code class="docutils literal notranslate"><span class="pre">order</span></code> in $a^2$ specified by the user.
+<p>Here <code class="docutils literal notranslate"><span class="pre">x</span></code> either denotes lattice spacing data or <span class="math notranslate nohighlight">\(N_\tau\)</span> data, which you can specify with the <code class="docutils literal notranslate"><span class="pre">xtype</span></code>.
+We do power series extrapolations, with the <code class="docutils literal notranslate"><span class="pre">order</span></code> in <span class="math notranslate nohighlight">\(a^2\)</span> specified by the user.
 The <code class="docutils literal notranslate"><span class="pre">error_strat</span></code> is inherited from the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>; it decides whether you will compute errors
-with error propagation or using the Hessian. This is <a class="reference internal" href="../base/speedify.html"><span class="std std-doc">parallelized</span></a> by
+with error propagation or using the Hessian. This is <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">parallelized</span></a> by
 default, but you can set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> to turn that off.</p>
 <p>To perform an extrapolation, you can</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ext</span><span class="o">.</span><span class="n">extrapolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior_err</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -112,7 +114,7 @@ default, but you can set <code class="docutils literal notranslate"><span class=
 but not others, then pass <code class="docutils literal notranslate"><span class="pre">np.inf</span></code> as the corresponding <code class="docutils literal notranslate"><span class="pre">prior_err</span></code> for those you don’t want to fix.
 These will not be included in counting the degrees of freedom.</p>
 <p>You can look at a plot with <code class="docutils literal notranslate"><span class="pre">ext.plot()</span></code>; you can pass it the same keyword arguments that
-you can with the <a class="reference internal" href="../base/plotting.html"><span class="std std-doc">plotter</span></a>. The class method <code class="docutils literal notranslate"><span class="pre">ext.showResults()</span></code> will
+you can with the <a class="reference internal" href="../base/plotting.html"><span class="doc std std-doc">plotter</span></a>. The class method <code class="docutils literal notranslate"><span class="pre">ext.showResults()</span></code> will
 print the results to screen.</p>
 <p>For your convenience, this whole process is wrapped inside a method</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">continuumExtrapolate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">obs</span><span class="p">,</span><span class="n">obs_err</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">plot_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

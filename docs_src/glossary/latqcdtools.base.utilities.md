@@ -11,19 +11,13 @@ capture the matched digits as separate elements. For example, if `key` were
 '''
 ```
 ```Python
-_convert(text):
-'''
-'''
+_convert(text)
 ```
 ```Python
-_getPrefix(byteString):
-'''
-'''
+_getPrefix(byteString)
 ```
 ```Python
-appendToDocstring(string=None, args=None, returns=None):
-'''
-'''
+appendToDocstring(string=None, args=None, returns=None)
 ```
 ```Python
 byteConvert(x, b1, b2):
@@ -87,6 +81,16 @@ Delete the folder at target, if it exists.
 '''
 ```
 ```Python
+deleteLine(target, line_number):
+'''
+Delete line line_number from file target.
+
+Args:
+    target (str)
+    line_number (int)
+'''
+```
+```Python
 elapsedSeconds(date1, date2, format='%Y/%m/%d %H:%M:%S') -> float:
 '''
 Compute elapsed time in seconds between date1 and date2. 
@@ -131,14 +135,10 @@ Returns:
 '''
 ```
 ```Python
-isComplexType(obj) -> bool:
-'''
-'''
+isComplexType(obj) -> bool
 ```
 ```Python
-isFloatType(obj) -> bool:
-'''
-'''
+isFloatType(obj) -> bool
 ```
 ```Python
 isHigherDimensional(obj) -> bool:
@@ -153,14 +153,13 @@ Returns:
 '''
 ```
 ```Python
-isIntType(obj) -> bool:
-'''
-'''
+isIntType(obj) -> bool
 ```
 ```Python
-isScalar(obj) -> bool:
-'''
-'''
+isScalar(obj) -> bool
+```
+```Python
+ls(filePath) -> list
 ```
 ```Python
 naturalSort(l) -> list:
@@ -220,9 +219,7 @@ Returns:
 '''
 ```
 ```Python
-toNumpy(*args, **kwargs):
-'''
-'''
+toNumpy(*args, **kwargs)
 ```
 ```Python
 unvector(obj):

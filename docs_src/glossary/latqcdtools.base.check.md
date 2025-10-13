@@ -18,14 +18,13 @@ Check that all array-like objects passed have the same length.
 '''
 ```
 ```Python
-checkExtension(filename, extension, ignoreExtension=False):
+checkExtension(filename, extension):
 '''
 Check the extension of a file
 
 Args:
     filename (str)
     extension (str)
-    ignoreExtension (bool, optional): Defaults to False.
 '''
 ```
 ```Python
@@ -73,20 +72,11 @@ Turn off underflow crashes.
 '''
 ```
 ```Python
-class DivideByZeroError
-:
-'''
-'''
+class DivideByZeroError:
 ```
 ```Python
-class InvalidValueError
-:
-'''
-'''
+class InvalidValueError:
 ```
 ```Python
-class UnderflowError
-:
-'''
-'''
+class UnderflowError:
 ```

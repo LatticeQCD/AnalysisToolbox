@@ -469,10 +469,15 @@ def impdist(Ns, r2max, improvedAction=True):
     weight = np.zeros(3*Ns**2, dtype=np.int32)
     
     # Transfer data to device
-    cosf_device = cuda.to_device(cosf)
-    sinf_device = cuda.to_device(sinf)
-    pots_device = cuda.to_device(pots)
-    weight_device = cuda.to_device(weight)
+    try:
+        cosf_device = cuda.to_device(cosf)
+        sinf_device = cuda.to_device(sinf)
+        pots_device = cuda.to_device(pots)
+        weight_device = cuda.to_device(weight)
+    except Exception as e:
+        logger.warn("Error copying into device memory. Got exception:",e) 
+        logger.warn("Falling back to CPU implementation.")
+        return _cpu_impdist(Ns, r2max, improvedAction)
     
     # Get optimal threads per block
     threads_per_block = get_optimal_block_size()

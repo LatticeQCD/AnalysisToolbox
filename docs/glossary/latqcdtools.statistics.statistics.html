@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>latqcdtools.statistics.statistics &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>latqcdtools.statistics.statistics &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,7 +13,7 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.lime.html">latqcdtools.interfaces.lime</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU2.html">latqcdtools.math.SU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
@@ -123,7 +124,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="latqcdtools-statistics-statistics">
+  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-statistics">
 <h1>latqcdtools.statistics.statistics<a class="headerlink" href="#latqcdtools-statistics-statistics" title="Link to this heading"></a></h1>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">AIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
@@ -280,9 +281,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkProb</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkProb</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkTS</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
@@ -315,7 +314,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">confidence_ellipse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">CI</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">confidence_ellipse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">CI</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Plot a confidence ellipse according to the data x, y. The confidence is only meaningful </span>
 <span class="sd">assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures</span>
@@ -475,9 +474,9 @@
 
 <span class="sd">Args:</span>
 <span class="sd">    x1 (float): mean 1 </span>
-<span class="sd">    e1 (float): error 1</span>
+<span class="sd">    e1 (float): standard error 1</span>
 <span class="sd">    x2 (float): mean 2</span>
-<span class="sd">    e2 (float): error 2</span>
+<span class="sd">    e2 (float): standard error 2</span>
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: p-value </span>
@@ -530,9 +529,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">meanArgWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">used_data</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">meanArgWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">used_data</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">modelAverage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">IC</span><span class="p">,</span> <span class="n">return_syst</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -660,14 +657,15 @@
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are</span>
 <span class="sd">both drawn from a normal distribution with the same mean. A rule of thumb is that this is more</span>
-<span class="sd">appropriate when one estimated x1 and x2 using ~30 or fewer measurements.</span>
+<span class="sd">appropriate when one estimated x1 and x2 using ~30 or fewer measurements. Of course, you can</span>
+<span class="sd">always compare this with gaudif to get a better idea.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    x1  (float): mean 1 </span>
-<span class="sd">    e1  (float): error 1</span>
+<span class="sd">    e1  (float): standard error 1</span>
 <span class="sd">    ndat1 (int): number of measurements used to compute x1</span>
 <span class="sd">    x2  (float): mean 2</span>
-<span class="sd">    e2  (float): error 2</span>
+<span class="sd">    e2  (float): standard error 2</span>
 <span class="sd">    ndat2 (int): number of measurements used to compute x2</span>
 
 <span class="sd">Returns:</span>
@@ -675,9 +673,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_mean_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

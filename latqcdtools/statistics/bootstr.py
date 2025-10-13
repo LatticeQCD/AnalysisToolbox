@@ -114,7 +114,7 @@ class nimbleBoot:
 
     def getResults(self):
         if self._return_sample:
-            return self._sampleval, self._mean, self._error
+            return np.array(self._sampleval), self._mean, self._error
         else:
             return self._mean, self._error
 

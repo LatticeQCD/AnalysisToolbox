@@ -575,8 +575,9 @@ def error_prop(func, means, errors, grad=None, args=()):
     Returns:
         np.ndarray, np.ndarray: f, f_err 
     """
-    checkType(np.ndarray,errors=errors)
     checkVector(means)
+    checkVector(errors)
+
     mean = func(means, *args)
 
     # Test if we got a covariance matrix
@@ -589,7 +590,11 @@ def error_prop(func, means, errors, grad=None, args=()):
     if grad is not None:
         grad = grad(means, *args)
     else:
-        grad = diff_jac(means, func, args).T
+        h = None 
+        minVal = np.min(np.abs(means))
+        if minVal<1e-10 and grad==None:
+            h = 1e-2*minVal 
+        grad = diff_jac(means, func, args, h).T
 
     error = 0
     try:

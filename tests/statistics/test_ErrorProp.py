@@ -54,12 +54,31 @@ def testErrorProp():
 
     lpass = True
 
-    x_test = [0.5, 0.1, 2]
-    a      = 1
-    b      = 2
-    a_err  = 0.1
-    b_err  = 0.2
-    opt    = 2
+    a       = 1
+    b       = 2
+    a_err   = 0.1
+    b_err   = 0.2
+    opt     = 2
+
+    # simple tests:
+    for A in [.1,99,np.pi]:
+        for p in [np.e,3,-2]:
+            for val in [1.,1e-3,1e-9,1e-11,3.4e-20]:
+                err = .1*val
+                x_test = np.array([val])
+                xe_test = np.array([err])
+                PREC=1e-6
+                if val<1e-8:
+                    PREC=1e-2
+                def simple_power(x):
+                    return A*x**p
+                def error_simple_power(x,xe):
+                    return np.sqrt( (xe*A*p*x**(p-1))**2 )
+                res, rese = error_prop(simple_power,x_test,xe_test)
+                lpass *= print_results(res, simple_power(x_test), rese, error_simple_power(x_test,xe_test),
+                                       text=f"simple power A={A}, p={p}, val={val}",prec=PREC)
+
+    x_test  = np.array([0.5, 0.1 , 2  ])
 
     res_true = err_func(x_test, [1,2], [a_err,b_err], opt)
 

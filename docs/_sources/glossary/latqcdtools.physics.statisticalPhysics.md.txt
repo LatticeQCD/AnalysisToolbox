@@ -2,9 +2,7 @@ latqcdtools.physics.statisticalPhysics
 =============
 
 ```Python
-_printExponent(prefix, exponent):
-'''
-'''
+_printExponent(prefix, exponent)
 ```
 ```Python
 reweight(X, pRW, p0, S):

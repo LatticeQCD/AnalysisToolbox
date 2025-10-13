@@ -38,7 +38,9 @@ def _getPrefix(byteString):
 
 def _convert(text):
     if text.isdigit():
-        return int(text)
+        # For strings with leading zeros, we want them to sort before strings without
+        # Use the original string for lexicographic ordering
+        return text
     else:
         return text.lower()
 
@@ -104,6 +106,14 @@ def isComplexType(obj) -> bool:
 
 def isScalar(obj) -> bool:
     if (not isIntType(obj)) and (not isFloatType(obj)) and (not isComplexType(obj)):
+        return False
+    return True
+
+
+def isReal(obj) -> bool:
+    if not isScalar(obj): 
+        return False
+    if obj.imag != 0:
         return False
     return True
 

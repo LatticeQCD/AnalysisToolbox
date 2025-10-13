@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jackknife &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>Jackknife &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,11 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -83,7 +85,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="jackknife">
+  <section class="tex2jax_ignore mathjax_ignore" id="jackknife">
 <h1>Jackknife<a class="headerlink" href="#jackknife" title="Link to this heading"></a></h1>
 <p>To generate jackknife error bars, please use the module</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.jackknife</span>
@@ -102,19 +104,19 @@ An example will be given below.</p>
 <p>This jackknife is quite general. Something easy one might do with the jackknife is calculate the
 Polyakov loop susceptibility from Polyakov loops. A rule of thumb to use when using the jackknife
 code is to “write your function the way it appears using math symbols”. For example with the
-susceptibility one calculates $\chi_P=N_\sigma^3\left(\langle P^2\rangle - \langle P\rangle\right)$,
+susceptibility one calculates <span class="math notranslate nohighlight">\(\chi_P=N_\sigma^3\left(\langle P^2\rangle - \langle P\rangle\right)\)</span>,
 so one correspondingly defines</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Ns</span><span class="o">=</span><span class="mi">32</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">susc</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
   <span class="k">return</span> <span class="n">Ns</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">P</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
 </pre></div>
 </div>
-<p>where $P$ is the time series of measurements of $P$, and then calls the jackknife by</p>
+<p>where <span class="math notranslate nohighlight">\(P\)</span> is the time series of measurements of <span class="math notranslate nohighlight">\(P\)</span>, and then calls the jackknife by</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">Pmean</span><span class="p">,</span> <span class="n">Perr</span> <span class="o">=</span> <span class="n">jackknife</span><span class="p">(</span><span class="n">susc</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Sometimes your function may depend on multiple observables; for instance one may be interested in
-the susceptibility of $|P|$, for which one needs the real and imaginary parts of $P$. One can
+the susceptibility of <span class="math notranslate nohighlight">\(|P|\)</span>, for which one needs the real and imaginary parts of <span class="math notranslate nohighlight">\(P\)</span>. One can
 accomplish this using 32 jackknife blocks with, for instance,</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">suscA</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
   <span class="n">ReP</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -126,13 +128,13 @@ accomplish this using 32 jackknife blocks with, for instance,</p>
 </div>
 <p>Note that these Polyakov loop examples are meant to be instructional. A complete set of functions
 measuring Polyakov loop observables is given in <code class="docutils literal notranslate"><span class="pre">polyakovTools.py</span></code>, described in part in the part
-of the documentation for <a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html"><span class="std std-doc">physics</span></a> modules.</p>
+of the documentation for <a class="reference internal" href="../physicsAnalysis/physicsAnalysis.html"><span class="doc std std-doc">physics</span></a> modules.</p>
 <p><strong>WARNING:</strong> Although the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> method is very general, there are at least a couple kinds of
 functions that may fail when passed to <code class="docutils literal notranslate"><span class="pre">jackknife</span></code>:</p>
-<ol class="arabic simple">
+<ol class="simple">
 <li><p>Don’t pass a lambda function. This is because the <code class="docutils literal notranslate"><span class="pre">jackknife</span></code> can be parallelized
 using <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code>, which is not able to pickle lambda functions.
-We <a class="reference internal" href="../contributions/contributions.html"><span class="std std-doc">discourage</span></a> the use of lambda functions in general.</p></li>
+We <a class="reference internal" href="../contributions/contributions.html"><span class="doc std std-doc">discourage</span></a> the use of lambda functions in general.</p></li>
 <li><p>Don’t pass a function that manipulates data indices. You may not be manipulating the
 indices you think, because the jackknife first splits your input data into bins, and
 then the indices of the binned data will get manipulated.</p></li>

@@ -25,7 +25,7 @@ def div(a):
 A =  np.array(range(1000))
 
 
-def Test_Bootstrap():
+def testBootstrap():
 
     lpass = True
 
@@ -59,4 +59,4 @@ def Test_Bootstrap():
 
 
 if __name__ == '__main__':
-    Test_Bootstrap()
+    testBootstrap()

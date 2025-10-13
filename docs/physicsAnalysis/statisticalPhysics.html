@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Statistical Physics &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>Statistical Physics &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,11 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -88,26 +90,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="statistical-physics">
+  <section class="tex2jax_ignore mathjax_ignore" id="statistical-physics">
 <h1>Statistical Physics<a class="headerlink" href="#statistical-physics" title="Link to this heading"></a></h1>
 <p>This module collects some basic methods and classes related to statistical physics.</p>
 <section id="critical-exponents">
 <h2>Critical exponents<a class="headerlink" href="#critical-exponents" title="Link to this heading"></a></h2>
 <p>There is a base <code class="docutils literal notranslate"><span class="pre">UniversalityClass</span></code> object from which all universality classes inherit. It holds critical exponents
 as attributes along with an <code class="docutils literal notranslate"><span class="pre">exponentSummary()</span></code> method that prints to screen all critical exponents. If you want to
-access 3-$d$, $\mathbb{Z}_2$ critical exponents, you can simply use, e.g.</p>
+access 3-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span> critical exponents, you can simply use, e.g.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">univ</span> <span class="o">=</span> <span class="n">Z2_3d</span>
 <span class="n">univ</span><span class="o">.</span><span class="n">alpha</span>
 </pre></div>
 </div>
 <p>At present one finds the universality classes</p>
 <ul class="simple">
-<li><p>3-$d$, O$(2)$</p></li>
-<li><p>3-$d$, O$(3)$</p></li>
-<li><p>3-$d$, O$(4)$</p></li>
-<li><p>4-$d$, $\mathbb{Z}_2$</p></li>
-<li><p>3-$d$, $\mathbb{Z}_2$</p></li>
-<li><p>2-$d$, $\mathbb{Z}_2$</p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((2)\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((3)\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, O<span class="math notranslate nohighlight">\((4)\)</span></p></li>
+<li><p>4-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
+<li><p>3-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
+<li><p>2-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span></p></li>
 </ul>
 </section>
 </section>

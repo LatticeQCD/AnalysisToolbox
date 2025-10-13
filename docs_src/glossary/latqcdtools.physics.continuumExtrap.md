@@ -22,6 +22,4 @@ A convenience wrapper for the Extrapolator.
 ```
 ```Python
 class Extrapolator(x, obs, obs_err, order=1, xtype='a', error_strat='propagation', ansatz=None, nproc=6, tol=1e-12, max_fev=None):
-'''
-'''
 ```

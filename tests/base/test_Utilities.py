@@ -24,9 +24,9 @@ def testUtilities():
     testArray = ['thermalTable_mu0.0357', 'thermalTable_mu0.0952', 'thermalTable_mu0.1309', 'thermalTable_mu0.0833',
                  'thermalTable_mu0.0595', 'thermalTable_mu0.0119', 'thermalTable_mu0.0'   , 'thermalTable_mu0.0714',
                  'thermalTable_mu0.0476', 'thermalTable_mu0.1071', 'thermalTable_mu0.119' , 'thermalTable_mu0.0238']
-    sortArray = ['thermalTable_mu0.0'   , 'thermalTable_mu0.0119', 'thermalTable_mu0.119' , 'thermalTable_mu0.0238',
-                 'thermalTable_mu0.0357', 'thermalTable_mu0.0476', 'thermalTable_mu0.0595', 'thermalTable_mu0.0714',
-                 'thermalTable_mu0.0833', 'thermalTable_mu0.0952', 'thermalTable_mu0.1071', 'thermalTable_mu0.1309']
+    sortArray = ['thermalTable_mu0.0'   , 'thermalTable_mu0.0119', 'thermalTable_mu0.0238', 'thermalTable_mu0.0357', 
+                 'thermalTable_mu0.0476', 'thermalTable_mu0.0595', 'thermalTable_mu0.0714', 'thermalTable_mu0.0833', 
+                 'thermalTable_mu0.0952', 'thermalTable_mu0.1071', 'thermalTable_mu0.119' , 'thermalTable_mu0.1309']
 
     lpass=True
 

@@ -7,22 +7,69 @@
 #
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.physics.constants import MeVinv_to_fm, fm_to_MeVinv, fk_phys, r0_phys, r1_phys
+from latqcdtools.physics.constants import convert, fk_phys, r0_phys, r1_phys
 from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, CY_param, CY_phys
 from latqcdtools.base.check import checkDomain
+from latqcdtools.base.utilities import isReal
 
 
-def _massStringToFloat(string):
-    if string is None:
+def _getMassString(mass):
+    if mass is None:
         return None
+    elif isinstance(mass,str):
+        return mass
+    elif isReal(mass):
+        if not 0<mass<1:
+            logger.TBRaise('I can only handle bare masses between 0 and 1.') 
+        return str(mass)[2:] 
     else:
-        return float('0.' + string)
+        logger.TBRaise(f'Expected str or float for mass. Got {type(mass)}')
+
+
+def _getMassFloat(mass):
+    if mass is None:
+        return None
+    elif isReal(mass):
+        if not 0<mass<1:
+            logger.TBRaise('I can only handle bare masses between 0 and 1.') 
+        return mass
+    elif isinstance(mass,str):
+        fmass = float(f'0.{mass}')
+        if not 0<fmass<1:
+            logger.TBRaise('I can only handle bare masses between 0 and 1.') 
+        return fmass
+    else:
+        logger.TBRaise(f'Expected str or float for mass. Got {type(mass)}')
 
 
 class latticeParams:
     """
     A class to handle and check the input parameters of a lattice run.
     """
+
+    def setCoupling(self,coupling):
+        if isinstance(coupling, str):
+            self.beta  = int(coupling)/10**(len(coupling)-1)
+            self.cbeta = coupling
+        else:
+            self.beta  = coupling
+            self.cbeta = str(coupling).replace('.','')
+
+    def setScales(self,scaleYear,paramYear):
+        self.fK    = fk_phys(CY_phys['fk'],"MeV")
+        self.r1    = r1_phys(CY_phys['r1'],"fm")
+        self.r0    = r0_phys(CY_phys['r0'],"fm")
+        if paramYear is None:
+            self.year = CY_param[self.scale] 
+        else:
+            self.year = paramYear
+        if scaleYear is not None:
+            if self.scale == 'fk':
+                self.fK = fk_phys(scaleYear)
+            elif self.scale == 'r1':
+                self.r1 = r1_phys(scaleYear)
+            elif self.scale == 'r0':
+                self.r0 = r0_phys(scaleYear)
 
     #           mass1  mass2  mass3
     # Nf=1+1+1     mu     md     ms
@@ -59,35 +106,17 @@ class latticeParams:
         """
         checkDomain(scaleType,list(CY_phys.keys()))
         self.scale = scaleType
-        self.fK    = fk_phys(CY_phys['fk'],"MeV")
-        self.r1    = r1_phys(CY_phys['r1'],"fm")
-        self.r0    = r0_phys(CY_phys['r0'],"fm")
-        if paramYear is None:
-            self.year = CY_param[self.scale] 
-        else:
-            self.year = paramYear
-        if scaleYear is not None:
-            if self.scale == 'fk':
-                self.fK = fk_phys(scaleYear)
-            elif self.scale == 'r1':
-                self.r1 = r1_phys(scaleYear)
-            elif self.scale == 'r0':
-                self.r0 = r0_phys(scaleYear)
-        if isinstance(coupling, str):
-            self.beta  = int(coupling)/10**(len(coupling)-1)
-            self.cbeta = coupling
-        else:
-            self.beta  = coupling
-            self.cbeta = str(coupling).replace('.','')
+        self.setScales(scaleYear,paramYear)
+        self.setCoupling(coupling)
         self.Nc   = 3
         self.mu   = mu
         self.Ns   = Nsigma
         self.Nt   = Ntau
         self.Nf   = Nf
         self.vol4 = self.Ns**3 * self.Nt
-        self.cm1  = mass1
-        self.cm2  = mass2
-        self.cm3  = mass3
+        self.cm1  = _getMassString(mass1)
+        self.cm2  = _getMassString(mass2)
+        self.cm3  = _getMassString(mass3)
         self.cml  = None 
         self.cmu  = None 
         self.cmd  = None 
@@ -106,31 +135,31 @@ class latticeParams:
         if Nf == '21':
             if mass3 is not None:
                 logger.TBRaise('Nf=2+1 expects only 2 mass parameters.')
-            self.cml  = mass1
-            self.cms  = mass2
-            self.ml   = _massStringToFloat(mass1)
-            self.ms   = _massStringToFloat(mass2)
+            self.cml  = _getMassString(mass1)
+            self.cms  = _getMassString(mass2)
+            self.ml   = _getMassFloat(mass1)
+            self.ms   = _getMassFloat(mass2)
         elif Nf == '111':
-            self.cmu  = mass1 
-            self.cmd  = mass2 
-            self.cms  = mass3
-            self.mu   = _massStringToFloat(mass1)
-            self.md   = _massStringToFloat(mass2)
-            self.ms   = _massStringToFloat(mass3)
+            self.cmu  = _getMassString(mass1) 
+            self.cmd  = _getMassString(mass2) 
+            self.cms  = _getMassString(mass3)
+            self.mu   = _getMassFloat(mass1)
+            self.md   = _getMassFloat(mass2)
+            self.ms   = _getMassFloat(mass3)
         elif Nf == '211':
-            self.cml  = mass1
-            self.cms  = mass2
-            self.cmc  = mass3
-            self.ml   = _massStringToFloat(mass1)
-            self.ms   = _massStringToFloat(mass2)
-            self.mc   = _massStringToFloat(mass3)
+            self.cml  = _getMassString(mass1)
+            self.cms  = _getMassString(mass2)
+            self.cmc  = _getMassString(mass3)
+            self.ml   = _getMassFloat(mass1)
+            self.ms   = _getMassFloat(mass2)
+            self.mc   = _getMassFloat(mass3)
         elif Nf=='3' or Nf=='5':
             if mass3 is not None:
                 logger.TBRaise('Degenerate Nf expects only 2 mass parameters.')
-            self.cm   = mass1
-            self.cpre = mass2
-            self.m    = _massStringToFloat(mass1)
-            self.pre  = _massStringToFloat(mass2)
+            self.cm   = _getMassString(mass1)
+            self.cpre = _getMassString(mass2)
+            self.m    = _getMassFloat(mass1)
+            self.pre  = _getMassFloat(mass2)
         else:
             logger.TBRaise("Unsupported Nf",Nf)
         if (self.ml is not None) and (self.ms is not None):
@@ -147,29 +176,22 @@ class latticeParams:
         return "latticeParams"
 
 
-    # a in [fm]
-    def geta(self):
+    def geta(self,units='fm'):
         if self.scale=='fk':
-            return MeVinv_to_fm( a_times_fk(self.beta,self.year)/self.fK )
+            return convert( a_times_fk(self.beta,self.year)/self.fK, 'MeVinv', units )
         elif self.scale=='r1':
-            return a_div_r1(self.beta,self.year)*self.r1
+            return convert( a_div_r1(self.beta,self.year)*self.r1, 'fm', units )
         elif self.scale=='r0':
-            return self.r0/r0_div_a(self.beta,self.year)
+            return convert( self.r0/r0_div_a(self.beta,self.year), 'fm', units )
 
 
-    def getT(self) -> float:
-        """ 
-        T in MeV. 
-        """
-        return 1/fm_to_MeVinv( (self.geta()*self.Nt) )
+    def getT(self,units='MeV') -> float:
+        return convert( 1/(self.geta('fm')*self.Nt), 'fminv', units )
 
 
-    def getLs(self) -> float:
-        """ 
-        L in space-like direction in [1/MeV]. 
-        """
+    def getLs(self,units='MeVinv') -> float:
         if self.Ns is not None:
-            return fm_to_MeVinv(self.Ns*self.geta())
+            return convert( self.Ns*self.geta('fm'), 'fm', units )
         else:
             logger.TBRaise('Must specify Ns get get Ls.')
 

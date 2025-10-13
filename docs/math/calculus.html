@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Numerical calculus &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>Numerical calculus &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,11 +13,13 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -82,7 +84,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="numerical-calculus">
+  <section class="tex2jax_ignore mathjax_ignore" id="numerical-calculus">
 <h1>Numerical calculus<a class="headerlink" href="#numerical-calculus" title="Link to this heading"></a></h1>
 <p>In the AnalysisToolbox we have some methods for numerical differentiation and integration.</p>
 <section id="numerical-differentiation">
@@ -94,7 +96,7 @@
 <p>We use central differences to calculate the numerical derivative. The method <code class="docutils literal notranslate"><span class="pre">best_h</span></code>
 finds a finite difference that is small enough to suppress higher order differences,
 but not so small that you suffer from errors due to machine precision.</p>
-<p>To calculate $f’$ of $f$ you can call</p>
+<p>To calculate <span class="math notranslate nohighlight">\(f'\)</span> of <span class="math notranslate nohighlight">\(f\)</span> you can call</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">diff_deriv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">h</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -123,8 +125,8 @@ tries various methods until something works.</p>
 <p>which will find the area under <code class="docutils literal notranslate"><span class="pre">ydata</span></code> given the grid points <code class="docutils literal notranslate"><span class="pre">xdata</span></code>. This uses the trapezoid rule by default,
 but it can also use the Simpson rule or the homebrew <code class="docutils literal notranslate"><span class="pre">spline</span></code> method, which fits the data with a spline,
 then evaluates the area by quadrature.</p>
-<p>Finally, if you want to solve an ODE of the form $dy/dt=f(t,y)$
-with some $y(t_0)=y_0$ already known, we have a method to solve initial value problems:</p>
+<p>Finally, if you want to solve an ODE of the form <span class="math notranslate nohighlight">\(dy/dt=f(t,y)\)</span>
+with some <span class="math notranslate nohighlight">\(y(t_0)=y_0\)</span> already known, we have a method to solve initial value problems:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">solveIVP</span><span class="p">(</span><span class="n">dydt</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">tf</span><span class="p">,</span><span class="n">y0</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;RK45&#39;</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(),</span><span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-8</span><span class="p">,</span><span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-8</span><span class="p">)</span>
 </pre></div>
 </div>

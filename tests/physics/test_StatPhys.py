@@ -27,14 +27,14 @@ def testStatPhys():
     univ = O2_3d()
     lpass *= univ.hyperscalingCheck()
     univ = O3_3d()
-    lpass *= univ.hyperscalingCheck(tol=1e-2)
+    lpass *= univ.hyperscalingCheck()
     univ = O4_3d()
     lpass *= univ.hyperscalingCheck()
     univ = Z2_3d()
     lpass *= univ.hyperscalingCheck()
     univ = Z2_2d()
     lpass *= univ.hyperscalingCheck()
-    if univ.Tc() != 2/np.log(1+np.sqrt(2)):
+    if univ.Tc != 2/np.log(1+np.sqrt(2)):
         logger.TBFail('Z2_2d Tc')
     univ = S3_2d()
     lpass *= univ.hyperscalingCheck()

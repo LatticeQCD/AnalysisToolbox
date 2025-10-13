@@ -85,11 +85,7 @@ Recursive function to fill the sample.
 ```
 ```Python
 class nimbleBoot(func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed, err_by_dist, args, nproc):
-'''
-'''
 ```
 ```Python
 class nimbleGaussianBoot(func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed, err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
-'''
-'''
 ```

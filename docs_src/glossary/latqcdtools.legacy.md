@@ -9,19 +9,13 @@ seed to be an integer when enforcing that different bootstrap samples use differ
 '''
 ```
 ```Python
-_getBlocksize(ndat, nblocks):
-'''
-'''
+_getBlocksize(ndat, nblocks)
 ```
 ```Python
-_pseudo(mean, mean_i, numb_blocks):
-'''
-'''
+_pseudo(mean, mean_i, numb_blocks)
 ```
 ```Python
-_pseudo_val(mean, mean_i, numb_blocks):
-'''
-'''
+_pseudo_val(mean, mean_i, numb_blocks)
 ```
 ```Python
 bootstr(func, data, numb_samples, sample_size=0, same_rand_for_obs=False, conf_axis=1, return_sample=False, seed=None, err_by_dist=False, args=(), nproc=6):
@@ -85,9 +79,7 @@ deviation of a mean.
 '''
 ```
 ```Python
-dev_by_dist(data, *args, **kwargs):
-'''
-'''
+dev_by_dist(data, *args, **kwargs)
 ```
 ```Python
 jackknife(func, data, numb_blocks=20, conf_axis=1, return_sample=False, args=(), nproc=6):
@@ -132,44 +124,28 @@ Recursive function to fill the sample.
 '''
 ```
 ```Python
-reduce_tuple(func):
-'''
-'''
+reduce_tuple(func)
 ```
 ```Python
-std_dev(data, *args, **kwargs):
-'''
-'''
+std_dev(data, *args, **kwargs)
 ```
 ```Python
-std_err(data, *args, **kwargs):
-'''
-'''
+std_err(data, *args, **kwargs)
 ```
 ```Python
-std_mean(data, *args, **kwargs):
-'''
-'''
+std_mean(data, *args, **kwargs)
 ```
 ```Python
-std_median(data, *args, **kwargs):
-'''
-'''
+std_median(data, *args, **kwargs)
 ```
 ```Python
-std_var(data, *args, **kwargs):
-'''
-'''
+std_var(data, *args, **kwargs)
 ```
 ```Python
 class nimbleBoot(func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed, err_by_dist, args, nproc):
-'''
-'''
 ```
 ```Python
 class nimbleGaussianBoot(func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed, err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
-'''
-'''
 ```
 ```Python
 class nimbleJack(func, data, nblocks, confAxis, return_sample, args, nproc):

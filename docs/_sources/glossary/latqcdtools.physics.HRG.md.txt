@@ -8,9 +8,7 @@ Give a good initial guess for NS=0 LCP.
 '''
 ```
 ```Python
-RMS_mass(Nt, T):
-'''
-'''
+RMS_mass(Nt, T)
 ```
 ```Python
 dmuh(order, muh):

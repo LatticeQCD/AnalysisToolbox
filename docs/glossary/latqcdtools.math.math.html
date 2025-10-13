@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>latqcdtools.math.math &mdash; AnalysisToolbox 1.3.0 documentation</title>
+  <title>latqcdtools.math.math &mdash; AnalysisToolbox 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
@@ -13,7 +13,7 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+        <script src="../_static/documentation_options.js?v=bb516dca"></script>
         <script src="../_static/doctools.js?v=9bcbadda"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/togglebutton.js?v=3e7854f7"></script>
@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.lime.html">latqcdtools.interfaces.lime</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU2.html">latqcdtools.math.SU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.math.math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
@@ -123,7 +124,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="latqcdtools-math-math">
+  <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-math">
 <h1>latqcdtools.math.math<a class="headerlink" href="#latqcdtools-math-math" title="Link to this heading"></a></h1>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">RMS</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
@@ -149,9 +150,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkMatrix</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkMatrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkSquare</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
@@ -163,19 +162,27 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkVector</span><span class="p">(</span><span class="n">vec</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkVector</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dagger</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dagger</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">exp</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Exponential of square matrix.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fallFactorial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Falling factorial n fall to m. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">id</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">NxN complex identity matrix</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
@@ -231,9 +238,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isMatrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isMatrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isOrthogonal</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -273,9 +278,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isSquare</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isSquare</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isSymmetric</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -302,8 +305,12 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isVector</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isVector</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">log</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Natural logarithm of square matrix.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
@@ -336,6 +343,12 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: pnorm </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">pow</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Matrix power. </span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
@@ -387,6 +400,26 @@
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">riseFactorial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Rising factorial n rise to m. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ze</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">NxN complex zero matrix</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SUN</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mat</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A member of the Lie group SU(N). Implemented as a subclass of the np.ndarray class. This gives us access already</span>
+<span class="sd">to all the nice features of np.ndarray and lets us leverage the speed of numpy.</span>
+<span class="sd">    g.trace()</span>
+<span class="sd">    g.det()</span>
+<span class="sd">    g.dagger()</span>
+<span class="sd">    g[i,j], which can be used to access and assign</span>
+<span class="sd">    g + h</span>
+<span class="sd">    g*h = g@h</span>
+<span class="sd">    2*g</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>

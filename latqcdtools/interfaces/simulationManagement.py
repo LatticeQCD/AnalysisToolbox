@@ -11,6 +11,8 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import plt, plot_lines, plot_hist, set_params, clearPlot,\
     saveFigure
 from latqcdtools.statistics.statistics import std_mean, std_err, checkTS, KSTest_1side
+from latqcdtools.statistics.autocorrelation import getTauInt
+from latqcdtools.base.printErrorBars import get_err_str
 import scipy as sp
 from latqcdtools.base.utilities import ls, naturalSort
 from latqcdtools.math.math import rel_check
@@ -43,7 +45,8 @@ def countConfigurations(targetFolder,name,delimiter='.'):
 
 
 def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
-                 showPlots=False,savePlots=False,plotNamePrefix=None,**plotargs):
+                 showPlots=False,savePlots=False,plotNamePrefix=None,tpickMax=None,
+                 nbins=None,verbose=False,**plotargs):
     """
     Do some basic analysis of a MCMC time series of measurements. We check whether the data
     are distributed normally. Optionally you can plot the time series and/or a histogram.
@@ -57,6 +60,9 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         showPlots (bool, optional): Defaults to False.
         savePlots (bool, optional): Defaults to False.
         plotNamePrefix (str, optional): Prefix of plot names. Defaults to None.
+        tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.
+        nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)
+        verbose (bool, optional): Report your findings to screen. Defaults to False.
     """
 
     checkTS(MCtime)
@@ -79,6 +85,7 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         saveFigure(plotNamePrefix+'TS.pdf')
     if showPlots:
         plt.show()
+        showTauIntPlot=True
 
     if savePlots or showPlots:
         clearPlot()
@@ -90,13 +97,31 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         plt.show()
     clearPlot()
 
-    mean = std_mean(measurements)
-    err  = std_err(measurements)
+    mean      = std_mean(measurements)
+    err       = std_err(measurements)
     normalCDF = sp.stats.norm(loc=mean,scale=err).cdf
-
-    if KSTest_1side(measurements,normalCDF)<KScutoff:
+    q         = KSTest_1side(measurements,normalCDF)
+    if q<KScutoff:
         logger.warn('Measurement distribution not consistent with Gaussian')
 
+    Nmeas = len(measurements)
+    if nbins is None:
+        nbins = int(Nmeas/100)+2
+    if tpickMax is None:
+        tpickMax = int(Nmeas/10)+1
+
+    try:
+        tau_int, tau_inte, _ = getTauInt(measurements,nbins=nbins,tpickMax=tpickMax,showPlot=showTauIntPlot)
+    except Exception as e:
+        logger.TBFail('Encountered exception',e)
+        logger.TBFail('You may have to adjust Nbins and tpickMax')
+        raise e 
+
+    logger.info(f'  tau_int = {get_err_str(tau_int,tau_inte)}')
+    if verbose:
+        logger.info(f'    Nmeas = {Nmeas}')
+        logger.info(f'      val = {get_err_str(mean,err)}')
+        logger.info(f' KS gauss = {q}')
 
 
 _allowedEnsKinds = ['conf','meas','conf/meas','seed','seed/meas']

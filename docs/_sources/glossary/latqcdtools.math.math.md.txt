@@ -26,9 +26,7 @@ Returns:
 '''
 ```
 ```Python
-checkMatrix(mat):
-'''
-'''
+checkMatrix(mat)
 ```
 ```Python
 checkSquare(mat):
@@ -40,19 +38,27 @@ Args:
 '''
 ```
 ```Python
-checkVector(vec):
-'''
-'''
+checkVector(vec)
 ```
 ```Python
-dagger(arr) -> numpy.ndarray:
+dagger(arr) -> numpy.ndarray
+```
+```Python
+exp(mat) -> numpy.ndarray:
 '''
+Exponential of square matrix.
 '''
 ```
 ```Python
 fallFactorial(n, m) -> float:
 '''
 Falling factorial n fall to m. 
+'''
+```
+```Python
+id(N) -> numpy.ndarray:
+'''
+NxN complex identity matrix
 '''
 ```
 ```Python
@@ -108,9 +114,7 @@ Returns:
 '''
 ```
 ```Python
-isMatrix(mat) -> bool:
-'''
-'''
+isMatrix(mat) -> bool
 ```
 ```Python
 isOrthogonal(mat) -> bool:
@@ -150,9 +154,7 @@ Returns:
 '''
 ```
 ```Python
-isSquare(mat) -> bool:
-'''
-'''
+isSquare(mat) -> bool
 ```
 ```Python
 isSymmetric(mat) -> bool:
@@ -179,8 +181,12 @@ Returns:
 '''
 ```
 ```Python
-isVector(vec) -> bool:
+isVector(vec) -> bool
+```
+```Python
+log(mat) -> numpy.ndarray:
 '''
+Natural logarithm of square matrix.
 '''
 ```
 ```Python
@@ -213,6 +219,12 @@ Args:
 
 Returns:
     float: pnorm 
+'''
+```
+```Python
+pow(mat, power) -> numpy.ndarray:
+'''
+Matrix power. 
 '''
 ```
 ```Python
@@ -264,5 +276,25 @@ Returns:
 riseFactorial(n, m) -> float:
 '''
 Rising factorial n rise to m. 
+'''
+```
+```Python
+ze(N) -> numpy.ndarray:
+'''
+NxN complex zero matrix
+'''
+```
+```Python
+class SUN(N=None, mat=None):
+'''
+A member of the Lie group SU(N). Implemented as a subclass of the np.ndarray class. This gives us access already
+to all the nice features of np.ndarray and lets us leverage the speed of numpy.
+    g.trace()
+    g.det()
+    g.dagger()
+    g[i,j], which can be used to access and assign
+    g + h
+    g*h = g@h
+    2*g
 '''
 ```
