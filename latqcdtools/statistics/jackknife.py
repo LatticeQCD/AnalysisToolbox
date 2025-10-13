@@ -18,7 +18,7 @@ def _pseudobins(jackknifeBins,avg):
     Calculate the 'pseudovalue' from the ith jackknife estimator. The pseudovalue is unbiased
     up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. 
     """ 
-    nblocks=len(jackknifeBins)
+    nblocks = len(jackknifeBins)
     return nblocks*np.array(avg) - (nblocks-1)*jackknifeBins
 
 
@@ -40,7 +40,7 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
     Carry out a jackknife of an arbitrary function f of some data.
 
     Args:
-        f (func)
+        f (func): It is expected that f will call an np.mean somewhere inside.
         data (array-like)
         numb_blocks (int, optional): Number of jackknife blocks. Defaults to 20.
         conf_axis (int, optional): The axis that represents the configuration axis, i.e., measurements
@@ -55,6 +55,7 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
     Returns:
         jackknife mean and error (optionally pseudovalues) 
     """
+
     checkType('int',numb_blocks=numb_blocks)
     checkType('int',conf_axis=conf_axis)
     checkType('int',nproc=nproc)
@@ -68,15 +69,20 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
     data = np.array(data)
     if numb_blocks > np.size(data,axis=conf_axis):
         logger.TBRaise(f'Need numb_blocks <= ndata. numb_blocks, ndata = {numb_blocks}, {np.size(data,axis=conf_axis)}')
-    data = _pareAxis(data,conf_axis,numb_blocks)
-    n = data.shape[conf_axis]
-    total = f(data, *args)
-    block_id = np.linspace(0, numb_blocks, n, endpoint=False).astype(np.int32)
+
+    data  = _pareAxis(data,conf_axis,numb_blocks)
+    Nmeas = data.shape[conf_axis]
+    fbar  = f(data, *args)
+
+    block_id = np.linspace(0, numb_blocks, Nmeas, endpoint=False).astype(np.int32)
+
     def fJ(i):
         sub_data = np.compress((block_id != i), data, axis=conf_axis)
         return f(sub_data, *args)
-    J = np.array(parallel_function_eval(fJ,range(numb_blocks),nproc=nproc))
-    bins = _pseudobins(J,total)
+
+    J    = np.array(parallel_function_eval(fJ,range(numb_blocks),nproc=nproc))
+    bins = _pseudobins(J,fbar)
+
     if return_sample:
         return bins, std_mean(bins), std_err(bins) 
     else:

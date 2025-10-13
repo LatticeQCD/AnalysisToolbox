@@ -101,6 +101,9 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
     lineno = 0
     for line in infile:
 
+        if 'COMPLETE' in line:
+            continue
+
         lineno += 1
         col = line.split()
 

@@ -46,10 +46,11 @@ def testJackknife():
     lpass *= print_results(TESTm, REFm, TESTe, REFe, "simple mean test", EPSILON)
     lpass *= print_results(samp,REFsamp,text='simple mean sample',prec=EPSILON)
 
+    # This test only works for linear functions!
     for iblock in [10,20,30]:
         REFm , REFe  = jackknife( std_mean, A, numb_blocks=iblock, conf_axis=0) 
         TESTm, TESTe = jackknife( std_mean, binSeries(A,iblock), numb_blocks=iblock, conf_axis=0) 
-        lpass *= print_results(TESTm, REFm, TESTe, REFe, f"Nblock remove-1 vs remove Nblock {iblock}", EPSILON)
+        lpass *= print_results(TESTm, REFm, TESTe, REFe, f"linear Nblock remove-1 vs remove Nblock {iblock}", EPSILON)
 
     concludeTest(lpass)
 
