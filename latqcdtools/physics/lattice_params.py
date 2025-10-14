@@ -77,7 +77,7 @@ class latticeParams:
     # Nf=X         ml   mpre
     # Nf=2+1+1     ml     ms     mc
     def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None,
-                 Nf='21', scaleYear=None, mu=0):
+                 Nf='21', scaleYear=None, muB=0):
         """ 
         Based on some input, determine all parameters relevant to the ensemble.
 
@@ -109,7 +109,7 @@ class latticeParams:
         self.setScales(scaleYear,paramYear)
         self.setCoupling(coupling)
         self.Nc   = 3
-        self.mu   = mu
+        self.muB  = muB
         self.Ns   = Nsigma
         self.Nt   = Ntau
         self.Nf   = Nf
