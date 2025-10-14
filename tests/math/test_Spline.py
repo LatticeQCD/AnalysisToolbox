@@ -14,7 +14,6 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.initialize import DEFAULTSEED
 
 
-logger.set_log_level('INFO')
 SHOWPLOT = False
 
 

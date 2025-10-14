@@ -10,13 +10,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import comesBefore, naturalSort, envector, unvector, isArrayLike, \
-    toNumpy, isFloatType, isComplexType, isScalar, isHigherDimensional
-
-logger.set_log_level('INFO')
-
-
-def square(x):
-    return x**2
+    toNumpy, isFloatType, isComplexType, isScalar, isHigherDimensional, isIntType, isReal
 
 
 def testUtilities():
@@ -43,10 +37,22 @@ def testUtilities():
         logger.TBFail('isArrayLike')
         lpass=False
 
+    if not isReal(x):
+        logger.TBFail('isReal')
+        lpass=False
+
+    if not isIntType(x):
+        logger.TBFail('isIntType 1')
+        lpass=False
+
     x = 3.143342342
     test = np.array([np.array([x])])
     if x != unvector(unvector(test)):
         logger.TBFail('unvector**2')
+        lpass=False
+
+    if isIntType(x):
+        logger.TBFail('isIntType 2')
         lpass=False
 
     date1 = "2017/12/14 14:50:30"
@@ -85,6 +91,8 @@ def testUtilities():
     lpass *= isScalar(x1)
     lpass *= isScalar(x2)
     lpass *= not isArrayLike(x1)
+    lpass *= isReal(x1)
+    lpass *= isReal(x2)
 
     concludeTest(lpass)
 

@@ -13,9 +13,6 @@ from latqcdtools.physics.gauge import gaugeField
 from latqcdtools.testing import concludeTest
 
 
-logger.set_log_level('INFO')
-
-
 def testGauge():
 
     lpass = True

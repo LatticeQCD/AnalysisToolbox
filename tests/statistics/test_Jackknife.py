@@ -9,10 +9,8 @@
 from latqcdtools.statistics.statistics import std_err, std_mean, binSeries
 from latqcdtools.statistics.jackknife import jackknife
 from latqcdtools.testing import print_results, concludeTest
-import latqcdtools.base.logger as logger
 import numpy as np
 
-logger.set_log_level('INFO')
 
 EPSILON=1e-12 # test precision
 

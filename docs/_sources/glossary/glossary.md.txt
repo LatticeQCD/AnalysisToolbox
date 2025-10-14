@@ -41,7 +41,6 @@ latqcdtools.physics.gauge.md
 latqcdtools.physics.ideal.md
 latqcdtools.physics.lattice.md
 latqcdtools.physics.lattice_params.md
-latqcdtools.physics.polyakovTools.md
 latqcdtools.physics.referenceScales.md
 latqcdtools.physics.runningCoupling.md
 latqcdtools.physics.staticPotential.md

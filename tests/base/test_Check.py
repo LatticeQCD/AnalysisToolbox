@@ -8,10 +8,6 @@ import numpy as np
 from latqcdtools.base.check import checkType, checkEqualLengths
 import latqcdtools.base.logger as logger
 
-
-logger.set_log_level('INFO')
-
-
 def testCheck():
 
     checkType(int,test=1) 

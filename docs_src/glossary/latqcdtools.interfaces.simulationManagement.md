@@ -2,7 +2,7 @@ latqcdtools.interfaces.simulationManagement
 =============
 
 ```Python
-analyzeChain(MCtime, measurements, obslabel=None, MClabel=None, KScutoff=0.05, showPlots=False, savePlots=False, plotNamePrefix=None, **plotargs):
+analyzeChain(MCtime, measurements, obslabel=None, MClabel=None, KScutoff=0.05, showPlots=False, savePlots=False, plotNamePrefix=None, tpickMax=None, nbins=None, verbose=False, **plotargs):
 '''
 Do some basic analysis of a MCMC time series of measurements. We check whether the data
 are distributed normally. Optionally you can plot the time series and/or a histogram.
@@ -16,6 +16,9 @@ Args:
     showPlots (bool, optional): Defaults to False.
     savePlots (bool, optional): Defaults to False.
     plotNamePrefix (str, optional): Prefix of plot names. Defaults to None.
+    tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.
+    nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)
+    verbose (bool, optional): Report your findings to screen. Defaults to False.
 '''
 ```
 ```Python

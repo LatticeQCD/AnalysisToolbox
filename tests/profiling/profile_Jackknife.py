@@ -49,24 +49,24 @@ logger.info('simple')
 logger.info(jackknife2(np.std, data, 20))
 logger.info(jackknife2(np.median, data, 20))
 logger.info(jackknife2(lambda x: 1 / np.mean(x), data, 20))
-
 timey.printTiming()
+
 logger.info('multiprocess')
 logger.info(jackknife3(np.std, data, 20))
 logger.info(jackknife3(np.median, data, 20))
 def inv_mean(x):
     return 1 / np.mean(x)
 logger.info(jackknife3(inv_mean, data, 20))
-
 timey.printTiming()
+
 logger.info('legacy')
 logger.info(jackknifeLeg(np.std, data, 20, conf_axis=0))
 logger.info(jackknifeLeg(np.median, data, 20, conf_axis=0))
 def inv_mean(x):
     return 1 / np.mean(x)
 logger.info(jackknifeLeg(inv_mean, data, 20, conf_axis=0))
-
 timey.printTiming()
+
 logger.info('current, 1-proc')
 logger.info(jackknife(np.std, data, 20, conf_axis=0 ))
 logger.info(jackknife(np.median, data, 20, conf_axis=0))
@@ -75,7 +75,6 @@ def inv_mean(x):
 logger.info(jackknife(inv_mean, data, 20, conf_axis=0))
 timey.printTiming()
 
-timey.printTiming()
 logger.info('current parallel')
 logger.info(jackknife(np.std, data, 20, conf_axis=0, nproc=DEFAULTTHREADS))
 logger.info(jackknife(np.median, data, 20, conf_axis=0, nproc=DEFAULTTHREADS))
@@ -83,4 +82,3 @@ def inv_mean(x):
     return 1 / np.mean(x)
 logger.info(jackknife(inv_mean, data, 20, conf_axis=0, nproc=DEFAULTTHREADS))
 timey.printTiming()
-

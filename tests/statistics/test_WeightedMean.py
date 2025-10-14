@@ -15,7 +15,6 @@ from latqcdtools.base.initialize import DEFAULTSEED
 import latqcdtools.base.logger as logger
 
 
-logger.set_log_level('INFO')
 PREC=1e-15
 
 

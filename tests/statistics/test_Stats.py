@@ -17,7 +17,6 @@ from latqcdtools.base.plotting import plt
 from latqcdtools.base.initialize import DEFAULTSEED
 from latqcdtools.base.utilities import toNumpy
 
-logger.set_log_level('INFO')
 
 eps=1e-7
 

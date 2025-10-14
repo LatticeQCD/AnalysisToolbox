@@ -8,7 +8,6 @@
 #
 
 import time
-import numpy as np
 import matplotlib.pyplot as plt
 from latqcdtools.physics.staticPotential import impdist
 import latqcdtools.base.logger as logger

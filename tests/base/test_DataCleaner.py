@@ -13,15 +13,11 @@ from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 
 
-logger.set_log_level('INFO')
-
-
 def testDataCleaner():
 
     lpass = True
 
     testArray = np.linspace(-10, 10, 1000)
-
 
     clippedArray = clipRange(testArray,minVal=-1,maxVal=1)
     for i in range(len(clippedArray)):

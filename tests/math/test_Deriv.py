@@ -6,15 +6,10 @@
 # Tests of methods to calculate derivatives numerically.
 #
 
-
 import numpy as np
 from latqcdtools.math.num_deriv import diff_fit_grad, diff_fit_hess, diff_deriv
 from latqcdtools.math.polynomials import Polynomial
-import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, print_results_iter, concludeTest
-
-
-logger.set_log_level('INFO')
 
 
 def f(x, b):

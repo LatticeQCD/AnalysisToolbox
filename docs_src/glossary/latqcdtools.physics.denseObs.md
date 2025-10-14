@@ -6,7 +6,7 @@ mean_square(vec):
 '''Unbiased calculation of < vec**2 >. '''
 ```
 ```Python
-op_to_obs(opTable, lp, obs=None, filename='denseObservables.d'):
+op_to_obs(opTable, lp, writeFiles=True) -> dict:
 '''
 Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:
     l--light
@@ -16,23 +16,12 @@ Take the operators from loadDens and combine them into physically meaningful obs
     I--isospin
     S--strangeness
 
-Parameters
-----------
-opTable : dict
-    A table indexed by confID. Its values are numpy arrays of operators that have been measured.
-lp : latticeParams
-    Parameters for the ensemle the configuration belongs to.
-obs : observablesOfInterest, optional
-    A list of the observables you want to compute.
-filename : str, optional
-    Name for output table.
-'''
-```
-```Python
-class observablesOfInterest(iterable=None):
-'''
-A class to specify the dense observables you want to look at. It contains some consistency checks, like making
-sure that you don't add an observable that is not yet computable. It also has some attributes that help streamline
-using methods like np.genfromtxt. 
+Args:
+    opTable (dict): Operators loaded from loadDens. 
+    lp (HotQCD_MILC_Params): latticeParams object with info about the ensemble. 
+    writeFiles (bool, optional): Write final observables in denseObservables directory. Defaults to True.
+
+Returns:
+    dict: Final observables 
 '''
 ```

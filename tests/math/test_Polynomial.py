@@ -8,10 +8,6 @@
 
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.math.polynomials import Polynomial, Rational
-import latqcdtools.base.logger as logger
-
-
-logger.set_log_level('INFO')
 
 
 def testPolynomial():

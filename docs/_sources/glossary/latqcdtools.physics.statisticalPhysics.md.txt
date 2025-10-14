@@ -2,7 +2,21 @@ latqcdtools.physics.statisticalPhysics
 =============
 
 ```Python
+_compareWithZero(err, tol) -> bool
+```
+```Python
+_getParameter(parameterInfo):
+'''
+Give the weighted average of literature values of some parameter. These are 
+in units with k_B=J=1 and no magnetic field. If there is only one known value, 
+give that back. 
+'''
+```
+```Python
 _printExponent(prefix, exponent)
+```
+```Python
+_statisticalConsistencyCheck(parameterInfo)
 ```
 ```Python
 reweight(X, pRW, p0, S):
@@ -24,21 +38,12 @@ Args:
 ```
 ```Python
 class O2_3d():
-'''
-3d O(2) critical exponents from JHEP08 (2016) 036 
-'''
 ```
 ```Python
 class O3_3d():
-'''
-3d O(3) critical exponents from JHEP08 (2016) 036 
-'''
 ```
 ```Python
 class O4_3d():
-'''
-3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). 
-'''
 ```
 ```Python
 class S3_2d():
@@ -61,12 +66,9 @@ Skeleton universality class from which all others inherit.
 ```Python
 class Z2_2d():
 '''
-Exact solution for 2d Z_2 class. 
+Onsager solution for 2d Z_2 class. 
 '''
 ```
 ```Python
 class Z2_3d():
-'''
-3d Z_2 critical exponents from J. Stat. Phys. 157. 869-914 (2014). 
-'''
 ```

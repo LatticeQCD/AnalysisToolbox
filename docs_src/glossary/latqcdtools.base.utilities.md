@@ -156,6 +156,9 @@ Returns:
 isIntType(obj) -> bool
 ```
 ```Python
+isReal(obj) -> bool
+```
+```Python
 isScalar(obj) -> bool
 ```
 ```Python

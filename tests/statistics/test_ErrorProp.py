@@ -13,11 +13,8 @@ import numpy as np
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.statistics.statistics import error_prop, error_prop_func, plot_func
 from latqcdtools.physics.constants import M_mu_phys 
-import latqcdtools.base.logger as logger
 
-
-logger.set_log_level('INFO')
-
+MAKEPLOT = False
 
 def func(x, p, OPT):
     A, B = p
@@ -31,7 +28,6 @@ def err_func(x, p, p_err, OPT):
     A, B = p
     A_err, B_err = p_err
     return np.sqrt((OPT*2*A*np.sin(x)*A_err)**2+B_err**2)
-
 
 pi                     = np.pi
 gamma_E                = np.euler_gamma
@@ -98,7 +94,8 @@ def testErrorProp():
     plot_func(func, domain=(-1,1), params = params, args=(opt,), params_err = params_err) 
     plot_func(func, domain=(-1,1), params = params, args=(opt,), params_err = params_err, grad = grad,
               title = "Please check if all error bands are the same")
-    plt.savefig("errorprop.pdf")
+    if MAKEPLOT:
+        plt.savefig("errorprop.pdf")
 
     amean, aerr = 0.09, 0.001
     mean, err   = error_prop(K_G, np.array([1,m_mu_MeV,amean]), np.array([0,m_mu_MeV_err,aerr]))

@@ -10,10 +10,6 @@ import numpy as np
 from latqcdtools.math.num_int import integrateData, integrateFunction
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.utilities import toNumpy
-import latqcdtools.base.logger as logger
-
-
-logger.set_log_level('INFO')
 
 
 def f(s):

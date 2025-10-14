@@ -90,7 +90,7 @@ Args:
 '''
 ```
 ```Python
-class HotQCD_MILC_Params(Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None, Nf='21', scaleYear=None, mu=0):
+class HotQCD_MILC_Params(Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None, Nf='21', scaleYear=None, muB=0):
 '''
 A class to handle and check the input parameters of a lattice run using conventions common to both the
 HotQCD and MILC collaborations. 

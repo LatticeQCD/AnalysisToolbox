@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Polyakov loop observables" href="observables.html" />
+    <link rel="next" title="Reference scales and physical constants" href="referenceScales.html" />
     <link rel="prev" title="Hadron resonance gas" href="HRG.html" /> 
 </head>
 
@@ -54,7 +54,6 @@
 <li class="toctree-l2"><a class="reference internal" href="statisticalPhysics.html">Statistical Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="HRG.html">Hadron resonance gas</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Handling Lattice Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observables.html">Polyakov loop observables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="referenceScales.html">Reference scales and physical constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="staticPotential.html">The zero-temperature static potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="freeDiracSpectra.html">Spectrum of the Dirac operator</a></li>
@@ -119,19 +118,6 @@ pick the year this function was computed. You can specify the number of flavors 
 the lattice spacing in [fm] and temperature in [MeV] using <code class="docutils literal notranslate"><span class="pre">geta</span></code> and <code class="docutils literal notranslate"><span class="pre">getT</span></code>, respectively.
 Finally <code class="docutils literal notranslate"><span class="pre">paramSummary()</span></code> prints a nice summary of all parameters going into your calculation
 to the screen.</p>
-</section>
-<section id="hotqcd-parameter-tables">
-<h2>HotQCD parameter tables<a class="headerlink" href="#hotqcd-parameter-tables" title="Link to this heading"></a></h2>
-<p>Generally when HotQCD does their lattice calculations, they move along a line of constant physics where the ratio
-<span class="math notranslate nohighlight">\(m_s/m_l\)</span> is fixed, and <span class="math notranslate nohighlight">\(m_s\)</span> is fixed at its physical value. Hence if you know this ratio, <span class="math notranslate nohighlight">\(\beta\)</span>, and <span class="math notranslate nohighlight">\(N_\tau\)</span>,
-both quark masses are determined. Lookup tables for this can be found in</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.physics.HotQCD</span>
-</pre></div>
-</div>
-<p>and one can access them through e.g.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">quarkMassTableHISQ</span><span class="p">(</span><span class="n">Nf</span><span class="p">,</span><span class="n">Nt</span><span class="p">,</span><span class="n">msml</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
 </section>
 

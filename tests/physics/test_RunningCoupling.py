@@ -6,14 +6,8 @@
 # Test some general methods for QCD running coupling. 
 # 
 
-
-import numpy as np
 from latqcdtools.physics.runningCoupling import CA, CF, ZETA_3, b2_dimreg_MSbar, b3_dimreg_MSbar
 from latqcdtools.testing import print_results, concludeTest
-import latqcdtools.base.logger as logger
-
-
-logger.set_log_level('INFO')
 
 
 def testRunningCoupling():

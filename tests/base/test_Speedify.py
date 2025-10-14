@@ -8,11 +8,8 @@
 
 import numpy as np
 from latqcdtools.testing import print_results, concludeTest
-import latqcdtools.base.logger as logger
 from latqcdtools.base.speedify import parallel_function_eval, parallel_reduce, compile, numbaON, \
     DEFAULTTHREADS
-
-logger.set_log_level('INFO')
 
 numbaON()
 
@@ -23,9 +20,10 @@ def square(x):
 def power(x,i):
     return x**i
 
-testArray = np.array(range(10))
 
 def testSpeedify():
+
+    testArray = np.array(range(10))
 
     lpass = True
 

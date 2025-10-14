@@ -10,10 +10,7 @@
 import numpy as np
 from latqcdtools.statistics.autocorrelation import getTauInt
 from latqcdtools.testing import print_results, concludeTest
-import latqcdtools.base.logger as logger
 
-
-logger.set_log_level('INFO')
 
 nt = 48
 nbins = 8

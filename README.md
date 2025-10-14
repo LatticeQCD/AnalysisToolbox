@@ -24,7 +24,7 @@ classes, physical constants, framework for spin models.
 - **QCD physics:** Hadron resonance gas model, ideal fermion gas, HotQCD equation of state, 
 and the QCD beta function. 
 These methods are useful for QCD phenomenology, independent of lattice contexts.
-- **Lattice QCD:** Continuum-limit extrapolation, Polyakov loop observables, SU(3) gauge
+- **Lattice QCD:** Continuum-limit extrapolation, SU(3) gauge
 fields, reading in gauge fields, and the static quark-antiquark potential. These methods
 rather target lattice QCD. 
 

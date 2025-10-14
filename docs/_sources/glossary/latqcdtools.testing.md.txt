@@ -12,7 +12,7 @@ to see whether res and res_true are statistically compatible.
 '''
 ```
 ```Python
-print_results(res, res_true, res_err=None, res_err_true=None, text='', prec=1e-10, abs_prec=None):
+print_results(res, res_true, res_err=None, res_err_true=None, text='', prec=1e-10, abs_prec=None) -> bool:
 '''
 Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,
 if you like.) Carries out with precision prec. Use abs_prec for comparisons with zero. 
