@@ -21,7 +21,7 @@ latexify()
 # columns to use from the file. For the style you can choose between dots, line, fill, band.
 # You should in general be able to pass standard matplotlib keyword arguments like 'marker'
 # to many of the plotting module's methods. 
-plot_file("datasets/wurf.dat", 0, 2, 3, 1, style="dots", label="$\\chi_{\\rm wurf}$", marker='o')
+plot_file("../datasets/wurf.dat", 0, 2, 3, 1, style="dots", label="$\\chi_{\\rm wurf}$", marker='o')
 
 # Sometimes a result is preliminary. You can put a marker that indicates your plot is preliminary
 # using this command. The arguments set the x- and y-coordinates in units of the axes. 
@@ -54,10 +54,10 @@ plt.show()
 clearPlot()
 
 # Here we show some more plotted data, this time also adjusting transparency (alpha).
-plot_file("datasets/wurf.dat"               , 0, 2, 3, 1, style="lines", label="quadratic", marker = 'o')
-plot_file("datasets/example_files/data1.txt", 0, 1, 2, 3, label="gauss noise", xlabel="$\\frac{1}{z}$", capsize = 2)
-plot_file("datasets/example_files/data2.txt", 0, 1, 2, 3, style="fill", alpha=0.3, label="linear")
-plot_file("datasets/example_files/data3.txt", 0, 1, 2, 3, style="fill", alpha=0.9, label="linear 2", legendpos = "best", capsize = 2)
+plot_file("../datasets/wurf.dat"               , 0, 2, 3, 1, style="lines", label="quadratic", marker = 'o')
+plot_file("../datasets/example_files/data1.txt", 0, 1, 2, 3, label="gauss noise", xlabel="$\\frac{1}{z}$", capsize = 2)
+plot_file("../datasets/example_files/data2.txt", 0, 1, 2, 3, style="fill", alpha=0.3, label="linear")
+plot_file("../datasets/example_files/data3.txt", 0, 1, 2, 3, style="fill", alpha=0.9, label="linear 2", legendpos = "best", capsize = 2)
 
 # At the moment plot_func is inside the statistics.statistics module to allow for error propagation.
 plot_func(np.sin,domain=(-5,10))
@@ -73,10 +73,10 @@ plt.show()
 clearPlot()
 
 # Simple histogram. Note that one can read in gpl-type files like used in Peter LePage's code.
-bareCorr = readGPL('datasets/example_files/hist2.gpx')
+bareCorr = readGPL('../datasets/example_files/hist2.gpx')
 factor   = 9*8.3724494170096e-08
 data2    = bareCorr[:,6]*factor
-bareCorr = readGPL('datasets/example_files/hist1.gpx')
+bareCorr = readGPL('../datasets/example_files/hist1.gpx')
 data1    = bareCorr[:,6]
 
 # Here we put two histograms on the same plot.
