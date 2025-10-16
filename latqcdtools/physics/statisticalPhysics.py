@@ -215,6 +215,7 @@ class Z2_3d(UniversalityClass):
     _statisticalConsistencyCheck(nus)
     _statisticalConsistencyCheck(Tcs)
 
+    Tc    = _getParameter(Tcs)
     eta   = _getParameter(etas)
     nu    = _getParameter(nus)
     alpha = 2 - nu*d
