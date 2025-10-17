@@ -23,6 +23,9 @@ M_c_phys(year=2024, units='GeV', returnErr=False)
 M_d_phys(year=2024, units='MeV', returnErr=False)
 ```
 ```Python
+M_e_phys(year=2024, units='MeV', returnErr=False)
+```
+```Python
 M_mu_phys(year=2022, units='MeV', returnErr=False)
 ```
 ```Python
@@ -128,6 +131,12 @@ Physical value of Sommer scale r0.
 r1_phys(year=2010, units='fm', returnErr=False):
 '''
 Physical value of Sommer scale r1. 
+'''
+```
+```Python
+sqrtG(year=2024, units='GeVinv', returnErr=False):
+'''
+Square root of Newton's gravitational constant
 '''
 ```
 ```Python

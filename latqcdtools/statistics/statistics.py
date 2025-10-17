@@ -576,7 +576,7 @@ def error_prop(func, means, errors, grad=None, args=()):
         np.ndarray, np.ndarray: f, f_err 
     """
     checkVector(means)
-    checkVector(errors)
+    checkType(np.ndarray,errors=errors) 
 
     mean = func(means, *args)
 
@@ -906,7 +906,7 @@ def binSeries(data,nbins) -> np.ndarray:
     Returns:
         np.ndarray: Binned data
     """
-    logger.TBError('Actually this should take a function as argument and apply that function in the bin.')
+    logger.warn('Actually this should take a function as argument and apply that function in the bin.')
     checkTS(data)
     checkType('int',nbins=nbins)
     ndat=len(data)

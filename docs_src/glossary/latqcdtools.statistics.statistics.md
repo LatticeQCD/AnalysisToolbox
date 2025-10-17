@@ -91,7 +91,7 @@ KSTest_1side(data, cdf) -> float:
 data and cdf are at least as extreme as suggested by the Kolmogorov statistic.
 
 Args:
-    data (array-like)
+    data (np.ndarray)
     cdf (function)
 
 Returns:
@@ -105,8 +105,8 @@ KSTest_2side(data1, data2) -> float:
 data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.
 
 Args:
-    data1 (array-like)
-    data2 (array-like)
+    data1 (np.ndarray)
+    data2 (np.ndarray)
 
 Returns:
     float: 1-p 

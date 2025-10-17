@@ -8,7 +8,7 @@
 from latqcdtools.interfaces.lime import limeHeader, trimNull
 from latqcdtools.testing import print_results,concludeTest
 import latqcdtools.base.logger as logger
-import numpy as np
+
 
 def testLime():
 

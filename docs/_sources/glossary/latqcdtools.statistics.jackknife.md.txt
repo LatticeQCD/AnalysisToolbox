@@ -21,7 +21,7 @@ jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False, ar
 Carry out a jackknife of an arbitrary function f of some data.
 
 Args:
-    f (func)
+    f (func): It is expected that f will call an np.mean somewhere inside.
     data (array-like)
     numb_blocks (int, optional): Number of jackknife blocks. Defaults to 20.
     conf_axis (int, optional): The axis that represents the configuration axis, i.e., measurements

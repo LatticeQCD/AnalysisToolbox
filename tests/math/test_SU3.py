@@ -15,8 +15,6 @@ from latqcdtools.math.math import rel_check, invert, id, ze
 from latqcdtools.testing import concludeTest
 
 
-logger.set_log_level('INFO')
-
 def testSU3():
 
     g = SU3(id(3))

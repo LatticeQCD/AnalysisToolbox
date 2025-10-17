@@ -21,7 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="latqcdtools.physics.polyakovTools" href="latqcdtools.physics.polyakovTools.html" />
+    <link rel="next" title="latqcdtools.physics.referenceScales" href="latqcdtools.physics.referenceScales.html" />
     <link rel="prev" title="latqcdtools.physics.lattice" href="latqcdtools.physics.lattice.html" /> 
 </head>
 
@@ -84,7 +84,6 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">latqcdtools.physics.lattice_params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.polyakovTools.html">latqcdtools.physics.polyakovTools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
@@ -126,10 +125,13 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-lattice-params">
 <h1>latqcdtools.physics.lattice_params<a class="headerlink" href="#latqcdtools-physics-lattice-params" title="Link to this heading"></a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_massStringToFloat</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getMassFloat</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">latticeParams</span><span class="p">(</span><span class="n">Nsigma</span><span class="p">,</span> <span class="n">Ntau</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">mass1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scaleType</span><span class="o">=</span><span class="s1">&#39;fk&#39;</span><span class="p">,</span> <span class="n">paramYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="s1">&#39;21&#39;</span><span class="p">,</span> <span class="n">scaleYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getMassString</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">latticeParams</span><span class="p">(</span><span class="n">Nsigma</span><span class="p">,</span> <span class="n">Ntau</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">mass1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scaleType</span><span class="o">=</span><span class="s1">&#39;fk&#39;</span><span class="p">,</span> <span class="n">paramYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="s1">&#39;21&#39;</span><span class="p">,</span> <span class="n">scaleYear</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">muB</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">A class to handle and check the input parameters of a lattice run.</span>
 <span class="sd">&#39;&#39;&#39;</span>

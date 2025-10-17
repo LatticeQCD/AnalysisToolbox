@@ -18,7 +18,6 @@ from latqcdtools.base.plotting import clearPlot, plt
 from latqcdtools.base.readWrite import readTable
 
 
-logger.set_log_level('INFO')
 TESTPLOTS = False
 
 
@@ -106,7 +105,7 @@ def testFit():
 
     logger.info("Testing quadradic fit with expansion of parameters...")
 
-    xdata, ydata, edata = readTable("wurf.dat", usecols=(0,2,3))
+    xdata, ydata, edata = readTable("../../datasets/wurf.dat", usecols=(0,2,3))
 
     res_true     = [-1.930355e+00, 6.747380e+00, -6.979050e-02]
     res_err_true = [ 9.072495e-02, 3.357190e-01,  2.676424e-01]
@@ -141,7 +140,7 @@ def testFit():
     logger.info("Testing correlator fit...")
 
 
-    xdata, ydata, edata = readTable("corr.dat", usecols=(0,1,2))
+    xdata, ydata, edata = readTable("../../datasets/corr.dat", usecols=(0,1,2))
 
 
     res_true = [5.088129e-05, 2.943403e-01]
@@ -172,11 +171,11 @@ def testFit():
     lpass *= print_results(res, res_true, res_err, res_err_true,"Numerical curve_fit with difference quotient",prec=EPSILON)
 
 
-    xdata, data, nconfs = readCorrelatorTable("corr_pure.dat",1,2)
+    xdata, data, nconfs = readCorrelatorTable("../../datasets/corr_pure.dat",1,2)
 
     cov   = calc_cov_OLD(data)
     ydata = std_mean(data, axis = 1)
-    cov_true = readTable("cov.txt")
+    cov_true = readTable("../../datasets/cov.txt")
     cov_test = True
     for i in range(len(cov)):
         for j in range(len(cov[i])):
@@ -224,7 +223,7 @@ def testFit():
 
         logger.info("Testing fit plots...")
 
-        xdata, ydata, edata = readTable("wurf.dat", usecols=(0,2,3))
+        xdata, ydata, edata = readTable("../../datasets/wurf.dat", usecols=(0,2,3))
 
         fitter = Fitter(fit_func,xdata,ydata,edata, norm_err_chi2=True)
         fitter.do_fit(start_params=None)

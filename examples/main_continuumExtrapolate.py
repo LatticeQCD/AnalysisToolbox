@@ -22,7 +22,7 @@ for Nt in Nts:
     Ns = Nt*3
 
     # Read in Polyakov loop measurements, 
-    beta, PM, PE = readTable('example_files/ploop/Nt'+str(Nt)+'.txt',usecols=(0,1,2))
+    beta, PM, PE = readTable('../datasets/example_files/ploop/Nt'+str(Nt)+'.txt',usecols=(0,1,2))
 
     # Create array of temperatures in physical units
     for b in beta:

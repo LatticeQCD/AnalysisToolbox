@@ -11,7 +11,6 @@ from latqcdtools.base.printErrorBars import get_err_str, getValuesFromErrStr
 from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 
-logger.set_log_level('INFO')
 
 def testPrintErrorBars():
 

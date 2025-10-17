@@ -1,6 +1,7 @@
 # Statistical Physics
 
 This module collects some basic methods and classes related to statistical physics.
+These can be imported from `latqcdtools.physics.statisticalPhysics`.
 
 ## Critical exponents
 
@@ -12,11 +13,25 @@ univ = Z2_3d
 univ.alpha
 ```
 
-At present one finds the universality classes
-- 3-$d$, O$(2)$
-- 3-$d$, O$(3)$
-- 3-$d$, O$(4)$
-- 4-$d$, $\mathbb{Z}_2$
-- 3-$d$, $\mathbb{Z}_2$
-- 2-$d$, $\mathbb{Z}_2$
+## Reweighter
 
+There is also a basic reweighter. Here we give a basic example to reweight a magnetic susceptibility:
+
+```Python
+def RWSUSC(data,xRW,x0) -> float:
+    """ Reweight the susceptibility. The susceptibility is an observable that is
+    defined in terms of expectation values. At the same time, we think of the
+    reweight() method as a redefined expectation value.
+
+    Args:
+        data (list): a list [M, E] 
+        xRW (float): the point we are RWing to 
+        x0 (float): the starting point (plays role 1/T)
+
+    Returns:
+        float: reweighted susceptibility 
+    """
+    X = data[0]
+    S = data[1]
+    return x0*( reweight(X**2,xRW,x0,S) - reweight(X,xRW,x0,S)**2 )
+```

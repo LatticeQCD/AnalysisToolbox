@@ -10,7 +10,6 @@
 
 
 import numpy as np
-import latqcdtools.base.logger as logger
 from latqcdtools.base.printErrorBars import getValuesFromErrStr
 from latqcdtools.base.plotting import plt, plot_dots, clearPlot
 from latqcdtools.base.utilities import toNumpy
@@ -18,8 +17,6 @@ from latqcdtools.statistics.statistics import plot_func, getModelWeights, modelA
 from latqcdtools.statistics.fitting import Fitter
 from latqcdtools.testing import concludeTest, print_results
 
-
-logger.set_log_level('INFO')
 
 def F(x):
     """ Model truth """

@@ -7,11 +7,9 @@
 #
 
 import numpy as np
-import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import readTable, writeTable
 from latqcdtools.testing import print_results, concludeTest
 
-logger.set_log_level('INFO')
 
 def testReadWrite():
 

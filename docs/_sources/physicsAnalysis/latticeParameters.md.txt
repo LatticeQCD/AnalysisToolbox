@@ -31,15 +31,3 @@ the lattice spacing in [fm] and temperature in [MeV] using `geta` and `getT`, re
 Finally `paramSummary()` prints a nice summary of all parameters going into your calculation 
 to the screen.
 
-## HotQCD parameter tables
-
-Generally when HotQCD does their lattice calculations, they move along a line of constant physics where the ratio 
-$m_s/m_l$ is fixed, and $m_s$ is fixed at its physical value. Hence if you know this ratio, $\beta$, and $N_\tau$, 
-both quark masses are determined. Lookup tables for this can be found in
-```Python
-import latqcdtools.physics.HotQCD
-``` 
-and one can access them through e.g.
-```Python
-quarkMassTableHISQ(Nf,Nt,msml)
-```

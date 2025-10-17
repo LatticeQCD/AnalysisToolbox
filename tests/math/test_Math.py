@@ -7,14 +7,11 @@
 #
 import numpy as np
 import math
-import latqcdtools.base.logger as logger
 from latqcdtools.math.math import fallFactorial, invert, RMS, isMatrix, isSquare, isUnitary, \
     isSpecial, isSymmetric, isHermitian, isAntihermitian, isOrthogonal, isHankel, TA, pnorm, \
     normalize, exp, pow, log, ze
 from latqcdtools.testing import print_results, concludeTest
 
-
-logger.set_log_level('INFO')
 
 mat = np.array( 
       [[ 1,2,-1],

@@ -84,7 +84,6 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice_params.html">latqcdtools.physics.lattice_params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.polyakovTools.html">latqcdtools.physics.polyakovTools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
@@ -126,7 +125,21 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-statisticalphysics">
 <h1>latqcdtools.physics.statisticalPhysics<a class="headerlink" href="#latqcdtools-physics-statisticalphysics" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_compareWithZero</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getParameter</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Give the weighted average of literature values of some parameter. These are </span>
+<span class="sd">in units with k_B=J=1 and no magnetic field. If there is only one known value, </span>
+<span class="sd">give that back. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_printExponent</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_statisticalConsistencyCheck</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reweight</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pRW</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
@@ -148,21 +161,12 @@
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O2_3d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">3d O(2) critical exponents from JHEP08 (2016) 036 </span>
-<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O3_3d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">3d O(3) critical exponents from JHEP08 (2016) 036 </span>
-<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O4_3d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">3d O(4) critical exponents from Nucl. Phys. B 675, 533-554 (2003). </span>
-<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">S3_2d</span><span class="p">():</span>
@@ -185,14 +189,11 @@
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Z2_2d</span><span class="p">():</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Exact solution for 2d Z_2 class. </span>
+<span class="sd">Onsager solution for 2d Z_2 class. </span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Z2_3d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">3d Z_2 critical exponents from J. Stat. Phys. 157. 869-914 (2014). </span>
-<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 </section>

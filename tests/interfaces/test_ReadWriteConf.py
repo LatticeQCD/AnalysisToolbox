@@ -10,22 +10,20 @@ from latqcdtools.interfaces.confReader import NERSCReader, ILDGReader
 from latqcdtools.base.utilities import timer
 from latqcdtools.math.math import rel_check
 from latqcdtools.testing import concludeTest
-import latqcdtools.base.logger as logger
 
-logger.set_log_level('INFO')
 
 def testReadWriteConf():
 
     timing = timer()
 
     reader = NERSCReader(Ns=8, Nt=4)
-    gauge1 = reader.readConf('nersc.l8t4b3360')
+    gauge1 = reader.readConf('../../datasets/nersc.l8t4b3360')
     timing.printTiming()
     gauge1.checkSU3()
     timing.printTiming()
 
     reader = ILDGReader(Ns=8, Nt=4)
-    gauge2 = reader.readConf('ildg.l8t4b3360')
+    gauge2 = reader.readConf('../../datasets/ildg.l8t4b3360')
     timing.printTiming()
     gauge2.checkSU3()
     timing.printTiming()

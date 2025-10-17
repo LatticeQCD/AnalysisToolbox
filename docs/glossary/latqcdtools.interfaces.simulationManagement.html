@@ -84,7 +84,6 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice_params.html">latqcdtools.physics.lattice_params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.polyakovTools.html">latqcdtools.physics.polyakovTools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
@@ -126,7 +125,7 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-simulationmanagement">
 <h1>latqcdtools.interfaces.simulationManagement<a class="headerlink" href="#latqcdtools-interfaces-simulationmanagement" title="Link to this heading"></a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analyzeChain</span><span class="p">(</span><span class="n">MCtime</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">obslabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MClabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KScutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">showPlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">savePlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotNamePrefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">plotargs</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analyzeChain</span><span class="p">(</span><span class="n">MCtime</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">obslabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MClabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">KScutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">showPlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">savePlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotNamePrefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tpickMax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">plotargs</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Do some basic analysis of a MCMC time series of measurements. We check whether the data</span>
 <span class="sd">are distributed normally. Optionally you can plot the time series and/or a histogram.</span>
@@ -140,6 +139,9 @@
 <span class="sd">    showPlots (bool, optional): Defaults to False.</span>
 <span class="sd">    savePlots (bool, optional): Defaults to False.</span>
 <span class="sd">    plotNamePrefix (str, optional): Prefix of plot names. Defaults to None.</span>
+<span class="sd">    tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.</span>
+<span class="sd">    nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)</span>
+<span class="sd">    verbose (bool, optional): Report your findings to screen. Defaults to False.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
