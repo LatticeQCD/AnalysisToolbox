@@ -6,10 +6,9 @@
 # Check some of the unit conversion methods. 
 # 
 
-import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import convert, fm_to_MeVinv, MeVinv_to_fm, fm_to_GeVinv, GeVinv_to_fm, \
-    M_mu_phys, M_pi0_phys, M_pipm_phys, fk_phys, frho_phys, lambda_MSbar_phys, cms, sqrtG
+    M_mu_phys, M_pi0_phys, M_pipm_phys, fk_phys, frho_phys, lambda_MSbar_phys, cms, sqrtG, M_e_phys, M_proton_phys
 from latqcdtools.testing import print_results, concludeTest
 
 logger.set_log_level('INFO')
@@ -48,6 +47,7 @@ def testUnits():
     lpass *= print_results( convert( convert(1,'Wh'  ,'J'   ),'J'   ,'Wh'  ), 1, text='identity: [Wh], [J]' )
     lpass *= print_results( convert( convert(1,'eV'  ,'J'   ),'J'   ,'eV'  ), 1, text='identity: [eV], [J]' )
     lpass *= print_results( convert( convert(1,'eV'  ,'K'   ),'K'   ,'eV'  ), 1, text='identity: [eV], [K]' )
+    lpass *= print_results( convert( convert(1,'eV'  ,'minv'),'minv','eV'  ), 1, text='identity: [eV], [1/m]' )
     lpass *= print_results( convert( convert(1,'K'   ,'degC'),'degC','K'   ), 1, text='identity: [K], [degC]' )
     lpass *= print_results( convert( convert(1,'K'   ,'degF'),'degF','K'   ), 1, text='identity: [K], [degF]' )
     lpass *= print_results( convert( convert(1,'degF','degC'),'degC','degF'), 1, text='identity: [degF], [degC]' )
@@ -79,6 +79,16 @@ def testUnits():
         Gm = convert(Gm,"m","s") 
     Gm = convert( convert(Gm,"m","GeVinv"), "Jinv", "GeVinv" )
     lpass *= print_results(sqrtG(2024,"GeVinv")**2, Gm,text="G_B [1/GeV^2]")
+
+    # Some more tests of natural unit conversions. Test against reference https://public.websites.umich.edu/~jwells/Scholardox/A3.pdf.
+    # They rounded to 3 significant figures, so that's the best accuracy I can get. 
+    lpass *= print_results(convert(M_e_phys(units="MeV")     ,"MeV","fminv"),1/386  ,text="m_e natural units",prec=1e-3)
+    lpass *= print_results(convert(M_proton_phys(units="MeV"),"MeV","fminv"),1/0.210,text="m_p natural units",prec=3e-3)
+
+    # Also a sanity check for the prefixes and physical parameter class
+    for prefix in ["Q","R","Y","Z","E","P","T","G","M","k","h"]:
+        lpass *= print_results(convert(M_proton_phys(units=f"{prefix}eV"),f"{prefix}eV","fminv"),1/0.210,
+                               text=f"m_p natural, prefix={prefix}",prec=3e-3)
 
     concludeTest(lpass)
 
