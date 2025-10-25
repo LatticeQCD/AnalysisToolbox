@@ -18,7 +18,7 @@ from latqcdtools.base.plotting import clearPlot, plt
 from latqcdtools.base.readWrite import readTable
 
 
-TESTPLOTS = False
+SHOWPLOTS = False
 
 
 ''' Quadratic fit '''
@@ -219,22 +219,15 @@ def testFit():
     timey.printTiming()
 
 
-    if TESTPLOTS:
+    logger.info("Testing fit plots...")
 
-        logger.info("Testing fit plots...")
+    xdata, ydata, edata = readTable("../../datasets/wurf.dat", usecols=(0,2,3))
 
-        xdata, ydata, edata = readTable("../../datasets/wurf.dat", usecols=(0,2,3))
+    fitter = Fitter(fit_func,xdata,ydata,edata, norm_err_chi2=True)
+    fitter.do_fit(start_params=np.array([1,1,1]))
 
-        fitter = Fitter(fit_func,xdata,ydata,edata, norm_err_chi2=True)
-        fitter.do_fit(start_params=None)
-
-        fitter.plot_fit()
-        plt.show()
-        clearPlot()
-        fitter.plot_cor()
-        plt.show()
-        clearPlot()
-        fitter.plot_eig()
+    fitter.plot_fit()
+    if SHOWPLOTS:
         plt.show()
 
 
