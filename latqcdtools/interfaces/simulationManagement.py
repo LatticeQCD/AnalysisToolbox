@@ -111,7 +111,7 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         tpickMax = int(Nmeas/10)+1
 
     try:
-        tau_int, tau_inte, _ = getTauInt(measurements,nbins=nbins,tpickMax=tpickMax,showPlot=showTauIntPlot)
+        tau_int, tau_inte, _ = getTauInt(measurements,nbins=nbins,tpickMax=tpickMax)
     except Exception as e:
         logger.TBFail('Encountered exception',e)
         logger.TBFail('You may have to adjust Nbins and tpickMax')
