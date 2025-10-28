@@ -35,6 +35,7 @@ latqcdtools.physics.HRG.md
 latqcdtools.physics.HotQCDEOS.md
 latqcdtools.physics.constants.md
 latqcdtools.physics.continuumExtrap.md
+latqcdtools.physics.correlators.md
 latqcdtools.physics.denseObs.md
 latqcdtools.physics.diracFreespectra.md
 latqcdtools.physics.gauge.md

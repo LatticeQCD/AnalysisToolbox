@@ -18,7 +18,7 @@ def mean_square(vec):
     return ( np.sum(vec)**2 - np.sum(vec**2) )/( N*(N-1))
 
 
-def op_to_obs(opTable,lp,writeFiles=True) -> dict:
+def op_to_obs(opTable,lp,writeFiles=True,outFolder='denseObservables') -> dict:
     """
     Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:
         l--light
@@ -161,10 +161,10 @@ def op_to_obs(opTable,lp,writeFiles=True) -> dict:
         OBS["X11QS" ].append(chi11QS*lp.Nt**2)
 
     if writeFiles:
-        logger.info("Write observables to file...")
+        logger.info(f"Write observables in {outFolder}/{lp.getcparams()}...")
         for observable in OBS:
             if len(OBS[observable])>0 and observable!="confID":
                 logger.info("  ",observable)
-                writeTable(f'denseObservables/{lp.getcparams()}/{observable}.txt',OBS["confID"],OBS[observable],header=["confID",observable])
+                writeTable(f'{outFolder}/{lp.getcparams()}/{observable}.txt',OBS["confID"],OBS[observable],header=["confID",observable])
 
     return OBS

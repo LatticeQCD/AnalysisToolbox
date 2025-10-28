@@ -720,40 +720,6 @@ class Fitter:
             plot_dots(self._xdata, self._ydata, **kwargs)
 
 
-    def plot_cor(self, title = 'Data correlation matrix', xlabel='$x_j$', ylabel='$x_i$'):
-        """ 
-        Plot the correlation matrix of the input data. 
-        """
-
-        ncov = self._fit_cor
-
-        if title is not None:
-            plt.title(title)
-
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-
-        xrange = np.arange(len(ncov) + 1)
-        yrange = np.arange(len(ncov) + 1)
-
-        plt.pcolormesh(xrange, yrange, ncov, cmap="Blues")
-        plt.gca().invert_yaxis()
-        cb = plt.colorbar()
-        cb.ax.tick_params(labelsize=12)
-
-
-    def plot_eig(self, xlabel="$i$", ylabel="$\\lambda_i$", title = 'Eigenvalues of data correlation matrix'):
-
-        vals, _ = np.linalg.eig(self._fit_cor)
-
-        eig_real = np.real(vals)
-        eig_imag = np.imag(vals)
-
-        plot_bar(range(len(eig_real)), eig_real, color='#d32d11', label="real", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
-        if np.min(eig_imag) != 0:
-            plot_bar(range(len(eig_imag)), eig_imag, color='#0081bf', label="imag", alpha=0.7, title=title, xlabel=xlabel, ylabel=ylabel)
-
-
 def save_func(func, filename, domain, args=(), func_err=None, args_err=(), grad = None, header=None, 
               npoints=1000, **kwargs):
 

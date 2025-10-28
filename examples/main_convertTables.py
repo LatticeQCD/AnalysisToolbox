@@ -13,7 +13,7 @@ import latqcdtools.base.logger as logger
 
 # This is an example table from Phys. Lett. B 858 (2024) 139040
 table1 = latexTable() 
-table1.readTable('example_files/table1.tex')
+table1.readTable('../datasets/example_files/table1.tex')
 
 #
 # What follows are some functions to convert from LaTeX symbols to
