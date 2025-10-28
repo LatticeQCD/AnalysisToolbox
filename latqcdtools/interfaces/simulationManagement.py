@@ -44,7 +44,7 @@ def countConfigurations(targetFolder,name,delimiter='.'):
     return len(confs)
 
 
-def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
+def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0.05,
                  showPlots=False,savePlots=False,plotNamePrefix=None,tpickMax=None,
                  nbins=None,verbose=False,**plotargs):
     """
@@ -75,7 +75,7 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         logger.TBRaise('Please specify a name prefix for the TS and histogram plots.')
 
     if savePlots or showPlots:
-        if MClabel is None:
+        if obslabel is None:
             logger.TBRaise('Plotting without an observable label.')
         checkType(str,MClabel=MClabel)
         plot_lines(MCtime,measurements,marker=None,color='black')
@@ -85,7 +85,6 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel=None,KScutoff=0.05,
         saveFigure(plotNamePrefix+'TS.pdf')
     if showPlots:
         plt.show()
-        showTauIntPlot=True
 
     if savePlots or showPlots:
         clearPlot()
