@@ -9,7 +9,7 @@
 
 import numpy as np
 from latqcdtools.base.plotting import plt, clearPlot, plot_dots, plot_lines, getColorGradient
-from latqcdtools.statistics.fitting import Fitter, zipXYData, unzipXYData
+from latqcdtools.statistics.fitting import Fitter, zipData, unzipData
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.base.initialize import initialize, finalize
 
@@ -54,14 +54,14 @@ y  = np.linspace(-1,1,5)
 Nx = len(x)
 Ny = len(y)
 
-# The zipXYData function conveniently prepares these x and y data
+# The zipData function conveniently prepares these x and y data
 # for use inside an aribrary fit function of two variables.
-xydata = zipXYData(x,y)
+xydata = zipData(x,y)
 
 def fitFunc(data,c):
     # And here we can extract X and Y arrays. The zip/unzip lets us
     # pass data as one array, which is needed for the fit methods.
-    X, Y = unzipXYData(data) 
+    X, Y = unzipData(data) 
     return c[0] + c[1]*X**2 + c[2]*Y
 
 # We will have Z = 1 + 2x^2 + 3y. Add some fake noise.
@@ -76,15 +76,15 @@ res, res_err, chi_dof = fitter.try_fit(start_params = [1, 2, 3], algorithms = ['
 Nplot = 101
 colors = getColorGradient(Ny)
 xplot  = np.linspace(-1,1,Nplot)
-xyplot = zipXYData(xplot,y)
+xyplot = zipData(xplot,y)
 for i in range(Ny):
-    # The data are ordered such that the first Nx data have the same y-value. Then the
-    # next Nx data have a different y-value, and so on.
-    zdata  = z     [i*Nx:(i+1)*Nx] 
-    xdata  = xydata[i*Nx:(i+1)*Nx][:,0]
+    # The data are ordered such that the first Ny data have the same x-value. Then the
+    # next Ny data have a different x-value, and so on.
+    zdata  = z     [i::Ny] 
+    xdata  = xydata[i::Ny][:,0]
     ylabel = xydata[i*Nx:(i+1)*Nx][:,1][0]
     plot_dots(xdata,zdata,marker='o',color=colors[i],label=str(ylabel))
-    xyfit  = xyplot[i*Nplot:(i+1)*Nplot]
+    xyfit  = xyplot[i::Ny]
     plot_lines(xplot,fitFunc(xyfit,res),marker=None,color=colors[i])
 
 plt.show()

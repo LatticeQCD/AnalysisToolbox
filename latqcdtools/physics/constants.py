@@ -69,6 +69,7 @@ _baseUnits = [
              "degF",   # Fahrenheit
              "eV",     # electron-volt
              "ft",     # feet
+             "g",      # grams
              "h",      # hour
              "J",      # Joule
              "K",      # Kelvin
@@ -103,7 +104,8 @@ def _separatePrefix(units):
 def convert(x,unit1,unit2) -> float:
     """ 
     General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
-    If the unit ends in 'inv', it is interpreted as 1/unit.
+    If the unit ends in 'inv', it is interpreted as 1/unit. He also knows about natural units. You can
+    only convert away one power or inverse power of a unit at a time.
 
     Args:
         x (float): measurement in [unit1]. 
@@ -231,6 +233,22 @@ def convert(x,unit1,unit2) -> float:
         result = x*cms 
     elif u1u2==('m','s'):
         result = x/cms
+    elif u1u2==('m','h'):
+        result = convert( convert(x,'m','s')    , 's','h'     )
+    elif u1u2==('h','m'):
+        result = convert( convert(x,'h','s')    , 's','m'     )
+    elif u1u2==('s','eVinv'):
+        result = convert( convert(x,'s','m')    , 'm','eVinv' )
+    elif u1u2==('eVinv','s'):
+        result = convert( convert(x,'eVinv','m'), 'm','s'     )
+    elif u1u2==('h','eVinv'):
+        result = convert( convert(x,'h','s')    , 's','eVinv' )
+    elif u1u2==('eVinv','h'):
+        result = convert( convert(x,'eVinv','m'), 'm','h'     )
+    elif u1u2==('g','eV'):
+        result = convert(x*cms**2,'mJ','eV')
+    elif u1u2==('eV','g'):
+        result = convert(x/cms**2,'eV','mJ')
 
     else:
         logger.TBRaise('No rule for conversion of ['+u1+'] to ['+u2+']') 

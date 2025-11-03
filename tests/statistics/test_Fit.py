@@ -7,14 +7,14 @@
 # 
 
 import numpy as np
-from latqcdtools.statistics.fitting import do_fit, try_fit, Fitter
+from latqcdtools.statistics.fitting import do_fit, try_fit, Fitter, zipData, unzipData
 from latqcdtools.math.math import rel_check
 from latqcdtools.testing import print_results, concludeTest
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import timer
 from latqcdtools.statistics.statistics import std_mean
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.plotting import clearPlot, plt
+from latqcdtools.base.plotting import plt
 from latqcdtools.base.readWrite import readTable
 
 
@@ -103,7 +103,34 @@ def testFit():
     timey = timer()
     lpass = True
 
-    logger.info("Testing quadradic fit with expansion of parameters...")
+    # First we test zip and unzip for 2d and 3d. Hopefully this gives the user a sense
+    # of how the indexing works.
+
+    xdata = np.array([1,2,3,4])
+    ydata = np.array([5,6,7])
+    zdata = np.array([8,9])
+
+    xtest, ytest = unzipData(zipData(xdata,ydata))
+
+    xREF = np.array([1,1,1,2,2,2,3,3,3,4,4,4])
+    yREF = np.array([5,6,7,5,6,7,5,6,7,5,6,7])
+
+    lpass *= print_results(xtest,xREF,text='zip-unzip x 2d')
+    lpass *= print_results(ytest,yREF,text='zip-unzip y 2d')
+
+    xtest, ytest, ztest = unzipData(zipData(xdata,ydata,zdata))
+
+    xREF = np.array([1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,4,4])
+    yREF = np.array([5,5,6,6,7,7,5,5,6,6,7,7,5,5,6,6,7,7,5,5,6,6,7,7])
+    zREF = np.array([8,9,8,9,8,9,8,9,8,9,8,9,8,9,8,9,8,9,8,9,8,9,8,9])
+
+    lpass *= print_results(xtest,xREF,text='zip-unzip x 3d')
+    lpass *= print_results(ytest,yREF,text='zip-unzip y 3d')
+    lpass *= print_results(ztest,zREF,text='zip-unzip z 3d')
+
+
+
+    logger.info("Testing quadratic fit with expansion of parameters...")
 
     xdata, ydata, edata = readTable("../../datasets/wurf.dat", usecols=(0,2,3))
 
@@ -137,11 +164,10 @@ def testFit():
     lpass *= print_results(res, res_true, res_err, res_err_true, "Nonlinear least-squares ",prec=EPSILON)
 
 
+
     logger.info("Testing correlator fit...")
 
-
     xdata, ydata, edata = readTable("../../datasets/corr.dat", usecols=(0,1,2))
-
 
     res_true = [5.088129e-05, 2.943403e-01]
     res_err_true = [5.042611e-08, 8.380914e-05]
