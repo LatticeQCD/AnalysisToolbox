@@ -26,6 +26,8 @@ BTU_per_Wh      = 3.412            # Many possible definitions--don't take too s
 kBJdivK         = 1.380649e-23     # kB in [J/K]. NIST 2018.
 eC              = 1.602176634e-19  # e in [C]. NIST 2018.
 
+# Some exact constants
+NA = 6.02214076e23    # Avagadro's number
 
 # See corresponding _phys() functions for the references
 _fkerrs2012   = np.array([0.2   ,0.8   ,0.2   ])

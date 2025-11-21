@@ -24,7 +24,7 @@ try:
         # This is to avoid possible problems with colors and themes. As far as I can tell,
         # everything works with PyQt5. 
         matplotlib.use('Qt5Agg') 
-except ModuleNotFoundError:
+except:
     pass
 
 
