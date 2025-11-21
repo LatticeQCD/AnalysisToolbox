@@ -7,11 +7,12 @@
 6.  pytest
 7.  git add .
 8.  git commit -m "getting ready for vX.X.X"
-6.  python setup.py sdist bdist_wheel
-7.  If you need API token, it's saved in personal account area
-8.  twine upload dist/*
-9.  make sure you have a .pypirc in your home directory like below
-10. python3 -m build
+9.  git push
+10.  python setup.py sdist bdist_wheel
+11.  If you need API token, it's saved in personal account area
+12.  twine upload dist/*
+13.  make sure you have a .pypirc in your home directory like below
+14. python3 -m build
 
 [distutils]
 index-servers =

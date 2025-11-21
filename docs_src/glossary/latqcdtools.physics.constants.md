@@ -77,7 +77,8 @@ Fine structure constant.
 convert(x, unit1, unit2) -> float:
 '''
 General method for doing unit conversions. He knows about scientific prefixes like G, M, and so on.
-If the unit ends in 'inv', it is interpreted as 1/unit.
+If the unit ends in 'inv', it is interpreted as 1/unit. He also knows about natural units. You can
+only convert away one power or inverse power of a unit at a time.
 
 Args:
     x (float): measurement in [unit1]. 
