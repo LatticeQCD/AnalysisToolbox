@@ -16,7 +16,7 @@ Lx, Ly, Lz, Lt = N, N, N, 8
 mass = 0.0
 
 
-@pytest.mark.skip(reason="Jishnu please fix the test, then remove this decorator when you're done.")
+#@pytest.mark.skip(reason="Jishnu please fix the test, then remove this decorator when you're done.")
 def testEigenevals():
 
     DW = DiracOp(Lx, Ly, Lz, Lt, fermion='Wilson')
