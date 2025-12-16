@@ -98,6 +98,7 @@ class UniversalityClass:
         _printExponent(" delta =",self.delta)
         _printExponent(" omega =",self.omega)
         _printExponent("    nu =",self.nu)
+        _printExponent("   eta =",self.eta)
         logger.info()
 
     def hyperscalingCheck(self, tol=1e-12) -> bool:
@@ -105,12 +106,14 @@ class UniversalityClass:
         err1 = 2*self.beta+self.gamma-2+self.alpha
         err2 = 2*self.beta*self.delta-self.gamma-2+self.alpha
         err3 = self.nu*self.d-2+self.alpha
+        err4 = self.gamma-self.nu*(2-self.eta)
         lpass *= _compareWithZero(err1,tol) 
         lpass *= _compareWithZero(err2,tol) 
         lpass *= _compareWithZero(err3,tol) 
+        lpass *= _compareWithZero(err4,tol) 
         if not lpass:
             logger.TBFail(f"{self.name()} fails at least one hypersclaing relation")
-            logger.TBFail(f"err1 = {err1}, err2 = {err2}, err3 = {err3}")
+            logger.TBFail(f"err1 = {err1}, err2 = {err2}, err3 = {err3}, err4 = {err4}")
         return lpass 
 
 
@@ -122,18 +125,20 @@ class O2_3d(UniversalityClass):
         return super().__repr__()+':'+self.name
 
     etas = {
-        '10.1007/JHEP08(2016)036' : gv.gvar('0.03852(64)'),
+        '10.1007/JHEP08(2016)036'     : gv.gvar('0.03852(64)'),
+        '10.1103/PhysRevB.100.224517' : gv.gvar('0.03810(8)'),
     }
     nus  = {
-        '10.1007/JHEP08(2016)036' : gv.gvar('0.6719(11)'),
+        '10.1007/JHEP08(2016)036'     : gv.gvar('0.6719(11)'),
+        '10.1103/PhysRevB.100.224517' : gv.gvar('0.67169(7)'),
     }
 
     eta   = _getParameter(etas)
     nu    = _getParameter(nus)
     gamma = nu*(2-eta)
-    beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
-    delta = (gamma+2*alpha)/(2*beta)
+    beta  = 0.5*(2-alpha-gamma)
+    delta = (2-alpha+gamma)/(2*beta) 
 
 
 # 3d Heisenberg model
@@ -159,9 +164,9 @@ class O3_3d(UniversalityClass):
     eta   = _getParameter(etas)
     nu    = _getParameter(nus)
     gamma = nu*(2-eta)
-    beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
-    delta = (gamma+2*alpha)/(2*beta)
+    beta  = 0.5*(2-alpha-gamma)
+    delta = (2-alpha+gamma)/(2*beta) 
 
 
 class O4_3d(UniversalityClass):
@@ -188,6 +193,21 @@ class O4_3d(UniversalityClass):
     gamma = _getParameter(gammas) 
     nu    = _getParameter(nus) 
     alpha = 2.-beta*(1.+delta)
+    eta   = 2.-gamma/nu
+
+
+# O(N), N=infinity limit
+class Oinf_3d(UniversalityClass):
+    symm = "O(inf)"
+    d    = 3
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+    beta  = 1/2
+    delta = 5
+    alpha = 2.-beta*(1.+delta)
+    nu    = (2.-alpha)/d
+    gamma = 2. - alpha - 2*beta 
+    eta   = 2. - gamma/nu
 
 
 # 3d Ising model
@@ -222,6 +242,7 @@ class Z2_3d(UniversalityClass):
     gamma = nu*(2 - eta)
     beta  = (nu*d -gamma)/2
     delta = nu*d/beta-1.
+    eta   = 2.-gamma/nu
 
 
 # 2d Ising model

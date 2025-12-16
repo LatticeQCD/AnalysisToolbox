@@ -160,6 +160,12 @@ class HRG(HRGbase):
                         * (kn(2, x) * 3 + kn(1, x) * x)
         return eps
 
+    def theta_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+        """ 
+        Trace anomaly
+        """
+        return self.E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) - 3*self.P_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
+
     def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
         """ 
         s = e + p - mu_i n_i 
