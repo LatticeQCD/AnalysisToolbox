@@ -1,4 +1,4 @@
-i#
+#
 # diracFreespectra.py
 #
 # J. Goswami
