@@ -85,6 +85,17 @@ def testUnits():
     lpass *= print_results(convert(M_e_phys(units="MeV")     ,"MeV","fminv"),1/386  ,text="m_e natural units",prec=1e-3)
     lpass *= print_results(convert(M_proton_phys(units="MeV"),"MeV","fminv"),1/0.210,text="m_p natural units",prec=3e-3)
 
+    # More tests of natural unit conversions. Test against Bastian Brandt's lecture notes.
+    lpass *= print_results(convert(1,'h','eVinv'), 5.46936285835437e+18,text='[h] to [1/eV]')
+    lpass *= print_results(convert(1,'eVinv','s'), 6.582119514160693e-16,text='[1/eV] to [s]')
+    lpass *= print_results(convert(1,'kg','eV'), 5.609588603804453e+35, text='[kg] to [eV]')
+
+    # Some natural unit identity operation checks
+    lpass *= print_results(convert(convert(1,'eVinv','s'),'s','eVinv'),1,text='identity: [1/eV], [s]')
+    lpass *= print_results(convert(convert(1,'eVinv','h'),'h','eVinv'),1,text='identity: [1/eV], [h]')
+    lpass *= print_results(convert(convert(1,'h'    ,'m'),'m','h'    ),1,text='identity: [h], [m]'   )
+    lpass *= print_results(convert(convert(1,'eV'   ,'g'),'g','eV'   ),1,text='identity: [eV], [g]'  )
+
     # Also a sanity check for the prefixes and physical parameter class
     for prefix in ["Q","R","Y","Z","E","P","T","G","M","k","h"]:
         lpass *= print_results(convert(M_proton_phys(units=f"{prefix}eV"),f"{prefix}eV","fminv"),1/0.210,

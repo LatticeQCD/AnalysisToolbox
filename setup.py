@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="latqcdtools",
-    version="1.3.1",
+    version="1.3.2",
     author="D. A. Clarke",
     author_email="clarke.davida@gmail.com",
     description="A set of Python tools for statistically analyzing correlated data. This includes aspects of lattice QCD applications related to QCD phenomenology.",

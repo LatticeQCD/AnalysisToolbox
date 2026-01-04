@@ -18,6 +18,18 @@ from latqcdtools.base.check import checkType
 from latqcdtools.statistics.statistics import gaudif 
 
 
+CATCHTENSION = True
+
+
+def ignoreTension():
+    """ 
+    Turn off statistical tension warnings. 
+    """
+    global CATCHTENSION
+    CATCHTENSION = False
+    logger.warn("Ignoring tests for statistical tension.")
+
+
 def _printExponent(prefix, exponent):
     if exponent is not None:
         logger.info(prefix, exponent)
@@ -40,15 +52,17 @@ def _getParameter(parameterInfo):
         return np.mean(_params) 
 
 
-def _statisticalConsistencyCheck(parameterInfo):
-    for key1 in parameterInfo:
-        for key2 in parameterInfo:
-            m1 = gv.mean(parameterInfo[key1])
-            e1 = gv.sdev(parameterInfo[key1])
-            m2 = gv.mean(parameterInfo[key2])
-            e2 = gv.sdev(parameterInfo[key2])
-            if gaudif(m1,e1,m2,e2)<0.05:
-                logger.warn("Statistical tension between",key1,key2)
+def _statisticalConsistencyCheck(parameterInfo,obs):
+    global CATCHTENSION
+    if CATCHTENSION:
+        for key1 in parameterInfo:
+            for key2 in parameterInfo:
+                m1 = gv.mean(parameterInfo[key1])
+                e1 = gv.sdev(parameterInfo[key1])
+                m2 = gv.mean(parameterInfo[key2])
+                e2 = gv.sdev(parameterInfo[key2])
+                if gaudif(m1,e1,m2,e2)<0.05:
+                    logger.warn(f"Statistical tension for {obs} between",key1,key2)
 
 
 def _compareWithZero(err,tol) -> bool:
@@ -98,6 +112,7 @@ class UniversalityClass:
         _printExponent(" delta =",self.delta)
         _printExponent(" omega =",self.omega)
         _printExponent("    nu =",self.nu)
+        _printExponent("   eta =",self.eta)
         logger.info()
 
     def hyperscalingCheck(self, tol=1e-12) -> bool:
@@ -105,12 +120,14 @@ class UniversalityClass:
         err1 = 2*self.beta+self.gamma-2+self.alpha
         err2 = 2*self.beta*self.delta-self.gamma-2+self.alpha
         err3 = self.nu*self.d-2+self.alpha
+        err4 = self.gamma-self.nu*(2-self.eta)
         lpass *= _compareWithZero(err1,tol) 
         lpass *= _compareWithZero(err2,tol) 
         lpass *= _compareWithZero(err3,tol) 
+        lpass *= _compareWithZero(err4,tol) 
         if not lpass:
-            logger.TBFail(f"{self.name()} fails at least one hypersclaing relation")
-            logger.TBFail(f"err1 = {err1}, err2 = {err2}, err3 = {err3}")
+            logger.TBFail(f"{self.name()} fails at least one hyperscaling relation")
+            logger.TBFail(f"err1 = {err1}, err2 = {err2}, err3 = {err3}, err4 = {err4}")
         return lpass 
 
 
@@ -122,18 +139,20 @@ class O2_3d(UniversalityClass):
         return super().__repr__()+':'+self.name
 
     etas = {
-        '10.1007/JHEP08(2016)036' : gv.gvar('0.03852(64)'),
+        '10.1007/JHEP08(2016)036'     : gv.gvar('0.03852(64)'),
+        '10.1103/PhysRevB.100.224517' : gv.gvar('0.03810(8)'),
     }
     nus  = {
-        '10.1007/JHEP08(2016)036' : gv.gvar('0.6719(11)'),
+        '10.1007/JHEP08(2016)036'     : gv.gvar('0.6719(11)'),
+        '10.1103/PhysRevB.100.224517' : gv.gvar('0.67169(7)'),
     }
 
     eta   = _getParameter(etas)
     nu    = _getParameter(nus)
     gamma = nu*(2-eta)
-    beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
-    delta = (gamma+2*alpha)/(2*beta)
+    beta  = 0.5*(2-alpha-gamma)
+    delta = (2-alpha+gamma)/(2*beta) 
 
 
 # 3d Heisenberg model
@@ -153,15 +172,15 @@ class O3_3d(UniversalityClass):
         '10.1103/PhysRevB.43.6087' : gv.gvar('1.44321(21)'),
         '10.1103/PhysRevB.48.936'  : gv.gvar('1.44300(21)')
     }
-    _statisticalConsistencyCheck(Tcs)
+    _statisticalConsistencyCheck(Tcs,'Tc')
 
     Tc    = _getParameter(Tcs)
     eta   = _getParameter(etas)
     nu    = _getParameter(nus)
     gamma = nu*(2-eta)
-    beta  = 0.5*(nu*d-gamma)
     alpha = 2 - nu*d
-    delta = (gamma+2*alpha)/(2*beta)
+    beta  = 0.5*(2-alpha-gamma)
+    delta = (2-alpha+gamma)/(2*beta) 
 
 
 class O4_3d(UniversalityClass):
@@ -188,9 +207,32 @@ class O4_3d(UniversalityClass):
     gamma = _getParameter(gammas) 
     nu    = _getParameter(nus) 
     alpha = 2.-beta*(1.+delta)
+    eta   = 2.-gamma/nu
 
 
-# 3d Ising model
+# O(N), N=infinity limit
+class Oinf_3d(UniversalityClass):
+    symm = "O(inf)"
+    d    = 3
+    def __repr__(self) -> str:
+        return super().__repr__()+':'+self.name
+    beta  = 1/2
+    delta = 5
+    alpha = 2.-beta*(1.+delta)
+    nu    = (2.-alpha)/d
+    gamma = 2. - alpha - 2*beta 
+    eta   = 2. - gamma/nu
+
+
+# 3d Ising model. There is a nice review article here: 10.1016/S0370-1573(00)00127-7.
+# Some of the results were taken from the MCMC/FSS section of tables 2 and 3 of that
+# reference. There they list Kc, yt, and yh. I used those values to compute Tc, nu,
+# and beta, so there may be minor rounding issues. beta was extracted from yh taking
+# correlations with nu into account.
+#
+# The results from 10.1103/PhysRevB.44.5081 are in statistical tension with many of
+# the other results, and they cause a failure of the hyperscaling check, so they have 
+# been excluded from averages.
 class Z2_3d(UniversalityClass):
     symm = "Z_2"
     d    = 3
@@ -198,30 +240,57 @@ class Z2_3d(UniversalityClass):
         return super().__repr__()+':'+self.name
 
     etas = {
-        '10.1007/s10955-014-1042-7'    : gv.gvar('0.03631(3)'),
-        '10.1007/JHEP08(2016)036'      : gv.gvar('0.0362978(20)'),
+        '10.1007/s10955-014-1042-7'    : gv.gvar('0.03631(3)'),      # 2014
+        '10.1007/JHEP08(2016)036'      : gv.gvar('0.0362978(20)'),   # 2016
     }
     nus  = {
-        '10.1007/s10955-014-1042-7'    : gv.gvar('0.62999(5)'),
-        '10.1007/JHEP08(2016)036'      : gv.gvar('0.629971(4)'),
+        '10.1016/0378-4371(94)90490-1' : gv.gvar('0.62893(79)'),     # 1994
+        '10.1088/0305-4470/28/22/007'  : gv.gvar('0.63012(79)'),     # 1995
+        '10.1142/S0129183196000247'    : gv.gvar('0.6309(28)'),      # 1996
+        '10.1088/0305-4470/30/1/006'   : gv.gvar('0.6309(12)'),      # 1997
+        '10.1103/PhysRevB.59.11471'    : gv.gvar('0.62980(52)'),     # 1999
+        '10.1088/0305-4470/32/26/304'  : gv.gvar('0.62960(20)'),     # 1999
+        '10.1142/S0129183199000929'    : gv.gvar('0.63032(56)'),     # 1999
+        '10.1088/0305-4470/32/1/004'   : gv.gvar('0.62941(48)'),     # 1999
+        '10.1007/s10955-014-1042-7'    : gv.gvar('0.62999(5)'),      # 2014
+        '10.1007/JHEP08(2016)036'      : gv.gvar('0.629971(4)'),     # 2016
+    }
+    betas = {
+        '10.1016/0378-4371(94)90490-1' : gv.gvar('0.3258(44)'),      # 1994
+        '10.1088/0305-4470/28/22/007'  : gv.gvar('0.3267(10)'),      # 1995
+        '10.1142/S0129183196000247'    : gv.gvar('0.3237(24)'),      # 1996
+        '10.1103/PhysRevB.59.11471'    : gv.gvar('0.32643(37)'),     # 1999
+        '10.1088/0305-4470/32/26/304'  : gv.gvar('0.32607(16)'),     # 1999
+        '10.1142/S0129183199000929'    : gv.gvar('0.32682(38)'),     # 1999
+        '10.1088/0305-4470/32/1/004'   : gv.gvar('0.32597(40)'),     # 1999
     }
     Tcs  = {
-        '10.1103/PhysRevB.29.4030'     : gv.gvar('4.51154(13)'),
-        '10.1103/PhysRevB.32.1720'     : gv.gvar('4.51162(11)'),
-        '10.1016/0378-4371(94)90490-1' : gv.gvar('4.511463(45)'),
-        '10.1103/PhysRevB.82.174433'   : gv.gvar('4.5115232(17)')
+        '10.1103/PhysRevB.29.4030'     : gv.gvar('4.51154(13)'),     # 1984
+        '10.1103/PhysRevB.32.1720'     : gv.gvar('4.51162(11)'),     # 1985
+        '10.1209/0295-5075/16/2/003'   : gv.gvar('4.511528(20)'),    # 1991
+        '10.1143/JPSJ.60.1978'         : gv.gvar('4.511475(61)'),    # 1991
+        '10.1016/0378-4371(93)90208-L' : gv.gvar('4.511658(81)'),    # 1993
+        '10.1016/0378-4371(94)90490-1' : gv.gvar('4.511463(45)'),    # 1994
+        '10.1088/0305-4470/28/22/007'  : gv.gvar('4.511524(20)'),    # 1995
+        '10.1088/0305-4470/29/17/042'  : gv.gvar('4.511528(12)'),    # 1996
+        '10.1142/S0129183196000247'    : gv.gvar('4.511516(20)'),    # 1996
+        '10.1103/PhysRevE.54.2291'     : gv.gvar('4.51152(31)'),     # 1996
+        '10.1142/S0129183199000929'    : gv.gvar('4.511524(20)'),    # 1999
+        '10.1103/PhysRevB.82.174433'   : gv.gvar('4.5115232(17)'),   # 2010  
     }
-    _statisticalConsistencyCheck(etas)
-    _statisticalConsistencyCheck(nus)
-    _statisticalConsistencyCheck(Tcs)
+    _statisticalConsistencyCheck(etas,'eta')
+    _statisticalConsistencyCheck(nus,'nu')
+    _statisticalConsistencyCheck(betas,'beta')
+    _statisticalConsistencyCheck(Tcs,'Tc')
 
     Tc    = _getParameter(Tcs)
     eta   = _getParameter(etas)
     nu    = _getParameter(nus)
+    beta  = _getParameter(betas)
     alpha = 2 - nu*d
     gamma = nu*(2 - eta)
-    beta  = (nu*d -gamma)/2
     delta = nu*d/beta-1.
+    eta   = 2.-gamma/nu
 
 
 # 2d Ising model

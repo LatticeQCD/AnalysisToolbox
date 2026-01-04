@@ -7,7 +7,8 @@
 #
 
 
-from latqcdtools.physics.statisticalPhysics import O2_3d, O3_3d, O4_3d, Z2_3d, Z2_2d, S3_2d, S4_2d, reweight
+from latqcdtools.physics.statisticalPhysics import O2_3d, O3_3d, O4_3d, Oinf_3d, Z2_3d, Z2_2d, \
+    S3_2d, S4_2d, reweight
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import ls
 from latqcdtools.base.readWrite import readTable
@@ -29,6 +30,8 @@ def testStatPhys():
     univ = O3_3d()
     lpass *= univ.hyperscalingCheck()
     univ = O4_3d()
+    lpass *= univ.hyperscalingCheck()
+    univ = Oinf_3d()
     lpass *= univ.hyperscalingCheck()
     univ = Z2_3d()
     lpass *= univ.hyperscalingCheck()

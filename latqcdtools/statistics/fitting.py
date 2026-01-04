@@ -12,8 +12,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths
-from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
-from latqcdtools.base.plotting import plot_dots, plot_bar, plt
+from latqcdtools.base.speedify import parallel_function_eval
+from latqcdtools.base.plotting import plot_dots, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy, createFilePath
 from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, isPositiveSemidefinite, \
@@ -39,35 +39,34 @@ std_algs = ["curve_fit", "TNC", "Powell", "Nelder-Mead", "nonlin"]
 bayes_algs = ["TNC", "Powell", "Nelder-Mead", "nonlin"]
 
 
-def zipXYData(xdata,ydata):
-    """ Collect 1d xdata and ydata into an 2d xydata array. You can then use
-    unzipXYData inside of some func(xydata), which represents some f(x,y), to
-    separate the x part and y part.
+def zipData(*data):
+    """ Collect N sets of 1d data into an Nd zipData array. You can then use
+    unzipData inside of some func(zipData), which represents some f(x,y,...), to
+    separate the x-, y-, ... part.
 
     Args:
-        xdata (array-like)
-        ydata (array-like)
+        data: In 2d, would be e.g. xdata,ydata, both np.ndarrays
 
     Returns:
-        np.ndarray: array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+        np.ndarray: In 2d, array of x,y coordinates [ (x1,y1), (x1,y2), ..., (x2,y1), ... ]
     """
-    x,y = np.meshgrid(xdata,ydata)
-    return np.stack((x,y), axis=2).reshape(-1, 2)
+    mesh = np.meshgrid(*data, indexing='ij')
+    stacked = np.stack(mesh, axis=-1)
+    return stacked.reshape(-1, len(data))
 
 
-def unzipXYData(xydata):
-    """ Take a 2d xydata array, created by zipXYData, and extract xvalues and yvalues
-    for use inside of a function of two variables.
+def unzipData(zipData):
+    """ Take a zipData array, created by zipData, and extract x-, y-, ... values 
+    for use inside of a function of two variables. Example in 2d:
 
     Args:
-        xydata (np.ndarray): array of x,y coordinates [ (x1,y1), (x2,y1), ..., (x1,y2), ... ]
+        zipData (np.ndarray): In 2d, array of x,y coordinates [ (x1,y1), (x1,y2), ..., (x2,y1), ... ]
 
-    Returns:
-        xvalues [x1, x2, ... , xN, x1, x2, ...],
-        yavlues [y1, y1, ... , y1, y2, y2, ...]
+    Returns: In 2d,
+        xvalues [x1, x2, ..., xN, x1, x2, ..., xN, ...],
+        yavlues [y1, y1, ..., y1, y2, y2, ..., y2, ...]
     """
-    X, Y = np.hsplit(xydata, 2)
-    return np.ravel(X), np.ravel(Y)
+    return [zipData[:, i] for i in range(zipData.shape[1])]
 
 
 class Fitter:

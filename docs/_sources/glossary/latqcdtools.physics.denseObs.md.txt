@@ -6,7 +6,7 @@ mean_square(vec):
 '''Unbiased calculation of < vec**2 >. '''
 ```
 ```Python
-op_to_obs(opTable, lp, writeFiles=True) -> dict:
+op_to_obs(opTable, lp, writeFiles=True, outFolder='denseObservables') -> dict:
 '''
 Take the operators from loadDens and combine them into physically meaningful observables. Some terminology:
     l--light
