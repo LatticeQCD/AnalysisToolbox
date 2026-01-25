@@ -159,6 +159,8 @@ def toNumpy(*args,**kwargs):
     result = ()
     for obj in args:
         if isArrayLike(obj):
+            if len(obj)==0:
+                logger.TBRaise('Received argument of length 0')
             obj = np.array(obj,**kwargs)
         result += (obj,)
     return result

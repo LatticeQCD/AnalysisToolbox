@@ -49,7 +49,7 @@ def deleteCol(array, col) -> np.ndarray:
     return np.delete(array,col,1)
 
 
-def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf) -> np.ndarray:
+def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf, allowEqual=False) -> np.ndarray:
     """ 
     Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this
     renders arrays finite. 
@@ -58,12 +58,18 @@ def clipRange(array, col = None, minVal=-np.inf, maxVal=np.inf) -> np.ndarray:
     if col is None:
         if array.ndim!=1:
             logger.TBRaise('Must have 1-d numpy array for col=None.')
-        mask = np.logical_and( array[:]>minVal, array[:]<maxVal )
+        if allowEqual:
+            mask = np.logical_and( array[:]>=minVal, array[:]<=maxVal )
+        else:
+            mask = np.logical_and( array[:]>minVal, array[:]<maxVal )
         return array[mask]
     else:
         if array.ndim<2:
             logger.TBRaise('Set col=None for 1-d numpy arrays.')
-        mask = np.logical_and( array[col,:]>minVal, array[col,:]<maxVal )
+        if allowEqual:
+            mask = np.logical_and( array[col,:]>=minVal, array[col,:]<=maxVal )
+        else:
+            mask = np.logical_and( array[col,:]>minVal, array[col,:]<maxVal )
         return array[:,mask]
 
 

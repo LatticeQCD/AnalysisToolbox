@@ -116,6 +116,12 @@ def op_to_obs(opTable,lp,writeFiles=True,outFolder='denseObservables') -> dict:
         chi11BS = (1/3)*(         - chi2s             - 2*chi11ls ) 
         chi11QS = (1/3)*(           chi2s             -   chi11ls ) 
 
+# Idea on why imaginary part is wrong: in your eq (12.22), the <> brackets are the gauge average. The tr is already
+# a random vector average, and that random vector average is exactly what you're computing in here. You don't do the
+# gauge average until the very end, way outside of this routine, so when you needed to compute the <>**2 term, you
+# accidentally computed <()**2>, which is not the same obviously. This still works at real chemical potential
+# because that term is zero, so you never needed to include it.
+
 # TODO: Find some data to test these against. They should be correct, but
 #       it's better to be careful.
 #        nl2  = - mean_square(trMdMl.imag)*vol4/16 + 0j

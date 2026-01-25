@@ -193,7 +193,8 @@ class O4_3d(UniversalityClass):
         '10.1103/PhysRevD.51.2404'         : gv.gvar('0.7479(90)')
     }
     betas  = {
-        '10.1103/PhysRevD.51.2404'         : gv.gvar('0.3836(46)')
+        '10.1103/PhysRevD.51.2404'         : gv.gvar('0.3836(46)'),
+        '10.1016/j.nuclphysb.2003.09.060'  : gv.gvar('0.380(2)'),
     }
     gammas = {
         '10.1103/PhysRevD.51.2404'         : gv.gvar('1.477(18)')
