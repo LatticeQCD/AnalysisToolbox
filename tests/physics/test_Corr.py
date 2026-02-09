@@ -32,7 +32,7 @@ def simulate_dt(Nt):
         else:
             toFold.append(np.inf)
     toFold=np.array(toFold)
-    return clipRange( foldCorrelator(toFold), maxVal=np.inf )
+    return clipRange( foldCorrelator(toFold), maxVal=np.inf, allowEqual=False )
 
 
 def testCorr():
