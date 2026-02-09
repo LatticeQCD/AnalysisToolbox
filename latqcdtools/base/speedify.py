@@ -19,11 +19,15 @@ HAVECUDA =True
 try:
     from numba import njit
     from numba.typed import List
-except ModuleNotFoundError or ImportError:
+except ModuleNotFoundError:
+    HAVENUMBA=False
+except ImportError: 
     HAVENUMBA=False
 try:
     from numba import cuda 
-except ModuleNotFoundError or ImportError:
+except ModuleNotFoundError:
+    HAVECUDA=False
+except ImportError: 
     HAVECUDA=False
 
 
@@ -90,12 +94,15 @@ def get_optimal_block_size():
     Returns:
         int: Optimal threads per block
     """
-    try:
-        device = cuda.get_current_device()
-        # Max threads per block is device.MAX_THREADS_PER_BLOCK, but usually better to use less
-        return min(256, device.MAX_THREADS_PER_BLOCK)
-    except:
-        return 256
+    global HAVECUDA
+    if HAVECUDA:
+        try:
+            device = cuda.get_current_device()
+            # Max threads per block is device.MAX_THREADS_PER_BLOCK, but usually better to use less
+            return min(256, device.MAX_THREADS_PER_BLOCK)
+        except:
+            pass
+    return 256 
 
 
 def numbaList(inList):
