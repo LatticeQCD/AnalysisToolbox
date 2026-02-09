@@ -6,9 +6,8 @@
 # Optimized GPU implementation for improved scaling with lattice size.
 
 import numpy as np
-from numba import cuda
 import latqcdtools.base.logger as logger
-from latqcdtools.base.speedify import numbaON, compile
+from latqcdtools.base.speedify import numbaON, compile, compileCUDA, get_optimal_block_size
 
 numbaON()
 
@@ -53,29 +52,11 @@ def fitV_Teq0_twoloop(r,a,b,c,d,e) -> float:
     return a + ( b + d*np.log(r) + e*np.log(np.log(r)) )/r + c*r
 
 
-#------------------------------------------------------------------------------
-# CUDA utility functions
-#------------------------------------------------------------------------------
-def get_optimal_block_size():
-    """
-    Returns an optimal block size based on the current CUDA device.
-    Defaults to 256 if device information cannot be obtained.
-    
-    Returns:
-        int: Optimal threads per block
-    """
-    try:
-        device = cuda.get_current_device()
-        # Max threads per block is device.MAX_THREADS_PER_BLOCK, but usually better to use less
-        return min(256, device.MAX_THREADS_PER_BLOCK)
-    except:
-        return 256
-
 
 #------------------------------------------------------------------------------
 # CUDA kernels
 #------------------------------------------------------------------------------
-@cuda.jit
+@compileCUDA
 def compute_sine_terms_kernel(sinf, cw, Ns, sine_terms_lookup):
     """
     Precompute sin terms for all k1, k2, k3 combinations to improve performance.
@@ -111,7 +92,7 @@ def compute_sine_terms_kernel(sinf, cw, Ns, sine_terms_lookup):
     else:
         sine_terms_lookup[k1, k2, k3] = 0.0
 
-@cuda.jit
+@compileCUDA
 def calculate_potential_kernel(points, Ns, cosf, sine_terms_lookup, point_results):
     """
     CUDA kernel for calculating lattice QCD potentials for a set of spatial points.
@@ -202,7 +183,7 @@ def calculate_potential_kernel(points, Ns, cosf, sine_terms_lookup, point_result
         point_results[point_idx, 2] = 1.0  # Weight for later averaging
 
 
-@cuda.jit
+@compileCUDA
 def calculate_x_potential_kernel(points, Ns, cosf,
                                  sine_terms_lookup, point_results):
     """
@@ -295,7 +276,7 @@ def calculate_x_potential_kernel(points, Ns, cosf,
         point_results[point_idx, 2] = 1.0  # Weight for later averaging
 
 
-@cuda.jit
+@compileCUDA
 def reduce_results_kernel(point_results, pots, weight, num_points):
     """
     CUDA kernel for aggregating individual point calculations into final result arrays.
