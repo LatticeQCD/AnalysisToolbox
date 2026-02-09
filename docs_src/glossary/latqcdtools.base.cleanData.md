@@ -2,7 +2,7 @@ latqcdtools.base.cleanData
 =============
 
 ```Python
-clipRange(array, col=None, minVal=-inf, maxVal=inf) -> numpy.ndarray:
+clipRange(array, col=None, minVal=-inf, maxVal=inf, allowEqual=False) -> numpy.ndarray:
 '''
 Throw out any elements of array that lie outside the interval (minVal,maxVal). Note this
 renders arrays finite. 

@@ -289,7 +289,6 @@ class SUN(N=None, mat=None):
 '''
 A member of the Lie group SU(N). Implemented as a subclass of the np.ndarray class. This gives us access already
 to all the nice features of np.ndarray and lets us leverage the speed of numpy.
-    g.trace()
     g.det()
     g.dagger()
     g[i,j], which can be used to access and assign

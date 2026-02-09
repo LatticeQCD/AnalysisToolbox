@@ -9,10 +9,12 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import writeTable
-
+from latqcdtools.interfaces.HotQCD import getObs
 
 def mean_square(vec):
-    """ Unbiased calculation of < vec**2 >. """
+    """ 
+    Unbiased calculation of < vec**2 >. 
+    """
     N = len(vec)
     #                         diagonal terms
     return ( np.sum(vec)**2 - np.sum(vec**2) )/( N*(N-1))
@@ -63,35 +65,18 @@ def op_to_obs(opTable,lp,writeFiles=True,outFolder='denseObservables') -> dict:
 
     vol4 = lp.vol4
     if lp.muB != 0:
-        logger.TBRaise("This hasn't been tested for imaginary muB.")
+        logger.TBRaise("This analysis assumes muB=0.") 
     if lp.Nf != '21':
         logger.TBRaise("This analysis assumes Nf=2+1.")
 
     # Construct the output table
     for cID in opTable:
 
-        if len(cID) != len(cID.strip()):
-            logger.TBRaise('confIDs must not have whitespace! This throws off the column indexing.')
-
-        trMdMl=np.array(opTable[cID][0]) # tr M^-1 d M 
-        trMdMs=np.array(opTable[cID][1])
-
-        if len(trMdMl) != len(trMdMs): 
-            logger.warn("len(trMdMl) != len(trMdMs) cID = "+cID+"... skipping")
-            continue
-
-        trMdMl2=np.array(opTable[cID][2])  # tr ( M^-1 d M )^2
-        trMdMs2=np.array(opTable[cID][3])
-
-        if len(trMdMl2) != len(trMdMs2):
-            logger.warn("len(trMdMl2) != len(trMdMs2) cID = "+cID+"... skipping")
-            continue
-
-        trMd2Ml=np.array(opTable[cID][4]) # tr ( M^-1 dd M )^2
-        trMd2Ms=np.array(opTable[cID][5])
-
-        if len(trMd2Ml) != len(trMd2Ms): 
-            logger.warn("len(trMd2Ml) != len(trMd2Ms), cID = "+cID+"... skipping")
+        try:
+            trMdMl , trMdMs  = getObs(opTable,cID,'trMdM')
+            trMdMl2, trMdMs2 = getObs(opTable,cID,'trMdM2')
+            trMd2Ml, trMd2Ms = getObs(opTable,cID,'trMd2M')
+        except logger.ToolboxException:
             continue
 
         if len(trMdMl)==0 or len(trMdMl2)==0 or len(trMd2Ml)==0:

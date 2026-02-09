@@ -2,6 +2,15 @@ latqcdtools.interfaces.HotQCD
 =============
 
 ```Python
+_parseOperator(mass, lp, ReOP, ImOP, lVec, sVec, lineno, densFile)
+```
+```Python
+getObs(opTable, cID, obs, asNumpy=True):
+'''
+Grab observable obs for configuration cID from opTable. 
+'''
+```
+```Python
 loadDens(densFile, confID, lp, inTable=None) -> dict:
 '''
 Allows reading of output from C. Schmidt's Dense code. The Dense code produces measurements of various operators
@@ -31,9 +40,7 @@ outTable : dict
 makeConfTag(conf, stream) -> str:
 '''
 This takes a configuration number conf and stream label stream to make a tag labelling a configuration.
-Implementing this as a function makes sure everyone using the Toolbox as the same convention and, more importantly,
-ensures that the tags have no whitespace in them, which otherwise can throw off the column counting of methods in
-the denseObs module. 
+Implementing this as a function makes sure everyone using the Toolbox as the same convention. 
 '''
 ```
 ```Python
