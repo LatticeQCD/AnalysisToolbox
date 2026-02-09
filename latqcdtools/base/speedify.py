@@ -16,7 +16,7 @@ HAVENUMBA=True
 try:
     from numba import njit
     from numba.typed import List
-except ModuleNotFoundError:
+except ModuleNotFoundError or ImportError:
     HAVENUMBA=False
 
 # Resolve parallelizer dependencies
@@ -39,8 +39,11 @@ def numbaON():
     called at the beginning of your code. 
     """
     global COMPILENUMBA
-    COMPILENUMBA = True
-    logger.info('Using numba to speed things up.')
+    if HAVENUMBA:
+        COMPILENUMBA = True
+        logger.info('Using numba to speed things up.')
+    else:
+        logger.warn('Numba does not seem to work on this system.')
 
 
 def numbaOFF():
