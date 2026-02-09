@@ -12,12 +12,20 @@ import concurrent.futures
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
 
+
+# Check to see if numba and numba.cuda work on this system
 HAVENUMBA=True
+HAVECUDA =True
 try:
     from numba import njit
     from numba.typed import List
 except ModuleNotFoundError or ImportError:
     HAVENUMBA=False
+try:
+    from numba import cuda 
+except ModuleNotFoundError or ImportError:
+    HAVECUDA=False
+
 
 # Resolve parallelizer dependencies
 DEFAULTPARALLELIZER = 'pathos.pools'
@@ -59,10 +67,35 @@ def compile(func):
     global COMPILENUMBA
     global HAVENUMBA
     if COMPILENUMBA and HAVENUMBA:
-        logger.info('Compiling',func.__name__+'.')
+        logger.info(f'Compiling {func.__name__}.')
         return njit(func)
     else:
         return func
+
+
+def compileCUDA(func):
+    global HAVECUDA
+    if HAVECUDA: 
+        logger.info(f'Compiling {func.__name__} for CUDA.')
+        return cuda.jit(func)
+    else:
+        return func
+
+
+def get_optimal_block_size():
+    """
+    Returns an optimal block size based on the current CUDA device.
+    Defaults to 256 if device information cannot be obtained.
+    
+    Returns:
+        int: Optimal threads per block
+    """
+    try:
+        device = cuda.get_current_device()
+        # Max threads per block is device.MAX_THREADS_PER_BLOCK, but usually better to use less
+        return min(256, device.MAX_THREADS_PER_BLOCK)
+    except:
+        return 256
 
 
 def numbaList(inList):
