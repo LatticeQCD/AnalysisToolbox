@@ -13,13 +13,33 @@ from latqcdtools.base.cleanData import restrictAtCol
 from latqcdtools.math.math import rel_check
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest
-from latqcdtools.base.utilities import unvector, ls
+from latqcdtools.base.utilities import unvector, ls, toNumpy
+from latqcdtools.statistics.jackknife import jackknife
+import numpy as np
 
 logger.set_log_level('INFO')
 
 lp = HotQCDParams(Nsigma=40, Ntau=8, coupling='6260',mass1='002025',mass2='0810')
 
 EPSILON = 1e-5
+
+def compare(test,REF,name,cID) -> bool:
+    if not rel_check(test,REF):
+        logger.TBFail(f'{name} {test} ref {REF} conf {cID}')
+        return False
+    return True
+
+def compareJack(arr,REF,REFe,name) -> bool:
+    passed=True
+    m, e = jackknife(np.mean,arr,numb_blocks=20)
+    if not rel_check(m.real,REF,prec=3e-2):
+        passed = False
+        logger.TBFail(f'{name} {m.real} ref {REF}')
+    if not rel_check(m.real,REF,prec=3e-2):
+        passed = False
+        logger.TBFail(f'{name}e {e} refe {REFe}')
+    return passed
+
 
 def testDensObs():
 
@@ -45,6 +65,9 @@ def testDensObs():
 
 
     lpass = True
+
+    chi2lavg,chi2savg,chi11llavg,chi11lsavg,chi2Bavg,chi2Qavg = [],[],[],[],[],[]
+
     for iconf in range(len(OBS['confID'])):
 
         confID = OBS['confID'][iconf]
@@ -68,29 +91,30 @@ def testDensObs():
         chi2B   = OBS['X2B'][iconf]
         chi2Q   = OBS['X2Q'][iconf]
 
-        if not rel_check(chi2l,REFchi2l):
-            lpass = False
-            logger.TBFail('chi2l',chi2l,'ref',REFchi2l,'conf',confID)
+        chi2lavg.append(chi2l)  
+        chi2savg.append(chi2s)  
+        chi11llavg.append(chi11ll) 
+        chi11lsavg.append(chi11ls) 
+        chi2Bavg.append(chi2B) 
+        chi2Qavg.append(chi2Q) 
 
-        if not rel_check(chi2s,REFchi2s):
-            lpass = False
-            logger.TBFail('chi2s',chi2s,'ref',REFchi2s,'conf',confID)
+        lpass *= compare(chi2l  ,REFchi2l  ,'chi2l'  ,confID)
+        lpass *= compare(chi2s  ,REFchi2s  ,'chi2s'  ,confID)
+        lpass *= compare(chi11ll,REFchi11ll,'chi11ll',confID)
+        lpass *= compare(chi11ls,REFchi11ls,'chi11ls',confID)
+        lpass *= compare(chi2B  ,REFchi2B  ,'chi2B'  ,confID)
+        lpass *= compare(chi2Q  ,REFchi2Q  ,'chi2Q'  ,confID)
 
-        if not rel_check(chi11ll,REFchi11ll):
-            lpass = False
-            logger.TBFail('chi11ll',chi11ll,'ref',REFchi11ll,'conf',confID)
+    chi2lavg,chi2savg,chi11llavg,chi11lsavg,chi2Bavg,chi2Qavg = toNumpy( chi2lavg,chi2savg,chi11llavg,chi11lsavg,chi2Bavg,chi2Qavg ) 
 
-        if not rel_check(chi11ls,REFchi11ls):
-            lpass = False
-            logger.TBFail('chi11ls',chi11ls,'ref',REFchi11ls,'conf',confID)
-
-        if not rel_check(chi2B,REFchi2B):
-            lpass = False
-            logger.TBFail('chi2B',chi2B,'ref',REFchi2B,'conf',confID)
-
-        if not rel_check(chi2Q,REFchi2Q):
-            lpass = False
-            logger.TBFail('chi2Q',chi2Q,'ref',REFchi2Q,'conf',confID)
+    # 
+    # Comparison with Jishnu's code
+    #
+    lpass *= compareJack(chi2lavg  , 3.02582962e-01,2.39426453e-02,'chi2l'  )
+    lpass *= compareJack(chi2savg  , 1.10486541e-01,3.64726294e-03,'chi2s'  )
+    lpass *= compareJack(chi11llavg,-6.20992517e-02,2.24982049e-02,'chi11ll')
+    lpass *= compareJack(chi2Bavg  , 5.75703687e-02,1.30232279e-02,'chi2B'  )
+    lpass *= compareJack(chi2Qavg  , 2.12050964e-01,7.11385988e-03,'chi2Q'  )
 
     concludeTest(lpass)
 

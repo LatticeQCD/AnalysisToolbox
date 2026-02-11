@@ -98,44 +98,47 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
     logger.info("Loading file",densFile)
 
     # In the following light and strange quarks are indexed by l and s, respectively.
+    # Quark flavor label is suppressed. dM = dM/dmu. We express these operators both
+    # in terms of the massive Dirac matrix M and the operators A intoduced in the
+    # electric-charge cumulants paper.
     if not confID in outTable:
         trMlVec        = []  # 1  : tr M^-1
         trMsVec        = []
-        trMdMlVec      = []  # 2  : tr M^-1 dM 
+        trMdMlVec      = []  # 2  : tr M^-1 dM                 : tr A
         trMdMsVec      = []
-        trMd2MlVec     = []  # 3  : tr M^-1 ddM
+        trMd2MlVec     = []  # 3  : tr M^-1 ddM                : tr A2
         trMd2MsVec     = []
-        trMd3MlVec     = []  # 4  : tr M^-1 dddM
+        trMd3MlVec     = []  # 4  : tr M^-1 dddM               : tr A3
         trMd3MsVec     = []
-        trMd4MlVec     = []  # 5  : tr M^-1 ddddM
+        trMd4MlVec     = []  # 5  : tr M^-1 ddddM              : tr A4
         trMd4MsVec     = []
         trM2lVec       = []  # 6  : tr M^-1 M^-1
         trM2sVec       = []
         trMdMMlVec     = []  # 11 : tr M^-1 d M M^-1  
         trMdMMsVec     = []
-        trMdM2lVec     = []  # 12 : tr ( M^-1 dM )^2
+        trMdM2lVec     = []  # 12 : tr ( M^-1 dM )^2           : tr A^2
         trMdM2sVec     = []
-        trMdMMd2MlVec  = []  # 13 : tr M^-1 dM M^-1 ddM 
+        trMdMMd2MlVec  = []  # 13 : tr M^-1 dM M^-1 ddM        : tr A A2
         trMdMMd2MsVec  = []
-        trMdMMd3MlVec  = []  # 14 : tr M^-1 dM M^-1 dddM 
+        trMdMMd3MlVec  = []  # 14 : tr M^-1 dM M^-1 dddM       : tr A A3
         trMdMMd3MsVec  = []
-        trMdMMd4MlVec  = []  # 15 : tr M^-1 dM M^-1 ddddM 
+        trMdMMd4MlVec  = []  # 15 : tr M^-1 dM M^-1 ddddM      : tr A A4
         trMdMMd4MsVec  = []
         trMd2MMlVec    = []  # 16 : tr M^-1 ddM M^-1 
         trMd2MMsVec    = []
-        trMd2MMdMlVec  = []  # 17 : tr M^-1 ddM M^-1 dM 
+        trMd2MMdMlVec  = []  # 17 : tr M^-1 ddM M^-1 dM        : tr A2 A
         trMd2MMdMsVec  = []
-        trMd2M2lVec    = []  # 18 : tr ( M^-1 ddM )^2 
+        trMd2M2lVec    = []  # 18 : tr ( M^-1 ddM )^2          : tr A2^2
         trMd2M2sVec    = []
         trMdM2MlVec    = []  # 61 : tr ( M^-1 dM )^2 M^-1 
         trMdM2MsVec    = []
-        trMdM3lVec     = []  # 62 : tr ( M^-1 dM )^3
+        trMdM3lVec     = []  # 62 : tr ( M^-1 dM )^3           : tr A^3
         trMdM3sVec     = []
-        trMdM3Md2MlVec = []  # 63 : tr ( M^-1 dM )^2 M^-1 ddM
+        trMdM3Md2MlVec = []  # 63 : tr ( M^-1 dM )^2 M^-1 ddM  : tr A^2 A2
         trMdM3Md2MsVec = []
         trMdM3MlVec    = []  # 311: tr ( M^-1 dM )^3 M^-1 
         trMdM3MsVec    = []
-        trMdM4lVec     = []  # 312: tr ( M^-1 dM )^4
+        trMdM4lVec     = []  # 312: tr ( M^-1 dM )^4           : tr A^4
         trMdM4sVec     = []
         
     else:
