@@ -15,6 +15,7 @@ from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import unvector, ls, toNumpy
 from latqcdtools.statistics.jackknife import jackknife
+from latqcdtools.base.speedify import parallel_function_eval
 import numpy as np
 
 logger.set_log_level('INFO')
@@ -40,24 +41,39 @@ def compareJack(arr,REF,REFe,name) -> bool:
         logger.TBFail(f'{name}e {e} refe {REFe}')
     return passed
 
+def constructOpTable(opTableList,streamList) -> dict:
+    opTable = opTableList[0]
+    for stream in streamList[1:]:
+        for conf in opTableList[stream]:
+            if not conf in opTable:
+                opTable[conf] = {}
+            for q in ['l','s']:
+                if not q in opTable[conf]:
+                    opTable[conf][q]= {}
+                for obs in opTableList[stream][conf][q]:
+                    opTable[conf][q][obs]=opTableList[stream][conf][q][obs]
+    return opTable
+
 
 def testDensObs():
 
-    initialize = True
-
-    for stream in [0, 1]:
+    def processDense(stream):
 
         directory = f'denseObs/str{stream}'
 
+        initialize = True
         for filename in ls(f'{directory}/*'):
-
             confID = filename.split('_')[1]
-
             if initialize:
                 opTable = loadDens(filename, confID, lp)
                 initialize = False
             else:
                 opTable = loadDens(filename, confID, lp, opTable)
+
+        return opTable
+
+    temp = parallel_function_eval(processDense,[0,1]) 
+    opTable = constructOpTable(temp,[0,1]) 
 
     OBS = op_to_obs(opTable, lp, writeFiles=False)
 

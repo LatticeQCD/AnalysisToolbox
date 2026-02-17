@@ -39,8 +39,11 @@ def getObs(opTable,cID,obs,asNumpy=True):
     resl=opTable[cID]['l'][obs]
     ress=opTable[cID]['s'][obs]
     if len(resl) != len(ress): 
-        logger.warn(f"len({obs}l) != len({obs}s) cID = "+cID+"... skipping")
+        logger.warn(f"len({obs}l) != len({obs}s) cID = {cID}")
         raise ToolboxException
+#    if len(resl)==0:
+#        logger.warn(f"Found zero random vectors for an observable, cID = {cID}")
+#        raise ToolboxException
     if asNumpy:
         return np.array(resl), np.array(ress)
     return resl, ress
@@ -134,8 +137,8 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
         trMdM2MsVec    = []
         trMdM3lVec     = []  # 62 : tr ( M^-1 dM )^3           : tr A^3
         trMdM3sVec     = []
-        trMdM3Md2MlVec = []  # 63 : tr ( M^-1 dM )^2 M^-1 ddM  : tr A^2 A2
-        trMdM3Md2MsVec = []
+        trMdM2Md2MlVec = []  # 63 : tr ( M^-1 dM )^2 M^-1 ddM  : tr A^2 A2
+        trMdM2Md2MsVec = []
         trMdM3MlVec    = []  # 311: tr ( M^-1 dM )^3 M^-1 
         trMdM3MsVec    = []
         trMdM4lVec     = []  # 312: tr ( M^-1 dM )^4           : tr A^4
@@ -158,7 +161,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
         trMd2M2lVec   , trMd2M2sVec    = getObs(outTable,confID,'trMd2M2'   ,False)
         trMdM2MlVec   , trMdM2MsVec    = getObs(outTable,confID,'trMdM2M'   ,False)
         trMdM3lVec    , trMdM3sVec     = getObs(outTable,confID,'trMdM3'    ,False)
-        trMdM3Md2MlVec, trMdM3Md2MsVec = getObs(outTable,confID,'trMdM3Md2M',False)
+        trMdM2Md2MlVec, trMdM2Md2MsVec = getObs(outTable,confID,'trMdM2Md2M',False)
         trMdM3MlVec   , trMdM3MsVec    = getObs(outTable,confID,'trMdM3M'   ,False)
         trMdM4lVec    , trMdM4sVec     = getObs(outTable,confID,'trMdM4'    ,False)
 
@@ -222,9 +225,9 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
         elif OPID == 63:
             _parseOperator(mass,lp,ReOP,ImOP,trMdM3lVec    ,trMdM3sVec    ,lineno,densFile) 
         elif OPID == 311:
-            _parseOperator(mass,lp,ReOP,ImOP,trMdM3Md2MlVec,trMdM3Md2MsVec,lineno,densFile) 
+            _parseOperator(mass,lp,ReOP,ImOP,trMdM2Md2MlVec,trMdM2Md2MsVec,lineno,densFile) 
         elif OPID == 312:
-            _parseOperator(mass,lp,ReOP,ImOP,trMdM3MlVec   ,trMdM3MsVec   ,lineno,densFile) 
+            _parseOperator(mass,lp,ReOP,ImOP,trMdM4lVec    ,trMdM4sVec    ,lineno,densFile) 
         else:
             continue
 
@@ -246,7 +249,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
             'trMd2M2'   : trMd2M2lVec,  
             'trMdM2M'   : trMdM2MlVec,  
             'trMdM3'    : trMdM3lVec,   
-            'trMdM3Md2M': trMdM3Md2MlVec,
+            'trMdM2Md2M': trMdM2Md2MlVec,
             'trMdM3M'   : trMdM3MlVec,
             'trMdM4'    : trMdM4lVec,
             },
@@ -268,7 +271,7 @@ def loadDens(densFile,confID,lp,inTable=None) -> dict:
             'trMd2M2'   : trMd2M2sVec,  
             'trMdM2M'   : trMdM2MsVec,  
             'trMdM3'    : trMdM3sVec,   
-            'trMdM3Md2M': trMdM3Md2MsVec,
+            'trMdM2Md2M': trMdM2Md2MsVec,
             'trMdM3M'   : trMdM3MsVec,
             'trMdM4'    : trMdM4sVec,
         }

@@ -19,6 +19,15 @@ def mean_square(vec):
     #                         diagonal terms
     return ( np.sum(vec)**2 - np.sum(vec**2) )/( N*(N-1))
 
+def square_mean_unequal(vec1,vec2):
+    """
+    <vec1><vec2> when vec1 and vec2 are of unequal length. This is needed because some
+    vectors receive extra statistics.
+    """
+    N1 = len(vec1)
+    N2 = len(vec2)
+    N = np.min([N1,N2])
+    return np.mean(vec1[:N])*np.mean(vec2[:N])
 
 def op_to_obs(opTable,lp,writeFiles=True,outFolder='denseObservables') -> dict:
     """
@@ -73,26 +82,64 @@ def op_to_obs(opTable,lp,writeFiles=True,outFolder='denseObservables') -> dict:
     for cID in opTable:
 
         try:
-            trMdMl , trMdMs  = getObs(opTable,cID,'trMdM')
-            trMdMl2, trMdMs2 = getObs(opTable,cID,'trMdM2')
-            trMd2Ml, trMd2Ms = getObs(opTable,cID,'trMd2M')
+            trMdMl     , trMdMs      = getObs(opTable,cID,'trMdM')
+            trMdMl2    , trMdMs2     = getObs(opTable,cID,'trMdM2')
+            trMd2Ml    , trMd2Ms     = getObs(opTable,cID,'trMd2M')
+            trMd3Ml    , trMd3Ms     = getObs(opTable,cID,'trMd3M')
+            trMd4Ml    , trMd4Ms     = getObs(opTable,cID,'trMd4M')
+            trMd2M2l   , trMd2M2s    = getObs(opTable,cID,'trMd2M2')
+            trMdMMd2Ml , trMdMMd2Ms  = getObs(opTable,cID,'trMdMMd2M')
+            trMdMMd3Ml , trMdMMd3Ms  = getObs(opTable,cID,'trMdMMd3M')
+            trMdM3l    , trMdM3s     = getObs(opTable,cID,'trMdM3')
+            trMdM4l    , trMdM4s     = getObs(opTable,cID,'trMdM4')
+            trMdM2Md2Ml, trMdM2Md2Ms = getObs(opTable,cID,'trMdM2Md2M')
         except logger.ToolboxException:
             continue
 
-        if len(trMdMl)==0 or len(trMdMl2)==0 or len(trMd2Ml)==0:
-            logger.warn("Found zero random vectors for an observable, cID = "+cID+"... skipping")
-            continue
+        # Express in terms of A operators. mu enters with an i in the partition function, so when I take derivatives
+        # w.r.t. mu, it pulls down an i factor. When I then evaluate at mu=0, that i is all that remains. Hence odd
+        # derivatives are pure imaginary while even derivatives are pure real. Moreover, when I square pure imaginary
+        # operators, it becomes real again, with a minus sign. 
+
+        trAl     = trMdMl.imag     # second order
+        trAs     = trMdMs.imag
+        trA2l    = trMd2Ml.real
+        trA2s    = trMd2Ms.real
+        trAe2l   = trMdMl2.real
+        trAe2s   = trMdMs2.real
+
+        trAe3l   = trMdM3l.imag    # third order
+        trAe3s   = trMdM3s.imag
+        trAA2l   = trMdMMd2Ml.imag
+        trAA2s   = trMdMMd2Ms.imag
+        trA3l    = trMd3Ml.imag # is this zero?
+        trA3s    = trMd3Ms.imag
+
+        trAe4l   = trMdM4l.real    # fourth order 
+        trAe4s   = trMdM4s.real
+        trAe2A2l = trMdM2Md2Ml.real 
+        trAe2A2s = trMdM2Md2Ms.real
+        trA2e2l  = trMd2M2l.real
+        trA2e2s  = trMd2M2s.real
+        trAA3l   = trMdMMd3Ml.real 
+        trAA3s   = trMdMMd3Ms.real
+        trA4l    = trMd4Ml.real 
+        trA4s    = trMd4Ms.real 
+
+        trdAl    = trA2l - trAe2l
+        trdAs    = trA2s - trAe2s
+        trddAl   = trA3l - trAA2l - 2*trAe3l
+        trddAs   = trA3s - trAA2s - 2*trAe3s
+        trddA2l  = trA4l - 2*trAA3l - trA2e2l + 2*trAe2A2l
+        trddA2s  = trA4s - 2*trAA3s - trA2e2s + 2*trAe2A2s
 
         # I follow the QCD Thermodynamics section of my researchNotes: https://github.com/clarkedavida/researchNotes
         # In the dense code, each trace comes with a 1/vol4. So whenever we have stuff like obs**2, since each factor 
-        # obs has a trace, we need to multiply by vol4 to get a correct normalization. Number densities should be 
-        # pure imaginary configuration by configuration at mu=0, so we take imaginary parts to reduce the noise. 
-        # When this quantity is squared, it introduces a (-) sign.
-
-        chi2l   = - vol4*( mean_square(trMdMl.imag) )/16 - np.mean(trMdMl2.real)/4 + np.mean(trMd2Ml.real)/4 + 0j
-        chi2s   = - vol4*( mean_square(trMdMs.imag) )/16 - np.mean(trMdMs2.real)/4 + np.mean(trMd2Ms.real)/4 + 0j
-        chi11ll = - vol4*( mean_square(trMdMl.imag) )/16 + 0*1j 
-        chi11ls = - vol4*( np.mean(trMdMl.imag)*np.mean(trMdMs.imag) )/16 + 0*1j
+        # obs has a trace, we need to multiply by vol4 to get a correct normalization. 
+        chi2l   = - vol4*( mean_square(trAl) )/16 - np.mean(trAe2l)/4 + np.mean(trA2l)/4 + 0j
+        chi2s   = - vol4*( mean_square(trAs) )/16 - np.mean(trAe2s)/4 + np.mean(trA2s)/4 + 0j
+        chi11ll = - vol4*( mean_square(trAl) )/16 + 0j 
+        chi11ls = - vol4*( np.mean(trAl)*np.mean(trAs) )/16 + 0j
 
         chi2B   = (1/9)*( 2*chi2l + chi2s + 2*chi11ll + 4*chi11ls )
         chi2Q   = (1/9)*( 5*chi2l + chi2s - 4*chi11ll - 2*chi11ls )
@@ -101,11 +148,20 @@ def op_to_obs(opTable,lp,writeFiles=True,outFolder='denseObservables') -> dict:
         chi11BS = (1/3)*(         - chi2s             - 2*chi11ls ) 
         chi11QS = (1/3)*(           chi2s             -   chi11ls ) 
 
+        # I guess something here is wrong for fourth order 
+        chi4l = (1/2)*np.mean(trAe4l + 7*trAe2A2l - 2*trA2e2l - 3*trAA3l + trA4l) \
+                -(1/8)*(np.mean(trddAl)*np.mean(trAl)+np.mean(trdAl)) \
+                +(1/8)*(square_mean_unequal(trddAl,trAl) + mean_square(trdAl))
+
 # Idea on why imaginary part is wrong: in your eq (12.22), the <> brackets are the gauge average. The tr is already
 # a random vector average, and that random vector average is exactly what you're computing in here. You don't do the
 # gauge average until the very end, way outside of this routine, so when you needed to compute the <>**2 term, you
 # accidentally computed <()**2>, which is not the same obviously. This still works at real chemical potential
 # because that term is zero, so you never needed to include it.
+#
+# The way around this would be to identify all the pieces that enter an observable, like mean_square(trAl), then
+# give those configuration by configuration. Then one can correctly reconstruct the jackknife averages also for
+# pure imaginary chemical potential.
 
 # TODO: Find some data to test these against. They should be correct, but
 #       it's better to be careful.
