@@ -206,4 +206,4 @@ def checkExtension(filename,extension):
         extension (str)
     """
     if not filename.endswith(extension):
-        logger.TBRaise('Expected a',extension,'file.')
+        logger.TBRaise(f'Expected a {extension} file. Got {filename}.')

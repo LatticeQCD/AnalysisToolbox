@@ -8,7 +8,6 @@
 # Given an Nt and T, get beta.
 #
 
-import numpy as np
 import argparse
 from latqcdtools.physics.referenceScales import r0_div_a, a_times_fk, CY_phys, CY_param, ignoreBetaRange
 from latqcdtools.physics.constants import fk_phys, r0_phys

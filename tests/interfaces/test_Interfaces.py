@@ -7,7 +7,8 @@
 # 
 
 from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML, writeYAML, \
-    writeJSON, readJSON, convertTable, csvTable, paramFromEnsLabel
+    writeJSON, readJSON, convertTable, csvTable
+from latqcdtools.interfaces.collaborations import paramFromEnsLabel
 from latqcdtools.testing import concludeTest
 from latqcdtools.base.utilities import deleteFile
 import latqcdtools.base.logger as logger

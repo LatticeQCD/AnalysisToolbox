@@ -17,7 +17,7 @@ For the first two, we have `HotQCDParams` and `MILCParams` objects, which inheri
 object described [here](../physicsAnalysis/latticeParameters.md). To quickly extract run parameters
 from a MILC or HotQCD-type string, one finds inside
 ```Python
-latqcdtools.interfaces.interfaces
+latqcdtools.interfaces.collaborations
 ```
 the method `paramFrom_HotQCD_MILC`. The `gpl`, `yaml`, and `json` reading methods 
 `loadGPL`, `loadYAML`, and `loadJSON` are also inside this module.
