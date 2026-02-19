@@ -16,7 +16,13 @@ give that back.
 _printExponent(prefix, exponent)
 ```
 ```Python
-_statisticalConsistencyCheck(parameterInfo)
+_statisticalConsistencyCheck(parameterInfo, obs)
+```
+```Python
+ignoreTension():
+'''
+Turn off statistical tension warnings. 
+'''
 ```
 ```Python
 reweight(X, pRW, p0, S):
@@ -44,6 +50,9 @@ class O3_3d():
 ```
 ```Python
 class O4_3d():
+```
+```Python
+class Oinf_3d():
 ```
 ```Python
 class S3_2d():

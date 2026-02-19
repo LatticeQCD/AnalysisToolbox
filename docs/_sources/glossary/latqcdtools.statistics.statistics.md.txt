@@ -436,7 +436,7 @@ Returns:
 '''
 ```
 ```Python
-plot_correlation(mat, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>):
+plot_correlation(mat, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>):
 '''Plot correlation matrix as a heatmap.
 
 Args:

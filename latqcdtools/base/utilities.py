@@ -37,22 +37,20 @@ def _getPrefix(byteString):
 
 
 def _convert(text):
-    if text.isdigit():
-        # For strings with leading zeros, we want them to sort before strings without
-        # Use the original string for lexicographic ordering
-        return text
-    else:
+    try:
+        # Try to convert text to a float for numerical sorting
+        return float(text)
+    except ValueError:
+        # If it fails, return the text in lowercase
         return text.lower()
 
 
 def _alphanum_key(key):
     """ 
-    Splits the string `key` at any point where there is one or more consecutive digits. 
-    The regular expression `([0-9]+)` is used to match one or more digits. The parentheses `()` 
-    capture the matched digits as separate elements. For example, if `key` were 
-    `'abc123def456ghi'`, the resulting list would be `['abc', '123', 'def', '456', 'ghi']`. 
+    Splits the string `key` at any point where there's a change from digit to non-digit or vice versa.
+    Will accurately handle integers and real numbers.
     """
-    return [_convert(c) for c in re.split('([0-9]+)', key)]
+    return [_convert(c) for c in re.split('([0-9]+(?:\\.[0-9]+)?)', key)]
 
 
 # ---------------------------------------------------------------------------------- MAKE INTERNAL FUNCTIONS MORE SMOOTH

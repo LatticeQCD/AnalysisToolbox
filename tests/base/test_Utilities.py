@@ -26,6 +26,8 @@ def testUtilities():
 
     if naturalSort(testArray)!=sortArray:
         logger.TBFail('natural sort')
+        for f in naturalSort(testArray):
+            logger.TBFail(' ',f)
         lpass=False
 
     x = 3

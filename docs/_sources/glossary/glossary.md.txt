@@ -16,8 +16,7 @@ latqcdtools.base.printErrorBars.md
 latqcdtools.base.readWrite.md
 latqcdtools.base.speedify.md
 latqcdtools.base.utilities.md
-latqcdtools.interfaces.HotQCD.md
-latqcdtools.interfaces.MILC.md
+latqcdtools.interfaces.collaborations.md
 latqcdtools.interfaces.confReader.md
 latqcdtools.interfaces.interfaces.md
 latqcdtools.interfaces.lime.md
@@ -36,7 +35,6 @@ latqcdtools.physics.HotQCDEOS.md
 latqcdtools.physics.constants.md
 latqcdtools.physics.continuumExtrap.md
 latqcdtools.physics.correlators.md
-latqcdtools.physics.denseObs.md
 latqcdtools.physics.diracFreespectra.md
 latqcdtools.physics.gauge.md
 latqcdtools.physics.ideal.md

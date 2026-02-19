@@ -44,16 +44,6 @@ Including two-loop corrections to Coulomb. See Nucl. Phys. B 501 (1997). Fit to 
 '''
 ```
 ```Python
-get_optimal_block_size():
-'''
-Returns an optimal block size based on the current CUDA device.
-Defaults to 256 if device information cannot be obtained.
-
-Returns:
-    int: Optimal threads per block
-'''
-```
-```Python
 impdist(Ns, r2max, improvedAction=True):
 '''
 GPU-accelerated calculation of tree-level improved distances.

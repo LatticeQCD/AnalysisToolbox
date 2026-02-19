@@ -4,10 +4,8 @@ latqcdtools.base.utilities
 ```Python
 _alphanum_key(key):
 '''
-Splits the string `key` at any point where there is one or more consecutive digits. 
-The regular expression `([0-9]+)` is used to match one or more digits. The parentheses `()` 
-capture the matched digits as separate elements. For example, if `key` were 
-`'abc123def456ghi'`, the resulting list would be `['abc', '123', 'def', '456', 'ghi']`. 
+Splits the string `key` at any point where there's a change from digit to non-digit or vice versa.
+Will accurately handle integers and real numbers.
 '''
 ```
 ```Python

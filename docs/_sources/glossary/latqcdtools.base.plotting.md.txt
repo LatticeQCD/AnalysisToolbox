@@ -279,8 +279,8 @@ Args:
 '''
 ```
 ```Python
-set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>)
+set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>)
 ```
 ```Python
-set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.13/site-packages/matplotlib/pyplot.py'>)
+set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>)
 ```

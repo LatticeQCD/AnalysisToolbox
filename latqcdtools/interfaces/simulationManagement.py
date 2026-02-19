@@ -46,7 +46,7 @@ def countConfigurations(targetFolder,name,delimiter='.'):
 
 def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0.05,
                  showPlots=False,savePlots=False,plotNamePrefix=None,tpickMax=None,
-                 nbins=None,verbose=False,**plotargs):
+                 nbins=None,verbose=False,**plotargs) -> dict:
     """
     Do some basic analysis of a MCMC time series of measurements. We check whether the data
     are distributed normally. Optionally you can plot the time series and/or a histogram.
@@ -96,6 +96,7 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0
         plt.show()
     clearPlot()
 
+    res       = {}
     mean      = std_mean(measurements)
     err       = std_err(measurements)
     normalCDF = sp.stats.norm(loc=mean,scale=err).cdf
@@ -103,11 +104,17 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0
     if q<KScutoff:
         logger.warn('Measurement distribution not consistent with Gaussian')
 
+    res["mean"] = mean
+    res["err"]  = err
+    res["qKS"]  = q
+
     Nmeas = len(measurements)
     if nbins is None:
         nbins = int(Nmeas/100)+2
     if tpickMax is None:
         tpickMax = int(Nmeas/10)+1
+    
+    res["Nmeas"] = Nmeas
 
     try:
         tau_int, tau_inte, _ = getTauInt(measurements,nbins=nbins,tpickMax=tpickMax)
@@ -116,12 +123,16 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0
         logger.TBFail('You may have to adjust Nbins and tpickMax')
         raise e 
 
+    res["tau_int"]     = tau_int
+    res["tau_int_err"] = tau_inte
+
     logger.info(f'  tau_int = {get_err_str(tau_int,tau_inte)}')
     if verbose:
         logger.info(f'    Nmeas = {Nmeas}')
         logger.info(f'      val = {get_err_str(mean,err)}')
         logger.info(f' KS gauss = {q}')
 
+    return res
 
 _allowedEnsKinds = ['conf','meas','conf/meas','seed','seed/meas']
 _allowedEnsKeys  = ['kind',  # configurations? measurements?

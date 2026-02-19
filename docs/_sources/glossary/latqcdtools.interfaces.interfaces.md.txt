@@ -14,18 +14,6 @@ Args:
 '''
 ```
 ```Python
-paramFromEnsLabel(ensemble, format='MILC'):
-'''
-Given an ensemble string, get the parameters out of it. 
-
-Args:
-    ensemble (str): ensemble label
-
-Returns:
-    tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string, mass3 string
-'''
-```
-```Python
 readGPL(filename, discardTag=True, raggedWarn=True, floatT=<class 'numpy.float64'>):
 '''
 Load GPL files from Peter Lepage's g-2 tools as 2d array. Can also load GPL-like files, where one allows the
@@ -87,13 +75,6 @@ Write dictionary to YAML file.
 Args:
     data (dict)
     filename (str)
-'''
-```
-```Python
-class HotQCD_MILC_Params(Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None, Nf='21', scaleYear=None, muB=0):
-'''
-A class to handle and check the input parameters of a lattice run using conventions common to both the
-HotQCD and MILC collaborations. 
 '''
 ```
 ```Python
