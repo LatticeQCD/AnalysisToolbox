@@ -121,7 +121,7 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
         if isVec:
             return integrateFunction(func,a,b,args=args,method='vec_quad',limit=limit,epsrel=epsrel,epsabs=epsabs)
         else:
-            return integrate.quad(func, a, b, args=args, limit=limit, epsrel=epsrel, epsabs=epsabs)[0]
+            return integrate.quad(func, unvector(a), unvector(b), args=args, limit=limit, epsrel=epsrel, epsabs=epsabs)[0]
 
     elif method=='trapezoid':
         for i in range(len(b)):
