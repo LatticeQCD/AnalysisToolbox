@@ -13,7 +13,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.math.math import quadrature
-from latqcdtools.statistics.statistics import error_prop
+from latqcdtools.statistics.statistics import error_prop, midpointMeanError, weighted_variance 
 
 
 # Base constants for unit conversions
@@ -524,9 +524,31 @@ def r0_phys(year=2014,units="fm",returnErr=False):
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
 
 
+def Tpc_chiral(year=2020,units="MeV",returnErr=False):
+    """
+    Chiral crossover temperature at zero net-baryon chemical potential, as estimated using the
+    chiral susceptibility. This differs from other methods, as different years combine results
+    from multiple groups. 
+    """
+    # T2019 from chi^sigma Fig 2. Fished out using WebPlotDigitizer 
+    Tm2019   , Te2019    = midpointMeanError(hi=156.79681608713867,lo=156.2253875157101) 
+    TmBMW2020, TeBMW2020 = 158, 0.6
+    Tms = np.array([Tm2019,TmBMW2020])
+    Tes = np.array([Te2019,TeBMW2020])
+    # BMW result compared with hotQCD has q=0.025. Therefore include the spread as part of estimate
+    # of systematic uncertainty. Have to take standard mean rather than weighted mean b/c of this.
+    Tm2020 = np.mean(Tms)
+    Te2020 = quadrature( np.array([weighted_variance(Tes), (Tm2019-TmBMW2020)**2]) )
+    scale = {
+        2019: ( Tm2019, Te2019), # hotQCD 2019. DOI: 10.1016/j.physletb.2019.05.013, chi^sigma Fig 2
+        2020: ( Tm2020, Te2020), # combine with BMW 2020. DOI: 10.1103/PhysRevLett.125.052001
+    }
+    return physicalConstant("Tpc_chiral",scale,"MeV").getValue(year,units,returnErr) 
+
+
 def sqrtG(year=2024,units="GeVinv",returnErr=False):
     """
-    Square root of Newton's gravitational constant
+    Square root of Newton's gravitational constant.
     """
     m2024, e2024 = error_prop(np.sqrt,np.array([6.70883e-39]),np.array([0.00014e-39]))
     scale = {

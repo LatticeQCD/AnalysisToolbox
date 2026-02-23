@@ -915,7 +915,19 @@ def binSeries(data,nbins) -> np.ndarray:
     return np.apply_along_axis(std_mean, 1, reshaped_data)
 
 
-def symmetrizeError(lo,hi,central,method='conservative') -> float:
+def symmetrizeError(lo,hi,central,method='conservative'):
+    """
+    Take unsymmetric errors and estimate symmetric errors from them.
+
+    Args:
+        lo (float): mean-err1 
+        hi (float): mean+err2
+        central (float): mean 
+        method (str, optional): Approach to estimate error. Defaults to 'conservative'.
+
+    Returns:
+        mean and symmetric error
+    """
     checkType(str,method=method)
     checkType("real",lo=lo)
     checkType("real",hi=hi)
@@ -936,3 +948,24 @@ def symmetrizeError(lo,hi,central,method='conservative') -> float:
     else:
         logger.TBRaise('Unrecognized method',method)
     return mean, err
+
+
+def midpointMeanError(lo,hi):
+    """
+    Take mean+err and mean-err and use those to compute mean and err. Assume symmetric
+    error bar. This is useful e.g. when using WebPlotDigitizer.
+
+    Args:
+        lo (float): mean-err 
+        hi (float): mean+err 
+
+    Returns:
+        mean, err 
+    """
+    checkType("real",lo=lo)
+    checkType("real",hi=hi)
+    if lo>hi:
+        logger.TBRaise('Must have lo<=hi.')
+    mean = (lo+hi)/2
+    err  = (hi-lo)/2
+    return mean, err 

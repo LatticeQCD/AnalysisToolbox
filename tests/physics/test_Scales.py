@@ -11,7 +11,7 @@ from latqcdtools.physics.referenceScales import a_times_fk, a_div_r1, r0_div_a, 
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.physics.constants import M_mu_phys, M_K0_phys, M_Kpm_phys, M_pi0_phys, M_pipm_phys,\
     M_rho_phys, frho_phys, fk_phys, fpi_phys, w0_phys, r0_phys, r1_phys, alpha_e, lambda_MSbar_phys,\
-    Rproton_phys
+    Rproton_phys, Tpc_chiral
 import latqcdtools.base.logger as logger
 
 
@@ -52,7 +52,7 @@ def testScales():
     lpass *= print_results(   7.2973525693e-3, alpha_e(year=2018)                      , text="alpha_e 2018"      )
     lpass *= print_results( 339              , lambda_MSbar_phys(year=2021,units="MeV"), text="lambda_MSbar 2021" )
     lpass *= print_results(   0.8414         , Rproton_phys(year=2018,units="fm")      , text="R_proton 2021"     )
-
+    lpass *= print_results( 157.2555509      , Tpc_chiral(year=2020,units="MeV")       , text="Tpc_chiral 2020"   )
 
     concludeTest(lpass)
 
