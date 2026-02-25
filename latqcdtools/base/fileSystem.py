@@ -104,7 +104,7 @@ def getFileTimeStamp(target) -> str:
     if os.path.isfile(target):
         modification_time = os.path.getmtime(target)
         mod_time_readable = datetime.datetime.fromtimestamp(modification_time)
-        return mod_time_readable
+        return str(mod_time_readable)
     else:
         logger.warn(f"{target} is not regular file.")
     
