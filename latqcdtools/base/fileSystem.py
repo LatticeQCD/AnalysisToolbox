@@ -37,7 +37,7 @@ def deleteLine(target,line_number):
 
 def rm(target):
     """
-    Delete target regular file or folder. Equivalent to rm -rf in bash.
+    Delete target regular file or folder. Equivalent to rm -rf in Bash.
     
     Args:
         target (str)
@@ -64,7 +64,7 @@ def rm(target):
 
 def ls(target) -> list:
     """
-    Get list of files in file path. Similar to ls in bash.
+    Get list of files in file path. Similar to ls in Bash.
 
     Args:
         target (str)
@@ -76,18 +76,36 @@ def ls(target) -> list:
     return naturalSort(list(glob.iglob(target)))
 
 
-def createFilePath(target):
+def createFilePath(filePath):
     """ 
     Create the directory path for a file if it isn't there already. 
 
     Args:
-        target (str)
+        filePath (str)
     """
-    checkType(str,target=target)
-    if '/' in target:
-        dir_path = os.path.dirname(target)
+    checkType(str,target=filePath)
+    if '/' in filePath:
+        dir_path = os.path.dirname(filePath)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path,exist_ok=True)
+
+
+def cp(source,target):
+    """
+    Copy source to target. Creates target directory path if needed. Similar
+    to cp -r in Bash.
+
+    Args:
+        source (str)
+        target (str)
+    """
+    checkType(str,source=source)
+    checkType(str,target=target)
+    createFilePath(target)
+    if os.path.isdir(source):
+        shutil.copytree(source,target)
+    else:
+        shutil.copy(source,target)
 
 
 def getFileTimeStamp(target) -> str:
