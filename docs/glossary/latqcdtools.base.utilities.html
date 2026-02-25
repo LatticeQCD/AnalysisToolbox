@@ -241,6 +241,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="glossary.html">Glossary</a><input aria-label="Toggle navigation of Glossary" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.check.html">latqcdtools.base.check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.cleanData.html">latqcdtools.base.cleanData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.fileSystem.html">latqcdtools.base.fileSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.initialize.html">latqcdtools.base.initialize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.plotting.html">latqcdtools.base.plotting</a></li>
@@ -383,34 +384,6 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">createFilePath</span><span class="p">(</span><span class="n">fullFileName</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Create the directory path if it isn&#39;t there already. </span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteFile</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Delete the file at target, if it exists. </span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteFolder</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Delete the folder at target, if it exists. </span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">deleteLine</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">line_number</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Delete line line_number from file target.</span>
-
-<span class="sd">Args:</span>
-<span class="sd">    target (str)</span>
-<span class="sd">    line_number (int)</span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">elapsedSeconds</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span> <span class="n">date2</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Compute elapsed time in seconds between date1 and date2. </span>
@@ -480,9 +453,6 @@
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">isScalar</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ls</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">naturalSort</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>

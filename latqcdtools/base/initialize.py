@@ -9,7 +9,8 @@
 import numpy as np
 import os, sys, warnings
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import shell, createFilePath
+from latqcdtools.base.utilities import shell 
+from latqcdtools.base.fileSystem import createFilePath
 
 
 INITIALIZED = False     # Global flag to check if initialization has already occurred.

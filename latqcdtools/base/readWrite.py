@@ -11,7 +11,8 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.base.cleanData import clipRange, excludeAtCol 
-from latqcdtools.base.utilities import createFilePath, isComplexType
+from latqcdtools.base.utilities import isComplexType
+from latqcdtools.base.fileSystem import createFilePath
 
 
 def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,excludeAtVal=None,**kwargs) -> np.ndarray:

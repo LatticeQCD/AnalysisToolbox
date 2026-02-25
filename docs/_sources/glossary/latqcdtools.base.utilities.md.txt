@@ -61,34 +61,6 @@ Returns:
 '''
 ```
 ```Python
-createFilePath(fullFileName):
-'''
-Create the directory path if it isn't there already. 
-'''
-```
-```Python
-deleteFile(target):
-'''
-Delete the file at target, if it exists. 
-'''
-```
-```Python
-deleteFolder(target):
-'''
-Delete the folder at target, if it exists. 
-'''
-```
-```Python
-deleteLine(target, line_number):
-'''
-Delete line line_number from file target.
-
-Args:
-    target (str)
-    line_number (int)
-'''
-```
-```Python
 elapsedSeconds(date1, date2, format='%Y/%m/%d %H:%M:%S') -> float:
 '''
 Compute elapsed time in seconds between date1 and date2. 
@@ -158,9 +130,6 @@ isReal(obj) -> bool
 ```
 ```Python
 isScalar(obj) -> bool
-```
-```Python
-ls(filePath) -> list
 ```
 ```Python
 naturalSort(l) -> list:

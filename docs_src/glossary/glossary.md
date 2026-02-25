@@ -9,6 +9,7 @@ maxdepth: 1
 ---
 latqcdtools.base.check.md
 latqcdtools.base.cleanData.md
+latqcdtools.base.fileSystem.md
 latqcdtools.base.initialize.md
 latqcdtools.base.logger.md
 latqcdtools.base.plotting.md

@@ -8,9 +8,8 @@
 
 from subprocess import run, PIPE
 import numpy as np
-import time, re, datetime, os, shutil
+import time, re, datetime
 import latqcdtools.base.logger as logger
-import glob
 
 
 # For byte conversions
@@ -360,73 +359,6 @@ def substringBetween(string,a,b) -> str:
     return string[start_index:end_index]
 
 
-def deleteLine(target,line_number):
-    """
-    Delete line line_number from file target.
-
-    Args:
-        target (str)
-        line_number (int)
-    """
-    if os.path.isfile(target):
-        with open(target, 'r') as file:
-            lines = file.readlines()
-        if 0 < line_number <= len(lines):
-            lines.pop(line_number - 1)  # line_number is 1-based
-            with open(target, 'w') as file:
-                file.writelines(lines)
-        else:
-            logger.TBRaise("Line number is out of range.")
-        return
-    logger.warn(f"{target} does not exist.")
-
-
-def deleteFile(target):
-    """ 
-    Delete the file at target, if it exists. 
-    """
-    if os.path.isfile(target):
-        try:
-            os.remove(target)
-            logger.info("Deleted file",target)
-            return
-        except OSError:
-            pass
-    else:
-        pass
-    logger.warn('Unable to remove file',target)
-
-
-def deleteFolder(target):
-    """ 
-    Delete the folder at target, if it exists. 
-    """
-    if os.path.isdir(target):
-        try:
-            shutil.rmtree(target)
-            logger.info("Deleted folder",target,"and its subdirectories.")
-            return
-        except OSError:
-            pass
-    else:
-        pass
-    logger.warn('Unable to remove folder',target)
-
-
-def createFilePath(fullFileName):
-    """ 
-    Create the directory path if it isn't there already. 
-    """
-    if '/' in fullFileName:
-        dir_path = os.path.dirname(fullFileName)
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path,exist_ok=True)
-
-
-def ls(filePath) -> list:
-    return naturalSort(list(glob.iglob(filePath)))
-
-
 def byteConvert(x,b1,b2):
     """ 
     Convert between bytes given scientific prefixes.
@@ -472,3 +404,8 @@ class timer:
     def resetTimer(self):
         self._tstart = time.time()
         self._tend   = self._tstart
+
+
+
+# ------------------------------------------------------------------------------------------------- LEGACY WRAPPERS 
+

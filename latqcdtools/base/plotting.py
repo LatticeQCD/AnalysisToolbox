@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
-from latqcdtools.base.utilities import isHigherDimensional, toNumpy , envector, createFilePath
+from latqcdtools.base.utilities import isHigherDimensional, toNumpy, envector 
+from latqcdtools.base.fileSystem import createFilePath
 from latqcdtools.base.readWrite import readTable
 
 try:

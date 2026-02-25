@@ -408,6 +408,20 @@ Differences in logGBF smaller than 1 are not very significant. Gaussian statisti
 meanArgWrapper(func, used_data, args)
 ```
 ```Python
+midpointMeanError(lo, hi):
+'''
+Take mean+err and mean-err and use those to compute mean and err. Assume symmetric
+error bar. This is useful e.g. when using WebPlotDigitizer.
+
+Args:
+    lo (float): mean-err 
+    hi (float): mean+err 
+
+Returns:
+    mean, err 
+'''
+```
+```Python
 modelAverage(data, err, IC, return_syst=False):
 '''
 Given some fit results, corresponding error, and information criteria, compute
@@ -549,7 +563,19 @@ Returns:
 '''
 ```
 ```Python
-symmetrizeError(lo, hi, central, method='conservative') -> float
+symmetrizeError(lo, hi, central, method='conservative'):
+'''
+Take unsymmetric errors and estimate symmetric errors from them.
+
+Args:
+    lo (float): mean-err1 
+    hi (float): mean+err2
+    central (float): mean 
+    method (str, optional): Approach to estimate error. Defaults to 'conservative'.
+
+Returns:
+    mean and symmetric error
+'''
 ```
 ```Python
 unbiased_mean_variance(data, err) -> float:

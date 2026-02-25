@@ -10,7 +10,7 @@ from latqcdtools.interfaces.interfaces import latexTable, redmineTable, readYAML
     writeJSON, readJSON, convertTable, csvTable
 from latqcdtools.interfaces.collaborations import paramFromEnsLabel
 from latqcdtools.testing import concludeTest
-from latqcdtools.base.utilities import deleteFile
+from latqcdtools.base.fileSystem import rm 
 import latqcdtools.base.logger as logger
 
 
@@ -76,11 +76,8 @@ def testInterfaces():
     testDict = readJSON('test.json')
     lpass *= testDict==refDict
 
-    deleteFile('test.yaml') 
-    deleteFile('test.json') 
-    deleteFile('testInterface.tex') 
-    deleteFile('testInterface.redmine') 
-    deleteFile('testInterface.csv')
+    for target in ['test.yaml','test.json','testInterface.tex','testInterface.redmine','testInterface.csv']:
+        rm(target)
 
     param = paramFromEnsLabel('l248f111b37000m00139736m00291117m0585145',format='MILC')
     if param != (24, 8, '111', '37000', '00139736', '00291117', '0585145'):

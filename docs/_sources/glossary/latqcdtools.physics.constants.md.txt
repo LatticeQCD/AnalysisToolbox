@@ -65,6 +65,14 @@ Physical value of proton charge radius.
 '''
 ```
 ```Python
+Tpc_chiral(year=2020, units='MeV', returnErr=False):
+'''
+Chiral crossover temperature at zero net-baryon chemical potential, as estimated using the
+chiral susceptibility. This differs from other methods, as different years combine results
+from multiple groups. 
+'''
+```
+```Python
 _separatePrefix(units)
 ```
 ```Python
@@ -137,7 +145,7 @@ Physical value of Sommer scale r1.
 ```Python
 sqrtG(year=2024, units='GeVinv', returnErr=False):
 '''
-Square root of Newton's gravitational constant
+Square root of Newton's gravitational constant.
 '''
 ```
 ```Python

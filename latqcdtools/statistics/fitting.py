@@ -15,7 +15,8 @@ from latqcdtools.base.check import checkEqualLengths
 from latqcdtools.base.speedify import parallel_function_eval
 from latqcdtools.base.plotting import plot_dots, plt
 from latqcdtools.base.readWrite import writeTable
-from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy, createFilePath
+from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy 
+from latqcdtools.base.fileSystem import createFilePath
 from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, isPositiveSemidefinite, \
     isMatrix, isVector
 from latqcdtools.math.optimize import minimize

@@ -14,8 +14,9 @@ import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac 
 from latqcdtools.math.math import logDet, normalize, invert, isVector, checkVector
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, plt, _initializePlt,\
-    _add_optional, _getAxObject, ZOD, _update_handles, _update_labels, set_params
-from latqcdtools.base.utilities import toNumpy, appendToDocstring, unvector, createFilePath
+    _add_optional, _getAxObject, _update_handles, _update_labels, set_params, ZOD
+from latqcdtools.base.utilities import appendToDocstring, unvector
+from latqcdtools.base.fileSystem import createFilePath
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.check import checkType, checkEqualLengths
 from latqcdtools.base.readWrite import writeTable

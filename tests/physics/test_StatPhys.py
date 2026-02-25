@@ -10,7 +10,7 @@
 from latqcdtools.physics.statisticalPhysics import O2_3d, O3_3d, O4_3d, Oinf_3d, Z2_3d, Z2_2d, \
     S3_2d, S4_2d, reweight
 import latqcdtools.base.logger as logger
-from latqcdtools.base.utilities import ls
+from latqcdtools.base.fileSystem import ls
 from latqcdtools.base.readWrite import readTable
 from latqcdtools.testing import concludeTest, gaudif_results
 from latqcdtools.statistics.statistics import std_mean

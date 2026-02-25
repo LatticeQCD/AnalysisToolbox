@@ -241,6 +241,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="glossary.html">Glossary</a><input aria-label="Toggle navigation of Glossary" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.check.html">latqcdtools.base.check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.cleanData.html">latqcdtools.base.cleanData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.fileSystem.html">latqcdtools.base.fileSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.initialize.html">latqcdtools.base.initialize</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.plotting.html">latqcdtools.base.plotting</a></li>
@@ -730,6 +731,20 @@
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">meanArgWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">used_data</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">midpointMeanError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Take mean+err and mean-err and use those to compute mean and err. Assume symmetric</span>
+<span class="sd">error bar. This is useful e.g. when using WebPlotDigitizer.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    lo (float): mean-err </span>
+<span class="sd">    hi (float): mean+err </span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    mean, err </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">modelAverage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">IC</span><span class="p">,</span> <span class="n">return_syst</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Given some fit results, corresponding error, and information criteria, compute</span>
@@ -871,7 +886,19 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Take unsymmetric errors and estimate symmetric errors from them.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    lo (float): mean-err1 </span>
+<span class="sd">    hi (float): mean+err2</span>
+<span class="sd">    central (float): mean </span>
+<span class="sd">    method (str, optional): Approach to estimate error. Defaults to &#39;conservative&#39;.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    mean and symmetric error</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_mean_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

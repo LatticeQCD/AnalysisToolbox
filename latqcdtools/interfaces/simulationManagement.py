@@ -14,7 +14,8 @@ from latqcdtools.statistics.statistics import std_mean, std_err, checkTS, KSTest
 from latqcdtools.statistics.autocorrelation import getTauInt
 from latqcdtools.base.printErrorBars import get_err_str
 import scipy as sp
-from latqcdtools.base.utilities import ls, naturalSort
+from latqcdtools.base.utilities import naturalSort
+from latqcdtools.base.fileSystem import ls
 from latqcdtools.math.math import rel_check
 
 def countConfigurations(targetFolder,name,delimiter='.'):
