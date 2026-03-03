@@ -7,6 +7,7 @@
 # Python script to do these things.
 #
 import os, shutil, glob, datetime
+from dateutil import tz
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.base.utilities import naturalSort
@@ -108,7 +109,7 @@ def cp(source,target):
         shutil.copy(source,target)
 
 
-def getFileTimeStamp(target) -> str:
+def getFileTimeStamp(target,form='human',zone=None) -> str:
     """
     Get the time stamp (when it was last modified) of a regular file.
 
@@ -119,10 +120,19 @@ def getFileTimeStamp(target) -> str:
         str: time stamp in format 2025-09-23 14:56:27
     """
     checkType(str,target=target)
+    if (zone is not None) and (form=='human'):
+        logger.TBRaise('zone only meaningful for form==hubert.')
     if os.path.isfile(target):
-        modification_time = os.path.getmtime(target)
-        mod_time_readable = datetime.datetime.fromtimestamp(modification_time)
-        return str(mod_time_readable)
+        modification_time = int(os.path.getmtime(target))
+        if form=='human':
+            mod_time_readable = datetime.datetime.fromtimestamp(modification_time)
+            return str(mod_time_readable).strip()
+        elif form=='hubert':
+            target_timezone = tz.gettz('Europe/Paris')  # Example for +01:00, adjust as needed.
+            mod_time = datetime.datetime.fromtimestamp(modification_time, tz=target_timezone)
+            return str(mod_time.isoformat()).strip()
+        else:
+            logger.TBRaise('Unsupported format',form)
     else:
         logger.warn(f"{target} is not regular file.")
     

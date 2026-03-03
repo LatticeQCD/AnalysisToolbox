@@ -274,7 +274,10 @@ def shell(*args):
         shell('ls -lah')
     """
     args = [str(s) for s in args]
-    process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
+    command = ' '.join(args)
+    process = run(command,shell=True,check=True,stdout=PIPE,universal_newlines=True)
+    if process.returncode != 0:
+        logger.TBRaise(f'{command} failed with return code {process.returncode}')
     return process.stdout
 
 
@@ -283,7 +286,10 @@ def shellVerbose(*args):
     Same as shell, but instead of capturing output, print it to screen. 
     """
     args = [str(s) for s in args]
-    process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
+    command = ' '.join(args)
+    process = run(command,shell=True,check=True,stdout=PIPE,universal_newlines=True)
+    if process.returncode != 0:
+        logger.TBRaise(f'{command} failed with return code {process.returncode}')
     print(process.stdout)
 
 

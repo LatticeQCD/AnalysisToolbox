@@ -32,16 +32,19 @@ class HotQCD_MILC_Params(latticeParams):
             return self.getcgeom()+'f'+str(self.Nf)+'b'+self.cbeta+'m'+self.cm1+'m'+self.cm2
 
 
-def paramFromEnsLabel(ensemble,format='MILC'):
+def paramFromEnsLabel(ensemble,format='MILC') -> dict:
     """ 
-    Given an ensemble string, get the parameters out of it. 
+    Given an ensemble string, get the parameters out of it. This is meant to be paired with
+    the latticeParameters subclass, i.e. it gives back information to quickly construct
+    a latticeParameters object. 
 
     Args:
         ensemble (str): ensemble label
 
     Returns:
-        tuple: Ns, Nt, Nf, beta string, mass1 string, mass2 string, mass3 string
+        dict: Extracted parameters 
     """
+    res = {}
     checkType(str,ensemble=ensemble)
     checkType(str,format=format)
     Ns, Nt, Nf, cbeta, cm1, cm2, cm3 = None, None, None, None, None, None, None
@@ -64,7 +67,14 @@ def paramFromEnsLabel(ensemble,format='MILC'):
             cm3 = ensemble.split('m')[3].strip()
     else:
         logger.TBRaise('Unsupported format',format)
-    return int(Ns), int(Nt), Nf, cbeta, cm1, cm2, cm3 
+    res['Ns']=int(Ns)
+    res['Nt']=int(Nt)
+    res['Nf']=Nf
+    res['cbeta']=cbeta
+    res['cm1']=cm1
+    res['cm2']=cm2
+    res['cm3']=cm3
+    return res 
 
 
 class HotQCDParams(HotQCD_MILC_Params):

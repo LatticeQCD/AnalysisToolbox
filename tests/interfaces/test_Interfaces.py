@@ -80,7 +80,8 @@ def testInterfaces():
         rm(target)
 
     param = paramFromEnsLabel('l248f111b37000m00139736m00291117m0585145',format='MILC')
-    if param != (24, 8, '111', '37000', '00139736', '00291117', '0585145'):
+    if param !=  {'Ns': 24, 'Nt': 8, 'Nf': '111', 'cbeta': '37000', 'cm1': '00139736', 'cm2': '00291117', 'cm3': '0585145'}:
+        print(param)
         logger.TBFail('paramFromEnsLabel')
         lpass = False
 
