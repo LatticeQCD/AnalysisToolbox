@@ -13,7 +13,7 @@ import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.math.math import quadrature
-from latqcdtools.statistics.statistics import error_prop, midpointMeanError, weighted_variance 
+from latqcdtools.statistics.statistics import error_prop, midpointMeanError, weighted_variance, symmetrizeError 
 
 
 # Base constants for unit conversions
@@ -498,6 +498,18 @@ def w0_phys(year=2013,units="fm",returnErr=False):
         2013: (0.1715, 0.0009), # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
     }
     return physicalConstant("w0",scale,"fm").getValue(year,units,returnErr) 
+
+
+def sqrtt0_phys(year=2017,units="fm",returnErr=False):
+    """
+    Gradient flow scale sqrt(t0).
+    """
+    st0m2016, st0e2016 = symmetrizeError(lo=0.0005,hi=0.0008,central=0.1416,method='FLAG')
+    scale = {
+        2016: (st0m2016        , st0e2016),                                       #  DOI: 10.1103/PhysRevD.93.094510
+        2017: (0.415/np.sqrt(8), quadrature(np.array([0.004,0.002]))/np.sqrt(8)), #  DOI: https://doi.org/10.1103/PhysRevD.95.074504. Eq (5.5).
+    }
+    return physicalConstant("sqrtt0",scale,"fm").getValue(year,units,returnErr) 
 
 
 def r1_phys(year=2010,units="fm",returnErr=False):

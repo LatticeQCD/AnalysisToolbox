@@ -135,4 +135,12 @@ def getFileTimeStamp(target,form='human',zone=None) -> str:
             logger.TBRaise('Unsupported format',form)
     else:
         logger.warn(f"{target} is not regular file.")
-    
+
+
+def getNumberLines(target) -> int:
+    funit = open(target,'r')
+    Nlines = 0
+    for line in funit:
+        Nlines += 1
+    funit.close()
+    return Nlines
