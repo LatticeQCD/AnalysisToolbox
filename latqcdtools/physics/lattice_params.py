@@ -11,6 +11,7 @@ from latqcdtools.physics.constants import convert, fk_phys, r0_phys, r1_phys
 from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, CY_param, CY_phys
 from latqcdtools.base.check import checkDomain
 from latqcdtools.base.utilities import isReal
+from latqcdtools.base.logger import ToolboxException
 
 
 def _getMassString(mass):
@@ -56,20 +57,39 @@ class latticeParams:
             self.cbeta = str(coupling).replace('.','')
 
     def setScales(self,scaleYear,paramYear):
-        self.fK    = fk_phys(CY_phys['fk'],"MeV")
-        self.r1    = r1_phys(CY_phys['r1'],"fm")
-        self.r0    = r0_phys(CY_phys['r0'],"fm")
+        self.fK = None 
+        self.r1 = None 
+        self.r0 = None 
+        if self.Nf is None:
+            self.world = 'SU3'
+        else:
+            self.world = f'Nf{self.Nf}'
         if paramYear is None:
             self.year = CY_param[self.scale] 
         else:
             self.year = paramYear
-        if scaleYear is not None:
-            if self.scale == 'fk':
-                self.fK = fk_phys(scaleYear)
-            elif self.scale == 'r1':
-                self.r1 = r1_phys(scaleYear)
-            elif self.scale == 'r0':
-                self.r0 = r0_phys(scaleYear)
+        if scaleYear is None:
+            year = CY_phys[self.scale]
+        else:
+            year = scaleYear
+        if self.scale == 'fk':
+            try:
+                self.fK = fk_phys(year=year,units="MeV",returnErr=False,world=self.world)
+            except ToolboxException:
+                logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.fK = fk_phys(year=year,units="MeV",returnErr=False,world='Nf21')
+        elif self.scale == 'r1':
+            try:
+                self.r1 = r1_phys(year=year,units="fm" ,returnErr=False,world=self.world)
+            except ToolboxException:
+                logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.r1 = r1_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
+        elif self.scale == 'r0':
+            try:
+                self.r0 = r0_phys(year=year,units="fm" ,returnErr=False,world=self.world)
+            except ToolboxException:
+                logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.r0 = r1_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
 
     #           mass1  mass2  mass3
     # Nf=1+1+1     mu     md     ms
@@ -77,7 +97,7 @@ class latticeParams:
     # Nf=X         ml   mpre
     # Nf=2+1+1     ml     ms     mc
     def __init__(self, Nsigma, Ntau, coupling, mass1=None, mass2=None, mass3=None, scaleType='fk', paramYear=None,
-                 Nf='21', scaleYear=None, muB=0):
+                 Nf=None, scaleYear=None, muB=0):
         """ 
         Based on some input, determine all parameters relevant to the ensemble.
 
@@ -106,13 +126,13 @@ class latticeParams:
         """
         checkDomain(scaleType,list(CY_phys.keys()))
         self.scale = scaleType
+        self.Nf    = Nf
         self.setScales(scaleYear,paramYear)
         self.setCoupling(coupling)
         self.Nc   = 3
         self.muB  = muB
         self.Ns   = Nsigma
         self.Nt   = Ntau
-        self.Nf   = Nf
         self.vol4 = self.Ns**3 * self.Nt
         self.cm1  = _getMassString(mass1)
         self.cm2  = _getMassString(mass2)

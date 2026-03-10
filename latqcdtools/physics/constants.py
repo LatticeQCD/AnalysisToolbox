@@ -25,15 +25,7 @@ meters_per_mile = 1609.344         # NIST 2023 based on international foot (not 
 BTU_per_Wh      = 3.412            # Many possible definitions--don't take too seriously. A stupid unit, indeed.
 kBJdivK         = 1.380649e-23     # kB in [J/K]. NIST 2018.
 eC              = 1.602176634e-19  # e in [C]. NIST 2018.
-
-# Some exact constants
-NA = 6.02214076e23    # Avagadro's number
-
-# See corresponding _phys() functions for the references
-_fkerrs2012   = np.array([0.2   ,0.8   ,0.2   ])
-_fkerrs2018   = np.array([0.17  ,0.45  ,0.16  ])
-_fpierrs2018  = np.array([0.01  ,0.03  ,0.13  ])
-_r1fmerrs2010 = np.array([0.0008,0.0014,0.0004])
+NA              = 6.02214076e23    # Avagadro's number
 
 
 # List of scientific prefixes
@@ -277,6 +269,12 @@ def fminv_to_MeV(x) -> float:
     return x*hcMeVfm
 
 
+# If a scale comes from a lattice calculation with a particular quark
+# content, or with static quarks and a particular gauge group, you can 
+# specify that with "world"
+worlds = ['nature','Nf2','Nf21','Nf211','SU3']
+
+
 class physicalConstant():
 
     name = None
@@ -296,8 +294,11 @@ class physicalConstant():
         checkType(dict,scale=scale)
         if units is not None:
             checkType(str,units=units)
-        for key in scale:
-            checkType(tuple,scale=scale[key])
+        for world in scale:
+            if not world in worlds:
+                logger.TBRaise('world must be one of',worlds)
+            for key in scale[world]:
+                checkType(tuple,scale=scale[world][key])
         self.name=name
         self.scale=scale
         self.scaleUnits=units
@@ -307,31 +308,37 @@ class physicalConstant():
             return 'physicalConstant'
         return self.name 
 
-    def getValue(self,year,units,returnErr,normalize=1.):
+    def getValue(self,world,year,units,returnErr,normalize=1.):
         """
         Retrieve the value of this scale.
 
         Args:
+            world (str): 'nature' or quark content in which scale was determined.
             year (int): Year this was measured. 
             units (str): Get it in these units. Use None for unitless quantities. 
             returnErr (bool): Return both mean and uncertainty as tuple.
             normalize (real): Return scale/normalize. Defaults to 1.
         """
+
+        checkType(str,world=world)
         checkType('int',year=year)
         if units is not None:
             checkType(str,units=units)
         checkType(bool,returnErr=returnErr)
         checkType("scalar",normalize=normalize)
-        if not year in self.scale:
-            logger.TBRaise(f"Invalid year specification {year}. Allowed years:",list(self.scale.keys()))
+        if not world in self.scale:
+            logger.TBRaise(f"Invalid world specification {world}. Allowed worlds:",list(self.scale.keys()))
+        if not year in self.scale[world]:
+            logger.TBRaise(f"Invalid year specification {year} for world {world}. Allowed years:",list(self.scale[world].keys()))
+
         if self.scaleUnits is None:
             if units is not None:
                 logger.TBRaise("Tried to convert a unitless quantity to units",units)
-            val = self.scale[year][0]
-            err = self.scale[year][1]
+            val = self.scale[world][year][0]
+            err = self.scale[world][year][1]
         else:
-            val = convert(self.scale[year][0],self.scaleUnits,units)/normalize
-            err = convert(self.scale[year][1],self.scaleUnits,units)/normalize
+            val = convert(self.scale[world][year][0],self.scaleUnits,units)/normalize
+            err = convert(self.scale[world][year][1],self.scaleUnits,units)/normalize
         if returnErr:
             return val, err 
         else:
@@ -341,113 +348,143 @@ class physicalConstant():
 # ------------------------------------------------------------------------------------------------------ PARTICLE MASSES 
 
 
-def M_e_phys(year=2024,units="MeV",returnErr=False):
+def M_e_phys(year=2024,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2024: (0.51099895000, 0.00000000015), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (0.51099895000, 0.00000000015), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_e",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_e",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_u_phys(year=2024,units="MeV",returnErr=False):
+def M_u_phys(year=2024,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2024: (2.16, 0.07), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (2.16, 0.07), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_u",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_u",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_d_phys(year=2024,units="MeV",returnErr=False):
+def M_d_phys(year=2024,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2024: (4.7, 0.07), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (4.7, 0.07), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_d",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_d",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_s_phys(year=2024,units="MeV",returnErr=False):
+def M_s_phys(year=2024,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2024: (93.5, 0.8), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (93.5, 0.8), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_s",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_s",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_c_phys(year=2024,units="GeV",returnErr=False):
+def M_c_phys(year=2024,units="GeV",returnErr=False,world="nature"):
     scale = {
-        2024: (1.273,0.0046), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (1.273,0.0046), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_c",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_c",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_b_phys(year=2024,units="GeV",returnErr=False):
+def M_b_phys(year=2024,units="GeV",returnErr=False,world="nature"):
     scale = {
-        2024: (4.183,0.007), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (4.183,0.007), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_b",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_b",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_t_phys(year=2024,units="GeV",returnErr=False):
+def M_t_phys(year=2024,units="GeV",returnErr=False,world="nature"):
     scale = {
-        2024: (172.57,0.29), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001. direct measurement
+        'nature' : {
+            2024: (172.57,0.29), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001. direct measurement
+        }
     }
-    return physicalConstant("M_t",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_t",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_mu_phys(year=2022,units="MeV",returnErr=False):
+def M_mu_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2022: (105.6583755, 0.0000023), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2020: (105.6583745, 0.0000024)  # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
+        'nature' : {
+            2022: (105.6583755, 0.0000023), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+            2020: (105.6583745, 0.0000024)  # PDG 2020. DOI: https://doi.org/10.1093/ptep/ptaa104.
+        }
     }
-    return physicalConstant("M_mu",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_mu",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_pi0_phys(year=2022,units="MeV",returnErr=False):
+def M_pi0_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2022: (134.9768, 0.0005), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2014: (134.9766, 0.0006)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        'nature' : {
+            2022: (134.9768, 0.0005), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+            2014: (134.9766, 0.0006)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        }
     }
-    return physicalConstant("M_pi0",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_pi0",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_pipm_phys(year=2022,units="MeV",returnErr=False):
+def M_pipm_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2022: (139.57039, 0.00018), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2014: (139.57018, 0.00035)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        'nature' : {
+            2022: (139.57039, 0.00018), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+            2014: (139.57018, 0.00035)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        }
     }
-    return physicalConstant("M_pi+/-",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_pi+/-",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_K0_phys(year=2022,units="MeV",returnErr=False):
+def M_K0_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2022: (497.611, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        'nature' : {
+            2022: (497.611, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        }
     }
-    return physicalConstant("M_K0",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_K0",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_Kpm_phys(year=2022,units="MeV",returnErr=False):
+def M_Kpm_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2022: (493.677, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        'nature' : {
+            2022: (493.677, 0.013), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        }
     }
-    return physicalConstant("M_K+/-",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_K+/-",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_rho_phys(year=2022,units="MeV",returnErr=False):
+def M_rho_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2022: (775.26, 0.23), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
-        2014: (775.26, 0.25)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        'nature' : {
+            2022: (775.26, 0.23), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+            2014: (775.26, 0.25)  # PDG 2014. DOI: 10.1088/1674-1137/38/9/090001
+        }
     }
-    return physicalConstant("M_rho",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_rho",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_proton_phys(year=2024,units="MeV",returnErr=False):
+def M_proton_phys(year=2024,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2024: (938.27208816, 0.00000029), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (938.27208816, 0.00000029), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_proton",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_proton",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def M_neutron_phys(year=2024,units="MeV",returnErr=False):
+def M_neutron_phys(year=2024,units="MeV",returnErr=False,world="nature"):
     scale = {
-        2024: (939.56542052, 0.00000054), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: (939.56542052, 0.00000054), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("M_neutron",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("M_neutron",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
 
@@ -455,88 +492,120 @@ def M_neutron_phys(year=2024,units="MeV",returnErr=False):
 
 
 
-def fk_phys(year=2019,units="MeV",returnErr=False):
+def fk_phys(year=2019,units="MeV",returnErr=False,world="nature"):
     """ 
-    Physical value of Kaon decay constant, f_K+/-. Scaled by sqrt(2.). 
+    Physical value of Kaon decay constant, f_K+/-. scale by sqrt(2.). 
     """
+    _fkerrs2012 = np.array([0.2   ,0.8   ,0.2   ])
+    _fkerrs2018 = np.array([0.17  ,0.45  ,0.16  ])
     scale = {
-        2019: (155.7 , 0.7),                     # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6, Nf=2+1.
-        2018: (155.72, quadrature(_fkerrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
-        2012: (156.1 , quadrature(_fkerrs2012)), # PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
+        'Nf211' : {
+            2019: (155.7 , 0.3),                     # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6
+        },
+        'Nf21' : {
+            2019: (155.7 , 0.7),                     # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6
+        },
+        'Nf2' : {
+            2019: (157.5 , 2.4),                     # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6
+        },
+        'nature' : {
+            2018: (155.72, quadrature(_fkerrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
+            2012: (156.1 , quadrature(_fkerrs2012)), # PDG 2012. DOI: 10.1103/PhysRevD.86.010001. Page 949 under meson listings.
+        }
     }
-    return physicalConstant("f_K+/-",scale,"MeV").getValue(year,units,returnErr,normalize=np.sqrt(2.)) 
+    return physicalConstant("f_K+/-",scale,"MeV").getValue(world,year,units,returnErr,normalize=np.sqrt(2.)) 
 
 
-def fpi_phys(year=2018,units="MeV",returnErr=False):
+def fpi_phys(year=2018,units="MeV",returnErr=False,world="nature"):
     """
     Physical value of the pion decay constant, f_pi+/-. 
     """
+    _fpierrs2018 = np.array([0.01  ,0.03  ,0.13  ])
     scale = {
-        2018: (130.50, quadrature(_fpierrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
+        'Nf21' : {
+            2019: (130.2 , 0.8                     ), # FLAG 2019. DOI: 10.1140/epjc/s10052-019-7354-7. Section 4.6
+        },
+        'nature' : {
+            2018: (130.50, quadrature(_fpierrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
+        }
     }
-    return physicalConstant("f_pi+/-",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("f_pi+/-",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def frho_phys(year=2017,units="GeV",returnErr=False):
+def frho_phys(year=2017,units="GeV",returnErr=False,world="nature"):
     """ 
     Physical value of the rho decay constant. 
     """
+    logger.warn("David lost track of where the 2017 value came from.")
     scale = {
-        2017: (0.21, 0.01), # HPQCD 2017. DOI: https://doi.org/10.1103/PhysRevD.93.014503. Figure 6.
+        'nature' : {
+            2017: (0.21, 0.01), # HPQCD 2017. 
+        }
     }
-    return physicalConstant("f_rho",scale,"GeV").getValue(year,units,returnErr) 
+    return physicalConstant("f_rho",scale,"GeV").getValue(world,year,units,returnErr) 
 
 
 # ---------------------------------------------------------------------------------------------------- LATTICE CONSTANTS 
 
 
-def w0_phys(year=2013,units="fm",returnErr=False):
+def w0_phys(year=2013,units="fm",returnErr=False,world="Nf211"):
     """ 
     Gradient flow scale w0.
     """    
     scale = {
-        2013: (0.1715, 0.0009), # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
+        'Nf211' : {
+            2013: (0.1715, 0.0009), # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
+        }
     }
-    return physicalConstant("w0",scale,"fm").getValue(year,units,returnErr) 
+    return physicalConstant("w0",scale,"fm").getValue(world,year,units,returnErr) 
 
 
-def sqrtt0_phys(year=2017,units="fm",returnErr=False):
+def sqrtt0_phys(year=2017,units="fm",returnErr=False,world="Nf21"):
     """
     Gradient flow scale sqrt(t0).
     """
     st0m2016, st0e2016 = symmetrizeError(lo=0.0005,hi=0.0008,central=0.1416,method='FLAG')
     scale = {
-        2016: (st0m2016        , st0e2016),                                       #  DOI: 10.1103/PhysRevD.93.094510
-        2017: (0.415/np.sqrt(8), quadrature(np.array([0.004,0.002]))/np.sqrt(8)), #  DOI: https://doi.org/10.1103/PhysRevD.95.074504. Eq (5.5).
+        'Nf211' : {
+            2016: (st0m2016        , st0e2016),                                       #  DOI: 10.1103/PhysRevD.93.094510
+        },
+        'Nf21' : {
+            2017: (0.415/np.sqrt(8), quadrature(np.array([0.004,0.002]))/np.sqrt(8)), #  DOI: https://doi.org/10.1103/PhysRevD.95.074504. Eq (5.5)
+        }
     }
-    return physicalConstant("sqrtt0",scale,"fm").getValue(year,units,returnErr) 
+    return physicalConstant("sqrtt0",scale,"fm").getValue(world,year,units,returnErr) 
 
 
-def r1_phys(year=2010,units="fm",returnErr=False):
+def r1_phys(year=2010,units="fm",returnErr=False,world="Nf21"):
     """ 
     Physical value of Sommer scale r1. 
     """    
+    _r1fmerrs2010 = np.array([0.0008,0.0014,0.0004])
     scale = {
-        2010: (0.3106, quadrature(_r1fmerrs2010)), # r1 taken from MILC 2010. arXiv:1012.0868. 
+        'Nf21' : {
+            2010: (0.3106, quadrature(_r1fmerrs2010)), # r1 taken from MILC 2010. arXiv:1012.0868. 
+        }
     }
-    return physicalConstant("r1",scale,"fm").getValue(year,units,returnErr) 
+    return physicalConstant("r1",scale,"fm").getValue(world,year,units,returnErr) 
 
 
-_r1phys2010, _r1phys2010e = r1_phys(year=2010,units="fm",returnErr=True)
-def r0_phys(year=2014,units="fm",returnErr=False):
+def r0_phys(year=2014,units="fm",returnErr=False,world="Nf21"):
     """ 
     Physical value of Sommer scale r0. 
     """    
+    _r1phys2010, _r1phys2010e = r1_phys(year=2010,units="fm",returnErr=True,world="Nf21")
     scale = {
-        2014: (_r1phys2010*1.5092, _r1phys2010e*1.5092), # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
+        'Nf21' : {
+            2014: (_r1phys2010*1.5092, _r1phys2010e*1.5092), # Use r0/r1 from hotQCD 2014. DOI: https://doi.org/10.1103/PhysRevD.90.094503.
+        }
     }
-    return physicalConstant("r0",scale,"fm").getValue(year,units,returnErr) 
+    return physicalConstant("r0",scale,"fm").getValue(world,year,units,returnErr) 
 
 
 # ------------------------------------------------------------------------------------------------------ OTHER CONSTANTS 
 
 
-def Tpc_chiral(year=2020,units="MeV",returnErr=False):
+def Tpc_chiral(year=2020,units="MeV",returnErr=False,world="Nf21"):
     """
     Chiral crossover temperature at zero net-baryon chemical potential, as estimated using the
     chiral susceptibility. This differs from other methods, as different years combine results
@@ -552,48 +621,58 @@ def Tpc_chiral(year=2020,units="MeV",returnErr=False):
     Tm2020 = np.mean(Tms)
     Te2020 = quadrature( np.array([weighted_variance(Tes), (Tm2019-TmBMW2020)**2]) )
     scale = {
-        2019: ( Tm2019, Te2019), # hotQCD 2019. DOI: 10.1016/j.physletb.2019.05.013, chi^sigma Fig 2
-        2020: ( Tm2020, Te2020), # combine with BMW 2020. DOI: 10.1103/PhysRevLett.125.052001
+        'Nf21' : {
+            2019: ( Tm2019, Te2019), # hotQCD 2019. DOI: 10.1016/j.physletb.2019.05.013, chi^sigma Fig 2
+            2020: ( Tm2020, Te2020), # combine with BMW 2020. DOI: 10.1103/PhysRevLett.125.052001
+        }
     }
-    return physicalConstant("Tpc_chiral",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("Tpc_chiral",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def sqrtG(year=2024,units="GeVinv",returnErr=False):
+def sqrtG(year=2024,units="GeVinv",returnErr=False,world="nature"):
     """
     Square root of Newton's gravitational constant.
     """
     m2024, e2024 = error_prop(np.sqrt,np.array([6.70883e-39]),np.array([0.00014e-39]))
     scale = {
-        2024: ( m2024, e2024), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        'nature' : {
+            2024: ( m2024, e2024), # PDG 2024. DOI: 10.1103/PhysRevD.110.030001
+        }
     }
-    return physicalConstant("sqrtG",scale,"GeVinv").getValue(year,units,returnErr) 
+    return physicalConstant("sqrtG",scale,"GeVinv").getValue(world,year,units,returnErr) 
 
 
-def alpha_e(year=2018,returnErr=False):
+def alpha_e(year=2018,returnErr=False,world="nature"):
     """ 
     Fine structure constant. 
     """
     scale = {
-        2018: (7.2973525693e-3, 0.0000000011e-3), # NIST 2018 CODATA recommended value.
+        'nature' : {
+            2018: (7.2973525693e-3, 0.0000000011e-3), # NIST 2018 CODATA recommended value.
+        }
     }
-    return physicalConstant("alpha_e",scale,None).getValue(year,None,returnErr) 
+    return physicalConstant("alpha_e",scale,None).getValue(world,year,None,returnErr) 
 
 
-def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False):
+def lambda_MSbar_phys(year=2021,units="MeV",returnErr=False,world="nature"):
     """ 
     Physical value of MS-bar lambda parameter. 
     """
     scale = {
-        2021: ( 339, 12 ), # Taken from FLAG 2021. arXiv: 2111.09849
+        'nature' : {
+            2021: ( 339, 12 ), # Taken from FLAG 2021. arXiv: 2111.09849. Comes from average of Nf21 and Nf211
+        }
     }
-    return physicalConstant("lambda_MSbar",scale,"MeV").getValue(year,units,returnErr) 
+    return physicalConstant("lambda_MSbar",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
-def Rproton_phys(year=2018,units="fm",returnErr=False):
+def Rproton_phys(year=2018,units="fm",returnErr=False,world="nature"):
     """ 
     Physical value of proton charge radius. 
     """
     scale = {
-        2018: ( 0.8414, 0.0019 ), # Taken from FLAG 2021. arXiv: 2111.09849
+        'nature' : {
+            2018: ( 0.8414, 0.0019 ), # Taken from FLAG 2021. arXiv: 2111.09849
+        }
     }
-    return physicalConstant("Rproton",scale,"fm").getValue(year,units,returnErr) 
+    return physicalConstant("Rproton",scale,"fm").getValue(world,year,units,returnErr) 
