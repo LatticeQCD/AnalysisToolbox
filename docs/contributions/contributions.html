@@ -9,7 +9,7 @@
         <title>Contributions - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,14 +323,14 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="contributions">
+          <section class="tex2jax_ignore mathjax_ignore" id="contributions">
 <h1>Contributions<a class="headerlink" href="#contributions" title="Link to this heading">¶</a></h1>
 <p>Here are a few basic guidelines to follow when making a contribution to the AnalysisToolbox:</p>
 <ul>
 <li><p>Please <strong>write documentation</strong> (like this one) for any new module that you make.</p></li>
 <li><p>Please <strong>write a test for each new feature you implement</strong>. We keep our tests in <code class="docutils literal notranslate"><span class="pre">AnalysisToolbox/testing</span></code>.</p></li>
 <li><p>Make sure you <strong>run all the tests</strong> when you’re done to check that nothing was broken. You can find more information
-about the tests <a class="reference internal" href="testing.html"><span class="std std-doc">here</span></a>.</p></li>
+about the tests <a class="reference internal" href="testing.html"><span class="doc std std-doc">here</span></a>.</p></li>
 <li><p>For all screen output and for terminating your program because of errors: Please try to use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> in <code class="docutils literal notranslate"><span class="pre">latqcdtools/base/logger.py</span></code>.
 This has the advantage that all scripts are terminated in the same way. Also you can have your program make little log files in
 addition to the terminal output, in case you want that! Finally in the case of error, warning, and debug messages, the logger will
@@ -373,7 +373,7 @@ weirdly this seems to help some of our parallelizers run on some Macs.</p>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> function is a special method that provides a string representation of an instance of the class. This is used by
-for instance the <a class="reference internal" href="logging.html"><span class="std std-doc">logger</span></a>, which when printing e.g. <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> messages, will report what method (or class if applicable)
+for instance the <a class="reference internal" href="logging.html"><span class="doc std std-doc">logger</span></a>, which when printing e.g. <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> messages, will report what method (or class if applicable)
 called it.</p>
 </li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">str</span></code> syntax in the above example indicates that we expect a string as a return value. I don’t think this is used by the Python
@@ -446,14 +446,11 @@ but drastically reduces readability.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

@@ -9,7 +9,7 @@
         <title>Loading configurations - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,7 +323,7 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="loading-configurations">
+          <section class="tex2jax_ignore mathjax_ignore" id="loading-configurations">
 <h1>Loading configurations<a class="headerlink" href="#loading-configurations" title="Link to this heading">¶</a></h1>
 <p>There are a handful of gauge configuration formats on the market, including</p>
 <ul class="simple">
@@ -337,7 +337,7 @@ one format and another. To this end, we have implemented <code class="docutils l
 <p>At the moment it only reads NERSC and ILDG format, but one can easily extend this, by following the example of e.g.
 the <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> class, which inherits from a more general <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class. If you want to implement your own class,
 please have it inherit from <code class="docutils literal notranslate"><span class="pre">confReader</span></code> as well.</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> object is easily instantiated with just information about $N_s$ and $N_\tau$ as</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">NERSCReader</span></code> object is easily instantiated with just information about <span class="math notranslate nohighlight">\(N_s\)</span> and <span class="math notranslate nohighlight">\(N_\tau\)</span> as</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reader</span> <span class="o">=</span> <span class="n">NERSCReader</span><span class="p">(</span><span class="n">Ns</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -345,7 +345,7 @@ please have it inherit from <code class="docutils literal notranslate"><span cla
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gauge</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">readConf</span><span class="p">(</span><span class="s1">&#39;nersc.l8t4b3360&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can access the link at site $(0,0,1,1)$ pointing in the 0-direction through</p>
+<p>You can access the link at site <span class="math notranslate nohighlight">\((0,0,1,1)\)</span> pointing in the 0-direction through</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gauge</span><span class="o">.</span><span class="n">getLink</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -400,14 +400,13 @@ please have it inherit from <code class="docutils literal notranslate"><span cla
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

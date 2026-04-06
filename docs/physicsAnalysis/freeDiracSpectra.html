@@ -9,7 +9,7 @@
         <title>Spectrum of the Dirac operator - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,7 +323,7 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="spectrum-of-the-dirac-operator">
+          <section class="tex2jax_ignore mathjax_ignore" id="spectrum-of-the-dirac-operator">
 <h1>Spectrum of the Dirac operator<a class="headerlink" href="#spectrum-of-the-dirac-operator" title="Link to this heading">¶</a></h1>
 <p>This is based on the discussions given in arXiv:hep-lat/0511052. Currently, we only have Wilson fermions and
 Möbius Domain wall fermions. One can also come up with their own fermion discretization scheme and compare the eigenvalues.
@@ -333,8 +333,8 @@ You can find the code in</p>
 </div>
 <p>The purpose of this module is mostly pedagogical. We hope you have fun with it!
 It consists of a <code class="docutils literal notranslate"><span class="pre">GammaMatrix</span></code> class,
-which represents the $4\times4$ gamma matrices used in Euclidean quantum field theory.
-You can get, e.g., $\gamma_1$ using <code class="docutils literal notranslate"><span class="pre">GammaMatrix.g(1)</span></code>. You get $\gamma_5$ with <code class="docutils literal notranslate"><span class="pre">g5()</span></code>.</p>
+which represents the <span class="math notranslate nohighlight">\(4\times4\)</span> gamma matrices used in Euclidean quantum field theory.
+You can get, e.g., <span class="math notranslate nohighlight">\(\gamma_1\)</span> using <code class="docutils literal notranslate"><span class="pre">GammaMatrix.g(1)</span></code>. You get <span class="math notranslate nohighlight">\(\gamma_5\)</span> with <code class="docutils literal notranslate"><span class="pre">g5()</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">DiracOp</span></code> class inherits from GammaMatrix, and
 Represents the Dirac Operator on a spacetime lattice.
 You instantiate it as</p>
@@ -346,7 +346,7 @@ You also provide the type of fermion being used. Right now we just have <code cl
 and <code class="docutils literal notranslate"><span class="pre">DwMobius</span></code>. A call to <code class="docutils literal notranslate"><span class="pre">DiracOp.p()</span></code>
 Computes and returns the momentum values px, py, pz, pt based on the provided lattice extents.
 You can also get the Wilson and Domain Wall operators with <code class="docutils literal notranslate"><span class="pre">DiracOp.WilsonOp</span></code> and <code class="docutils literal notranslate"><span class="pre">DiracOp.DWMobius4D</span></code>.</p>
-<p>For example, say you want to instantiate a $4^4$ <code class="docutils literal notranslate"><span class="pre">DiracOp</span></code> object and calculate its eigenvalues
+<p>For example, say you want to instantiate a <span class="math notranslate nohighlight">\(4^4\)</span> <code class="docutils literal notranslate"><span class="pre">DiracOp</span></code> object and calculate its eigenvalues
 for Wilson fermions. You can do this with</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">DiracOp</span><span class="p">(</span><span class="n">Lx</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">Ly</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">Lz</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">Lt</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">fermion</span><span class="o">=</span><span class="s2">&quot;Wilson&quot;</span><span class="p">)</span>
 <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">eigvalues</span><span class="p">(</span><span class="n">mass</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
@@ -403,14 +403,13 @@ for Wilson fermions. You can do this with</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

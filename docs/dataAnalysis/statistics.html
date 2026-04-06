@@ -9,7 +9,7 @@
         <title>Statistics - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,7 +323,7 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="statistics">
+          <section class="tex2jax_ignore mathjax_ignore" id="statistics">
 <h1>Statistics<a class="headerlink" href="#statistics" title="Link to this heading">¶</a></h1>
 <p>A collection of useful methods for statistics calculations can be found in</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.statistics</span>
@@ -373,13 +373,13 @@ be similar to the Gaussian difference test.</p>
 <h2>Integrated autocorrelation time<a class="headerlink" href="#integrated-autocorrelation-time" title="Link to this heading">¶</a></h2>
 <p>The integrated autocorrelation time is the ratio between
 the estimated variance of the sample mean and what this variance would have been if the data were
-independent; i.e. $\sigma^2_{\bar{X}}=\frac{\sigma^2}{N}\tau_{\text{int}}.$
+independent; i.e. <span class="math notranslate nohighlight">\(\sigma^2_{\bar{X}}=\frac{\sigma^2}{N}\tau_{\text{int}}.\)</span>
 A call to</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getTauInt</span><span class="p">(</span><span class="n">timeSeries</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">tpickMax</span><span class="p">,</span> <span class="n">acoutfileName</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>returns an estimate for $\tau_{\text{int}}$, its error bar, its bias, and the Monte Carlo time
-separation at which it found this $\tau_{\text{int}}$. It takes a time series <code class="docutils literal notranslate"><span class="pre">timeSeries</span></code>, a
+<p>returns an estimate for <span class="math notranslate nohighlight">\(\tau_{\text{int}}\)</span>, its error bar, its bias, and the Monte Carlo time
+separation at which it found this <span class="math notranslate nohighlight">\(\tau_{\text{int}}\)</span>. It takes a time series <code class="docutils literal notranslate"><span class="pre">timeSeries</span></code>, a
 number of jackknife bins needed for the calculation <code class="docutils literal notranslate"><span class="pre">nbins</span></code>, and an estimate for the largest that
 the autocorrelation time could be. (You can play around with this latter variable a bit if you
 are having trouble to get it to run. Usually I pick a little less than half the size of the series.)
@@ -459,14 +459,13 @@ The results are saved by default in <code class="docutils literal notranslate"><
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

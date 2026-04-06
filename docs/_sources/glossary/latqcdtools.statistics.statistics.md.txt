@@ -450,7 +450,7 @@ Returns:
 '''
 ```
 ```Python
-plot_correlation(mat, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>):
+plot_correlation(mat, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>, vmin=-1, vmax=1):
 '''Plot correlation matrix as a heatmap.
 
 Args:

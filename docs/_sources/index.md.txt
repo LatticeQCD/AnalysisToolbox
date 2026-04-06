@@ -102,14 +102,7 @@ packages (2-10) can be installed via
 ```shell
 pip3 install -r requirements.txt
 ```
-There are some further packages required if you would like to make contributions to the AnalysisToolbox; in particular
-there are many packages needed to compile the documentation. If you are interested in writing documentation, you should also 
-instead
-```shell
-pip3 install -r docRequirements.txt
-```
-
-Once this has all been settled, try running the tests using
+Next try running the tests using
 ```shell
 pytest
 ```

@@ -2,12 +2,7 @@
 
 You have written some readable code and, crucially, you [wrote a test for it](testing.md). There is only one thing 
 left for you to do, to make sure your code can be easily used and adapted by future developers: You must document it!
-
-To create some documentation, please navigate to `AnalysisToolbox/doc_src/`, where you can find its source code. Our 
-source code is written using [Sphinx](https://www.sphinx-doc.org/en/master/), a python documentation generator, combined 
-with [MyST](https://myst-parser.readthedocs.io/en/latest/), which is an extension for Sphinx supporting 
-[Markdown](https://daringfireball.net/projects/markdown/). You can follow those links to learn more in detail about 
-this syntax. With this documentation, we just want to show you how to get started.
+To create some documentation, please navigate to `AnalysisToolbox/doc_src/`, where you can find its source code.
 
 ## Documentation syntax
 

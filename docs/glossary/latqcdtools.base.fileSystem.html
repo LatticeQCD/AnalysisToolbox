@@ -9,7 +9,7 @@
         <title>latqcdtools.base.fileSystem - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,14 +323,34 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="latqcdtools-base-filesystem">
+          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-filesystem">
 <h1>latqcdtools.base.fileSystem<a class="headerlink" href="#latqcdtools-base-filesystem" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">createFilePath</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Change to target directory. Equivalent to cd in Bash.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    target (str)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Copy source to target. Creates target directory path if needed. Similar</span>
+<span class="sd">to cp -r in Bash.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    source (str)</span>
+<span class="sd">    target (str)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">createFilePath</span><span class="p">(</span><span class="n">filePath</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Create the directory path for a file if it isn&#39;t there already. </span>
 
 <span class="sd">Args:</span>
-<span class="sd">    target (str)</span>
+<span class="sd">    filePath (str)</span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
@@ -344,21 +364,47 @@
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getFileTimeStamp</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getFileSize</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Get the time stamp (when it was last modified) of a regular file.</span>
+<span class="sd">Get size of regular file.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    target (str)</span>
 
 <span class="sd">Returns:</span>
+<span class="sd">    int: size of file in bytes </span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getFileTimeStamp</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;human&#39;</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get the time stamp (when it was last modified) of a regular file.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    target (str)</span>
+<span class="sd">    form (str)</span>
+<span class="sd">    zone (str): list of time zones here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</span>
+<span class="sd">    </span>
+<span class="sd">Returns:</span>
 <span class="sd">    str: time stamp in format 2025-09-23 14:56:27</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getNumberLines</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Get number of lines in human-readable file.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    target (str)</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    int: number of lines </span>
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ls</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Get list of files in file path. Similar to ls in bash.</span>
+<span class="sd">Get list of files in file path. Similar to ls in Bash.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    target (str)</span>
@@ -370,7 +416,7 @@
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Delete target regular file or folder. Equivalent to rm -rf in bash.</span>
+<span class="sd">Delete target regular file or folder. Equivalent to rm -rf in Bash.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    target (str)</span>
@@ -428,14 +474,11 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

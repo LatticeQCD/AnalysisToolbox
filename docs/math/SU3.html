@@ -9,7 +9,7 @@
         <title>SU(N) matrices - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,19 +323,19 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="su-n-matrices">
+          <section class="tex2jax_ignore mathjax_ignore" id="su-n-matrices">
 <h1>SU(N) matrices<a class="headerlink" href="#su-n-matrices" title="Link to this heading">¶</a></h1>
 <p>In <code class="docutils literal notranslate"><span class="pre">latqcdtools.math.SU3</span></code> one finds the <code class="docutils literal notranslate"><span class="pre">SU3</span></code> class, which inherits from the <code class="docutils literal notranslate"><span class="pre">numpy.matrix</span></code> class. This way you
 can get all the nice, fast features of <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, like already defined matrix multiplication, transposes, and so on.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">SU3</span></code> class also has some extra functionality, most importantly given the first two rows, the method
 <code class="docutils literal notranslate"><span class="pre">su3unitarize</span></code> will use unitarity to compute the last one. This allows reconstruction of compressed configurations
-in the <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class, described <a class="reference internal" href="../interfacing/confLoader.html"><span class="std std-doc">here</span></a>. The unitarization can be compiled
-with <code class="docutils literal notranslate"><span class="pre">numbaON()</span></code>, as described <a class="reference internal" href="../base/speedify.html"><span class="std std-doc">here</span></a>.</p>
+in the <code class="docutils literal notranslate"><span class="pre">confReader</span></code> class, described <a class="reference internal" href="../interfacing/confLoader.html"><span class="doc std std-doc">here</span></a>. The unitarization can be compiled
+with <code class="docutils literal notranslate"><span class="pre">numbaON()</span></code>, as described <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">here</span></a>.</p>
 <p>You can instantiate an <code class="docutils literal notranslate"><span class="pre">SU(3)</span></code> matrix object as</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">U</span> <span class="o">=</span> <span class="n">SU3</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>This object is needed especially for <code class="docutils literal notranslate"><span class="pre">gaugeField</span></code> objects, described <a class="reference internal" href="../physicsAnalysis/gauge.html"><span class="std std-doc">here</span></a>.
+<p>This object is needed especially for <code class="docutils literal notranslate"><span class="pre">gaugeField</span></code> objects, described <a class="reference internal" href="../physicsAnalysis/gauge.html"><span class="doc std std-doc">here</span></a>.
 Some other implemented methods special for <code class="docutils literal notranslate"><span class="pre">SU3</span></code> objects include</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">setToRandom</span></code>: Sets to a random group element.</p></li>
@@ -393,14 +393,11 @@ Some other implemented methods special for <code class="docutils literal notrans
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

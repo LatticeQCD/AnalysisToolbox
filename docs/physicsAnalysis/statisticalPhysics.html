@@ -9,7 +9,7 @@
         <title>Statistical Physics - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -323,7 +323,7 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="statistical-physics">
+          <section class="tex2jax_ignore mathjax_ignore" id="statistical-physics">
 <h1>Statistical Physics<a class="headerlink" href="#statistical-physics" title="Link to this heading">¶</a></h1>
 <p>This module collects some basic methods and classes related to statistical physics.
 These can be imported from <code class="docutils literal notranslate"><span class="pre">latqcdtools.physics.statisticalPhysics</span></code>.</p>
@@ -331,7 +331,7 @@ These can be imported from <code class="docutils literal notranslate"><span clas
 <h2>Critical exponents<a class="headerlink" href="#critical-exponents" title="Link to this heading">¶</a></h2>
 <p>There is a base <code class="docutils literal notranslate"><span class="pre">UniversalityClass</span></code> object from which all universality classes inherit. It holds critical exponents
 as attributes along with an <code class="docutils literal notranslate"><span class="pre">exponentSummary()</span></code> method that prints to screen all critical exponents. If you want to
-access 3-$d$, $\mathbb{Z}_2$ critical exponents, you can simply use, e.g.</p>
+access 3-<span class="math notranslate nohighlight">\(d\)</span>, <span class="math notranslate nohighlight">\(\mathbb{Z}_2\)</span> critical exponents, you can simply use, e.g.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">univ</span> <span class="o">=</span> <span class="n">Z2_3d</span>
 <span class="n">univ</span><span class="o">.</span><span class="n">alpha</span>
 </pre></div>
@@ -430,14 +430,13 @@ access 3-$d$, $\mathbb{Z}_2$ critical exponents, you can simply use, e.g.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

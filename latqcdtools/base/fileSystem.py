@@ -152,6 +152,15 @@ def getFileTimeStamp(target,form='human',zone=None) -> str:
 
 
 def getNumberLines(target) -> int:
+    """
+    Get number of lines in human-readable file.
+
+    Args:
+        target (str)
+
+    Returns:
+        int: number of lines 
+    """
     checkType(str,target=target)
     funit = open(target,'r')
     Nlines = 0
@@ -162,6 +171,15 @@ def getNumberLines(target) -> int:
 
 
 def getFileSize(target) -> int:
+    """
+    Get size of regular file.
+
+    Args:
+        target (str)
+
+    Returns:
+        int: size of file in bytes 
+    """
     checkType(str,target=target)
     if os.path.isfile(target):
         return os.path.getsize(target)

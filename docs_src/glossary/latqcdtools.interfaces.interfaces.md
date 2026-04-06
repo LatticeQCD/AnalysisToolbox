@@ -52,6 +52,12 @@ Returns:
 '''
 ```
 ```Python
+readXML(filename, ignoreExtension=False) -> dict:
+'''
+Load a XML file. Returns a dict, where each key level corresponds to an organizational level of the XML. 
+'''
+```
+```Python
 readYAML(filename, ignoreExtension=False) -> dict:
 '''
 Load a YAML file. Returns a dict, where each key level corresponds to an organizational level of the YAML. 

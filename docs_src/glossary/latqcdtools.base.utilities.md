@@ -32,7 +32,7 @@ Returns:
 '''
 ```
 ```Python
-cleanOutput(*args, label=None) -> str:
+cleanOutput(*args, label=None, sspace=20) -> str:
 '''
 This method takes a bunch of args and formats them automatically for output. The idea is
 that you can use this method to ensure that columns are well lined up.
@@ -144,7 +144,7 @@ Some arguments are None by default, and you only want to print them if they are 
 '''
 ```
 ```Python
-printClean(*args, label=None):
+printClean(*args, label=None, sspace=20):
 '''
 Wrapper for cleanOutput that prints to screen.
 
