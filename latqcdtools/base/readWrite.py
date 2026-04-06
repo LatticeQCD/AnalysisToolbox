@@ -39,10 +39,7 @@ def readTable(filename,unpack=True,col=None,minVal=-np.inf,maxVal=np.inf,exclude
         np.array: Data table. 
     """
     checkType(str,filename=filename)
-    try: 
-        data = np.loadtxt(filename,unpack=unpack,**kwargs)
-    except Exception as e:
-        raise e
+    data = np.loadtxt(filename,unpack=unpack,**kwargs)
     if col is not None:
         data = clipRange(data,col=col,minVal=minVal,maxVal=maxVal)
         if excludeAtVal is not None:

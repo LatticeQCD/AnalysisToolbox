@@ -40,8 +40,8 @@ except ModuleNotFoundError:
 
 
 COMPILENUMBA        = False
-MAXTHREADS          = os.cpu_count() 
-DEFAULTTHREADS      = MAXTHREADS - 2
+MAXTHREADS          = os.cpu_count()
+DEFAULTTHREADS      = max(1, MAXTHREADS - 2)
 
 
 def numbaON():
@@ -100,9 +100,9 @@ def get_optimal_block_size():
             device = cuda.get_current_device()
             # Max threads per block is device.MAX_THREADS_PER_BLOCK, but usually better to use less
             return min(256, device.MAX_THREADS_PER_BLOCK)
-        except:
+        except Exception:
             pass
-    return 256 
+    return 256
 
 
 def numbaList(inList):
@@ -113,8 +113,9 @@ def numbaList(inList):
     global HAVENUMBA
     if COMPILENUMBA and HAVENUMBA:
         nList = List()
-        [nList.append(x) for x in inList]
-        return nList 
+        for x in inList:
+            nList.append(x)
+        return nList
     else:
         return inList
 

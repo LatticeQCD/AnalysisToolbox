@@ -6,7 +6,7 @@
 # Warning and error control, along with methods to check internal code consistency. 
 #
 
-import warnings, inspect
+import warnings
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.utilities import envector, isArrayLike, isIntType, isScalar
@@ -155,9 +155,9 @@ def checkType(expectedType,**kwargs):
         if not isScalar(obj): 
             logger.TBRaise('Expected scalar object for',objName,'but received',type(obj),frame=3)
     elif expectedType=="real":
-        if not isScalar(obj): 
+        if not isScalar(obj):
             logger.TBRaise('Expected real scalar object for',objName,'but received',type(obj),frame=3)
-        elif obj.imag>0:
+        elif obj.imag!=0:
             logger.TBRaise('Expected real scalar object',objName,'has nonzero imaginary part',frame=3)
     elif expectedType=="int":
         if not isIntType(obj):
@@ -168,7 +168,7 @@ def checkType(expectedType,**kwargs):
 
 
 def checkDomain(obj, expectedDomain):
-    """ 
+    """
     Check that obj lies in expectedDomain.
 
     Args:
@@ -176,12 +176,8 @@ def checkDomain(obj, expectedDomain):
         expectedDomain (array-like): collection of values obj is allowed to take
     """
     checkType("array",expectedDomain=expectedDomain)
-    calling_frame = inspect.currentframe().f_back
-    locals_dict = calling_frame.f_locals
-    for var_name, _ in locals_dict.items():
-        objName = var_name  
-    if not obj in expectedDomain:
-        logger.TBRaise('Expected',objName,'to be one of',expectedDomain,frame=3)
+    if obj not in expectedDomain:
+        logger.TBRaise('Expected value to be one of',expectedDomain,'but got',obj,frame=3)
 
 
 def checkEqualLengths(*args):

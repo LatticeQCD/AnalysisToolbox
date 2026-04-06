@@ -133,7 +133,8 @@ def getFileTimeStamp(target,form='human',zone=None) -> str:
         str: time stamp in format 2025-09-23 14:56:27
     """
     checkType(str,target=target)
-    checkType(str,zone=zone)
+    if zone is not None:
+        checkType(str,zone=zone)
     if (zone is not None) and (form=='human'):
         logger.TBRaise('zone only meaningful for form==hubert.')
     if os.path.isfile(target):
@@ -162,11 +163,10 @@ def getNumberLines(target) -> int:
         int: number of lines 
     """
     checkType(str,target=target)
-    funit = open(target,'r')
     Nlines = 0
-    for line in funit:
-        Nlines += 1
-    funit.close()
+    with open(target,'r') as funit:
+        for line in funit:
+            Nlines += 1
     return Nlines
 
 

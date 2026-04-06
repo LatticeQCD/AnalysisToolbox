@@ -76,7 +76,7 @@ def get_err_str(param, param_err, numb_err_dig=2, rounding='conservative') -> st
 
     if param_err<=0:
         logger.details('Encountered non-positive error',param_err)
-        return param
+        return str(param)
 
     if numb_err_dig < 1:
         logger.TBRaise("Number of error digits has to be larger than 0!")
