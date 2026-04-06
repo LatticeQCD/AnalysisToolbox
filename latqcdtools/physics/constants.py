@@ -459,6 +459,15 @@ def M_Kpm_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     return physicalConstant("M_K+/-",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
+def M_phi_phys(year=2022,units="MeV",returnErr=False,world="nature"):
+    scale = {
+        'nature' : {
+            2022: (1019.461, 0.016), # PDG 2022. DOI: https://doi.org/10.1093/ptep/ptac097.
+        }
+    }
+    return physicalConstant("M_K+/-",scale,"MeV").getValue(world,year,units,returnErr) 
+
+
 def M_rho_phys(year=2022,units="MeV",returnErr=False,world="nature"):
     scale = {
         'nature' : {
@@ -532,6 +541,18 @@ def fpi_phys(year=2018,units="MeV",returnErr=False,world="nature"):
     return physicalConstant("f_pi+/-",scale,"MeV").getValue(world,year,units,returnErr) 
 
 
+def fphi_phys(year=2021,units="MeV",returnErr=False,world="Nf21"):
+    """
+    Physical value of the phi decay constant.
+    """
+    scale = {
+        'Nf21' : {
+            2021: (241 , 9), # DOI:  10.1088/1674-1137/abcd8f
+        },
+    }
+    return physicalConstant("f_phi",scale,"MeV").getValue(world,year,units,returnErr) 
+
+
 def frho_phys(year=2017,units="GeV",returnErr=False,world="nature"):
     """ 
     Physical value of the rho decay constant. 
@@ -555,6 +576,9 @@ def w0_phys(year=2013,units="fm",returnErr=False,world="Nf211"):
     scale = {
         'Nf211' : {
             2013: (0.1715, 0.0009), # w0 taken from HPQCD. DOI: 10.1103/PhysRevD.88.074504. Eq (18).
+        },
+        'Nf21' : {
+            2024: (0.17355, 0.00092), # FLAG https://arxiv.org/pdf/2411.04268
         }
     }
     return physicalConstant("w0",scale,"fm").getValue(world,year,units,returnErr) 
@@ -567,9 +591,11 @@ def sqrtt0_phys(year=2017,units="fm",returnErr=False,world="Nf21"):
     st0m2016, st0e2016 = symmetrizeError(lo=0.0005,hi=0.0008,central=0.1416,method='FLAG')
     scale = {
         'Nf211' : {
-            2016: (st0m2016        , st0e2016),                                       #  DOI: 10.1103/PhysRevD.93.094510
+            2024: (0.14292         , 0.00104                                       ), #  FLAG https://arxiv.org/pdf/2411.04268
+            2016: (st0m2016        , st0e2016                                      ), #  DOI: 10.1103/PhysRevD.93.094510
         },
         'Nf21' : {
+            2024: (0.14474         , 0.00057                                       ), #  FLAG https://arxiv.org/pdf/2411.04268
             2017: (0.415/np.sqrt(8), quadrature(np.array([0.004,0.002]))/np.sqrt(8)), #  DOI: https://doi.org/10.1103/PhysRevD.95.074504. Eq (5.5)
         }
     }

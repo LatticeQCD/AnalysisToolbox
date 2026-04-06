@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------- USER PREFERENCES
 
 SHELL    = "BASH"    # POWERSHELL to be added later
-STRATEGY = "BASIC"   # Options are "VENV" and "BASIC"
+STRATEGY = "VENV"   # Options are "VENV" and "BASIC"
 
 # ------------------------------------------------------------------------------ MAIN CODE 
 

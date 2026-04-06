@@ -201,7 +201,7 @@ def printArg(message,param):
         logger.info(message,param)
 
 
-def cleanOutput(*args,label=None) -> str:
+def cleanOutput(*args,label=None,sspace=20) -> str:
     """ 
     This method takes a bunch of args and formats them automatically for output. The idea is
     that you can use this method to ensure that columns are well lined up.
@@ -227,7 +227,7 @@ def cleanOutput(*args,label=None) -> str:
             form += spacing+'%15s'
         elif isinstance(col,str):
             data += (col,)
-            form += spacing+'%20s'
+            form += spacing+f'%{sspace}s'
         elif isinstance(col,complex):
             data += (col.real,)
             data += (col.imag,)
@@ -241,7 +241,7 @@ def cleanOutput(*args,label=None) -> str:
     return form % data
 
 
-def printClean(*args,label=None):
+def printClean(*args,label=None,sspace=20):
     """ 
     Wrapper for cleanOutput that prints to screen.
 
@@ -249,7 +249,7 @@ def printClean(*args,label=None):
         *args: The numbers you want to output, separated by commas. 
         label (str, optional): Put label to the left of your output. Defaults to None.
     """
-    logger.info(cleanOutput(*args,label).strip())
+    logger.info(cleanOutput(*args,label=label,sspace=sspace).strip())
 
 
 def printDict(dic,level=0):

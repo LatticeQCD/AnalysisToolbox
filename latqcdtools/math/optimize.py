@@ -15,7 +15,7 @@ from latqcdtools.base.utilities import envector
 
 
 # This is the base list of exceptions. If encountered, we treat the solve as unreliable.
-opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError)
+opt_exceptions = (NoConvergence, FloatingPointError, ValueError, RuntimeWarning, DivideByZeroError, InvalidValueError, OverflowError)
 
 
 # These orders are not necessarily optimal.

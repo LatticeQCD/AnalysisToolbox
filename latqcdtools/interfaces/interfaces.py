@@ -6,9 +6,10 @@
 # Some common classes and functions that may be shared among multiple interfaces modules.
 #
 
-import yaml, json, pickle
+import yaml, json, pickle, xmltodict
 import numpy as np
 from latqcdtools.base.check import checkType, checkExtension
+from latqcdtools.base.fileSystem import createFilePath
 import latqcdtools.base.logger as logger
 
 
@@ -85,6 +86,16 @@ def readJSON(filename,ignoreExtension=False) -> dict:
         return json.load(file)
 
 
+def readXML(filename,ignoreExtension=False) -> dict:
+    """
+    Load a XML file. Returns a dict, where each key level corresponds to an organizational level of the XML. 
+    """
+    checkType(str,filename=filename)
+    if not ignoreExtension:
+        checkExtension(filename,'xml')
+    return xmltodict.parse( open(filename).read() )
+
+
 def readWML(filename) -> list:
     """ 
     Does its best to read a table from Wikipedia Markup Language. Returns a list of lists,
@@ -141,6 +152,7 @@ def writeYAML(data,filename):
     """
     checkType(dict,data=data)
     checkType(str,filename=filename)
+    createFilePath(filename)
     with open(filename, 'w') as file:
         yaml.safe_dump(data, file) 
 
@@ -155,6 +167,7 @@ def writeJSON(data,filename):
     """
     checkType(dict,data=data)
     checkType(str,filename=filename)
+    createFilePath(filename)
     with open(filename, 'w') as file:
         json.dump(data, file, indent=4)
 

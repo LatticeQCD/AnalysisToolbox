@@ -109,17 +109,31 @@ def cp(source,target):
         shutil.copy(source,target)
 
 
+def cd(target):
+    """
+    Change to target directory. Equivalent to cd in Bash.
+
+    Args:
+        target (str)
+    """
+    checkType(str,target=target)
+    os.chdir(target)
+
+
 def getFileTimeStamp(target,form='human',zone=None) -> str:
     """
     Get the time stamp (when it was last modified) of a regular file.
 
     Args:
         target (str)
-
+        form (str)
+        zone (str): list of time zones here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        
     Returns:
         str: time stamp in format 2025-09-23 14:56:27
     """
     checkType(str,target=target)
+    checkType(str,zone=zone)
     if (zone is not None) and (form=='human'):
         logger.TBRaise('zone only meaningful for form==hubert.')
     if os.path.isfile(target):
@@ -128,7 +142,7 @@ def getFileTimeStamp(target,form='human',zone=None) -> str:
             mod_time_readable = datetime.datetime.fromtimestamp(modification_time)
             return str(mod_time_readable).strip()
         elif form=='hubert':
-            target_timezone = tz.gettz('Europe/Paris')  # Example for +01:00, adjust as needed.
+            target_timezone = tz.gettz(zone)
             mod_time = datetime.datetime.fromtimestamp(modification_time, tz=target_timezone)
             return str(mod_time.isoformat()).strip()
         else:
@@ -138,9 +152,18 @@ def getFileTimeStamp(target,form='human',zone=None) -> str:
 
 
 def getNumberLines(target) -> int:
+    checkType(str,target=target)
     funit = open(target,'r')
     Nlines = 0
     for line in funit:
         Nlines += 1
     funit.close()
     return Nlines
+
+
+def getFileSize(target) -> int:
+    checkType(str,target=target)
+    if os.path.isfile(target):
+        return os.path.getsize(target)
+    else:
+        logger.TBRaise(f"{target} is not regular file.")

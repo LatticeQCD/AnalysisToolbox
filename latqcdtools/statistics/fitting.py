@@ -539,7 +539,8 @@ class Fitter:
         return domain
 
 
-    def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, detailedInfo = False, show_results = False):
+    def try_fit(self, algorithms = std_algs, start_params = None, priorval = None, priorsigma = None, 
+                detailedInfo = False, show_results = False, Ncut=0):
         """ 
         Perform the fit. This is what you should usually call. Try different algorithms and choose the one with the
         smallest chi^2. By default this method does a standard statistical fit. One can also include priors to obtain
@@ -652,7 +653,7 @@ class Fitter:
                         'chi2'     : all_chi2[min_ind],
                         'chi2data' : chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
                                                None, None),
-                        'BAIC'     : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
+                        'BAIC'     : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,Ncut=Ncut),
                         'AIC'      : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
                                          self._priorval, self._priorsigma),
                         'AICc'     : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,

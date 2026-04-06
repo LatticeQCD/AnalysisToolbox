@@ -504,7 +504,7 @@ def confidence_ellipse(x,y,CI=None,**params):
     return a, b, theta 
 
 
-def plot_correlation(mat,ax=plt):
+def plot_correlation(mat,ax=plt,vmin=-1,vmax=1):
     """ Plot correlation matrix as a heatmap.
 
     Args:
@@ -514,7 +514,7 @@ def plot_correlation(mat,ax=plt):
     checkType(np.ndarray,mat=mat)
     heatmapColors = ['blue', 'white', 'red']
     cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom_cmap', heatmapColors)
-    ax.imshow(mat, cmap=cmap, vmin=-1,vmax=1)
+    ax.imshow(mat, cmap=cmap, vmin=vmin,vmax=vmax)
     ax.colorbar()
 
 
