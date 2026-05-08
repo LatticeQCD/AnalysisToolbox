@@ -8,7 +8,7 @@
 
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import convert, fm_to_MeVinv, MeVinv_to_fm, fm_to_GeVinv, GeVinv_to_fm, \
-    M_mu_phys, M_pi0_phys, M_pipm_phys, fk_phys, frho_phys, lambda_MSbar_phys, cms, sqrtG, M_e_phys, M_proton_phys
+    M_mu_phys, M_pi0_phys, M_pipm_phys, lambda_MSbar_phys, cms, sqrtG, M_e_phys, M_proton_phys
 from latqcdtools.testing import print_results, concludeTest
 
 logger.set_log_level('INFO')
@@ -63,9 +63,6 @@ def testUnits():
     lpass *= print_results(M_pi0_phys(2022,"fminv"), 0.6840260810804044, text="m_pi0 [1/fm]")
     lpass *= print_results(M_pipm_phys(2022,"MeV"), 139.57039,text="m_pipm [MeV]")
     lpass *= print_results(M_pipm_phys(2022,"GeV"), 0.13957039000000002, text="m_pipm [GeV]")
-    lpass *= print_results(frho_phys(2017,"GeV"), 0.21,text="frho [GeV]")
-    lpass *= print_results(frho_phys(2017,"MeV"), 210.0,text="frho [MeV]")
-    lpass *= print_results(frho_phys(2017,"fminv"), 1.06422345934179,text="frho [1/fm]")
     lpass *= print_results(lambda_MSbar_phys(2021,"GeV"), 0.339,text="lambda_MSbar [GeV]")
     lpass *= print_results(lambda_MSbar_phys(2021,"MeV"), 339,text="lambda_MSbar [MeV]")
     lpass *= print_results(lambda_MSbar_phys(2021,"fminv"), 1.7179607272231752,text="lambda_MSbar [1/fm]")

@@ -500,10 +500,12 @@ def M_neutron_phys(year=2024,units="MeV",returnErr=False,world="nature"):
 # ------------------------------------------------------------------------------------------------------ DECAY CONSTANTS
 
 
-
+# As a note for these decay constants: I haven't figured out exactly what definitions
+# lead to inclusion of sqrt(2.). I will only mention that this convention for fpi seems
+# to match Peskin and Schroeder, at least.
 def fk_phys(year=2019,units="MeV",returnErr=False,world="nature"):
     """ 
-    Physical value of Kaon decay constant, f_K+/-. scale by sqrt(2.). 
+    Physical value of Kaon decay constant, f_K+/-. Scale by sqrt(2.). 
     """
     _fkerrs2012 = np.array([0.2   ,0.8   ,0.2   ])
     _fkerrs2018 = np.array([0.17  ,0.45  ,0.16  ])
@@ -527,7 +529,7 @@ def fk_phys(year=2019,units="MeV",returnErr=False,world="nature"):
 
 def fpi_phys(year=2018,units="MeV",returnErr=False,world="nature"):
     """
-    Physical value of the pion decay constant, f_pi+/-. 
+    Physical value of the pion decay constant, f_pi+/-. Scale by sqrt(2.) 
     """
     _fpierrs2018 = np.array([0.01  ,0.03  ,0.13  ])
     scale = {
@@ -538,13 +540,14 @@ def fpi_phys(year=2018,units="MeV",returnErr=False,world="nature"):
             2018: (130.50, quadrature(_fpierrs2018)), # PDG 2018. DOI: 10.1103/PhysRevD.98.030001. Section 84.5.1.
         }
     }
-    return physicalConstant("f_pi+/-",scale,"MeV").getValue(world,year,units,returnErr) 
+    return physicalConstant("f_pi+/-",scale,"MeV").getValue(world,year,units,returnErr,normalize=np.sqrt(2.)) 
 
 
 def fphi_phys(year=2021,units="MeV",returnErr=False,world="Nf21"):
     """
     Physical value of the phi decay constant.
     """
+    logger.TBError('CHECK NORMALIZATION')
     scale = {
         'Nf21' : {
             2021: (241 , 9), # DOI:  10.1088/1674-1137/abcd8f
@@ -557,6 +560,7 @@ def frho_phys(year=2017,units="GeV",returnErr=False,world="nature"):
     """ 
     Physical value of the rho decay constant. 
     """
+    logger.TBError('CHECK NORMALIZATION')
     logger.warn("David lost track of where the 2017 value came from.")
     scale = {
         'nature' : {

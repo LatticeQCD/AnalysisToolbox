@@ -6,7 +6,7 @@
 # Some tools useful when analyzing correlators 
 # 
 import numpy as np
-from latqcdtools.base.check import checkType
+from latqcdtools.base.check import checkType, InvalidValueError
 from latqcdtools.math.optimize import persistentSolve
 import latqcdtools.base.logger as logger
 
@@ -71,8 +71,11 @@ def effectiveMass(corr,algorithm='simple',guess=None) -> np.ndarray:
     Nt = len(corr)
     meff = []
     if algorithm=='simple':
-        for it in range(Nt-1):
-            meff.append( np.log(corr[it]/corr[it+1]) )
+        try:
+            for it in range(Nt-1):
+                meff.append( np.log(corr[it]/corr[it+1]) )
+        except InvalidValueError:
+            logger.TBRaise('corr=',corr,exception=InvalidValueError)
     elif algorithm=='periodic':
         mit = guess
         for it in range(Nt-1):

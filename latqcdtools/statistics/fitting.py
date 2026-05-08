@@ -483,7 +483,7 @@ class Fitter:
             if abs(np.sum(test) - np.sum(np.diag(test))) > self._test_tol:
                 if not self._nowarn:
                     logger.warn(algorithm,"pcov @ jej not close to id")
-                    logger.warn(np.diag(test))
+                    logger.warn(test)
 
             if np.min(np.diag(pcov)) < 0:
                 logger.TBFail(algorithm + ": Negative entries for the variance!")

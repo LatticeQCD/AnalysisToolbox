@@ -67,6 +67,7 @@ z = Plus( Multiply(x, Plus(x,y)), Multiply(y, y) )
 x_partial = z.evaluate_and_derive(x).partial
 y_partial = z.evaluate_and_derive(y).partial
 
+logger.info('z = x(x+y)+y^2 at x=2, y=3')
 logger.info(f"(auto) ∂z/∂x = {x_partial}, ∂z/∂y = {y_partial}")
 
 # Example implemented using numerical differentiation of the Toolbox.
