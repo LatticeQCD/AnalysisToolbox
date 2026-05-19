@@ -11,7 +11,7 @@ import numpy as np
 from latqcdtools.base.plotting import plt, clearPlot, plot_dots, plot_lines, getColorGradient
 from latqcdtools.statistics.fitting import Fitter, zipData, unzipData
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.initialize import initialize, finalize
+from latqcdtools.base.initialize import initialize, finalize, TBRNG 
 
 
 initialize()
@@ -65,7 +65,7 @@ def fitFunc(data,c):
     return c[0] + c[1]*X**2 + c[2]*Y
 
 # We will have Z = 1 + 2x^2 + 3y. Add some fake noise.
-rng = np.random.default_rng()
+rng = TBRNG() 
 z = fitFunc(xydata,[1,2,3]) + rng.normal(0,0.1,len(xydata))
 
 # Now we pass xydata as our array of independent data.

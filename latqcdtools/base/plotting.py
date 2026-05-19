@@ -874,7 +874,7 @@ def plot_lines(xdata, ydata, yedata=None, xedata=None, **params):
         _prepare_legend(ax,params)
 
 
-def plot_fill(xdata, ydata, yedata, xedata=None, center=True, **params):
+def plot_fill(xdata, ydata, yedata, xedata=None, center=False, **params):
     """ 
     Plot a filled region within ydata +/- yedata. Can set xedata along with yedata=None for vertical bands.
 

@@ -7,7 +7,7 @@
 from latqcdtools.physics.correlators import foldCorrelator
 from latqcdtools.testing import concludeTest,print_results
 from latqcdtools.base.cleanData import clipRange
-from latqcdtools.base.initialize import rng
+from latqcdtools.base.initialize import TBRNG, DEFAULTSEED 
 import numpy as np
 
 def foldSimple(corr):
@@ -34,6 +34,7 @@ def simulate_dt(Nt):
     toFold=np.array(toFold)
     return clipRange( foldCorrelator(toFold), maxVal=np.inf, allowEqual=False )
 
+rng = TBRNG(DEFAULTSEED)
 
 def testCorr():
 

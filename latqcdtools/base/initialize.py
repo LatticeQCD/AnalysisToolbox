@@ -18,7 +18,7 @@ DEFAULTSEED = 7271978   # Default seed for reproducibility (needed in testing). 
 
 # The default_rng() constructor is what numpy recommends, which at the time of writing 
 # utilizes O'Neill's PCG algorithm. 
-rng = np.random.default_rng()
+TBRNG = np.random.default_rng
 
 
 def gitHash() -> str:

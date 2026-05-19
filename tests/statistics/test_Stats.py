@@ -91,8 +91,9 @@ ts2 = [-0.41765878, -0.2333498 ,  -0.22939907,  -0.27035445,  -0.29163003,  -0.2
         0.5725527 ,  0.5917013 ,   0.46564984,   0.5967817 ,   0.68037146,   0.53769773,
         0.5776071 ,  0.6235754 ,   0.67287165,   0.82511437,   0.93292713,   0.84517425,
         0.762654  ,  0.8910726 ,   0.9227938 ,   0.7618559 ,   0.80128413]
+tssimple = [0,1,2,3,4,5,6,7]
 
-ts1, ts2 = toNumpy(ts1, ts2)
+ts1, ts2, tssimple = toNumpy(ts1, ts2, tssimple)
 
 # An example taken from P. Lepage's lsqfit tutorial:
 ycov  = np.array(
@@ -128,7 +129,7 @@ mat = [[ 1,2,-1],
        [-1,2, 1]]
 mat = np.array(mat)
 
-psd =np.array(
+psd = np.array(
 [[ 1.        ,  0.64069129, -0.17902934],
  [ 0.64069129,  1.        ,  0.64069129],
  [-0.17902934,  0.64069129,  1.        ]])
@@ -159,7 +160,7 @@ def testStats():
     q13=gaudif(x1,e1,x3,e3)
     q14=gaudif(x1,e1,x4,e4)
 
-    # Test gaussian difference
+    # Test Z-test
     if abs(q12-q12control) > eps:
         lpass=False
     if abs(q13-q13control) > eps:
@@ -169,11 +170,11 @@ def testStats():
 
     s12=studif(x1,e1,ndat1,x2,e2,ndat2)
 
-    # Test student difference
+    # Test T-test
     if abs(s12-s12control) > eps:
         lpass=False
 
-    # Student and Gaussian difference tests should agree for large sample sizes
+    # Z- and T-tests should agree for large sample sizes
     if studif(x1,e1,300,x2,e2,300)/gaudif(x1,e1,x2,e2) > 1.005:
         lpass=False
 

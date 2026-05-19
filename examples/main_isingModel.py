@@ -10,7 +10,7 @@
 
 import numpy as np
 from latqcdtools.physics.lattice import Lattice
-from latqcdtools.base.initialize import initialize, finalize
+from latqcdtools.base.initialize import initialize, finalize, TBRNG
 from latqcdtools.base.plotting import latexify, plt, plot_dots, set_params, clearPlot
 from latqcdtools.base.printErrorBars import get_err_str
 from latqcdtools.statistics.statistics import std_mean
@@ -28,13 +28,13 @@ latexify()
 # Simulation parameters. 
 #
 Nd    = 2        # number of dimensions
-Tlow  = 2.25     # lowest temperature to sample (kB=1)
-Thi   = 2.4      # highest temperature to sample
+Tlow  = 2.0      # lowest temperature to sample (kB=1)
+Thi   = 3.0      # highest temperature to sample
 h     = 0.       # external magnetic field
 L     = 8        # spatial extension
-Nequi = 2000     # equilibrate with this many MCMC sweeps
-Nmeas = 600      # measure this many MCMC sweeps
-Nskip = 5        # separate measurements by this many MCMC sweeps
+Nequi = 8000     # equilibrate with this many MCMC sweeps
+Nmeas = 2000     # measure this many MCMC sweeps
+Nskip = 10       # separate measurements by this many MCMC sweeps
 start = 'hot'    # start with all spins up (up), down (down), or random (hot)
 
 
@@ -58,10 +58,9 @@ def runIsingModel(T):
     beta  = 1/T
     logger.info('T =',T)
 
-    # Initialize the random number generator. When carrying out a statistical physics MCMC, it's
-    # crucially important that you pick a good one. The default_rng() constructor is what
-    # numpy recommends, which at the time of writing utilizes O'Neill's PCG algorithm. 
-    rng = np.random.default_rng()
+    # The rng object is the Toolbox's generator, which is just a renaming of the numpy
+    # default random number generator. You can pass him a seed if you like.
+    rng = TBRNG() 
 
     # Initialize the lattice object. The first argument says the lattice geometry will be L**Nd,
     # while the second argument is an example of the kind of object that will be on each site.
@@ -191,7 +190,7 @@ plt.show()
 
 
 # Record the results in a nicely formatted table.
-writeTable('ising_'+str(L)+'_'+str(Nd)+'.d',Tlist,res_M,res_E,res_chi,res_chie,res_B,res_Be,
+writeTable('ising_'+str(L)+'_'+str(Nd)+'.d',Tlist,res_M,res_Me,res_chi,res_chie,res_B,res_Be,
            header=['T','|M|','|M|_err','chi','chi_err','B','B_err'])
 finalize()
 
