@@ -636,11 +636,14 @@ class Fitter:
         else:
             chidof = all_chi2[min_ind]/dof
 
+        aicc = AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params, self._priorval, self._priorsigma)
+
         if show_results:
             logger.info('Fit Results:')
             for i in range(len(all_fit_errors[min_ind])):
                 logger.info(f'          p[{i}] =',get_err_str(self._saved_params[i],all_fit_errors[min_ind][i]))
             logger.info('  chi^2/d.o.f. =',chidof)
+            logger.info('          AICc =',aicc)
 
 
         if detailedInfo:
@@ -656,8 +659,7 @@ class Fitter:
                         'BAIC'     : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,Ncut=Ncut),
                         'AIC'      : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
                                          self._priorval, self._priorsigma),
-                        'AICc'     : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                                          self._priorval, self._priorsigma),
+                        'AICc'     : aicc, 
                         'DOF'      : dof,
                         'Q'        : goodnessOfFit(dof,all_chi2[min_ind])
                      }

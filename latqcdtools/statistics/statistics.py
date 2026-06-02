@@ -612,12 +612,12 @@ def error_prop_func(x, func, params, params_err, grad=None, args=()):
     """ 
     Propagate error in f(x;params,params_err). This needs its own special treatment, since
     the error propagation method on its own only propagates params_err to f(params,params_err).
-
+    
     Args:
         x (array-like)
         func (func)
         params (array-like): Model parameters. 
-        params_err (array-like): Error in model parameters. 
+        params_err (array-like): Covariance matrix of model parameters
         grad (func, optional): Gradient function. Defaults to None.
         args (tuple, optional): Arguments of func. Defaults to ().
     """

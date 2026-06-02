@@ -902,12 +902,13 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=False, **params):
     ax       = _getAxObject(params)
     ZOD      = _getZOD(params)
 
+    handle = None
     if center :
         if params['color'] is not None:
-            handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+            handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'],
                                  color=params['color'], zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
         else:
-            handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'], 
+            handle = ax.errorbar(xdata*params['xscale'], ydata*params['yscale'], linewidth=params['linewidth'],
                                  zorder=ZOD+1, alpha = params['alpha_lines'], **optional)
         col = handle[0].get_color()
     else:
@@ -941,7 +942,7 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=False, **params):
 
     if params['label'] is not None:
         _update_labels(ax,params['label'])
-        _update_handles(ax,(handle,pl))
+        _update_handles(ax,(handle,pl) if handle is not None else pl)
         _prepare_legend(ax,params)
 
 

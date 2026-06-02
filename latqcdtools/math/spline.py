@@ -12,10 +12,10 @@ from scipy.interpolate import CubicSpline, splrep, splev
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import AICc
 from latqcdtools.base.check import checkType, checkEqualLengths
-from latqcdtools.base.utilities import toNumpy
-from latqcdtools.statistics.bootstr import bootstr_from_gauss
+from latqcdtools.base.utilities import toNumpy, find_nearest_idx
 from latqcdtools.base.initialize import TBRNG, DEFAULTSEED
-from latqcdtools.statistics.statistics import std_median, dev_by_dist
+from latqcdtools.statistics.statistics import std_median, dev_by_dist, countParams
+from latqcdtools.math.num_deriv import diff_deriv
 
 
 def _even_knots(xdata, nknots):
@@ -113,6 +113,20 @@ class TBSpline:
     def get_weights(self):
         return self.weights
 
+    def n_deriv(self,x,n):
+        """
+        Take n derivatives of spline, evaluate at x
+
+        Args:
+            x (float)
+            n (int)
+
+        Returns:
+            float: d^n S/ dx^n 
+        """
+        return splev(x, self.tck, der=n)
+
+
 
 def getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None, 
               getAICc=False, natural=False):
@@ -200,25 +214,42 @@ def getSplineErr(xdata, xspline, ydata, ydatae, num_knots=None, order=3, rand=Fa
 
 
 def bootSpline(xdata, ydata, edata, num_knots=None, order=3, rand=False, fixedKnots=None, 
-               natural=False, numb_samples=300, nsupport=301) -> dict:
+               natural=False, numb_samples=300, nsupport=301, seed=DEFAULTSEED) -> dict:
     """
     Given xdata, ydata, edata, create a spline. Use bootstrap to propagate uncertainties of the data into an
     error band for the spline. Gives back a dictionary whose xspl, yspl, and ysple entries can be used
     to plot a spline with error bars 
     """
-    rng = TBRNG(DEFAULTSEED)
+    checkType("int",seed=seed)
     checkEqualLengths(xdata,ydata,edata)
-    xspl = np.linspace(np.min(xdata),np.max(xdata),nsupport)
-    iboot=0
-    splines, AICcs = [], []
-    res = {}
+    rng     = TBRNG(seed)
+    xspl    = np.linspace(np.min(xdata),np.max(xdata),nsupport)
+    spline0 = getSpline(xdata=xdata,ydata=ydata,edata=edata,num_knots=num_knots,order=order,
+                        rand=rand,fixedKnots=fixedKnots,natural=natural)
+    nparams = countParams(spline0,params=())
+    ndata   = len(ydata)
+    splines = [] 
+    AICcs   = []
+    xmaxs   = []
+    res     = {}
+
+    iboot = 0
     while iboot<numb_samples:
         yBS = rng.normal(ydata,edata)
-        spl, AICc = getSpline(xdata=xdata,ydata=yBS,num_knots=num_knots,edata=edata,order=order,rand=rand,
-                              fixedKnots=fixedKnots,natural=natural,getAICc=True)
+        if nparams>=ndata:
+            spl = getSpline(xdata=xdata,ydata=yBS,num_knots=num_knots,edata=edata,order=order,rand=rand,
+                            fixedKnots=fixedKnots,natural=natural)
+        else:
+            spl, AICc = getSpline(xdata=xdata,ydata=yBS,num_knots=num_knots,edata=edata,order=order,rand=rand,
+                                  fixedKnots=fixedKnots,natural=natural,getAICc=True)
+            AICcs.append(AICc)
         splines.append(spl)
-        AICcs.append(AICc)
+
+        max_idx = find_nearest_idx(spl(xspl),np.max(spl(xspl)))
+        xmaxs.append(xspl[max_idx])
+
         iboot += 1
+
     ys, yes = [], []
     for x in xspl:
         splx = []
@@ -227,13 +258,15 @@ def bootSpline(xdata, ydata, edata, num_knots=None, order=3, rand=False, fixedKn
         splx = np.array(splx)
         ys.append(std_median(splx))
         yes.append(dev_by_dist(splx))
-    ys, yes, AICcs = toNumpy(ys, yes, AICcs)
+    ys, yes, AICcs, xmaxs = toNumpy(ys, yes, AICcs, xmaxs)
+
     res['AICcs']      = AICcs   # in case you want to diagnose fit quality
     res['splineBS']   = splines # in case you want spline functions at bootstrap level
     res['xspl']       = xspl
     res['yspl']       = ys
     res['ysple']      = yes
-    # A spline to the spline data. Its derivatives may not be reliable
-    res['splineMean'] = getSpline(xspl,ys,num_knots=int(nsupport/10+1),edata=yes,order=order,rand=rand,
-                                  fixedKnots=fixedKnots,natural=natural)
+    res['splineMean'] = spline0
+    res['xmax']       = std_median(xmaxs)  # where is the maximum  
+    res['xmaxe']      = dev_by_dist(xmaxs)
+                        
     return res

@@ -14,6 +14,18 @@ from latqcdtools.base.utilities import isReal
 from latqcdtools.base.logger import ToolboxException
 
 
+CHECKWORLD = False
+
+
+def ignoreWorldWarning():
+    """ 
+    Turn off world warnings. 
+    """
+    global CHECKWORLD 
+    CHECKWORLD = False
+    logger.warn("Ignoring world warnings.")
+
+
 def _getMassString(mass):
     if mass is None:
         return None
@@ -76,13 +88,15 @@ class latticeParams:
             try:
                 self.fK = fk_phys(year=year,units="MeV",returnErr=False,world=self.world)
             except ToolboxException:
-                logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                if CHECKWORLD:
+                    logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
                 self.fK = fk_phys(year=year,units="MeV",returnErr=False,world='Nf21')
         elif self.scale == 'r1':
             try:
                 self.r1 = r1_phys(year=year,units="fm" ,returnErr=False,world=self.world)
             except ToolboxException:
-                logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                if CHECKWORLD:
+                    logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
                 self.r1 = r1_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
         elif self.scale == 'r0':
             try:
