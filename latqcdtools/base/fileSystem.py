@@ -109,6 +109,21 @@ def cp(source,target):
         shutil.copy(source,target)
 
 
+def mv(source,target):
+    """
+    Move source to target. Creates target directory path if needed. Similar
+    to mv in Bash.
+
+    Args:
+        source (str)
+        target (str)
+    """
+    checkType(str,source=source)
+    checkType(str,target=target)
+    createFilePath(target)
+    shutil.move(source,target) 
+
+
 def cd(target):
     """
     Change to target directory. Equivalent to cd in Bash.
