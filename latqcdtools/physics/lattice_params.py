@@ -234,36 +234,37 @@ class latticeParams:
     def paramSummary(self):
         logger.info()
         logger.info("Lattice parameter summary: ")
+        logger.info("    Nf =",self.Nf)
         if self.scale == 'fk':
-            logger.info("    fK = ",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
+            logger.info("    fK =",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
         elif self.scale == 'r1':
-            logger.info("    r1 = ",self.r1,"[fm] ")
+            logger.info("    r1 =",self.r1,"[fm] ")
         elif self.scale == 'r0':
-            logger.info("    r0 = ",round(self.r0,4),"[fm] ")
+            logger.info("    r0 =",round(self.r0,4),"[fm] ")
         if self.Ns is not None:
-            logger.info("    Ns = ",self.Ns)
-        logger.info("    Nt = ",self.Nt)
+            logger.info("    Ns =",self.Ns)
+        logger.info("    Nt =",self.Nt)
+        logger.info("  beta =",self.beta)
         if self.ml is not None:
-            logger.info("    ml = ",self.ml)
+            logger.info("    ml =",self.ml)
         if self.mu is not None:
-            logger.info("    mu = ",self.mu)
+            logger.info("    mu =",self.mu)
         if self.md is not None:
-            logger.info("    md = ",self.md)
+            logger.info("    md =",self.md)
         if self.ms is not None:
-            logger.info("    ms = ",self.ms)
+            logger.info("    ms =",self.ms)
         if self.m is not None:
-            logger.info("     m = ",self.m)
+            logger.info("     m =",self.m)
         if self.pre is not None:
-            logger.info("   pre = ",self.pre)
+            logger.info("   pre =",self.pre)
         if self.msml is not None: 
-            logger.info(" ms/ml = ",self.msml)
+            logger.info(" ms/ml =",self.msml)
         if self.msmu is not None: 
-            logger.info(" ms/mu = ",self.msmu)
+            logger.info(" ms/mu =",self.msmu)
         if self.mdmu is not None: 
-            logger.info(" md/mu = ",self.mdmu)
-        logger.info("    T  = ",round(self.getT(),2), "[MeV]")
-        logger.info("    a  = ",round(self.geta(),4), "[fm]")
+            logger.info(" md/mu =",self.mdmu)
+        logger.info("    T  =",round(self.getT(),2), "[MeV]")
+        logger.info("    a  =",round(self.geta(),4), "[fm]")
         if self.Ns is not None:
-            logger.info("    Ls = ",round(self.getLs(),4), "1/[MeV]")
-        logger.info("  beta = ",self.beta)
+            logger.info("    Ls =",round(self.getLs(),4), "1/[MeV]")
         logger.info()

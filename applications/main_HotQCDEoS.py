@@ -46,14 +46,14 @@ eot = args.EoT
 if muBdivT is not None and eot == "fixedmuB":
     p, nB, e, s = eos.ObsEoSfixedmuB(Nnparams, qnparams, muBdivT)
     outFileName = "HotQCDEos2022_fixedmuBdivT%0.2f.txt" % muBdivT
-    writeTable(outFileName, T, muBdivT * T, p, nB, e, s, header='TMeV muBMeV p nB e s')
+    writeTable(outFileName, T, muBdivT * T, p, nB, e, s, header=['T [MeV]', 'muB [MeV]', 'p', 'nB', 'e', 's'])
 elif snB is not None and eot == "fixedsnB":
     muBdivT, p, nB, e, s = eos.ObsEoSfixedsnB(Nnparams, qnparams, snB)
     outFileName = "HotQCDEos2022_fixedsnB%0.2f.txt" % snB
-    writeTable(outFileName, T, muBdivT * T, p, nB, e, s, header='TMeV muBMeV p nB e s')
+    writeTable(outFileName, T, muBdivT * T, p, nB, e, s, header=['T [MeV]', 'muB [MeV]', 'p', 'nB', 'e', 's'])
 elif muBdivT == 0.0:
     p, e, s = eos.ObsEoS()
     outFileName = "HotQCDEos2022_fixedmuBdivT%0.1f.txt" % muBdivT
-    writeTable(outFileName, T, muBdivT * T, p, e, s, header='TMeV muBMeV p nB e s')
+    writeTable(outFileName, T, muBdivT * T, p, e, s, header=['T [MeV]', 'muB [MeV]', 'p', 'nB', 'e', 's'])
 else:
     print("To calculate EOS either provide a fixed muB/T value or fixed s/nB value see : python  main_HotQCDEoS.py -h")

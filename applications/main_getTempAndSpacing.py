@@ -20,6 +20,7 @@ parser = argparse.ArgumentParser(description='Compute a and T.')
 
 parser.add_argument('--Nt', dest='Nt', type=int, default=8, help='euclidean time extension')
 parser.add_argument('--Ns', dest='Ns', type=int, default=None, help='spatial extension')
+parser.add_argument('--Nf', dest='Nf', type=str, default='21', help='number flavors (e.g. 21 or 111)')
 parser.add_argument('--beta', dest='beta', type=float, required=True, help='bare coupling const')
 parser.add_argument('--scale', dest='scale', required=True, help='reference scale (r0, r1, or fk)')
 parser.add_argument('--paramYear', dest='paramYear', type=int, default=None, help='year for a(beta) parameterization')
@@ -29,6 +30,7 @@ args = getArgs(parser)
 
 scale      = args.scale
 Nt         = args.Nt
+Nf         = args.Nf
 beta       = args.beta
 scaleYear  = args.scaleYear
 paramYear  = args.paramYear
@@ -43,6 +45,6 @@ if paramYear is None:
 if scaleYear is None:
     scaleYear = CY_phys[scale]
 
-lp = latticeParams(Ns, Nt, beta, mass1=None, mass2=None, scaleType=scale, paramYear=paramYear, scaleYear=scaleYear)
+lp = latticeParams(Ns, Nt, beta, Nf=Nf, mass1=None, mass2=None, scaleType=scale, paramYear=paramYear, scaleYear=scaleYear)
 
 lp.paramSummary()

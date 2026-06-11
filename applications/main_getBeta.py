@@ -21,6 +21,7 @@ ignoreBetaRange()
 parser = argparse.ArgumentParser(description='Compute a and T.')
 
 parser.add_argument('--Nt', dest='Nt', type=int, default=8, help='euclidean time extension')
+parser.add_argument('--Nf', dest='Nf', type=str, default='21', help='number flavors, e.g. 21')
 parser.add_argument('--scale', dest='scale', required=True, help='reference scale (r0, r1, or fk)')
 parser.add_argument('--T', dest='T', required=True, type=float, help='temperature in [MeV]')
 parser.add_argument('--paramYear', dest='paramYear', type=int, default=None, help='year for a(beta) parameterization')
@@ -31,6 +32,7 @@ args = getArgs(parser)
 scale      = args.scale
 T          = args.T
 Nt         = args.Nt
+Nf         = args.Nf
 scaleYear  = args.scaleYear
 paramYear  = args.paramYear
 beta_guess = 6.0
@@ -43,14 +45,15 @@ if scaleYear is None:
 # Implement target_T - T as the LHS of the solver.
 if scale == 'r0':
     def LHS(beta):
-        return r0_div_a(beta,paramYear)/r0_phys(scaleYear,units="MeVinv")/Nt - T
+        return r0_div_a(beta,paramYear)/r0_phys(scaleYear,units="MeVinv",world=f'Nf{Nf}')/Nt - T
 elif scale == 'fk':
     def LHS(beta):
-        return fk_phys(scaleYear,units="MeV")/a_times_fk(beta,paramYear)/Nt - T
+        return fk_phys(scaleYear,units="MeV",world=f'Nf{Nf}')/a_times_fk(beta,paramYear)/Nt - T
 else:
     logger.TBError('Beta extraction not yet implemented for scale',scale)
 
 logger.info('     scale =',scale)
+logger.info('        Nf =',Nf)
 logger.info(' scaleYear =',scaleYear)
 logger.info(' paramYear =',paramYear)
 logger.info('         T =',T,'[MeV]')

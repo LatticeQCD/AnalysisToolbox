@@ -26,9 +26,9 @@ parser.add_argument("--hadron_file", dest="hadron_file", default="../latqcdtools
                     help="Table with hadron properties")
 parser.add_argument("--b", dest="b", help="excluded volume parameter.", default=None, type=float)
 parser.add_argument("--Tpc", dest="Tpc", default=None,help="determine T(muB) along the pseudo-critical line", type=float)
-parser.add_argument("--T", dest="temp", default=None,help="perform all calculations at this constant T", type=float)
+parser.add_argument("--T", dest="temp", default=None,help="perform all calculations at this constant T [MeV]", type=float)
 parser.add_argument("--r", dest="r", default=0.4, help="r=nQ/nB (RHIC is 0.4, isospin symmetric is 0.5", type=float)
-parser.add_argument("--models",nargs="*",dest="models",default=['QM'],required=True,help="list of HRG models from (EV,QM) to try, default = QM",type=str)
+parser.add_argument("--models",nargs="*",dest="models",default=['QM'],help="list of HRG models from (EV,QM) to try, default = QM",type=str)
 
 
 args = getArgs(parser)
