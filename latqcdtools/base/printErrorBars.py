@@ -29,6 +29,8 @@ def getValuesFromErrStr(errStr):
         mean     = float(meanStr)
         ebstr    = errStr.split('(')[1][:-1]
         err      = float(ebstr)
+        if err==0:
+            return mean, err 
         if not '.' in errStr:
             return mean, err
         dot_index = errStr.find('.')

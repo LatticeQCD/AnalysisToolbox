@@ -51,12 +51,22 @@ class idealGas:
     def __repr__(self) -> str:
         return "idealGas"
 
-    def P(self, T, muB=0., muS=0., muQ=0., muC=0.):
+    def _eval(self, sym_expr, T, muB, muQ, muS, muC):
         """ 
-        Unitful pressure. 
+        Evaluate a sympy expression at T (scalar or array). 
         """
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return np.float128(self.Psym.subs(values).evalf())
+        if np.ndim(T) == 0:
+            values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC}
+            return np.float128(sym_expr.subs(values).evalf())
+        return np.array([np.float128(sym_expr.subs({self.T: t, self.muB: muB, self.muQ: muQ,
+                                                    self.muS: muS, self.muC: muC}).evalf())
+                         for t in T])
+
+    def P(self, T, muB=0., muS=0., muQ=0., muC=0.):
+        """
+        Unitful pressure.
+        """
+        return self._eval(self.Psym, T, muB, muQ, muS, muC)
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         """
@@ -66,16 +76,14 @@ class idealGas:
         chi = sympy.diff(chi      , self.muQ, Q_order)
         chi = sympy.diff(chi      , self.muS, S_order)
         chi = sympy.diff(chi      , self.muC, C_order)
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return np.float128(chi.subs(values).evalf())
+        return self._eval(chi, T, muB, muQ, muS, muC)
 
     def S(self, T, muB=0., muS=0., muQ=0., muC=0.):
-        """ 
-        Unitful entropy. 
+        """
+        Unitful entropy.
         """
         entropy = sympy.diff(self.Psym, self.T, 1)
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return np.float128(entropy.subs(values).evalf())
+        return self._eval(entropy, T, muB, muQ, muS, muC)
 
 #    def E(self, T, muB=0., muS=0., muQ=0., muC=0.):
 #        """
@@ -91,8 +99,7 @@ class idealGas:
         chi     = sympy.diff(chi      , self.muS, S_order)
         chi     = sympy.diff(chi      , self.muC, C_order)
         ddT_chi = sympy.diff(chi      , self.T  , 1      )
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return np.float128(ddT_chi.subs(values).evalf())
+        return self._eval(ddT_chi, T, muB, muQ, muS, muC)
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB=0., muQ=0., muS=0., muC=0.):
         chi       = sympy.diff(self.Psym, self.muB, B_order)
@@ -100,6 +107,5 @@ class idealGas:
         chi       = sympy.diff(chi      , self.muS, S_order)
         chi       = sympy.diff(chi      , self.muC, C_order)
         d2dT2_chi = sympy.diff(chi      , self.T  , 2      )
-        values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC} 
-        return np.float128(d2dT2_chi.subs(values).evalf())
+        return self._eval(d2dT2_chi, T, muB, muQ, muS, muC)
 

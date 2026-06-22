@@ -89,7 +89,7 @@ def integrateFunction(func,a,b,method='persistent',args=(),stepsize=None,limit=1
                                 > 'quad' : Gaussian quadrature.
                                 > 'trapezoid' : Trapezoidal rule.
         args (tuple, optional): Arguments to func. Defaults to ().
-        stepsize (float, optional): _description_. Defaults to None.
+        stepsize (float, optional): Defaults to None.
         limit (int, optional): Upper bound on number of subintervals used in the adaptive algorithm. Defaults to 1000.
         epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.
         epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.

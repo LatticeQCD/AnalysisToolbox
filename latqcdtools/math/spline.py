@@ -206,10 +206,10 @@ def getSplineErr(xdata, xspline, ydata, ydatae, num_knots=None, order=3, rand=Fa
     """ 
     Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. 
     """
-    spline_lower = getSpline(xdata, ydata - ydatae, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
-    spline_upper = getSpline(xdata, ydata + ydatae, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
-    spline_center = getSpline(xdata, ydata, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
-    spline_err = ((spline_upper - spline_center) + (spline_center - spline_lower)) / 2
+    spline_lower  = getSpline(xdata, ydata - ydatae, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
+    spline_upper  = getSpline(xdata, ydata + ydatae, num_knots=num_knots, order=order, rand=rand, fixedKnots=fixedKnots, natural=natural)(xspline)
+    spline_center = (spline_lower+spline_upper)/2 
+    spline_err    = (spline_upper-spline_lower)/2 
     return spline_center, spline_err
 
 
