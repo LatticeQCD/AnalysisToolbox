@@ -4,10 +4,13 @@
 # D. Clarke
 # 
 # A collection of methods relevant for statistical physics calculations. This includes
-# tables for critical exponents and temperatures from the literature. We assume that
-# estimates for multiple critical parameters coming from the same paper have correctly
-# accounted for correlations; i.e. we do not here account for the fact that e.g. nu and
-# eta coming from the same Markov chain are correlated.
+# tables for critical exponents and temperatures from the literature. These tables are
+# not exhaustive. We assume that estimates for multiple critical parameters coming from 
+# the same paper have correctly accounted for correlations; i.e. we do not here account 
+# for the fact that e.g. nu and eta coming from the same Markov chain are correlated.  
+# We do however take into account correlations between exponents given in a paper and 
+# exponents derived from that paper in this code using hyperscaling laws. This is done 
+# in the background through gvar.
 #
 
 
@@ -16,18 +19,6 @@ import gvar as gv
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.statistics.statistics import gaudif 
-
-
-CATCHTENSION = True
-
-
-def ignoreTension():
-    """ 
-    Turn off statistical tension warnings. 
-    """
-    global CATCHTENSION
-    CATCHTENSION = False
-    logger.warn("Ignoring tests for statistical tension.")
 
 
 def _printExponent(prefix, exponent):
@@ -53,16 +44,15 @@ def _getParameter(parameterInfo):
 
 
 def _statisticalConsistencyCheck(parameterInfo,obs):
-    global CATCHTENSION
-    if CATCHTENSION:
-        for key1 in parameterInfo:
-            for key2 in parameterInfo:
-                m1 = gv.mean(parameterInfo[key1])
-                e1 = gv.sdev(parameterInfo[key1])
-                m2 = gv.mean(parameterInfo[key2])
-                e2 = gv.sdev(parameterInfo[key2])
-                if gaudif(m1,e1,m2,e2)<0.05:
-                    logger.warn(f"Statistical tension for {obs} between",key1,key2)
+    for key1 in parameterInfo:
+        for key2 in parameterInfo:
+            m1 = gv.mean(parameterInfo[key1])
+            e1 = gv.sdev(parameterInfo[key1])
+            m2 = gv.mean(parameterInfo[key2])
+            e2 = gv.sdev(parameterInfo[key2])
+            q  = gaudif(m1,e1,m2,e2)
+            if q<0.01:
+                logger.warn(f"Statistical tension for {obs} between",key1,key2,round(q,2))
 
 
 def _compareWithZero(err,tol) -> bool:
@@ -226,14 +216,12 @@ class Oinf_3d(UniversalityClass):
 
 
 # 3d Ising model. There is a nice review article here: 10.1016/S0370-1573(00)00127-7.
-# Some of the results were taken from the MCMC/FSS section of tables 2 and 3 of that
-# reference. There they list Kc, yt, and yh. I used those values to compute Tc, nu,
+# Some of the results were taken from tables 2 and 3 of that reference. 
+# There they list Kc, yt, and yh. I used those values to compute Tc, nu,
 # and beta, so there may be minor rounding issues. beta was extracted from yh taking
-# correlations with nu into account.
-#
-# The results from 10.1103/PhysRevB.44.5081 are in statistical tension with many of
-# the other results, and they cause a failure of the hyperscaling check, so they have 
-# been excluded from averages.
+# correlations with nu into account. Some of the results come from high-temperature
+# expansions. These are indicated with HT. Some results come from the conformal bootstrap,
+# indicated CBS. Otherwise they come from FSS analysis of MCMC simulations.
 class Z2_3d(UniversalityClass):
     symm = "Z_2"
     d    = 3
@@ -241,20 +229,32 @@ class Z2_3d(UniversalityClass):
         return super().__repr__()+':'+self.name
 
     etas = {
-        '10.1007/s10955-014-1042-7'    : gv.gvar('0.03631(3)'),      # 2014
-        '10.1007/JHEP08(2016)036'      : gv.gvar('0.0362978(20)'),   # 2016
+        '10.1007/s10955-014-1042-7'     : gv.gvar('0.03631(3)'),      # 2014 CBS
+        '10.1007/JHEP08(2016)036'       : gv.gvar('0.0362978(20)'),   # 2016 CBS
+        '10.21468/SciPostPhys.14.5.135' : gv.gvar('0.036310(30)'),    # 2022 CBS
+        '10.1007/JHEP03(2025)136'       : gv.gvar('0.036297612(48)'), # 2024 CBS
     }
     nus  = {
-        '10.1016/0378-4371(94)90490-1' : gv.gvar('0.62893(79)'),     # 1994
-        '10.1088/0305-4470/28/22/007'  : gv.gvar('0.63012(79)'),     # 1995
-        '10.1142/S0129183196000247'    : gv.gvar('0.6309(28)'),      # 1996
-        '10.1088/0305-4470/30/1/006'   : gv.gvar('0.6309(12)'),      # 1997
-        '10.1103/PhysRevB.59.11471'    : gv.gvar('0.62980(52)'),     # 1999
-        '10.1088/0305-4470/32/26/304'  : gv.gvar('0.62960(20)'),     # 1999
-        '10.1142/S0129183199000929'    : gv.gvar('0.63032(56)'),     # 1999
-        '10.1088/0305-4470/32/1/004'   : gv.gvar('0.62941(48)'),     # 1999
-        '10.1007/s10955-014-1042-7'    : gv.gvar('0.62999(5)'),      # 2014
-        '10.1007/JHEP08(2016)036'      : gv.gvar('0.629971(4)'),     # 2016
+        '10.1051/jphys:01981004206078300' : gv.gvar('0.6305(16)'),      # 1981 HT
+        '10.1088/0305-4470/16/15/023'     : gv.gvar('0.6309(40)'),      # 1983 HT
+        '10.1007/BF01013953'              : gv.gvar('0.6301(16)'),      # 1990 HT
+        '10.1016/0378-4371(94)90490-1'    : gv.gvar('0.62893(79)'),     # 1994
+        '10.1088/0305-4470/28/22/007'     : gv.gvar('0.63012(79)'),     # 1995
+        '10.1142/S0129183196000247'       : gv.gvar('0.6309(28)'),      # 1996
+        '10.1103/PhysRevB.56.8212'        : gv.gvar('0.6341(20)'),      # 1997 HT
+        '10.1103/PhysRevB.58.11552'       : gv.gvar('0.63151(80)'),     # 1998 HT
+        '10.1142/S0129183198000157'       : gv.gvar('0.6301(48)'),      # 1998 HT
+        '10.1088/0305-4470/30/1/006'      : gv.gvar('0.6309(12)'),      # 1997
+        '10.1103/PhysRevB.59.11471'       : gv.gvar('0.62980(52)'),     # 1999
+        '10.1088/0305-4470/32/26/304'     : gv.gvar('0.62960(20)'),     # 1999
+        '10.1142/S0129183199000929'       : gv.gvar('0.63032(56)'),     # 1999
+        '10.1088/0305-4470/32/1/004'      : gv.gvar('0.62941(48)'),     # 1999
+        '10.1103/PhysRevE.60.3526'        : gv.gvar('0.63002(23)'),     # 1999 HT
+        '10.1103/PhysRevE.65.066127'      : gv.gvar('0.63012(16)'),     # 2002 HT
+        '10.1007/s10955-014-1042-7'       : gv.gvar('0.62999(5)'),      # 2014 CBS
+        '10.1007/JHEP08(2016)036'         : gv.gvar('0.629971(4)'),     # 2016 CBS
+        '10.21468/SciPostPhys.14.5.135'   : gv.gvar('0.630001(60)'),    # 2022 CBS
+        '10.1007/JHEP03(2025)136'         : gv.gvar('0.62997097(12)'),  # 2024 CBS
     }
     betas = {
         '10.1016/0378-4371(94)90490-1' : gv.gvar('0.3258(44)'),      # 1994
@@ -266,6 +266,7 @@ class Z2_3d(UniversalityClass):
         '10.1088/0305-4470/32/1/004'   : gv.gvar('0.32597(40)'),     # 1999
     }
     Tcs  = {
+        '10.1088/0305-4470/16/15/023'  : gv.gvar('4.51152(10)'),     # 1983 HT
         '10.1103/PhysRevB.29.4030'     : gv.gvar('4.51154(13)'),     # 1984
         '10.1103/PhysRevB.32.1720'     : gv.gvar('4.51162(11)'),     # 1985
         '10.1209/0295-5075/16/2/003'   : gv.gvar('4.511528(20)'),    # 1991
@@ -276,6 +277,9 @@ class Z2_3d(UniversalityClass):
         '10.1088/0305-4470/29/17/042'  : gv.gvar('4.511528(12)'),    # 1996
         '10.1142/S0129183196000247'    : gv.gvar('4.511516(20)'),    # 1996
         '10.1103/PhysRevE.54.2291'     : gv.gvar('4.51152(31)'),     # 1996
+        '10.1103/PhysRevB.56.8212'     : gv.gvar('4.51135(18)'),     # 1997 HT
+        '10.1103/PhysRevB.58.11552'    : gv.gvar('4.5115279(61)'),   # 1998 HT
+        '10.1142/S0129183198000157'    : gv.gvar('4.511414(81)'),    # 1998 HT
         '10.1142/S0129183199000929'    : gv.gvar('4.511524(20)'),    # 1999
         '10.1103/PhysRevB.82.174433'   : gv.gvar('4.5115232(17)'),   # 2010  
     }
