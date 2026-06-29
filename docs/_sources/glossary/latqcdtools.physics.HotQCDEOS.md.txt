@@ -1,6 +1,6 @@
 latqcdtools.physics.HotQCDEOS
 =============
 
-```Python
+```python
 class EOS(temp):
 ```

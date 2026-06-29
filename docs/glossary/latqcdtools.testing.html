@@ -323,26 +323,26 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-testing">
+          <section id="latqcdtools-testing">
 <h1>latqcdtools.testing<a class="headerlink" href="#latqcdtools-testing" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">concludeTest</span><span class="p">(</span><span class="n">lpass</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">concludeTest</span><span class="p">(</span><span class="n">lpass</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err_true</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">qcut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err_true</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">qcut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compares element-by-element the results of res with res_true using Gaussian difference test, i.e. it checks</span>
 <span class="sd">to see whether res and res_true are statistically compatible. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compares element-by-element the results of res with res_true. (Does the same with res_err and res_err_true,</span>
 <span class="sd">if you like.) Carries out with precision prec. Use abs_prec for comparisons with zero. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results_iter</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results_iter</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -388,7 +388,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

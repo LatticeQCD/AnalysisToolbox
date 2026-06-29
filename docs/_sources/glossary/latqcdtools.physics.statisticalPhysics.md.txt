@@ -1,32 +1,26 @@
 latqcdtools.physics.statisticalPhysics
 =============
 
-```Python
+```python
 _compareWithZero(err, tol) -> bool
 ```
-```Python
+```python
 _getParameter(parameterInfo):
-'''
+"""
 Give the weighted average of literature values of some parameter. These are 
 in units with k_B=J=1 and no magnetic field. If there is only one known value, 
 give that back. 
-'''
+"""
 ```
-```Python
+```python
 _printExponent(prefix, exponent)
 ```
-```Python
+```python
 _statisticalConsistencyCheck(parameterInfo, obs)
 ```
-```Python
-ignoreTension():
-'''
-Turn off statistical tension warnings. 
-'''
-```
-```Python
+```python
 reweight(X, pRW, p0, S):
-'''
+"""
 Reweight an observable X computed at a simulation point p0 to a nearby
 simulation point pRW. We assume the action depends linearly on the simulation
 parameter, i.e. S' ~ p S
@@ -40,44 +34,44 @@ Args:
     pRW (float): Reweight to this target. 
     p0 (float): Simulation point.
     S (np.array): Measurements of the action (extensive) divided by parameter p. 
-'''
+"""
 ```
-```Python
+```python
 class O2_3d():
 ```
-```Python
+```python
 class O3_3d():
 ```
-```Python
+```python
 class O4_3d():
 ```
-```Python
+```python
 class Oinf_3d():
 ```
-```Python
+```python
 class S3_2d():
-'''
+"""
 Exact solution for 2d S_3 class from Baxter "Exactly Solved Models in Statistical Mechanics"
-'''
+"""
 ```
-```Python
+```python
 class S4_2d():
-'''
+"""
 Exact solution for 2d S_4 class from Baxter, "Exactly Solved Models in Statistical Mechanics"
-'''
+"""
 ```
-```Python
+```python
 class UniversalityClass():
-'''
+"""
 Skeleton universality class from which all others inherit.
-'''
+"""
 ```
-```Python
+```python
 class Z2_2d():
-'''
+"""
 Onsager solution for 2d Z_2 class. 
-'''
+"""
 ```
-```Python
+```python
 class Z2_3d():
 ```

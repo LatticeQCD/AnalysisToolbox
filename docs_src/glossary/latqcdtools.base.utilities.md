@@ -1,25 +1,25 @@
 latqcdtools.base.utilities
 =============
 
-```Python
+```python
 _alphanum_key(key):
-'''
+"""
 Splits the string `key` at any point where there's a change from digit to non-digit or vice versa.
 Will accurately handle integers and real numbers.
-'''
+"""
 ```
-```Python
+```python
 _convert(text)
 ```
-```Python
+```python
 _getPrefix(byteString)
 ```
-```Python
+```python
 appendToDocstring(string=None, args=None, returns=None)
 ```
-```Python
+```python
 byteConvert(x, b1, b2):
-'''
+"""
 Convert between bytes given scientific prefixes.
 
 Args:
@@ -29,11 +29,11 @@ Args:
 
 Returns:
     float: Bytes in target units. 
-'''
+"""
 ```
-```Python
+```python
 cleanOutput(*args, label=None, sspace=20) -> str:
-'''
+"""
 This method takes a bunch of args and formats them automatically for output. The idea is
 that you can use this method to ensure that columns are well lined up.
 
@@ -43,11 +43,11 @@ Args:
 
 Returns:
     str: formatted output string 
-'''
+"""
 ```
-```Python
+```python
 comesBefore(date1, date2, format='%Y/%m/%d %H:%M:%S', beforeOrEqual=False) -> bool:
-'''
+"""
 Check whether date1 comes before date2.
 
 Args:
@@ -58,11 +58,11 @@ Args:
     
 Returns:
     bool: date1 < date2 
-'''
+"""
 ```
-```Python
+```python
 elapsedSeconds(date1, date2, format='%Y/%m/%d %H:%M:%S') -> float:
-'''
+"""
 Compute elapsed time in seconds between date1 and date2. 
 
 Args:
@@ -72,29 +72,29 @@ Args:
     
 Returns:
     float: elapsed time in seconds 
-'''
+"""
 ```
-```Python
+```python
 envector(*args):
-'''
+"""
 Change obj to a numpy array if it's a scalar. Sometimes required when, e.g., using np.vectorize. 
-'''
+"""
 ```
-```Python
+```python
 find_nearest_idx(array, value) -> int:
-'''
+"""
 Find the index of the element of array nearest to value. 
-'''
+"""
 ```
-```Python
+```python
 getArgs(parser):
-'''
+"""
 Get arguments from the ArgumentParser. Complain if you don't get exactly the correct arguments. 
-'''
+"""
 ```
-```Python
+```python
 isArrayLike(obj) -> bool:
-'''
+"""
 Figure out whether obj is indexable.
 
 Args:
@@ -102,17 +102,17 @@ Args:
 
 Returns:
     bool: True if there is at least one index, false otherwise. 
-'''
+"""
 ```
-```Python
+```python
 isComplexType(obj) -> bool
 ```
-```Python
+```python
 isFloatType(obj) -> bool
 ```
-```Python
+```python
 isHigherDimensional(obj) -> bool:
-'''
+"""
 Figure out whether obj has at least two indices.
 
 Args:
@@ -120,62 +120,62 @@ Args:
 
 Returns:
     bool: True if there are at least two indices, false otherwise. 
-'''
+"""
 ```
-```Python
+```python
 isIntType(obj) -> bool
 ```
-```Python
+```python
 isReal(obj) -> bool
 ```
-```Python
+```python
 isScalar(obj) -> bool
 ```
-```Python
+```python
 naturalSort(l) -> list:
-'''
+"""
 Sort list of strings so that, e.g. '10' comes after '9' rather than before it.
-'''
+"""
 ```
-```Python
+```python
 printArg(message, param):
-'''
+"""
 Some arguments are None by default, and you only want to print them if they are set. 
-'''
+"""
 ```
-```Python
+```python
 printClean(*args, label=None, sspace=20):
-'''
+"""
 Wrapper for cleanOutput that prints to screen.
 
 Args:
     *args: The numbers you want to output, separated by commas. 
     label (str, optional): Put label to the left of your output. Defaults to None.
-'''
+"""
 ```
-```Python
+```python
 printDict(dic, level=0):
-'''
+"""
 Prints key, value pairs line by line. 
-'''
+"""
 ```
-```Python
+```python
 shell(*args):
-'''
+"""
 Carry out the passed arguments args in the shell. Can be passed as a single
 string or as a list. Captures and returns output of shell command. E.g.
     shell('ls -lah')
-'''
+"""
 ```
-```Python
+```python
 shellVerbose(*args):
-'''
+"""
 Same as shell, but instead of capturing output, print it to screen. 
-'''
+"""
 ```
-```Python
+```python
 substringBetween(string, a, b) -> str:
-'''
+"""
 Find the substring of string between a and b. If a==b, it looks between the
 first and second occurences of a. 
 
@@ -186,14 +186,14 @@ Args:
 
 Returns:
     str: substring
-'''
+"""
 ```
-```Python
+```python
 toNumpy(*args, **kwargs)
 ```
-```Python
+```python
 unvector(obj):
-'''
+"""
 Remove outermost brackets of array-like object with single element, if possible. This is needed
 because sometimes different numpy methods give inconsistent outputs, like turning a scalar
 into a zero-dimensional array, a 1-dimensional array, or just the scalar itself.
@@ -204,11 +204,11 @@ Args:
 Returns:
     obj, obj[0], or obj.item() depending on obj
 
-'''
+"""
 ```
-```Python
+```python
 class timer():
-'''
+"""
 A class to facilitate doing rudimentary timings in the Toolbox. 
-'''
+"""
 ```

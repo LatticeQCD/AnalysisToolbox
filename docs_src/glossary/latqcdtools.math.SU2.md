@@ -1,6 +1,6 @@
 latqcdtools.math.SU2
 =============
 
-```Python
+```python
 class SU2(mat=None):
 ```

@@ -1,9 +1,9 @@
 latqcdtools.interfaces.lime
 =============
 
-```Python
+```python
 limeHeader(mbeg, mend, size, type) -> bytes:
-'''
+"""
 Get the header for a LIME record.
 
 Args:
@@ -14,20 +14,20 @@ Args:
 
 Returns:
     bytes: LIME header byte sequence 
-'''
+"""
 ```
-```Python
+```python
 printLimeHeaders(filename):
-'''
+"""
 Print the headers of a file in LIME format.
 
 Args:
     filename (str)
-'''
+"""
 ```
-```Python
+```python
 scidacChecksum(latdata, vol, sitesize):
-'''
+"""
 Compute SciDAC checksum for lattice data
 
 Args:
@@ -37,11 +37,11 @@ Args:
 
 Returns:
     checksum values (suma, sumb) 
-'''
+"""
 ```
-```Python
+```python
 trimNull(byteString) -> bytes:
-'''
+"""
 Remove null byte and everything after it from a byte string.
 
 Args:
@@ -49,11 +49,11 @@ Args:
 
 Returns:
     bytes: trimmed byte string 
-'''
+"""
 ```
-```Python
+```python
 xmlFind(s, xmlTag) -> bytes:
-'''
+"""
 Find substring in byte string s between xmlTags.
 
 Args:
@@ -62,5 +62,5 @@ Args:
 
 Returns:
     bytes: byte string between tags 
-'''
+"""
 ```

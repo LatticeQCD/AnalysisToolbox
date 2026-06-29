@@ -1,9 +1,9 @@
 latqcdtools.math.num_int
 =============
 
-```Python
+```python
 integrateData(xdata, ydata, method='trapezoid'):
-'''
+"""
 Wrapper to integrate data. 
 
 Args:
@@ -15,11 +15,11 @@ Args:
 
 Returns:
     float: Area under ydata. 
-'''
+"""
 ```
-```Python
-integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08, floatT=<class 'numpy.float64'>):
-'''
+```python
+integrateFunction(func, a, b, method='persistent', args=(), stepsize=None, limit=1000, epsrel=1.49e-08, epsabs=1.49e-08, floatT=numpy.float64):
+"""
 Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, 
 which otherwise does not like to handle numpy arrays.
 
@@ -32,18 +32,18 @@ Args:
                             > 'quad' : Gaussian quadrature.
                             > 'trapezoid' : Trapezoidal rule.
     args (tuple, optional): Arguments to func. Defaults to ().
-    stepsize (float, optional): _description_. Defaults to None.
+    stepsize (float, optional): Defaults to None.
     limit (int, optional): Upper bound on number of subintervals used in the adaptive algorithm. Defaults to 1000.
     epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.
     epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.
 
 Returns:
     float: Integral of func from a to b. 
-'''
+"""
 ```
-```Python
+```python
 solveIVP(dydt, t0, tf, y0, method='RK45', args=(), epsrel=1.49e-08, epsabs=1.49e-08) -> numpy.ndarray:
-'''
+"""
 Wrapper to solve an initial value problem of the form
 
 dy/dt = dydt(t, y)
@@ -61,5 +61,5 @@ Args:
 
 Returns:
     array-like: y(tf) 
-'''
+"""
 ```

@@ -323,10 +323,10 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-continuumextrap">
+          <section id="latqcdtools-physics-continuumextrap">
 <h1>latqcdtools.physics.continuumExtrap<a class="headerlink" href="#latqcdtools-physics-continuumextrap" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_powerSeries</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_powerSeries</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The default fit form for a continuum extrapolation is a power series in a^2.</span>
 
 <span class="sd">Args:</span>
@@ -335,16 +335,16 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    array-like: power series in x </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">continuumExtrapolate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">continuumExtrapolate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A convenience wrapper for the Extrapolator. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">ansatz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">max_fev</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">ansatz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">max_fev</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 </pre></div>
 </div>
 </section>
@@ -398,7 +398,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

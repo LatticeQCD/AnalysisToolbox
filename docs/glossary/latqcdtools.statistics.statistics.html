@@ -323,10 +323,10 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-statistics">
+          <section id="latqcdtools-statistics-statistics">
 <h1>latqcdtools.statistics.statistics<a class="headerlink" href="#latqcdtools-statistics-statistics" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">AIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood</span>
 <span class="sd">function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to</span>
 <span class="sd">choose from,and hence different numbers of d.o.f. possible. It&#39;s also useful when you are worried about</span>
@@ -344,11 +344,11 @@
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        float: AIC</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">AICc</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AICc</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too</span>
 <span class="sd">many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to</span>
 <span class="sd">infinity, one recovers the AIC.</span>
@@ -365,11 +365,11 @@
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        float: corrected AIC</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">BAIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">Ncut</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">modelPrior</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">BAIC</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">Ncut</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">modelPrior</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Bayesian Akaike information criterion of 2208.14983. It uses the chi^2 as its likelihood</span>
 <span class="sd">function and includes penalties for having many fit parameters and cutting many data from</span>
 <span class="sd">your original sample.</span>
@@ -388,11 +388,11 @@
 <span class="sd">    </span>
 <span class="sd">Returns:</span>
 <span class="sd">    float: Bayesian AIC </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">DOF</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">nparam</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DOF</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">nparam</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the number of degrees of freedom. Depends on whether you use priors. Any input priors are taken as</span>
 <span class="sd">initial guesses for the fit algorithm. If you would like parameters in the prior array to be treated as a </span>
 <span class="sd">starting guess only, and not as a Bayesian prior, set its corresponding error to np.inf. Hence when there</span>
@@ -405,11 +405,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    int: number of degrees of freedom </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">KSTest_1side</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">KSTest_1side</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">1-sided Kolmogorov test. Gives back the likelihood that the observed difference between</span>
 <span class="sd">data and cdf are at least as extreme as suggested by the Kolmogorov statistic.</span>
 
@@ -419,11 +419,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: 1-p </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">KSTest_2side</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">KSTest_2side</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">2-sided Kolmogorov test. Gives back the likelihood that the observed difference between</span>
 <span class="sd">data1 and data2 are at least as extreme as suggested by the Kolmogorov statistic.</span>
 
@@ -433,11 +433,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: 1-p </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">biased_sample_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">biased_sample_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the biased weighted sample variance, i.e. the biased variance of an </span>
 <span class="sd">individual measurement and not the variance of the mean.</span>
 
@@ -447,11 +447,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: sample variance </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">binSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nbins</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nbins</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Take a time series and bin it. Bin 0 is the average over the first binsize elements,</span>
 <span class="sd">bin 1 the average over the next binsize elements, and so on.</span>
 
@@ -461,40 +461,40 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray: Binned data</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkDomain</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkDomain</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Some methods require that you do something over an interval, which we refer to in this module as</span>
 <span class="sd">a &#39;domain&#39;. This checks the domain makes sense.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    domain (tuple)</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkPrior</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">priorsigma</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkPrior</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">priorsigma</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Make sure prior and priorsigma status are compatible. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkProb</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkProb</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">checkTS</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkTS</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Some methods require 1-d time series. This checks that the type, dimensionality,</span>
 <span class="sd">and length are appropriate.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    ts (array-like): time series </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">chisquare</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chisquare</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of</span>
 <span class="sd">10.1103/PhysRevD.90.054506. We assume priors are not correlated with data.</span>
 
@@ -510,11 +510,11 @@
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        float: chi^2</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">confidence_ellipse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">CI</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">confidence_ellipse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">CI</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Plot a confidence ellipse according to the data x, y. The confidence is only meaningful </span>
 <span class="sd">assuming the x and y are Gaussian distributed. By default, draws an ellipse that captures</span>
 <span class="sd">roughly 39% of the data.</span>
@@ -528,11 +528,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float, float: semi-major and semi-minor lengths of drawn ellipse </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">countParams</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">countParams</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Count number of model parameters. For a typical function without priors,</span>
 <span class="sd">we count the length of the params array. Otherwise we assume it&#39;s a spline.</span>
 
@@ -543,11 +543,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    int: number of parameters. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">countPriors</span><span class="p">(</span><span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">countPriors</span><span class="p">(</span><span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The number of priors is the number of finite prior error bars.</span>
 
 <span class="sd">Args:</span>
@@ -555,11 +555,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    int: Number of priors </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cov_to_cor</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cov_to_cor</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Normalize covariance matrix to create correlation matrix.</span>
 
 <span class="sd">Args:</span>
@@ -567,11 +567,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray: correlation matrix </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">covariance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">covariance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Unbiased estimator of the covariance between the time series x and y.</span>
 
 <span class="sd">Args:</span>
@@ -580,18 +580,18 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: cov </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dev_by_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_both_q</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">percentile</span><span class="o">=</span><span class="mi">68</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dev_by_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_both_q</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">percentile</span><span class="o">=</span><span class="mi">68</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Calculate the distance between the median and 68% quantiles. Returns the larger of the two </span>
 <span class="sd">distances. This method is used sometimes to estimate error, for example in the bootstrap. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">empiricalCDF</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">empiricalCDF</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Create the x and y coordinates needed to plot the empirical CDF</span>
 <span class="sd">of a 1-d set of data.</span>
 
@@ -600,11 +600,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    func: CDF </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Use error propagation to propagate some errors through function func. The function should have the form</span>
 <span class="sd">    func( data ), </span>
 <span class="sd">where data is a 1-d array of input variables. </span>
@@ -618,11 +618,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray, np.ndarray: f, f_err </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">params_err</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">error_prop_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">params_err</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Propagate error in f(x;params,params_err). This needs its own special treatment, since</span>
 <span class="sd">the error propagation method on its own only propagates params_err to f(params,params_err).</span>
 
@@ -630,14 +630,14 @@
 <span class="sd">    x (array-like)</span>
 <span class="sd">    func (func)</span>
 <span class="sd">    params (array-like): Model parameters. </span>
-<span class="sd">    params_err (array-like): Error in model parameters. </span>
+<span class="sd">    params_err (array-like): Covariance matrix of model parameters</span>
 <span class="sd">    grad (func, optional): Gradient function. Defaults to None.</span>
 <span class="sd">    args (tuple, optional): Arguments of func. Defaults to ().</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">expandArgs</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">expandArgs</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">In general we distinguish between parameters and arguments. Parameters should be passed</span>
 <span class="sd">together as a collection, e.g. as a tuple, list, or np.array. Other function arguments can</span>
 <span class="sd">be passed how you like and will be expanded here.</span>
@@ -650,11 +650,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    func(x,params,args) </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">forcePositiveSemidefinite</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;Doctors a noisy correlation matrix mat to be positive semidefinite if it isn&#39;t already. </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">forcePositiveSemidefinite</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;Doctors a noisy correlation matrix mat to be positive semidefinite if it isn&#39;t already. </span>
 <span class="sd">Uses algorithm of Rebonato and Jaeckel, DOI: 10.2139/ssrn.1969689</span>
 
 <span class="sd">Args:</span>
@@ -662,11 +662,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray: positive semidefinite matrix </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are</span>
 <span class="sd">both drawn from a normal distribution with the same mean. A rule of thumb is that this is more</span>
 <span class="sd">appropriate when one estimated x1 and x2 using ~30 or more measurements.</span>
@@ -679,11 +679,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: p-value </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getModelWeights</span><span class="p">(</span><span class="n">IC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getModelWeights</span><span class="p">(</span><span class="n">IC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Convert information criteria IC to normalized probability weights.</span>
 
 <span class="sd">Args:</span>
@@ -691,11 +691,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.array: Probability weights </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">goodnessOfFit</span><span class="p">(</span><span class="n">dof</span><span class="p">,</span> <span class="n">chi2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">goodnessOfFit</span><span class="p">(</span><span class="n">dof</span><span class="p">,</span> <span class="n">chi2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The q-value or goodness of fit.</span>
 
 <span class="sd">Args:</span>
@@ -704,11 +704,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: Q </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">logGBF</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logGBF</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">log P(data|model). This quantity is useful for comparing fits of the same data to different models that</span>
 <span class="sd">have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.</span>
 <span class="sd">Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.</span>
@@ -725,14 +725,14 @@
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        float: log( Gaussian Bayes factor )</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">meanArgWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">used_data</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meanArgWrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">used_data</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">midpointMeanError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">midpointMeanError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Take mean+err and mean-err and use those to compute mean and err. Assume symmetric</span>
 <span class="sd">error bar. This is useful e.g. when using WebPlotDigitizer.</span>
 
@@ -742,11 +742,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    mean, err </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">modelAverage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">IC</span><span class="p">,</span> <span class="n">return_syst</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">modelAverage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">IC</span><span class="p">,</span> <span class="n">return_syst</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Given some fit results, corresponding error, and information criteria, compute</span>
 <span class="sd">a weighted model average.</span>
 
@@ -757,11 +757,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    tuple: Model average and error (optionally systematic error)</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pearson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pearson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Get the Pearson correlation coefficient between the time series x and y.</span>
 
 <span class="sd">Args:</span>
@@ -770,20 +770,20 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: R </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_correlation</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">&#39;matplotlib.pyplot&#39;</span> <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;Plot correlation matrix as a heatmap.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_correlation</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">&#39;matplotlib.pyplot&#39;</span> <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;Plot correlation matrix as a heatmap.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    mat (np.ndarray): correlation matrix</span>
 <span class="sd">    ax (matplotlib ax object): Defaults to plt.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">swapXY</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">swapXY</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Plot a function along with its error bands.</span>
 
 <span class="sd">Args:</span>
@@ -796,11 +796,11 @@
 <span class="sd">    grad (func, optional): Explicit function gradient to compute error. Defaults to None.</span>
 <span class="sd">    swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.</span>
 <span class="sd">    npoints (int, optional): Number of points to use for plotting. Defaults to 1000.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">save_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;func.d&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">save_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;func.d&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Save a function along with its error bands.</span>
 
 <span class="sd">Args:</span>
@@ -813,61 +813,61 @@
 <span class="sd">    grad (func, optional): Explicit function gradient to compute error. Defaults to None.</span>
 <span class="sd">    swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.</span>
 <span class="sd">    npoints (int, optional): Number of points to use for plotting. Defaults to 1000.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_dev</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_dev</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Calculate unbiased (ddof = 1) estimator for the standard deviation. </span>
 <span class="sd"> </span>
 <span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
 <span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
 <span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_err</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_err</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Standard deviation of the sample mean according to the CLT. </span>
 <span class="sd"> </span>
 <span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
 <span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
 <span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the mean. </span>
 <span class="sd"> </span>
 <span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
 <span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
 <span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the median. </span>
 <span class="sd"> </span>
 <span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
 <span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
 <span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Calculate unbiased (ddof = 1) estimator for the variance. </span>
 <span class="sd"> </span>
 <span class="sd">    The default behavior of numpy is to flatten the data, flagged by axis=None. This is</span>
 <span class="sd">    something that is never needed in our context. Changing the default to axis=0 means</span>
 <span class="sd">    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). </span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">studif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">ndat1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">ndat2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">studif</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">ndat1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">e2</span><span class="p">,</span> <span class="n">ndat2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Likelihood that difference between outcomes x1 and x2 is due to chance, assuming x1 and x2 are</span>
 <span class="sd">both drawn from a normal distribution with the same mean. A rule of thumb is that this is more</span>
 <span class="sd">appropriate when one estimated x1 and x2 using ~30 or fewer measurements. Of course, you can</span>
@@ -883,11 +883,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: p-value </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">symmetrizeError</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">central</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conservative&#39;</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Take unsymmetric errors and estimate symmetric errors from them.</span>
 
 <span class="sd">Args:</span>
@@ -898,26 +898,26 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    mean and symmetric error</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_mean_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_mean_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency</span>
 <span class="sd">weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is</span>
 <span class="sd">constructed using the deviations of the individual data points. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_sample_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">unbiased_sample_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not</span>
 <span class="sd">the variance of the mean. Do not use this function if your weights are frequency weights. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compute the weighted mean. Here the weights are Gaussian error bars.</span>
 <span class="sd">See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.</span>
 
@@ -927,11 +927,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: weighted mean </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_variance</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_variance</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Get variance of above weighted mean, when the weights are statistical errors. </span>
 
 <span class="sd">Args:</span>
@@ -939,7 +939,7 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: weighted variance </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -993,7 +993,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

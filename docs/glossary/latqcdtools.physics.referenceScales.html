@@ -323,10 +323,10 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-referencescales">
+          <section id="latqcdtools-physics-referencescales">
 <h1>latqcdtools.physics.referenceScales<a class="headerlink" href="#latqcdtools-physics-referencescales" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_betaRangeWarn</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">beta_range</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_betaRangeWarn</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">beta_range</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Many of these ansätze a(beta) have coefficients that were determined by performing a fit within a certain</span>
 <span class="sd">beta range. This warning flashes whenever you are using information outside of that range, where the ansatz</span>
 <span class="sd">is less likely be to reliable.</span>
@@ -334,11 +334,11 @@
 <span class="sd">Args:</span>
 <span class="sd">    beta (float) or numpy array</span>
 <span class="sd">    beta_range (array-like): min and max beta of range, in that order </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a_div_r1</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_div_r1</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Get a/r_1(beta).</span>
 
 <span class="sd">Args:</span>
@@ -347,11 +347,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: a/r_1</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a_times_fk</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_times_fk</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Get a*f_k(beta).</span>
 
 <span class="sd">Args:</span>
@@ -360,29 +360,29 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: a*f_k </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a_times_ms_2014</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_times_ms_2014</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">allton_type_ansatz</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">allton_type_ansatz</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_2014Eos_eqB2</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_2014Eos_eqB2</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_tayloraLambda</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fit_tayloraLambda</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreBetaRange</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreBetaRange</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Turn off the beta range warnings. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">r0_div_a</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r0_div_a</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Get r0/a(beta).</span>
 
 <span class="sd">Args:</span>
@@ -391,14 +391,14 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: r0/a </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">r1_times_ms_2014</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r1_times_ms_2014</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sqrtt0_div_a</span><span class="p">(</span><span class="n">beta</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sqrtt0_div_a</span><span class="p">(</span><span class="n">beta</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Get sqrt(t0/a)(beta)</span>
 
 <span class="sd">Args:</span>
@@ -406,10 +406,10 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: sqrt(t0/a) </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">wuppertal_type_ansatz</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wuppertal_type_ansatz</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -463,7 +463,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

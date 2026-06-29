@@ -1,9 +1,9 @@
 latqcdtools.math.num_deriv
 =============
 
-```Python
+```python
 _best_h(x):
-'''
+"""
 This routine attempts to automatically determine the best possible step size h when calculating numerical
 derivatives. One does not like the step size to be too large, since one pays a ~h^2 penalty. On the other hand,
 if the step size is too small, the function may not change within machine precision eps, and hence the derivative
@@ -21,40 +21,40 @@ the first place. A compromise that has some memory of this optimization problem 
 
 We choose eps = 1.1e-16, which is roughly the difference between 1.0 and the next-smallest representable float less
 than 1.0 in 64-bit. The difference between 1.0 and the next-largest float is slightly bigger. 
-'''
+"""
 ```
-```Python
+```python
 diff_deriv(x, func, args=(), h=None):
-'''
+"""
 Numerical derivative using central difference. 
-'''
+"""
 ```
-```Python
+```python
 diff_fit_grad(x, params, func, args=(), h=None):
-'''
+"""
 When fitting we're trying to optimize params, and hence we want to think of func as a function of
 its parameters rather than x. 
-'''
+"""
 ```
-```Python
+```python
 diff_fit_hess(x, params, func, args=(), h=None):
-'''
+"""
 When fitting we're trying to optimize params, and hence we want to think of func as a function of
 its parameters rather than x. 
-'''
+"""
 ```
-```Python
-diff_grad(params, func, args=(), h=None, floatT=<class 'numpy.float64'>) -> numpy.ndarray:
-'''
+```python
+diff_grad(params, func, args=(), h=None, floatT=numpy.float64) -> numpy.ndarray:
+"""
 Gradient using difference quotient. 
-'''
+"""
 ```
-```Python
-diff_hess(params, func, args=(), h=None, floatT=<class 'numpy.float64'>) -> numpy.ndarray:
-'''
+```python
+diff_hess(params, func, args=(), h=None, floatT=numpy.float64) -> numpy.ndarray:
+"""
 Hessian using difference quotient. 
-'''
+"""
 ```
-```Python
+```python
 diff_jac(params, func, args=(), h=None) -> numpy.ndarray
 ```

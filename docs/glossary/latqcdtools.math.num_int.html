@@ -323,10 +323,10 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-num-int">
+          <section id="latqcdtools-math-num-int">
 <h1>latqcdtools.math.num_int<a class="headerlink" href="#latqcdtools-math-num-int" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateData</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;trapezoid&#39;</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateData</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;trapezoid&#39;</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Wrapper to integrate data. </span>
 
 <span class="sd">Args:</span>
@@ -338,11 +338,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: Area under ydata. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateFunction</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;persistent&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">stepsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">floatT</span><span class="o">=&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">numpy</span><span class="o">.</span><span class="n">float64</span><span class="s1">&#39;&gt;):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">integrateFunction</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;persistent&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">stepsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">floatT</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Wrapper to integrate functions. Allows to conveniently adjust the stepsize, and can vectorize scipy.quad, </span>
 <span class="sd">which otherwise does not like to handle numpy arrays.</span>
 
@@ -355,18 +355,18 @@
 <span class="sd">                            &gt; &#39;quad&#39; : Gaussian quadrature.</span>
 <span class="sd">                            &gt; &#39;trapezoid&#39; : Trapezoidal rule.</span>
 <span class="sd">    args (tuple, optional): Arguments to func. Defaults to ().</span>
-<span class="sd">    stepsize (float, optional): _description_. Defaults to None.</span>
+<span class="sd">    stepsize (float, optional): Defaults to None.</span>
 <span class="sd">    limit (int, optional): Upper bound on number of subintervals used in the adaptive algorithm. Defaults to 1000.</span>
 <span class="sd">    epsrel (float, optional): Relative error tolerance. Defaults to 1.49e-8.</span>
 <span class="sd">    epsabs (float, optional): Absolute error tolerance. Defaults to 1.49e-8.</span>
 
 <span class="sd">Returns:</span>
 <span class="sd">    float: Integral of func from a to b. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">solveIVP</span><span class="p">(</span><span class="n">dydt</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;RK45&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solveIVP</span><span class="p">(</span><span class="n">dydt</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;RK45&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1.49e-08</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Wrapper to solve an initial value problem of the form</span>
 
 <span class="sd">dy/dt = dydt(t, y)</span>
@@ -384,7 +384,7 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    array-like: y(tf) </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -438,7 +438,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

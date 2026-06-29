@@ -323,22 +323,22 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="curve-fitting-and-splines">
+          <section id="curve-fitting-and-splines">
 <h1>Curve fitting and splines<a class="headerlink" href="#curve-fitting-and-splines" title="Link to this heading">¶</a></h1>
-<p>There are many ways to fit a curve. There are strategies that minimize <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span>
+<p>There are many ways to fit a curve. There are strategies that minimize $\chi^2/{\rm d.o.f.}$
 for when you know the functional form ahead of time, splines for when you don’t, and other methods.
 The AnalysisToolbox includes some routines that are helpful for this purpose.
-By default the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> is <a class="reference internal" href="../base/speedify.html"><span class="doc std std-doc">parallelized</span></a> with <code class="docutils literal notranslate"><span class="pre">DEFAULTTHREADS</span></code>
+By default the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> is <a class="reference internal" href="../base/speedify.html"><span class="std std-doc">parallelized</span></a> with <code class="docutils literal notranslate"><span class="pre">DEFAULTTHREADS</span></code>
 processes. Set <code class="docutils literal notranslate"><span class="pre">nproc=1</span></code> if you want to turn off parallelization.
 Splines are not parallelized in this way, but should be fast because they wrap SciPy methods.</p>
 <section id="chi-2-minimization">
-<h2><span class="math notranslate nohighlight">\(\chi^2\)</span> minimization<a class="headerlink" href="#chi-2-minimization" title="Link to this heading">¶</a></h2>
+<h2>$\chi^2$ minimization<a class="headerlink" href="#chi-2-minimization" title="Link to this heading">¶</a></h2>
 <p>In the module</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">latqcdtools.statistics.fitting</span>
 </pre></div>
 </div>
 <p>one finds a <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> class for carrying out fits. The <code class="docutils literal notranslate"><span class="pre">Fitter</span></code> class encapsulates all information
-relevant to a fit, like its <span class="math notranslate nohighlight">\(x\)</span>-data, <span class="math notranslate nohighlight">\(y\)</span>-data, the fit form, and so on.
+relevant to a fit, like its $x$-data, $y$-data, the fit form, and so on.
 After constructing a <code class="docutils literal notranslate"><span class="pre">fitter</span></code> object, one can then use associated
 methods to try various kinds of fits. These are generally wrappers from <code class="docutils literal notranslate"><span class="pre">scipy.optimize</span></code>.
 An easy example is given in  <code class="docutils literal notranslate"><span class="pre">testing/fitting/simple_example.py</span></code>, shown below.</p>
@@ -389,7 +389,7 @@ An easy example is given in  <code class="docutils literal notranslate"><span cl
 <li><p>SLSQP
 which are essentially wrappers for <code class="docutils literal notranslate"><span class="pre">scipy</span></code> fit functions.
 If one does not specify an algorithm, the <code class="docutils literal notranslate"><span class="pre">try_fit</span></code> method will attempt all of them and return the
-result of whichever one had the best <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span></p></li>
+result of whichever one had the best $\chi^2/{\rm d.o.f.}$</p></li>
 </ul>
 <p><strong>IMPORTANT: The functions that you pass to these fitting routines have to be able to handle arrays!</strong>
 E.g. you pass it <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">x1,</span> <span class="pre">...,</span> <span class="pre">xN]</span></code> and get back <code class="docutils literal notranslate"><span class="pre">[f(x0),</span> <span class="pre">f(x1),</span> <span class="pre">...,</span> <span class="pre">f(xN)]</span></code>. It is written this
@@ -397,13 +397,13 @@ way to force better performance; if it were a typical loop it would be slow. If 
 trouble figuring out how to write your function in a way to handle arrays, a good starting point
 can be to use <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vectorize.html">np.vectorize</a>.</p>
 <p>The covariance matrix of the fit parameters are computed through error propagation of the covariance matrix
-of the <span class="math notranslate nohighlight">\(y\)</span>-data. The error is then obtained by</p>
-<p><span class="math notranslate nohighlight">\(\sigma = \sqrt{\diag{\text{cov}}}\)</span></p>
-<p>In some codes, such as <code class="docutils literal notranslate"><span class="pre">gnuplot</span></code>, it is customary to multiply this error by a further factor <span class="math notranslate nohighlight">\(\chi^2/{\rm d.o.f.}\)</span>.
+of the $y$-data. The error is then obtained by</p>
+<p>$\sigma = \sqrt{\diag{\text{cov}}}$</p>
+<p>In some codes, such as <code class="docutils literal notranslate"><span class="pre">gnuplot</span></code>, it is customary to multiply this error by a further factor $\chi^2/{\rm d.o.f.}$.
 The intuition behind this is that the error will be increased if the fit is poor. This is okay if you would like to be
 somewhat more conservative with your error bar, but it is strictly speaking not necessary. It also makes the error bar
 more difficult to interpret clearly, i.e. if your input data and errors were well estimated, then it’s not clear that
-the true fit parameters will fall within one <span class="math notranslate nohighlight">\(\sigma\)</span> of the estimators 67% of the time. The default behavior
+the true fit parameters will fall within one $\sigma$ of the estimators 67% of the time. The default behavior
 is not to include this factor, but in case you would like it in your fits, for example because you are feeling
 conservative, or for comparison with <code class="docutils literal notranslate"><span class="pre">gnuplot</span></code>, you can pass the option
 <code class="docutils literal notranslate"><span class="pre">norm_err_chi2=True</span></code> to your <code class="docutils literal notranslate"><span class="pre">try_fit</span></code> or <code class="docutils literal notranslate"><span class="pre">do_fit</span></code> call.</p>
@@ -485,7 +485,7 @@ There also exists the option to use natural splines.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Curve fitting and splines</a><ul>
-<li><a class="reference internal" href="#chi-2-minimization"><span class="math notranslate nohighlight">\(\chi^2\)</span> minimization</a></li>
+<li><a class="reference internal" href="#chi-2-minimization">$\chi^2$ minimization</a></li>
 <li><a class="reference internal" href="#splines">Splines</a></li>
 </ul>
 </li>
@@ -498,13 +498,11 @@ There also exists the option to use natural splines.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/togglebutton.js?v=3e7854f7"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

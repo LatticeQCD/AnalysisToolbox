@@ -1,71 +1,71 @@
 latqcdtools.base.logger
 =============
 
-```Python
+```python
 TBError(*args, frame=2):
-'''
+"""
 Print error message and exit with -1.
 
 Args:
     frame (int, optional): Controls the name of the caller. Defaults to method that called TBError.
-'''
+"""
 ```
-```Python
+```python
 TBFail(*args)
 ```
-```Python
+```python
 TBPass(*args)
 ```
-```Python
+```python
 TBRaise(*args, frame=2, exception=None):
-'''
+"""
 Add custom text to exceptions, which can be useful for debugging sometimes. 
 
 Args:
     frame (int, optional): Controls the name of the caller. Defaults to method that called TBRaise.
     exception (Exception, optional): If None, raise generic ToolboxException. Otherwise raise exception.
-'''
+"""
 ```
-```Python
+```python
 _getCallerName(frame):
-'''
+"""
 Gets the name of the function that calls the present function. 
-'''
+"""
 ```
-```Python
+```python
 _getTimeStamp():
-'''
+"""
 Get HH:MM:SS 
-'''
+"""
 ```
-```Python
+```python
 _log(outString)
 ```
-```Python
+```python
 createLogFile(filename='Toolbox.log'):
-'''
+"""
 Have output sent also to a log file filename. If this file already exists, it will get deleted. We use the
 logging module because it knows how to handle multiple processes writing to the same file. 
-'''
+"""
 ```
-```Python
+```python
 debug(*args, frame=2)
 ```
-```Python
+```python
 details(*args)
 ```
-```Python
+```python
 info(*args)
 ```
-```Python
+```python
 progress(*args)
 ```
-```Python
+```python
 set_log_level(level)
 ```
-```Python
+```python
 warn(*args, frame=2)
 ```
-```Python
+```python
 class ToolboxException:
 ```

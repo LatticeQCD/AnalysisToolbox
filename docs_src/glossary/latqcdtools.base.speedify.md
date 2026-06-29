@@ -1,45 +1,45 @@
 latqcdtools.base.speedify
 =============
 
-```Python
+```python
 compile(func)
 ```
-```Python
+```python
 compileCUDA(func)
 ```
-```Python
+```python
 get_optimal_block_size():
-'''
+"""
 Returns an optimal block size based on the current CUDA device.
 Defaults to 256 if device information cannot be obtained.
 
 Returns:
     int: Optimal threads per block
-'''
+"""
 ```
-```Python
+```python
 numbaList(inList):
-'''
+"""
 Turn a list into List that numba can parse. 
-'''
+"""
 ```
-```Python
+```python
 numbaOFF():
-'''
+"""
 Turn off numba compilation for small functions. 
-'''
+"""
 ```
-```Python
+```python
 numbaON():
-'''
+"""
 Use numba wherever possible. By default it is turned off, since compilation takes some time,
 and hence you will only see a performance boost for particularly long-running functions. Must be
 called at the beginning of your code. 
-'''
+"""
 ```
-```Python
+```python
 parallel_function_eval(function, input_array, args=(), nproc=6, parallelizer='pathos.pools'):
-'''
+"""
 Parallelize a function over an input_array. Effectively this can replace a loop over an array and should
 lead to a performance boost.
 
@@ -50,11 +50,11 @@ Args:
 
 Returns:
     array-like: func(input_array)
-'''
+"""
 ```
-```Python
+```python
 parallel_reduce(function, input_array, args=(), nproc=6, parallelizer='pathos.pools') -> float:
-'''
+"""
 Parallelize a function over an input_array, then sum over the input_array elements. 
 
 Args:
@@ -64,8 +64,8 @@ Args:
 
 Returns:
     float
-'''
+"""
 ```
-```Python
+```python
 class ComputationClass(function, input_array, args, nproc, parallelizer):
 ```

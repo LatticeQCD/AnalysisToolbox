@@ -1,9 +1,9 @@
 latqcdtools.math.math
 =============
 
-```Python
+```python
 RMS(data) -> float:
-'''
+"""
 Root-mean-square of data
 
 Args:
@@ -11,11 +11,11 @@ Args:
 
 Returns:
     float: RMS of data 
-'''
+"""
 ```
-```Python
+```python
 TA(mat) -> numpy.ndarray:
-'''
+"""
 Make mat traceless and antihermitian
 
 Args:
@@ -23,47 +23,47 @@ Args:
 
 Returns:
     bool: _description_
-'''
+"""
 ```
-```Python
+```python
 checkMatrix(mat)
 ```
-```Python
+```python
 checkSquare(mat):
-'''
+"""
 Make sure mat is a square np.ndarray object. 
 
 Args:
     mat (np.ndarray)
-'''
+"""
 ```
-```Python
+```python
 checkVector(vec)
 ```
-```Python
+```python
 dagger(arr) -> numpy.ndarray
 ```
-```Python
+```python
 exp(mat) -> numpy.ndarray:
-'''
+"""
 Exponential of square matrix.
-'''
+"""
 ```
-```Python
+```python
 fallFactorial(n, m) -> float:
-'''
+"""
 Falling factorial n fall to m. 
-'''
+"""
 ```
-```Python
+```python
 id(N) -> numpy.ndarray:
-'''
+"""
 NxN complex identity matrix
-'''
+"""
 ```
-```Python
+```python
 invert(mat, method='scipy', svdcut=1e-12) -> numpy.ndarray:
-'''
+"""
 Invert matrix.
 
 Args:
@@ -72,11 +72,11 @@ Args:
     
 Returns:
     np.ndarray: mat^{-1} 
-'''
+"""
 ```
-```Python
+```python
 isAntihermitian(mat) -> bool:
-'''
+"""
 Antihermitian matrices satisfy dagger(M)=-M
 
 Args:
@@ -84,11 +84,11 @@ Args:
 
 Returns:
     bool: True if antihermitian 
-'''
+"""
 ```
-```Python
+```python
 isHankel(mat) -> bool:
-'''
+"""
 Hankel matrices look like (3d example)
 a b c
 b c d
@@ -99,11 +99,11 @@ Args:
 
 Returns:
     bool: True if Hankel 
-'''
+"""
 ```
-```Python
+```python
 isHermitian(mat) -> bool:
-'''
+"""
 Hermitian matrices satisfy dagger(M)=M
 
 Args:
@@ -111,14 +111,14 @@ Args:
 
 Returns:
     bool: True if hermitian 
-'''
+"""
 ```
-```Python
+```python
 isMatrix(mat) -> bool
 ```
-```Python
+```python
 isOrthogonal(mat) -> bool:
-'''
+"""
 Orthogonal matrices satisfy M^t M = id
 
 Args:
@@ -126,11 +126,11 @@ Args:
 
 Returns:
     bool: True if orthogonal 
-'''
+"""
 ```
-```Python
+```python
 isPositiveSemidefinite(mat, details=False, eps=1e-12) -> bool:
-'''Returns true if mat is positive semidefinite. Otherwise, if details=True,
+"""Returns true if mat is positive semidefinite. Otherwise, if details=True,
 list the eigenvalues that are not >=0.
 
 Args:
@@ -139,11 +139,11 @@ Args:
 
 Returns:
     bool: True if positive semidefinite 
-'''
+"""
 ```
-```Python
+```python
 isSpecial(mat) -> bool:
-'''
+"""
 Special matrices M satisfy det(M) = 1.
 
 Args:
@@ -151,14 +151,14 @@ Args:
 
 Returns:
     bool: True if special
-'''
+"""
 ```
-```Python
+```python
 isSquare(mat) -> bool
 ```
-```Python
+```python
 isSymmetric(mat) -> bool:
-'''
+"""
 Symmetric matrices satisfy M^t = M.
 
 Args:
@@ -166,11 +166,11 @@ Args:
 
 Returns:
     bool: True if symmetric
-'''
+"""
 ```
-```Python
+```python
 isUnitary(mat) -> bool:
-'''
+"""
 Unitary matrices U satisfy U^dag U = 1.
 
 Args:
@@ -178,26 +178,26 @@ Args:
 
 Returns:
     bool: True if unitary
-'''
+"""
 ```
-```Python
+```python
 isVector(vec) -> bool
 ```
-```Python
+```python
 log(mat) -> numpy.ndarray:
-'''
+"""
 Natural logarithm of square matrix.
-'''
+"""
 ```
-```Python
+```python
 logDet(mat) -> float:
-'''
+"""
 Logarithm of determinant. 
-'''
+"""
 ```
-```Python
+```python
 normalize(arr, p=2) -> numpy.ndarray:
-'''
+"""
 Normalize vector or matrix arr using p-norm.
 
 Args:
@@ -206,11 +206,11 @@ Args:
 
 Returns:
     np.ndarray: normalized array 
-'''
+"""
 ```
-```Python
+```python
 pnorm(arr, p=2) -> float:
-'''
+"""
 Returns p-norm of vector or matrix arr.
 
 Args:
@@ -219,17 +219,17 @@ Args:
 
 Returns:
     float: pnorm 
-'''
+"""
 ```
-```Python
+```python
 pow(mat, power) -> numpy.ndarray:
-'''
+"""
 Matrix power. 
-'''
+"""
 ```
-```Python
+```python
 quadrature(data) -> float:
-'''
+"""
 Add data in quadrature
 
 Args:
@@ -237,11 +237,11 @@ Args:
 
 Returns:
     float: data added in quadrature 
-'''
+"""
 ```
-```Python
+```python
 regulate(mat, svdcut=1e-12) -> numpy.ndarray:
-'''
+"""
 If a matrix's singular values are too small, it will be ill-conditioned,
 making it difficult to invert and hence reducing numerical stability. This method
 extracts its singular values using SVD, then doctors the singular values to reduce
@@ -254,11 +254,11 @@ Args:
 
 Returns:
     np.ndarray: regulated matrix 
-'''
+"""
 ```
-```Python
+```python
 rel_check(a, b, prec=1e-06, abs_prec=1e-14) -> bool:
-'''
+"""
 Check whether a and b are equal. a and b can be array-like, float-like, or complexes. If a
 and b are array-like, we check that they are element-wise equal within the tolerance. 
 
@@ -270,23 +270,23 @@ Args:
 
 Returns:
     bool: True if a and b are equal. 
-'''
+"""
 ```
-```Python
+```python
 riseFactorial(n, m) -> float:
-'''
+"""
 Rising factorial n rise to m. 
-'''
+"""
 ```
-```Python
+```python
 ze(N) -> numpy.ndarray:
-'''
+"""
 NxN complex zero matrix
-'''
+"""
 ```
-```Python
+```python
 class SUN(N=None, mat=None):
-'''
+"""
 A member of the Lie group SU(N). Implemented as a subclass of the np.ndarray class. This gives us access already
 to all the nice features of np.ndarray and lets us leverage the speed of numpy.
     g.det()
@@ -295,5 +295,5 @@ to all the nice features of np.ndarray and lets us leverage the speed of numpy.
     g + h
     g*h = g@h
     2*g
-'''
+"""
 ```

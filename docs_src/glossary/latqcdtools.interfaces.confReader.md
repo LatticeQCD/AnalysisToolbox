@@ -1,15 +1,15 @@
 latqcdtools.interfaces.confReader
 =============
 
-```Python
+```python
 class ILDGReader(Ns, Nt, nproc=None):
 ```
-```Python
+```python
 class NERSCReader(Ns, Nt, nproc=None):
 ```
-```Python
+```python
 class confReader(Ns, Nt, nproc=None):
-'''
+"""
 Base class for reading configurations. 
-'''
+"""
 ```

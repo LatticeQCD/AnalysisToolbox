@@ -9,11 +9,14 @@
 # documentation easily. 
 #
 
-import os, pkgutil, importlib, inspect
+import os, re, pkgutil, importlib, inspect
 
 LIBRARY_NAME = 'latqcdtools'
 LIBRARY_PATH = os.path.dirname(importlib.import_module(LIBRARY_NAME).__file__)
 
+
+def clean_sig(sig):
+    return re.sub(r"<class '([^']+)'>", r'\1', str(sig))
 
 def get_functions_with_docs(module):
     functions = inspect.getmembers(module, inspect.isfunction)
@@ -56,23 +59,25 @@ for importer, module_name, ispkg in pkgutil.walk_packages(path=[LIBRARY_PATH], p
 
         for func_name, sig, func_doc in get_functions_with_docs(module):
             doc = func_doc
+            s = clean_sig(sig)
             if func_doc is not None:
-                mdfile.write(f"```Python\n{func_name}{sig}:\n'''{doc}'''\n```\n")
+                mdfile.write(f'```python\n{func_name}{s}:\n"""{doc}"""\n```\n')
             else:
-                mdfile.write(f"```Python\n{func_name}{sig}\n```\n")
+                mdfile.write(f'```python\n{func_name}{s}\n```\n')
 
         for func_name, sig, func_doc in get_classes_with_docs(module):
             doc = func_doc
             if sig is not None:
+                s = clean_sig(sig)
                 if func_doc is not None:
-                    mdfile.write(f"```Python\nclass {func_name}{sig}:\n'''{doc}'''\n```\n")
+                    mdfile.write(f'```python\nclass {func_name}{s}:\n"""{doc}"""\n```\n')
                 else:
-                    mdfile.write(f"```Python\nclass {func_name}{sig}:\n```\n")
+                    mdfile.write(f'```python\nclass {func_name}{s}:\n```\n')
             else:
                 if func_doc is not None:
-                    mdfile.write(f"```Python\nclass {func_name}:\n'''{doc}'''\n```\n")
+                    mdfile.write(f'```python\nclass {func_name}:\n"""{doc}"""\n```\n')
                 else:
-                    mdfile.write(f"```Python\nclass {func_name}:\n```\n")
+                    mdfile.write(f'```python\nclass {func_name}:\n```\n')
 
         mdfile.close()
 

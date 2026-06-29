@@ -323,46 +323,46 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-base-speedify">
+          <section id="latqcdtools-base-speedify">
 <h1>latqcdtools.base.speedify<a class="headerlink" href="#latqcdtools-base-speedify" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">compile</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">compile</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">compileCUDA</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">compileCUDA</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">get_optimal_block_size</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_optimal_block_size</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Returns an optimal block size based on the current CUDA device.</span>
 <span class="sd">Defaults to 256 if device information cannot be obtained.</span>
 
 <span class="sd">Returns:</span>
 <span class="sd">    int: Optimal threads per block</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaList</span><span class="p">(</span><span class="n">inList</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaList</span><span class="p">(</span><span class="n">inList</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Turn a list into List that numba can parse. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaOFF</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaOFF</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Turn off numba compilation for small functions. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaON</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaON</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Use numba wherever possible. By default it is turned off, since compilation takes some time,</span>
 <span class="sd">and hence you will only see a performance boost for particularly long-running functions. Must be</span>
 <span class="sd">called at the beginning of your code. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_function_eval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_function_eval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Parallelize a function over an input_array. Effectively this can replace a loop over an array and should</span>
 <span class="sd">lead to a performance boost.</span>
 
@@ -373,11 +373,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    array-like: func(input_array)</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Parallelize a function over an input_array, then sum over the input_array elements. </span>
 
 <span class="sd">Args:</span>
@@ -387,10 +387,10 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ComputationClass</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">parallelizer</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ComputationClass</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">parallelizer</span><span class="p">):</span>
 </pre></div>
 </div>
 </section>
@@ -444,7 +444,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

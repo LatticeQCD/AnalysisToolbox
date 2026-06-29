@@ -323,24 +323,24 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-jackknife">
+          <section id="latqcdtools-statistics-jackknife">
 <h1>latqcdtools.statistics.jackknife<a class="headerlink" href="#latqcdtools-statistics-jackknife" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_pareAxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_pareAxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">In order to ensure that all jackknife blocks have the same length, we pare the data along</span>
 <span class="sd">the conf_axis, so that nblocks divides the length of data along conf_axis.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudobins</span><span class="p">(</span><span class="n">jackknifeBins</span><span class="p">,</span> <span class="n">avg</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudobins</span><span class="p">(</span><span class="n">jackknifeBins</span><span class="p">,</span> <span class="n">avg</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Calculate the &#39;pseudovalue&#39; from the ith jackknife estimator. The pseudovalue is unbiased</span>
 <span class="sd">up to O(1/N), where N is the number of data. See e.g. eq. (1.1) of Miller, Biometrika 1974. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Carry out a jackknife of an arbitrary function f of some data.</span>
 
 <span class="sd">Args:</span>
@@ -358,7 +358,7 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    jackknife mean and error (optionally pseudovalues) </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -412,7 +412,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

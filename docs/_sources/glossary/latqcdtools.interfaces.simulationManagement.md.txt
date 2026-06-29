@@ -1,9 +1,9 @@
 latqcdtools.interfaces.simulationManagement
 =============
 
-```Python
+```python
 analyzeChain(MCtime, measurements, obslabel=None, MClabel='traj no.', KScutoff=0.05, showPlots=False, savePlots=False, plotNamePrefix=None, tpickMax=None, nbins=None, verbose=False, **plotargs) -> dict:
-'''
+"""
 Do some basic analysis of a MCMC time series of measurements. We check whether the data
 are distributed normally. Optionally you can plot the time series and/or a histogram.
 
@@ -19,11 +19,11 @@ Args:
     tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.
     nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)
     verbose (bool, optional): Report your findings to screen. Defaults to False.
-'''
+"""
 ```
-```Python
+```python
 countConfigurations(targetFolder, name, delimiter='.'):
-'''
+"""
 Count the number of configurations in the target folder.
 
 Args:
@@ -33,17 +33,17 @@ Args:
 
 Returns:
     int: number of configurations in targetFolder 
-'''
+"""
 ```
-```Python
+```python
 class ensemble(**kwargs):
-'''
+"""
 An ensemble object. This is to help you organize where data are saved
-'''
+"""
 ```
-```Python
+```python
 class repository():
-'''
+"""
 This reposistory holds ensemble objects.
-'''
+"""
 ```

@@ -323,10 +323,10 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-interfaces-simulationmanagement">
+          <section id="latqcdtools-interfaces-simulationmanagement">
 <h1>latqcdtools.interfaces.simulationManagement<a class="headerlink" href="#latqcdtools-interfaces-simulationmanagement" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analyzeChain</span><span class="p">(</span><span class="n">MCtime</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">obslabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MClabel</span><span class="o">=</span><span class="s1">&#39;traj no.&#39;</span><span class="p">,</span> <span class="n">KScutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">showPlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">savePlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotNamePrefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tpickMax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">plotargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analyzeChain</span><span class="p">(</span><span class="n">MCtime</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">obslabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">MClabel</span><span class="o">=</span><span class="s1">&#39;traj no.&#39;</span><span class="p">,</span> <span class="n">KScutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">showPlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">savePlots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotNamePrefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tpickMax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">plotargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Do some basic analysis of a MCMC time series of measurements. We check whether the data</span>
 <span class="sd">are distributed normally. Optionally you can plot the time series and/or a histogram.</span>
 
@@ -342,11 +342,11 @@
 <span class="sd">    tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.</span>
 <span class="sd">    nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)</span>
 <span class="sd">    verbose (bool, optional): Report your findings to screen. Defaults to False.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">countConfigurations</span><span class="p">(</span><span class="n">targetFolder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">countConfigurations</span><span class="p">(</span><span class="n">targetFolder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Count the number of configurations in the target folder.</span>
 
 <span class="sd">Args:</span>
@@ -356,19 +356,19 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    int: number of configurations in targetFolder </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ensemble</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ensemble</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">An ensemble object. This is to help you organize where data are saved</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">repository</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">repository</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This reposistory holds ensemble objects.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -422,7 +422,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

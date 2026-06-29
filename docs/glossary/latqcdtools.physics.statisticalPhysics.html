@@ -323,33 +323,27 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-physics-statisticalphysics">
+          <section id="latqcdtools-physics-statisticalphysics">
 <h1>latqcdtools.physics.statisticalPhysics<a class="headerlink" href="#latqcdtools-physics-statisticalphysics" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_compareWithZero</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_compareWithZero</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getParameter</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_getParameter</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Give the weighted average of literature values of some parameter. These are </span>
 <span class="sd">in units with k_B=J=1 and no magnetic field. If there is only one known value, </span>
 <span class="sd">give that back. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_printExponent</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_printExponent</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_statisticalConsistencyCheck</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_statisticalConsistencyCheck</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreTension</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Turn off statistical tension warnings. </span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reweight</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pRW</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reweight</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pRW</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Reweight an observable X computed at a simulation point p0 to a nearby</span>
 <span class="sd">simulation point pRW. We assume the action depends linearly on the simulation</span>
 <span class="sd">parameter, i.e. S&#39; ~ p S</span>
@@ -363,46 +357,46 @@
 <span class="sd">    pRW (float): Reweight to this target. </span>
 <span class="sd">    p0 (float): Simulation point.</span>
 <span class="sd">    S (np.array): Measurements of the action (extensive) divided by parameter p. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O2_3d</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O2_3d</span><span class="p">():</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O3_3d</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O3_3d</span><span class="p">():</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O4_3d</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">O4_3d</span><span class="p">():</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Oinf_3d</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Oinf_3d</span><span class="p">():</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">S3_2d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">S3_2d</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Exact solution for 2d S_3 class from Baxter &quot;Exactly Solved Models in Statistical Mechanics&quot;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">S4_2d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">S4_2d</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Exact solution for 2d S_4 class from Baxter, &quot;Exactly Solved Models in Statistical Mechanics&quot;</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UniversalityClass</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UniversalityClass</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Skeleton universality class from which all others inherit.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Z2_2d</span><span class="p">():</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Z2_2d</span><span class="p">():</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Onsager solution for 2d Z_2 class. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Z2_3d</span><span class="p">():</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Z2_3d</span><span class="p">():</span>
 </pre></div>
 </div>
 </section>
@@ -456,7 +450,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

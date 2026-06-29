@@ -323,26 +323,26 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-legacy">
+          <section id="latqcdtools-legacy">
 <h1>latqcdtools.legacy<a class="headerlink" href="#latqcdtools-legacy" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_autoSeed</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_autoSeed</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">We use seed=None to flag the seed should be automatically chosen. The problem is that we need</span>
 <span class="sd">seed to be an integer when enforcing that different bootstrap samples use different seeds. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_getBlocksize</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_getBlocksize</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudo</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean_i</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudo</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean_i</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudo_val</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean_i</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_pseudo_val</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean_i</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Bootstrap for arbitrary functions. This routine resamples the data and passes them to the function in the same</span>
 <span class="sd">format as in the input. So the idea is to write a function that computes an observable from a given data set. This</span>
 <span class="sd">function can be put into this bootstrap routine and will get bootstrap samples as input. Based on the output of the</span>
@@ -390,23 +390,23 @@
 
 <span class="sd">    nproc : integer</span>
 <span class="sd">        Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">useCovariance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Covariance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">asym_err</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">useCovariance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Covariance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">asym_err</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Same as standard bootstrap routine, but the data are generated by gaussian noise around the mean values in data.</span>
 <span class="sd">The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.</span>
 <span class="sd">This means that data_std_dev should always be the standard deviation of a single measurement and not the standard</span>
 <span class="sd">deviation of a mean.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dev_by_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dev_by_dist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">jackknife</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_blocks</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Jackknife routine for arbitrary functions. This routine creates the jackknife like blocked subsets of data and</span>
 <span class="sd">passes them to the function in the same format as in the input data. So the idea is to write a function that</span>
 <span class="sd">computes an observable from a given data set. This function can be put into this jackkife routine and will get the</span>
@@ -438,43 +438,43 @@
 
 <span class="sd">    nproc : integer</span>
 <span class="sd">        Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">recurs_append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_data</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">my_seed</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">recurs_append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_data</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">my_seed</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Recursive function to fill the sample. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">reduce_tuple</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reduce_tuple</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_dev</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_dev</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_err</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_err</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">std_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">):</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleGaussianBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">useCovariance</span><span class="p">,</span> <span class="n">Covariance</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">asym_err</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleGaussianBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">useCovariance</span><span class="p">,</span> <span class="n">Covariance</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">asym_err</span><span class="p">):</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleJack</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">,</span> <span class="n">confAxis</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleJack</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">nblocks</span><span class="p">,</span> <span class="n">confAxis</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Class allowing for parallelization of the jackknife function. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -528,7 +528,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

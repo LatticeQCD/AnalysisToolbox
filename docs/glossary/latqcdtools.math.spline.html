@@ -323,22 +323,30 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-math-spline">
+          <section id="latqcdtools-math-spline">
 <h1>latqcdtools.math.spline<a class="headerlink" href="#latqcdtools-math-spline" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_even_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_even_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Return a list of nknots evenly spaced knots. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_random_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">,</span> <span class="n">randomization_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SEED</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_random_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">,</span> <span class="n">randomization_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SEED</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Return a list of nknots randomly spaced knots. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getAICc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">numb_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">nsupport</span><span class="o">=</span><span class="mi">301</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7271978</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Given xdata, ydata, edata, create a spline. Use bootstrap to propagate uncertainties of the data into an</span>
+<span class="sd">error band for the spline. Gives back a dictionary whose xspl, yspl, and ysple entries can be used</span>
+<span class="sd">to plot a spline with error bars </span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getAICc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally</span>
 <span class="sd">this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will</span>
 <span class="sd">use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a</span>
@@ -365,19 +373,19 @@
 <span class="sd">Returns:</span>
 <span class="sd">    callable spline object</span>
 <span class="sd">    AICc (optionally)</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSplineErr</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">xspline</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">ydatae</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getSplineErr</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">xspline</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">ydatae</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TBSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">naturalLike</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TBSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">naturalLike</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A class that prepares a splrep and wraps it with splev.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -431,7 +439,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

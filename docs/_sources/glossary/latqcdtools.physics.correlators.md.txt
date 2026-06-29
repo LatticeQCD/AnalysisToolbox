@@ -1,17 +1,17 @@
 latqcdtools.physics.correlators
 =============
 
-```Python
+```python
 _periodicLHS(corr, m, it):
-'''
+"""
 Helper function for finding effective mass curve, baking in the fact
 that the lattice is periodic. See e.g. Gattringer and Lang eq. (6.57).
 Meant to be used with a solver.
-'''
+"""
 ```
-```Python
+```python
 effectiveMass(corr, algorithm='simple', guess=None) -> numpy.ndarray:
-'''
+"""
 Get m_eff(t). Where this plateaus can be used as a first estimate for
 the ground state. See e.g. Gattringer and Lang eq. (6.56)
 
@@ -22,11 +22,11 @@ Args:
 
 Returns:
     np.ndarray: m_eff(t) 
-'''
+"""
 ```
-```Python
+```python
 foldCorrelator(corr) -> numpy.ndarray:
-'''
+"""
 On a periodic lattice, information for t>Nt/2 is redundant. This method
 combines corr below and above that threshold to improve statistics.
 
@@ -35,5 +35,5 @@ Args:
 
 Returns:
     np.ndarray: folded correlator 
-'''
+"""
 ```

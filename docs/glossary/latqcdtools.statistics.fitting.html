@@ -323,26 +323,26 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="latqcdtools-statistics-fitting">
+          <section id="latqcdtools-statistics-fitting">
 <h1>latqcdtools.statistics.fitting<a class="headerlink" href="#latqcdtools-statistics-fitting" title="Link to this heading">¶</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">do_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">,</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">do_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">,</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Wrapper to fitter initialization and the fit in one step. See above for arguments. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">save_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">save_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">func_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args_err</span><span class="o">=</span><span class="p">(),</span> <span class="n">grad</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">try_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">,</span> <span class="s1">&#39;TNC&#39;</span><span class="p">,</span> <span class="s1">&#39;Powell&#39;</span><span class="p">,</span> <span class="s1">&#39;Nelder-Mead&#39;</span><span class="p">,</span> <span class="s1">&#39;nonlin&#39;</span><span class="p">],</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">try_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priorsigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">,</span> <span class="s1">&#39;TNC&#39;</span><span class="p">,</span> <span class="s1">&#39;Powell&#39;</span><span class="p">,</span> <span class="s1">&#39;Nelder-Mead&#39;</span><span class="p">,</span> <span class="s1">&#39;nonlin&#39;</span><span class="p">],</span> <span class="n">detailedInfo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Wrapper to fitter initialization and the fit in one step. See above for arguments. For historical reasons</span>
 <span class="sd">algorithms has no default values here. </span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">unzipData</span><span class="p">(</span><span class="n">zipData</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;Take a zipData array, created by zipData, and extract x-, y-, ... values </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">unzipData</span><span class="p">(</span><span class="n">zipData</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;Take a zipData array, created by zipData, and extract x-, y-, ... values </span>
 <span class="sd">for use inside of a function of two variables. Example in 2d:</span>
 
 <span class="sd">Args:</span>
@@ -351,11 +351,11 @@
 <span class="sd">Returns: In 2d,</span>
 <span class="sd">    xvalues [x1, x2, ..., xN, x1, x2, ..., xN, ...],</span>
 <span class="sd">    yavlues [y1, y1, ..., y1, y2, y2, ..., y2, ...]</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">zipData</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;Collect N sets of 1d data into an Nd zipData array. You can then use</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">zipData</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;Collect N sets of 1d data into an Nd zipData array. You can then use</span>
 <span class="sd">unzipData inside of some func(zipData), which represents some f(x,y,...), to</span>
 <span class="sd">separate the x-, y-, ... part.</span>
 
@@ -364,11 +364,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray: In 2d, array of x,y coordinates [ (x1,y1), (x1,y2), ..., (x2,y1), ... ]</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The :class:`Fitter`, contains all information necessary for fitting: The data, the function to be fitted, and</span>
 <span class="sd">optional the data for the errors. There are different minimization algorithms available. Many of them need the</span>
 <span class="sd">gradient or hessian of the chisquare. One way is to set the derivatives of the fitting function from outside.</span>
@@ -378,7 +378,7 @@
 <span class="sd">There are two ways to compute the derivatives of the chisqare numerically. Either compute the</span>
 <span class="sd">numerical derivative of the whole chisquare (error_strat=&#39;hessian&#39;) or compute the derivatives of the fitting</span>
 <span class="sd">function and use error propagation (error_strat=&#39;propagation&#39;). The latter is the default case.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -432,7 +432,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=28d163b9"></script>
+</div><script src="../_static/documentation_options.js?v=e358f374"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
