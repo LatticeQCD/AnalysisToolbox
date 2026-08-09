@@ -81,7 +81,6 @@ default_params = {
     'alpha_dots': None,          # Transperancy for different dots
     'alpha_lines': 1,            # Transperancy for different lines
     'alpha_fill_edge': 0,        # Transperancy for edges of error bands
-    'hatch': None,               # Fill pattern
     'linewidth': 1,              # Linewidth of line plots
     'capsize': 1.5,              # Length of caps af error bars
     'elinewidth': 1,             # Linewidth of the error bars of caps af error bars
@@ -918,6 +917,11 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=False, **params):
         facecol=col
     else:
         facecol=params['facecolor']
+    try:
+        hatch=params['hatch']
+    except KeyError:
+        hatch=None
+
 
     if xedata is None:
         if len(yedata) == 2:
@@ -925,19 +929,19 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=False, **params):
                                  (np.asarray(ydata*params['yscale']) - np.asarray(yedata[0]*params['yscale'])),
                                  (np.asarray(ydata*params['yscale']) + np.asarray(yedata[1]*params['yscale'])), 
                                  facecolor=facecol, alpha=params['alpha'], linewidth=params['linewidth'], 
-                                 zorder=ZOD, edgecolor=col, hatch=params['hatch'])
+                                 zorder=ZOD, edgecolor=col, hatch=hatch)
         else:    
             pl = ax.fill_between(xdata*params['xscale'],
                                  (np.asarray(ydata*params['yscale']) - np.asarray(yedata*params['yscale'])),
                                  (np.asarray(ydata*params['yscale']) + np.asarray(yedata*params['yscale'])), 
                                  facecolor=facecol, alpha=params['alpha'], linewidth=params['linewidth'], 
-                                 zorder=ZOD, edgecolor=col, hatch=params['hatch'])
+                                 zorder=ZOD, edgecolor=col, hatch=hatch)
     else:
         pl = ax.fill_betweenx(ydata*params['yscale'], 
                               (np.asarray(xdata*params['xscale']) - np.asarray(xedata*params['xscale'])),
                               (np.asarray(xdata*params['xscale']) + np.asarray(xedata*params['xscale'])), 
                               facecolor=facecol, alpha=params['alpha'],linewidth=params['linewidth'], 
-                              zorder=ZOD, edgecolor=col, hatch=params['hatch'])
+                              zorder=ZOD, edgecolor=col, hatch=hatch)
     globals()['ZOD'] += 2
 
     if params['label'] is not None:

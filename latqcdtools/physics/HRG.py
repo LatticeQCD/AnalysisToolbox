@@ -14,7 +14,7 @@ from scipy.special import lambertw, kn
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
 import latqcdtools.base.logger as logger
 from latqcdtools.math.num_int import integrateFunction
-from latqcdtools.base.check import ignoreUnderflow
+from latqcdtools.base.check import ignoreUnderflow, checkType
 from latqcdtools.base.utilities import envector, unvector
 
 
@@ -64,6 +64,27 @@ def dmuh(order, muh):
         return 0
 
 
+def _checkOrders(B,Q,S,C,I):
+    """
+    Want to avoid simultaneous muQ and muI derivatives.
+    """
+    checkType("int",B=B)
+    checkType("int",Q=Q)
+    checkType("int",S=S)
+    checkType("int",C=C)
+    checkType("int",I=I)
+    if (Q>0) and (I>0):
+        logger.TBRaise('Do not allow muQ and muI derivatives simulataneously')
+
+
+def _checkMus(muB,muQ,muS,muC,muI):
+    """
+    Want to avoid simultaneous muQ and muI. 
+    """
+    if (muQ!=0) and (muI!=0):
+        logger.TBRaise('Do not allow muQ and muI simulataneously')
+    
+
 class HRGbase:
 
     """ 
@@ -74,11 +95,12 @@ class HRGbase:
 
     def __init__(self, Mass, g, w, B, S, Q, C=None):
         self.Mass = Mass
-        self.g = g
-        self.w = w
-        self.B = B
-        self.Q = Q
-        self.S = S
+        self.g  = g
+        self.w  = w
+        self.B  = B
+        self.Q  = Q
+        self.S  = S
+        self.I3 = Q-(B+S)/2 # Gell-Mann-Nishijima 
         if C is None:
             self.C = np.zeros(len(Mass))
         else:
@@ -87,17 +109,19 @@ class HRGbase:
     def __repr__(self) -> str:
         return "HRGbase"
 
-    def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
+    def muN_div_T(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, muI_div_T):
         """ 
-        mu_X * N_X, X = (B,Q,S,C) 
+        mu_X * N_X, X = (B,Q,S,C,I) 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         return self.B[k]*muB_div_T + self.Q[k]*muQ_div_T + self.S[k]*muS_div_T + self.C[k]*muC_div_T
 
-    def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T):
+    def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, muI_div_T):
         """ 
-        e^(mu_X*N_X/T) , X = (B,Q,S,C) 
+        e^(mu_X*N_X/T) , X = (B,Q,S,C,I) 
         """
-        return np.exp(self.muN_div_T(k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T))
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        return np.exp(self.muN_div_T(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T))
 
 
 class HRG(HRGbase):
@@ -141,68 +165,75 @@ class HRG(HRGbase):
         """
         return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
-    def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 P += self.factor(k, n, T) \
-                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                         * kn(2, (n * self.Mass[k] / T))
         return P
 
-    def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 x = self.Mass[k]*n/T
                 eps += self.factor(k, n, T) \
-                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T,muI_div_T=muI_div_T)**n \
                         * (kn(2, x) * 3 + kn(1, x) * x)
         return eps
 
-    def theta_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def theta_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         Trace anomaly
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         return self.E_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T) - 3*self.P_div_T4(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
 
-    def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         s = e + p - mu_i n_i 
         """
-        NB = self.gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        NS = self.gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        NQ = self.gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        NC = self.gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=1, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        muxN_div_T = NB*muB_div_T + NS*muS_div_T + NQ*muQ_div_T + NC*muC_div_T
-        return self.E_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) \
-                + self.P_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T,muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) - muxN_div_T
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        NB = self.gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NS = self.gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NQ = self.gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NC = self.gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=1, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NI = self.gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=1, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        muxN_div_T = NB*muB_div_T + NS*muS_div_T + NQ*muQ_div_T + NC*muC_div_T + NI*muI_div_T
+        return self.E_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T) \
+                + self.P_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T,muQ_div_T=muQ_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T) - muxN_div_T
 
-    def ddT_E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def ddT_E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         d(E/T^4)/dT at fixed mu/T 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 m = self.Mass[k]
                 x = m*n/T
                 eps += self.factor(k, n, T)*m*n \
-                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                         * (kn(0, x)*n*m + kn(1, x)*T)/T**3
         return eps
 
-    def ddT_P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def ddT_P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         d(P/T^4)/dT at fixed mu/T 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 m = self.Mass[k]
                 x = m*n/T
                 P += self.factor(k, n, T) \
-                        * self.z(k, muB_div_T=muB_div_T,muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                        * self.z(k, muB_div_T=muB_div_T,muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                         * m*n*kn(1, x) / T**2
         return P
 
@@ -210,154 +241,174 @@ class HRG(HRGbase):
         """ 
         C_V/T^3 at mu=0. 
         """
-        return 4*self.E_div_T4(T, 0, 0, 0, 0) + T*self.ddT_E_div_T4(T, 0, 0, 0, 0)
+        return 4*self.E_div_T4(T, 0, 0, 0, 0, 0) + T*self.ddT_E_div_T4(T, 0, 0, 0, 0, 0)
 
-    def ddT_S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def ddT_S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         d(s/T^3)/dT at fixed mu/T 
         """
-        ddTNB = self.ddT_gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0,
-                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        ddTNS = self.ddT_gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0,
-                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        ddTNQ = self.ddT_gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0,
-                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        ddTNC = self.ddT_gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=1,
-                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        muxddTN_div_T = ddTNB*muB_div_T + ddTNS*muS_div_T + ddTNQ*muQ_div_T + ddTNC*muC_div_T
-        return self.ddT_E_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) \
-                + self.ddT_P_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) - muxddTN_div_T
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        ddTNB = self.ddT_gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, I_order=0,
+                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        ddTNS = self.ddT_gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, I_order=0,
+                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        ddTNQ = self.ddT_gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0, I_order=0,
+                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        ddTNC = self.ddT_gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=1, I_order=0,
+                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        ddTNI = self.ddT_gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=1,
+                                 muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        muxddTN_div_T = ddTNB*muB_div_T + ddTNS*muS_div_T + ddTNQ*muQ_div_T + ddTNC*muC_div_T + ddTNI*muI_div_T
+        return self.ddT_E_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T) \
+                + self.ddT_P_div_T4(T, muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T) - muxddTN_div_T
 
-    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
+    def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         chi_BQSC 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
-                zn_Kn = self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n * kn(2, (n*self.Mass[k]/T))
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * self.factor(k, n, T) * zn_Kn
+                zn_Kn = self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n * kn(2, (n*self.Mass[k]/T))
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * (self.I3[k]*n)**I_order * self.factor(k, n, T) * zn_Kn
         return chi
 
-    def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
+    def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         d(chi_BQSC)/dT at fixed mu/T 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 m = self.Mass[k]
                 x = m*n/T
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * (self.I3[k]*n)**I_order \
                                               * self.factor(k, n, T) \
-                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                                               * m*n*kn(1, x) / T**2
         return chi
 
-    def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
+    def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         d^2(chi_BQSC)/dT^2 at fixed mu/T 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         chi = 0.0
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 m = self.Mass[k]
                 x = m*n/T
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order *(self.I3[k]*n)**I_order \
                                               * self.factor(k, n, T) * m*n \
-                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T,muI_div_T=muI_div_T)**n \
                                               * (m*n*kn(0, x)/T**4 - 3*kn(1, x)/T**3)
         return chi
 
-    def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         Arbitrary mu/T derivatives of E/T^4 at fixed T 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         eps = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
                 x = self.Mass[k]*n/T
-                eps += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                eps += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order *(self.I3[k]*n)**I_order \
                                               * self.factor(k, n, T) \
-                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                                               * (kn(2, x)*3 + kn(1, x)*x)
         return eps
 
-    def gen_ddmuh_P_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def gen_ddmuh_P_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         Arbitrary mu/T derivatives of P/T^4 at fixed T 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         P = 0.
         for k in range(len(self.Mass)):
             for n in range(1, self.Nmax(k)):
-                P += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order \
+                P += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * (self.I3[k]*n)**I_order \
                                             * self.factor(k, n, T) \
-                                            * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                            * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                                             * kn(2, (n*self.Mass[k]/T))
         return P
 
-    def gen_ddmuh_S_div_T3(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
+    def gen_ddmuh_S_div_T3(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         s = e + p - mu_i n_i 
         """
-        NB = self.gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, muB_div_T=muB_div_T,
-                          muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        NS = self.gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, muB_div_T=muB_div_T,
-                          muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        NQ = self.gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0, muB_div_T=muB_div_T,
-                          muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        NC = self.gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=1, muB_div_T=muB_div_T,
-                          muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        dmuhNB = self.gen_chi(T, B_order=1+B_order, S_order=S_order, Q_order=Q_order, C_order=C_order,
-                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        dmuhNS = self.gen_chi(T, B_order=B_order, S_order=1+S_order, Q_order=Q_order, C_order=C_order,
-                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        dmuhNQ = self.gen_chi(T, B_order=B_order, S_order=S_order, Q_order=1+Q_order, C_order=C_order,
-                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        dmuhNC = self.gen_chi(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=1+C_order,
-                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)
-        return self.gen_ddmuh_E_div_T4(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=C_order, 
-                                       muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) \
-                + self.gen_ddmuh_P_div_T4(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=C_order, 
-                                          muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T) \
-                - muB_div_T*dmuhNB - muQ_div_T*dmuhNQ - muS_div_T*dmuhNS - muC_div_T*dmuhNC \
-                - NB*dmuh(B_order, muB_div_T) - NQ*dmuh(Q_order, muQ_div_T) - NS*dmuh(S_order, muS_div_T) - NC*dmuh(C_order, muC_div_T)
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
+        NB = self.gen_chi(T, B_order=1, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NS = self.gen_chi(T, B_order=0, S_order=1, Q_order=0, C_order=0, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NQ = self.gen_chi(T, B_order=0, S_order=0, Q_order=1, C_order=0, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NC = self.gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=1, I_order=0, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        NI = self.gen_chi(T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=1, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        dmuhNB = self.gen_chi(T, B_order=1+B_order, S_order=S_order, Q_order=Q_order, C_order=C_order, I_order=I_order,
+                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        dmuhNS = self.gen_chi(T, B_order=B_order, S_order=1+S_order, Q_order=Q_order, C_order=C_order, I_order=I_order,
+                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        dmuhNQ = self.gen_chi(T, B_order=B_order, S_order=S_order, Q_order=1+Q_order, C_order=C_order, I_order=I_order,
+                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        dmuhNC = self.gen_chi(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=1+C_order, I_order=I_order,
+                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        dmuhNI = self.gen_chi(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=C_order, I_order=1+I_order,
+                              muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)
+        return self.gen_ddmuh_E_div_T4(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=C_order, I_order=I_order, 
+                                       muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T) \
+                + self.gen_ddmuh_P_div_T4(T, B_order=B_order, S_order=S_order, Q_order=Q_order, C_order=C_order, I_order=I_order,
+                                          muB_div_T=muB_div_T, muS_div_T=muS_div_T, muQ_div_T=muQ_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T) \
+                - muB_div_T*dmuhNB - muQ_div_T*dmuhNQ - muS_div_T*dmuhNS - muC_div_T*dmuhNC - muI_div_T*dmuhNI \
+                - NB*dmuh(B_order, muB_div_T) - NQ*dmuh(Q_order, muQ_div_T) - NS*dmuh(S_order, muS_div_T) - NC*dmuh(C_order, muC_div_T) - NI*dmuh(I_order,muI_div_T)
 
-    def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
+    def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         # rms_mass[0] is for pions and rms_mass[1] is for kaons
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         rms_mass = RMS_mass(Nt, T)
         chi = 0.0
         for k in range(len(self.Mass)):
             if 140 >= self.Mass[k] >= 130:
                 for n in range(1, 20):
-                    chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
-                                                  * (self.Q[k]*n)**Q_order \
-                                                  * (self.C[k]*n)**C_order \
+                    chi += (self.B[k]*n)**B_order * (self.S[k]*n )**S_order \
+                                                  * (self.Q[k]*n )**Q_order \
+                                                  * (self.C[k]*n )**C_order \
+                                                  * (self.I3[k]*n)**I_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[0]/T)**2 \
-                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                                                   * kn(2, (n*rms_mass[0]/T)) / (np.pi*n)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
                 for n in range(1, 10):
-                    chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
-                                                  * (self.Q[k]*n)**Q_order \
-                                                  * (self.C[k]*n)**C_order \
+                    chi += (self.B[k]*n)**B_order * (self.S[k]*n )**S_order \
+                                                  * (self.Q[k]*n )**Q_order \
+                                                  * (self.C[k]*n )**C_order \
+                                                  * (self.I3[k]*n)**I_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[1]/T)**2 \
-                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                                                   * kn(2, (n*rms_mass[1]/T)) / (np.pi*n)**2 / 2
             else:
                 for n in range(1, 2):
-                    chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order \
-                                                  * (self.Q[k]*n)**Q_order \
-                                                  * (self.C[k]*n)**C_order \
+                    chi += (self.B[k]*n)**B_order * (self.S[k]*n )**S_order \
+                                                  * (self.Q[k]*n )**Q_order \
+                                                  * (self.C[k]*n )**C_order \
+                                                  * (self.I3[k]*n)**I_order \
                                                   * self.factor(k, n, T) \
-                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                                                  * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                                                   * kn(2, (n*self.Mass[k]/T))
         return chi
 
-    def genChiFlavor(self, T, u_order=0, d_order=0, s_order=0, c_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0.):
+    def genChiFlavor(self, T, u_order=0, d_order=0, s_order=0, c_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
         chi_udsc 
         """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         logger.warn('HRGFlavor basis is not yet tested for finite mu...')
         chi = 0.0
         for k in range(len(self.Mass)):
@@ -367,109 +418,10 @@ class HRG(HRGbase):
                     * (-self.S[k]*n)**s_order \
                     * (self.C[k]*n)**c_order \
                     * self.factor(k, n, T) \
-                    * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T)**n \
+                    * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
                     * kn(2, (n*self.Mass[k]/T))
         return chi
 # TODO: gen_chi can be implemented using multi-dimensional Leibniz rule
-
-
-class HRGexact(HRGbase):
-# TODO: maybe just delete this eventually, it seems to be crap
-
-    """ 
-    HRG implemented through numerical integration. 
-    """
-
-    def __init__(self, Mass, g, w, B, S, Q, C=None):
-        logger.warn('ExactHRG numerical integration is not yet reliable...')
-        HRGbase.__init__(self, Mass, g, w, B, S, Q, C)
-
-    def __repr__(self) -> str:
-        return "HRGexact"
-
-    def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
-
-        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
-            P = 0.
-            for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muB_div_T=muBvec,muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
-                def integrand(E):
-                    exp_E_div_T = np.exp(-E/Tvec)
-                    return -(wz/(3*Tvec)) * (E**2-self.Mass[k]**2)**(3/2) * exp_E_div_T / (1-wz*exp_E_div_T)
-                P -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad') / (2*np.pi**2 * Tvec**3)
-            return P
-        int_vec = np.vectorize(int_wrapper)
-        return unvector(np.asarray(int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)))
-
-    def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
-
-        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
-            eps = 0.
-            for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muB_div_T=muBvec,
-                                        muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
-
-                def integrand(E):
-                    exp_E_div_T = np.exp(-E/Tvec)
-                    return wz * E**2 * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / (1-wz*exp_E_div_T)
-                eps += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
-            eps /= (2*np.pi**2*Tvec**4)
-            return eps
-        int_vec = np.vectorize(int_wrapper)
-        return unvector(np.asarray(int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)))
-
-    def number_density(self, T, charge='B', muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
-        if charge == 'B':
-            X = self.B
-        elif charge == 'Q':
-            X = self.Q
-        elif charge == 'S':
-            X = self.S
-        elif charge == 'C':
-            X = self.C
-        else:
-            logger.TBRaise('Unrecognized charge', charge)
-
-        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
-            NX = 0.
-            for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muB_div_T=muBvec,muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
-                def integrand(E):
-                    exp_E_div_T = np.exp(-E/Tvec)
-                    return -wz * X[k] * E * (E**2-self.Mass[k]**2)**(1/2) * exp_E_div_T / (1 - wz*exp_E_div_T)
-                NX -= self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
-            NX /= (2*np.pi**2*Tvec**3)
-            return NX
-        int_vec = np.vectorize(int_wrapper)
-        return unvector(np.asarray(int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)))
-
-    def S_div_T3(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0.):
-        """ 
-        s = e + p - mu_i n_i 
-        """
-        T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T = envector(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)
-
-        def int_wrapper(Tvec, muBvec, muSvec, muQvec, muCvec):
-            S = 0.
-            for k in range(len(self.Mass)):
-                wz = self.w[k] * self.z(k, muB_div_T=muBvec, muQ_div_T=muQvec, muS_div_T=muSvec, muC_div_T=muCvec)
-
-                def integrand(E):
-                    exp_E_div_T = np.exp(-E/Tvec)
-                    P = (E**2-self.Mass[k]**2)/3
-                    eps = E**2
-                    return ( wz * (E**2-self.Mass[k]**2)**(1/2) \
-                                * (P + eps - Tvec*E*(self.B[k]*muBvec + self.Q[k]*muQvec + self.S[k]*muSvec + self.C[k]*muCvec)) \
-                                * exp_E_div_T / (1-wz*exp_E_div_T) )
-
-                S += self.w[k] * self.g[k] * integrateFunction(integrand, self.Mass[k], np.inf, method='quad')
-            S /= (2*np.pi**2*Tvec**4)
-            return S
-        int_vec = np.vectorize(int_wrapper)
-        return unvector(np.asarray(int_vec(T, muB_div_T, muS_div_T, muQ_div_T, muC_div_T)))
 
 
 class EVHRG(HRGbase):
@@ -479,6 +431,7 @@ class EVHRG(HRGbase):
     """
 
     def __init__(self, Mass, g, w, B, S, Q, C=None):
+        logger.warn("Only implemented for (B,Q,S) basis")
         HRGbase.__init__(self, Mass, g, w, B, S, Q, C)
 
     def __repr__(self) -> str:

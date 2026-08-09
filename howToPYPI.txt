@@ -2,18 +2,15 @@
 1.  Update setup.py
 2.  (Maybe) python autoglossary.py
 3.  (Maybe) update docs_src/conf.py and recompile documentation
-4.  (Maybe) python -m pip install --upgrade setuptools wheel
-5.  (Maybe) python -m pip install --upgrade twine
-6.  pytest
-7.  git add .
-8.  git commit -m "getting ready for vX.X.X"
-9.  git push
+4.  (Maybe) pip install --upgrade setuptools wheel twine build
+5.  pytest
+6.  git add .
+7.  git commit -m "getting ready for vX.X.X"
+8.  git push
+9.  Make sure ~/.pypirc exists (see below)
 10. rm -rf dist
-10. python setup.py sdist bdist_wheel
-11. If you need API token, it's saved in personal account area
+11. python3 -m build
 12. twine upload dist/*
-13. make sure you have a .pypirc in your home directory like below
-14. python3 -m build
 
 [distutils]
 index-servers =
