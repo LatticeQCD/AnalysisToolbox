@@ -49,7 +49,7 @@ Besides this basic install, there is a `latexify()` command you can use when plo
 make your plot font match typical LaTeX documents. In order for this command to work, you need
 to have LaTeX installed on your system. The easiest is to install `texlive-full`, but
 if that is not possible, it may be enough to install `texlive-mathscience` in addition
-to the basic stuff.
+to the basic stuff. On a Mac, you will want `mactex`.
 
 
 ## Getting started and documentation
@@ -110,6 +110,7 @@ us out by citing
 
 - We acknowledge support by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) through the CRC-TR 211 'Strong-interaction matter under extreme conditions'– project number 315477589 – TRR 211.
 - This work was partly performed in the framework of the PUNCH4NFDI consortium supported by DFG fund "NFDI 39/1", Proj.No. 460248186 (PUNCH4NFDI).
+- Thanks to Claude code to help iron out some issues with running on MACOS.
 - DAC acknowledges helpful discussions with 
 [C. DeTar](https://github.com/detar),
 [X.-Y. Jin](https://github.com/jxy),

@@ -57,8 +57,8 @@ class idealGas:
         """
         if np.ndim(T) == 0:
             values = {self.T: T, self.muB: muB, self.muQ: muQ, self.muS: muS, self.muC: muC}
-            return np.float128(sym_expr.subs(values).evalf())
-        return np.array([np.float128(sym_expr.subs({self.T: t, self.muB: muB, self.muQ: muQ,
+            return np.longdouble(sym_expr.subs(values).evalf())
+        return np.array([np.longdouble(sym_expr.subs({self.T: t, self.muB: muB, self.muQ: muQ,
                                                     self.muS: muS, self.muC: muC}).evalf())
                          for t in T])
 

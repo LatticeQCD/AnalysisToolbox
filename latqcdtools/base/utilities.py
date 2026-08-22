@@ -94,7 +94,7 @@ def isIntType(obj) -> bool:
 
 
 def isFloatType(obj) -> bool:
-    return isinstance(obj,(float,np.float16,np.float32,np.float64,np.float128))
+    return isinstance(obj,(float,np.float16,np.float32,np.float64,np.longdouble))
 
 
 def isComplexType(obj) -> bool:

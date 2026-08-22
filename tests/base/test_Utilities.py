@@ -84,7 +84,7 @@ def testUtilities():
         logger.TBFail('toNumpy r4')
         lpass=False
 
-    x1 = np.float128(1.)
+    x1 = np.longdouble(1.)
     x2 = np.complex128(1.)
     lpass *= isFloatType(x1)
     lpass *= not isFloatType(x2)

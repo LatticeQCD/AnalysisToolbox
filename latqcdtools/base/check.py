@@ -29,21 +29,47 @@ class UnderflowError(Exception): pass
 class InvalidValueError(Exception): pass
 
 
-CATCHUNDERFLOW    = True 
-CATCHOVERFLOW     = True 
+CATCHUNDERFLOW    = True
+CATCHOVERFLOW     = True
 CATCHDIVIDEBYZERO = True
 CATCHINVALIDVALUE = True
 
 
+def _usesAccelerateBLAS() -> bool:
+    """
+    Apple's Accelerate BLAS/LAPACK, used by the default macOS arm64 numpy wheels, is known to leave the
+    hardware FPU status flags "tainted" after certain matmul/linalg calls involving matrices with many
+    exact-zero entries (e.g. diagonal or orthogonal matrices), even though the numerical result is fine.
+    Once tainted, numpy reports ALL FOUR floating-point exception bits (divide, overflow, underflow,
+    invalid; flag=15) simultaneously for essentially any later operation, whether or not it actually did
+    anything problematic. This has no equivalent on the OpenBLAS/MKL backends normally used on Linux, so
+    we only need to work around it when Accelerate is actually in use.
+    """
+    try:
+        config = np.show_config(mode='dicts')
+        blas_name = config.get('Build Dependencies', {}).get('blas', {}).get('name', '')
+        return 'accelerate' in blas_name.lower()
+    except Exception:
+        return False
+
+
+USES_ACCELERATE_BLAS = _usesAccelerateBLAS()
+
+
 def err_handler(err, flag):
-    """ 
-    This method lets us control in detail how different types of errors are treated. 
+    """
+    This method lets us control in detail how different types of errors are treated.
     """
     global CATCHUNDERFLOW
     global CATCHOVERFLOW
     global CATCHDIVIDEBYZERO
     global CATCHINVALIDVALUE
-    if flag == 1:
+    if USES_ACCELERATE_BLAS and flag == 15:
+        # See _usesAccelerateBLAS: flag=15 (all FPE bits set at once) on an Accelerate-linked numpy is
+        # the signature of this sticky-flag artifact rather than a genuine numerical failure.
+        logger.debug('Ignoring spurious combined FPE flags (Accelerate BLAS artifact):',err)
+        return
+    elif flag == 1:
         if CATCHDIVIDEBYZERO:
             raise DivideByZeroError(err)
         else:
