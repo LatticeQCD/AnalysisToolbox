@@ -74,7 +74,7 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
     Nmeas = data.shape[conf_axis]
     fbar  = f(data, *args)
 
-    block_id = np.linspace(0, numb_blocks, Nmeas, endpoint=False).astype(np.int32)
+    block_id = np.repeat( np.arange(numb_blocks) , Nmeas // numb_blocks )
 
     def fJ(i):
         sub_data = np.compress((block_id != i), data, axis=conf_axis)
