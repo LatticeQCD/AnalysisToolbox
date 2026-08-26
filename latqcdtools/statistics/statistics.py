@@ -484,7 +484,7 @@ def confidence_ellipse(x,y,CI=None,**params):
 
     data = np.vstack((x, y))
     cov  = np.cov(data)
-    eigvals, eigvecs = np.linalg.eig(cov)
+    eigvals, eigvecs = np.linalg.eigh(cov)
     maj_eigvec = eigvecs[:,np.argmax(eigvals)]
     theta = np.rad2deg( np.arctan2(maj_eigvec[1],maj_eigvec[0]) )
     a = s*np.sqrt(np.max(eigvals))
