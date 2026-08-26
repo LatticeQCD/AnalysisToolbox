@@ -32,7 +32,8 @@ try:
         # everything works with PyQt5.
         matplotlib.use('Qt5Agg')
 except:
-    pass
+    # This extra exception is needed for CI GitHub testing
+    matplotlib.use('Qt5Agg')
 
 
 ZOD        = 10     # Global, Orders different layers 
