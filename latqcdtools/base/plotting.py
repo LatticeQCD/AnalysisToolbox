@@ -17,15 +17,21 @@ from latqcdtools.base.utilities import isHigherDimensional, toNumpy, envector
 from latqcdtools.base.fileSystem import createFilePath
 from latqcdtools.base.readWrite import readTable
 
+import sys
+
 try:
-    if 'DISPLAY' not in os.environ:
+    if sys.platform == 'darwin':
+        # macOS has a display but doesn't set DISPLAY (that's an X11/Linux convention),
+        # so use the native backend directly.
+        matplotlib.use('MacOSX')
+    elif 'DISPLAY' not in os.environ:
         # Check if there's no display (headless environment)
         matplotlib.use('Agg')
     else:
         # This is to avoid possible problems with colors and themes. As far as I can tell,
-        # everything works with PyQt5. 
-        matplotlib.use('Qt5Agg') 
-except: 
+        # everything works with PyQt5.
+        matplotlib.use('Qt5Agg')
+except:
     pass
 
 
