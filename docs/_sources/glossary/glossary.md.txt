@@ -29,6 +29,7 @@ latqcdtools.math.math.md
 latqcdtools.math.num_deriv.md
 latqcdtools.math.num_int.md
 latqcdtools.math.optimize.md
+latqcdtools.math.pade.md
 latqcdtools.math.polynomials.md
 latqcdtools.math.spline.md
 latqcdtools.physics.HRG.md

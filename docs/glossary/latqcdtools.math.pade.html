@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Loading configurations" href="confLoader.html"><link rel="prev" title="Interfacing" href="interfacing.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="latqcdtools.math.polynomials" href="latqcdtools.math.polynomials.html"><link rel="prev" title="latqcdtools.math.optimize" href="latqcdtools.math.optimize.html">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
-        <title>Ensemble names and file formats - AnalysisToolbox</title>
+        <title>latqcdtools.math.pade - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
@@ -232,58 +232,58 @@
 <li class="toctree-l2"><a class="reference internal" href="../physicsAnalysis/freeDiracSpectra.html">Spectrum of the Dirac operator</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="interfacing.html">Interfacing</a><input aria-label="Toggle navigation of Interfacing" checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Ensemble names and file formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="confLoader.html">Loading configurations</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interfacing/interfacing.html">Interfacing</a><input aria-label="Toggle navigation of Interfacing" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interfacing/fileNamingConventions.html">Ensemble names and file formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interfacing/confLoader.html">Loading configurations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../applications/applications.html">Applications</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../glossary/glossary.html">Glossary</a><input aria-label="Toggle navigation of Glossary" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.check.html">latqcdtools.base.check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.cleanData.html">latqcdtools.base.cleanData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.fileSystem.html">latqcdtools.base.fileSystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.initialize.html">latqcdtools.base.initialize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.plotting.html">latqcdtools.base.plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.printErrorBars.html">latqcdtools.base.printErrorBars</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.readWrite.html">latqcdtools.base.readWrite</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.speedify.html">latqcdtools.base.speedify</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.base.utilities.html">latqcdtools.base.utilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.interfaces.collaborations.html">latqcdtools.interfaces.collaborations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.interfaces.lime.html">latqcdtools.interfaces.lime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.legacy.html">latqcdtools.legacy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.SU2.html">latqcdtools.math.SU2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.math.html">latqcdtools.math.math</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HotQCDEOS.html">latqcdtools.physics.HotQCDEOS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.constants.html">latqcdtools.physics.constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.continuumExtrap.html">latqcdtools.physics.continuumExtrap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.correlators.html">latqcdtools.physics.correlators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.diracFreespectra.html">latqcdtools.physics.diracFreespectra</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.gauge.html">latqcdtools.physics.gauge</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.lattice_params.html">latqcdtools.physics.lattice_params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.statisticalPhysics.html">latqcdtools.physics.statisticalPhysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.statistics.autocorrelation.html">latqcdtools.statistics.autocorrelation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.statistics.bootstr.html">latqcdtools.statistics.bootstr</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.statistics.fitting.html">latqcdtools.statistics.fitting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.statistics.jackknife.html">latqcdtools.statistics.jackknife</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.statistics.statistics.html">latqcdtools.statistics.statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.testing.html">latqcdtools.testing</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="glossary.html">Glossary</a><input aria-label="Toggle navigation of Glossary" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.check.html">latqcdtools.base.check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.cleanData.html">latqcdtools.base.cleanData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.fileSystem.html">latqcdtools.base.fileSystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.initialize.html">latqcdtools.base.initialize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.logger.html">latqcdtools.base.logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.plotting.html">latqcdtools.base.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.printErrorBars.html">latqcdtools.base.printErrorBars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.readWrite.html">latqcdtools.base.readWrite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.speedify.html">latqcdtools.base.speedify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.base.utilities.html">latqcdtools.base.utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.collaborations.html">latqcdtools.interfaces.collaborations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.confReader.html">latqcdtools.interfaces.confReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.interfaces.html">latqcdtools.interfaces.interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.lime.html">latqcdtools.interfaces.lime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.interfaces.simulationManagement.html">latqcdtools.interfaces.simulationManagement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.legacy.html">latqcdtools.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU2.html">latqcdtools.math.SU2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.SU3.html">latqcdtools.math.SU3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.math.html">latqcdtools.math.math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">latqcdtools.math.pade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HotQCDEOS.html">latqcdtools.physics.HotQCDEOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.constants.html">latqcdtools.physics.constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.continuumExtrap.html">latqcdtools.physics.continuumExtrap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.correlators.html">latqcdtools.physics.correlators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.diracFreespectra.html">latqcdtools.physics.diracFreespectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.gauge.html">latqcdtools.physics.gauge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.ideal.html">latqcdtools.physics.ideal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice.html">latqcdtools.physics.lattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.lattice_params.html">latqcdtools.physics.lattice_params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.referenceScales.html">latqcdtools.physics.referenceScales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.runningCoupling.html">latqcdtools.physics.runningCoupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.staticPotential.html">latqcdtools.physics.staticPotential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.statisticalPhysics.html">latqcdtools.physics.statisticalPhysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.autocorrelation.html">latqcdtools.statistics.autocorrelation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.bootstr.html">latqcdtools.statistics.bootstr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.fitting.html">latqcdtools.statistics.fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.jackknife.html">latqcdtools.statistics.jackknife</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.statistics.statistics.html">latqcdtools.statistics.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.testing.html">latqcdtools.testing</a></li>
 </ul>
 </li>
 </ul>
@@ -306,7 +306,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/interfacing/fileNamingConventions.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/glossary/latqcdtools.math.pade.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -324,29 +324,30 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="ensemble-names-and-file-formats">
-<h1>Ensemble names and file formats<a class="headerlink" href="#ensemble-names-and-file-formats" title="Link to this heading">¶</a></h1>
-<p>Not every collaboration names their files in the same way. On the other hand, there are a few prominent collaborations
-that have their own naming schemes. It can make it easier for you to read in their files, if you can generate
-these names automatically. Moreover some collaborations like to use third-party tools that have specific file
-format requirements, and it is helpful to be able to read these in. Being able to interface within this highly
-heterogeneous field is an important part of interoperability.</p>
-<p>To this end, the AnalysisToolbox has some methods specifically for this purpose. At the moment we support</p>
-<ul class="simple">
-<li><p>MILC code configuration naming schemes</p></li>
-<li><p>HotQCD configuration naming schemes</p></li>
-<li><p>Reading <code class="docutils literal notranslate"><span class="pre">gpl</span></code> files</p></li>
-<li><p>Reading <code class="docutils literal notranslate"><span class="pre">yaml</span></code> files</p></li>
-<li><p>Reading <code class="docutils literal notranslate"><span class="pre">json</span></code> files</p></li>
-</ul>
-<p>For the first two, we have <code class="docutils literal notranslate"><span class="pre">HotQCDParams</span></code> and <code class="docutils literal notranslate"><span class="pre">MILCParams</span></code> objects, which inherit from the <code class="docutils literal notranslate"><span class="pre">latticeParams</span></code>
-object described <a class="reference internal" href="../physicsAnalysis/latticeParameters.html"><span class="std std-doc">here</span></a>. To quickly extract run parameters
-from a MILC or HotQCD-type string, one finds inside</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">collaborations</span>
+          <section id="latqcdtools-math-pade">
+<h1>latqcdtools.math.pade<a class="headerlink" href="#latqcdtools-math-pade" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">singlePointPade</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Single-point Padé approximant. Given the Taylor coefficients c of some function f about</span>
+<span class="sd">a point x0, i.e.</span>
+<span class="sd">    f(x) = sum_k c[k] (x-x0)**k,</span>
+<span class="sd">build the rational function</span>
+<span class="sd">    R(x) = P(x-x0) / Q(x-x0),   deg(P) = p,  deg(Q) = q,</span>
+<span class="sd">whose own Taylor expansion about x0 agrees with f through order p+q. The denominator is</span>
+<span class="sd">normalized so that Q(0) = 1. The object is callable and is backed by a Rational.</span>
+
+<span class="sd">The numerator degree p and denominator degree q must both be given. They have to satisfy</span>
+<span class="sd">p &gt;= 0, q &gt;= 0, and p + q &lt;= len(c) - 1, since matching the series through order p+q needs</span>
+<span class="sd">the coefficients c[0..p+q].</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    from math import factorial</span>
+<span class="sd">    c = [1/factorial(k) for k in range(7)]   # Taylor coeffs of exp about 0</span>
+<span class="sd">    R = singlePointPade(c, p=3, q=3)</span>
+<span class="sd">    R(0.5)                                    # ~ exp(0.5)</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
-<p>the method <code class="docutils literal notranslate"><span class="pre">paramFrom_HotQCD_MILC</span></code>. The <code class="docutils literal notranslate"><span class="pre">gpl</span></code>, <code class="docutils literal notranslate"><span class="pre">yaml</span></code>, and <code class="docutils literal notranslate"><span class="pre">json</span></code> reading methods
-<code class="docutils literal notranslate"><span class="pre">loadGPL</span></code>, <code class="docutils literal notranslate"><span class="pre">loadYAML</span></code>, and <code class="docutils literal notranslate"><span class="pre">loadJSON</span></code> are also inside this module.</p>
 </section>
 
         </article>
@@ -354,23 +355,23 @@ from a MILC or HotQCD-type string, one finds inside</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="confLoader.html">
+          <a class="next-page" href="latqcdtools.math.polynomials.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Loading configurations</div>
+                <div class="title">latqcdtools.math.polynomials</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="interfacing.html">
+          <a class="prev-page" href="latqcdtools.math.optimize.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Interfacing</div>
+                <div class="title">latqcdtools.math.optimize</div>
                 
               </div>
             </a>

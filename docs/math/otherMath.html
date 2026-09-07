@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Data Analysis Modules" href="../dataAnalysis/dataAnalysis.html"><link rel="prev" title="SU(N) matrices" href="SU3.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Other mathematics - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -354,6 +355,25 @@ polynomials or rational functions. For example</p>
 </div>
 <p>constructs a polynomial of only even powers up to fourth order.</p>
 </section>
+<section id="pade-approximants">
+<h2>Padé approximants<a class="headerlink" href="#pade-approximants" title="Link to this heading">¶</a></h2>
+<p>The module</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latqcdtools</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">pade</span>
+</pre></div>
+</div>
+<p>contains the <code class="docutils literal notranslate"><span class="pre">singlePointPade</span></code> class, which builds a rational approximation from the
+Taylor coefficients of a function about a single point. Given coefficients <code class="docutils literal notranslate"><span class="pre">c</span></code> with
+<code class="docutils literal notranslate"><span class="pre">f(x)</span> <span class="pre">=</span> <span class="pre">sum_k</span> <span class="pre">c[k]</span> <span class="pre">(x-x0)**k</span></code>, the call</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">=</span> <span class="n">singlePointPade</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">R</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>returns a callable rational function <code class="docutils literal notranslate"><span class="pre">P(x-x0)/Q(x-x0)</span></code> with <code class="docutils literal notranslate"><span class="pre">deg(P)=p</span></code>, <code class="docutils literal notranslate"><span class="pre">deg(Q)=q</span></code>,
+whose own Taylor expansion about <code class="docutils literal notranslate"><span class="pre">x0</span></code> matches <code class="docutils literal notranslate"><span class="pre">f</span></code> through order <code class="docutils literal notranslate"><span class="pre">p+q</span></code>. The denominator is
+normalized so <code class="docutils literal notranslate"><span class="pre">Q(0)=1</span></code>, and the object is backed by a <code class="docutils literal notranslate"><span class="pre">Rational</span></code> (see above). Both <code class="docutils literal notranslate"><span class="pre">p</span></code> and
+<code class="docutils literal notranslate"><span class="pre">q</span></code> are required, and must satisfy <code class="docutils literal notranslate"><span class="pre">p+q</span> <span class="pre">&lt;=</span> <span class="pre">len(c)-1</span></code>. Under the hood this wraps
+<code class="docutils literal notranslate"><span class="pre">scipy.interpolate.pade</span></code>.</p>
+</section>
 <section id="special-functions">
 <h2>Special functions<a class="headerlink" href="#special-functions" title="Link to this heading">¶</a></h2>
 <p>Most special functions are covered by SciPy, but some either somehow return extra values
@@ -424,6 +444,7 @@ or have notation that David is not used to. Therefore you can find</p>
 <li><a class="reference internal" href="#">Other mathematics</a><ul>
 <li><a class="reference internal" href="#solving-equations-numerically">Solving equations numerically</a></li>
 <li><a class="reference internal" href="#constructing-polynomials">Constructing polynomials</a></li>
+<li><a class="reference internal" href="#pade-approximants">Padé approximants</a></li>
 <li><a class="reference internal" href="#special-functions">Special functions</a></li>
 </ul>
 </li>
@@ -437,10 +458,14 @@ or have notation that David is not used to. Therefore you can find</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

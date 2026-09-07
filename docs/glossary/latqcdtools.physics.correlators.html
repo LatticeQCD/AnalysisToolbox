@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="latqcdtools.physics.diracFreespectra" href="latqcdtools.physics.diracFreespectra.html"><link rel="prev" title="latqcdtools.physics.continuumExtrap" href="latqcdtools.physics.continuumExtrap.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>latqcdtools.physics.correlators - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -326,30 +327,30 @@
           <section id="latqcdtools-physics-correlators">
 <h1>latqcdtools.physics.correlators<a class="headerlink" href="#latqcdtools-physics-correlators" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_periodicLHS</span><span class="p">(</span><span class="n">corr</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">it</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Helper function for finding effective mass curve, baking in the fact</span>
 <span class="sd">that the lattice is periodic. See e.g. Gattringer and Lang eq. (6.57).</span>
 <span class="sd">Meant to be used with a solver.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">effectiveMass</span><span class="p">(</span><span class="n">corr</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">effectiveMass</span><span class="p">(</span><span class="n">corr</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">'simple'</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">"""</span>
 <span class="sd">Get m_eff(t). Where this plateaus can be used as a first estimate for</span>
 <span class="sd">the ground state. See e.g. Gattringer and Lang eq. (6.56)</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    corr (np.ndarray)</span>
-<span class="sd">    algorithm (str): &#39;simple&#39; or &#39;periodic&#39;</span>
+<span class="sd">    algorithm (str): 'simple' or 'periodic'</span>
 <span class="sd">    guess (float): initial guess for periodic mass meff[0]</span>
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray: m_eff(t) </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">foldCorrelator</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">On a periodic lattice, information for t&gt;Nt/2 is redundant. This method</span>
 <span class="sd">combines corr below and above that threshold to improve statistics.</span>
 
@@ -358,7 +359,7 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    np.ndarray: folded correlator </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 </section>
@@ -413,10 +414,14 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

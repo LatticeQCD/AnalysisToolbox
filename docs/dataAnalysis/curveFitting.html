@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Statistics" href="statistics.html"><link rel="prev" title="Data Analysis Modules" href="dataAnalysis.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Curve fitting and splines - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -347,9 +348,9 @@ An easy example is given in  <code class="docutils literal notranslate"><span cl
 <span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fitter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_log_level</span>
 
-<span class="n">set_log_level</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+<span class="n">set_log_level</span><span class="p">(</span><span class="s1">'DEBUG'</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Example of a simple 3-parameter quadratic fit.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> Example of a simple 3-parameter quadratic fit.</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Here we define our fit function. we pass it its independent variable followed by the fit parameters we are</span>
 <span class="c1"># trying to determine.</span>
@@ -359,7 +360,7 @@ An easy example is given in  <code class="docutils literal notranslate"><span cl
     <span class="n">c</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">a</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">c</span>
 
-<span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s2">&quot;wurf.dat&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s2">"wurf.dat"</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># We initialize our Fitter object. If expand = True, fit_func has to look like</span>
 <span class="c1">#            func(x, a, b, *args)</span>
@@ -367,14 +368,14 @@ An easy example is given in  <code class="docutils literal notranslate"><span cl
 <span class="c1">#            func(x, params, *args).</span>
 <span class="n">fitter</span> <span class="o">=</span> <span class="n">Fitter</span><span class="p">(</span><span class="n">fit_func</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">expand</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 
-<span class="c1"># Here we try a fit, using the &#39;curve_fit&#39; method, specifying the starting guesses for the fit parameters. Since</span>
+<span class="c1"># Here we try a fit, using the 'curve_fit' method, specifying the starting guesses for the fit parameters. Since</span>
 <span class="c1"># ret_pcov = True, we will get back the covariance matrix as well.</span>
-<span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">chi_dof</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">try_fit</span><span class="p">(</span><span class="n">start_params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">algorithms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;curve_fit&#39;</span><span class="p">],</span> <span class="n">ret_pcov</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">chi_dof</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">try_fit</span><span class="p">(</span><span class="n">start_params</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">algorithms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'curve_fit'</span><span class="p">],</span> <span class="n">ret_pcov</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; a , b,  c : &quot;</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ae, be, ce: &quot;</span><span class="p">,</span><span class="n">res_err</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chi2/d.o.f.: &quot;</span><span class="p">,</span><span class="n">chi_dof</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       pcov: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">pcov</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">" a , b,  c : "</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">" ae, be, ce: "</span><span class="p">,</span><span class="n">res_err</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"chi2/d.o.f.: "</span><span class="p">,</span><span class="n">chi_dof</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"       pcov: </span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span><span class="n">pcov</span><span class="p">,</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="n">fitter</span><span class="o">.</span><span class="n">plot_fit</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -499,10 +500,14 @@ There also exists the option to use natural splines.</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

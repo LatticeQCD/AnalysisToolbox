@@ -29,6 +29,25 @@ p(x)
 ```
 constructs a polynomial of only even powers up to fourth order.
 
+## Padé approximants
+
+The module
+```Python
+latqcdtools.math.pade
+```
+contains the `singlePointPade` class, which builds a rational approximation from the
+Taylor coefficients of a function about a single point. Given coefficients `c` with
+`f(x) = sum_k c[k] (x-x0)**k`, the call
+```Python
+R = singlePointPade(c, p=3, q=3, x0=0.)
+R(x)
+```
+returns a callable rational function `P(x-x0)/Q(x-x0)` with `deg(P)=p`, `deg(Q)=q`,
+whose own Taylor expansion about `x0` matches `f` through order `p+q`. The denominator is
+normalized so `Q(0)=1`, and the object is backed by a `Rational` (see above). Both `p` and
+`q` are required, and must satisfy `p+q <= len(c)-1`. Under the hood this wraps
+`scipy.interpolate.pade`.
+
 ## Special functions
 
 Most special functions are covered by SciPy, but some either somehow return extra values

@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Reference scales and physical constants" href="referenceScales.html"><link rel="prev" title="Hadron resonance gas" href="HRG.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Handling Lattice Parameters - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -337,7 +338,7 @@ into the parameter name as, e.g. <code class="docutils literal notranslate"><spa
 <p>collects all this information into one object, and contains some useful
 methods, for example the ability to convert one of these parameter strings into its corresponding
 float value. To instantiate this object, use</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lp</span> <span class="o">=</span> <span class="n">latticeParams</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mass_l</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">mass_s</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">scaleType</span><span class="o">=</span><span class="s1">&#39;fk&#39;</span><span class="p">,</span> <span class="n">paramYear</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="s1">&#39;21&#39;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lp</span> <span class="o">=</span> <span class="n">latticeParams</span><span class="p">(</span><span class="n">Ns</span><span class="p">,</span> <span class="n">Nt</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mass_l</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">mass_s</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span><span class="n">scaleType</span><span class="o">=</span><span class="s1">'fk'</span><span class="p">,</span> <span class="n">paramYear</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span> <span class="n">Nf</span><span class="o">=</span><span class="s1">'21'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">beta</span></code> and the quark masses are input strings coming from <code class="docutils literal notranslate"><span class="pre">l328f21b6390m00257m0694</span></code>. You can
@@ -424,10 +425,14 @@ to the screen.</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

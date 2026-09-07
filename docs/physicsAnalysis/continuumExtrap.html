@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Statistical Physics" href="statisticalPhysics.html"><link rel="prev" title="Gaugefields" href="gauge.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Continuum-limit extrapolation - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -331,7 +332,7 @@
 </div>
 <p>It is the <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> class, which inherits from the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>,
 described <a class="reference internal" href="../dataAnalysis/curveFitting.html"><span class="std std-doc">here</span></a>. You instantiate an <code class="docutils literal notranslate"><span class="pre">Extrapolator</span></code> with</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ext</span> <span class="o">=</span> <span class="n">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ext</span> <span class="o">=</span> <span class="n">Extrapolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">obs_err</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtype</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span> <span class="n">error_strat</span><span class="o">=</span><span class="s1">'propagation'</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">x</span></code> either denotes lattice spacing data or $N_\tau$ data, which you can specify with the <code class="docutils literal notranslate"><span class="pre">xtype</span></code>.
@@ -351,7 +352,7 @@ you can with the <a class="reference internal" href="../base/plotting.html"><spa
 print the results to screen.</p>
 <p>For your convenience, this whole process is wrapped inside a method</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">continuumExtrapolate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">obs</span><span class="p">,</span><span class="n">obs_err</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">plot_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                     <span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">error_strat</span><span class="o">=</span><span class="s1">&#39;propagation&#39;</span><span class="p">,</span><span class="n">xtype</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span>
+                     <span class="n">start_coeffs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">prior_err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">error_strat</span><span class="o">=</span><span class="s1">'propagation'</span><span class="p">,</span><span class="n">xtype</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span>
                      <span class="n">nproc</span><span class="o">=</span><span class="n">DEFAULTTHREADS</span><span class="p">):</span>
 </pre></div>
 </div>
@@ -407,10 +408,14 @@ print the results to screen.</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

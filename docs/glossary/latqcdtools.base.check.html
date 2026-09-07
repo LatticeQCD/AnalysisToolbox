@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="latqcdtools.base.cleanData" href="latqcdtools.base.cleanData.html"><link rel="prev" title="Glossary" href="glossary.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>latqcdtools.base.check - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -326,73 +327,73 @@
           <section id="latqcdtools-base-check">
 <h1>latqcdtools.base.check<a class="headerlink" href="#latqcdtools-base-check" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkDomain</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">expectedDomain</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Check that obj lies in expectedDomain.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    obj (obj)</span>
 <span class="sd">    expectedDomain (array-like): collection of values obj is allowed to take</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkEqualLengths</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Check that all array-like objects passed have the same length. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkExtension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">extension</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Check the extension of a file</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    filename (str)</span>
 <span class="sd">    extension (str)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkType</span><span class="p">(</span><span class="n">expectedType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Check the type of an object. If it thinks the type is wrong, it will tell you what the</span>
 <span class="sd">name of obj is (as you named it in your code) along with its type and what was expected.</span>
-<span class="sd">Grabbing the name doesn&#39;t work if you pass him a dictionary element like myDict[&#39;key&#39;];</span>
+<span class="sd">Grabbing the name doesn't work if you pass him a dictionary element like myDict['key'];</span>
 <span class="sd">it can only tell the name myDict. One could use type hints, but at the time of writing,</span>
 <span class="sd">type hints will not necessarily crash the program, which I want.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    obj (obj)</span>
-<span class="sd">    expectedType (type): what type do you expect? Also accepts &quot;array&quot;, &quot;real&quot;, &quot;int&quot;, and &quot;scalar&quot;.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    expectedType (type): what type do you expect? Also accepts "array", "real", "int", and "scalar".</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">err_handler</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This method lets us control in detail how different types of errors are treated. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreDivideByZero</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Turn off zero division crashes. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreInvalidValue</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Turn off invalid value crashes. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreOverflow</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Turn off overflow crashes. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ignoreUnderflow</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Turn off underflow crashes. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DivideByZeroError</span><span class="p">:</span>
@@ -456,10 +457,14 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

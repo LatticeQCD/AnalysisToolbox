@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Math" href="../math/math.html"><link rel="prev" title="Speedify" href="speedify.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Plotting - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -341,11 +342,11 @@ Be sure to also check out the example in <code class="docutils literal notransla
 <p>You probably want to get started quickly, so here’s a minimal example. <strong>Please be mindful of the
 order of the commands.</strong></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">latexify</span><span class="p">()</span>
-<span class="n">plot_file</span><span class="p">(</span><span class="s1">&#39;susceptibility.d&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$56^3</span><span class="se">\\</span><span class="s1">times8~~m_s/m_l=80$&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="n">markers_1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">set_params</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;T [MeV]&quot;</span><span class="p">,</span>
-           <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;$N_s^3</span><span class="se">\\</span><span class="s2">,</span><span class="se">\\</span><span class="s2">chi^{</span><span class="se">\\</span><span class="s2">rm</span><span class="si">{bare}</span><span class="s2">}$&quot;</span><span class="p">,</span>
-           <span class="n">title</span> <span class="o">=</span><span class="s2">&quot;$N_</span><span class="se">\\</span><span class="s2">tau=8$&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;susceptibility.pdf&quot;</span><span class="p">)</span>
+<span class="n">plot_file</span><span class="p">(</span><span class="s1">'susceptibility.d'</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">'$56^3</span><span class="se">\\</span><span class="s1">times8~~m_s/m_l=80$'</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="n">markers_1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">set_params</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"T [MeV]"</span><span class="p">,</span>
+           <span class="n">ylabel</span><span class="o">=</span><span class="s2">"$N_s^3</span><span class="se">\\</span><span class="s2">,</span><span class="se">\\</span><span class="s2">chi^{</span><span class="se">\\</span><span class="s2">rm</span><span class="si">{bare}</span><span class="s2">}$"</span><span class="p">,</span>
+           <span class="n">title</span> <span class="o">=</span><span class="s2">"$N_</span><span class="se">\\</span><span class="s2">tau=8$"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">"susceptibility.pdf"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -376,7 +377,7 @@ other possible colors to use are given in the module. There are 11 markers in th
 and since this module is based on Matplotlib, you find other possibilities for markers
 <a class="reference external" href="https://matplotlib.org/api/markers_api.html">here</a>. The last two commands are self-explanatory.
 In case you wish to change the style of your plot, this can be accomplished with the</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;dots&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">=</span><span class="s1">'dots'</span>
 </pre></div>
 </div>
 <p>option in your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> arguments. The allowed styles include <code class="docutils literal notranslate"><span class="pre">dots</span></code>, <code class="docutils literal notranslate"><span class="pre">lines</span></code>, <code class="docutils literal notranslate"><span class="pre">fill</span></code>, and
@@ -442,7 +443,7 @@ namely</p>
 <p>Here the <code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> arguments are used to specify the width of the band, and 0 &lt; <code class="docutils literal notranslate"><span class="pre">alpha</span></code> &lt; 1
 is the opacity. If you have a file with data and error bars, and you would like to plot these as
 error bands, you can use</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;fill&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">=</span><span class="s1">'fill'</span>
 </pre></div>
 </div>
 <p>as an argument to your <code class="docutils literal notranslate"><span class="pre">plot_file</span></code> command.</p>
@@ -454,7 +455,7 @@ interest, and you might zoom in on that. It is possible to print this inset to p
 Use</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;example.pdf&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">"example.pdf"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note that the relative order of <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.savefig()</span></code> has changed.</p>
@@ -576,10 +577,14 @@ plot carry over to the next one. You can clear all plot labels, options, and dat
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

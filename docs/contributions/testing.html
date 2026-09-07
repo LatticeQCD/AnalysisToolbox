@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="How to do pull requests" href="git.html"><link rel="prev" title="Contributions" href="contributions.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Writing Tests - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -343,7 +344,7 @@ If you make any changes to the code, call</p>
 <p>to compare the floats <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> up to precision <code class="docutils literal notranslate"><span class="pre">prec</span></code>. This is essentially
 a wrapper for <code class="docutils literal notranslate"><span class="pre">math.isclose</span></code>, and it’s what we recommend especially when <code class="docutils literal notranslate"><span class="pre">a=0</span></code> or <code class="docutils literal notranslate"><span class="pre">b=0</span></code>.</p>
 <p>In the <code class="docutils literal notranslate"><span class="pre">latqcdtools.testing</span></code> module, one finds</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prec</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">print_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_err_true</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="n">prec</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">abs_prec</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>which is a convenient method for comparing two array-like objects <code class="docutils literal notranslate"><span class="pre">res</span></code> and <code class="docutils literal notranslate"><span class="pre">res_true</span></code>, optionally allowing
@@ -358,7 +359,7 @@ and prints a standard message depending on the test outcomes. For instance</p>
 </div>
 <p>Finally if you would like your test to be statistical, you can do Z-tests between two vectors given
 their Gaussian error bars using</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err_true</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">qcut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">testMode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaudif_results</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_err</span><span class="p">,</span> <span class="n">res_true</span><span class="p">,</span> <span class="n">res_err_true</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="n">qcut</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">testMode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can read more about our Z-test implementation <a class="reference internal" href="../dataAnalysis/statistics.html"><span class="std std-doc">here</span></a></p>
@@ -426,10 +427,14 @@ since the last time <code class="docutils literal notranslate"><span class="pre"
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

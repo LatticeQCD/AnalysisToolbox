@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="latqcdtools.base.utilities" href="latqcdtools.base.utilities.html"><link rel="prev" title="latqcdtools.base.readWrite" href="latqcdtools.base.readWrite.html">
 
-    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>latqcdtools.base.speedify - AnalysisToolbox</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=3943d584" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
@@ -261,6 +261,7 @@
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_deriv.html">latqcdtools.math.num_deriv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.num_int.html">latqcdtools.math.num_int</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.optimize.html">latqcdtools.math.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.pade.html">latqcdtools.math.pade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.polynomials.html">latqcdtools.math.polynomials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.math.spline.html">latqcdtools.math.spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="latqcdtools.physics.HRG.html">latqcdtools.physics.HRG</a></li>
@@ -332,37 +333,37 @@
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">get_optimal_block_size</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Returns an optimal block size based on the current CUDA device.</span>
 <span class="sd">Defaults to 256 if device information cannot be obtained.</span>
 
 <span class="sd">Returns:</span>
 <span class="sd">    int: Optimal threads per block</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaList</span><span class="p">(</span><span class="n">inList</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Turn a list into List that numba can parse. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaOFF</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Turn off numba compilation for small functions. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numbaON</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Use numba wherever possible. By default it is turned off, since compilation takes some time,</span>
 <span class="sd">and hence you will only see a performance boost for particularly long-running functions. Must be</span>
 <span class="sd">called at the beginning of your code. </span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_function_eval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_function_eval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">'pathos.pools'</span><span class="p">):</span>
+<span class="sd">"""</span>
 <span class="sd">Parallelize a function over an input_array. Effectively this can replace a loop over an array and should</span>
 <span class="sd">lead to a performance boost.</span>
 
@@ -373,11 +374,11 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    array-like: func(input_array)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">&#39;pathos.pools&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_reduce</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">parallelizer</span><span class="o">=</span><span class="s1">'pathos.pools'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="sd">"""</span>
 <span class="sd">Parallelize a function over an input_array, then sum over the input_array elements. </span>
 
 <span class="sd">Args:</span>
@@ -387,7 +388,7 @@
 
 <span class="sd">Returns:</span>
 <span class="sd">    float</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ComputationClass</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">parallelizer</span><span class="p">):</span>
@@ -445,10 +446,14 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=e358f374"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/togglebutton.js?v=3e7854f7"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     </body>
 </html>

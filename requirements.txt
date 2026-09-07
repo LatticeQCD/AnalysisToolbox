@@ -1,11 +1,15 @@
 colorama
+furo
 gvar
 matplotlib
+myst-parser
 numba
 numpy
 pathos
 pytest
 pyyaml
 scipy
+sphinx
+sphinx-togglebutton
 sympy
 xmltodict
