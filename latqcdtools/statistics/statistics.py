@@ -174,11 +174,14 @@ def countParams(func,params) -> int:
     nparam = len(params)
     if nparam == 0:
         try:
-            # customSpline
-            nparam = len(func.get_coeffs())
-            # CubicSpline
+            # TBSpline / other splrep-based wrappers. splrep pads tck[1] with k+1
+            # trailing zeros, so len(get_coeffs()) overcounts; the number of free
+            # B-spline coefficients is len(knots) - order - 1.
+            nparam = len(func.get_knots()) - func.get_order() - 1
         except AttributeError:
-            nparam = len(func.c)
+            # scipy CubicSpline. c has shape (order+1, n_intervals), so len(c) is
+            # just order+1; the free parameters are the n = n_intervals+1 ordinates.
+            nparam = func.c.shape[1] + 1
     return nparam
 
 
@@ -269,16 +272,26 @@ def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None
 
 @appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: corrected AIC\n')
 def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
-    """ 
+    """
     Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
     many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
     infinity, one recovers the AIC.
+
+    The correction term is AICc = AIC + 2k(k+1)/(n-k-1), with k the number of parameters and n the sample size.
+    See Sugiura, Commun. Stat. Theory Methods 7, 13 (1978); Hurvich & Tsai, Biometrika 76, 297 (1989);
+    Burnham & Anderson, "Model Selection and Multimodel Inference" (2nd ed., Springer, 2002), Eq. (2.4). The
+    correction diverges as n -> k+1 from above and is undefined for n <= k+1. In that saturated regime we return
+    +inf, so that in a model average (weight ~ exp(-AICc/2)) such a model is simply assigned zero weight.
     """
     nparam = countParams(func,params)
-    nprior = countPriors(priorsigma) 
+    nprior = countPriors(priorsigma)
     ndat   = len(ydata) + nprior
     aic    = AIC(xdata, ydata, cov, func, args, params, prior, priorsigma)
-    return aic + 2*(nparam**2+nparam)/(ndat-nparam+1)
+    denom  = ndat - nparam - 1
+    if denom <= 0:
+        logger.warn(f'AICc undefined for ndat - nparam - 1 = {denom} <= 0 (too few data). Returning inf.')
+        return np.inf
+    return aic + 2*(nparam**2+nparam)/denom
 
 
 def BAIC(xdata, ydata, cov, func, args=(), params=(), Ncut=0, modelPrior=1) -> float:

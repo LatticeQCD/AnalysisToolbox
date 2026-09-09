@@ -239,7 +239,7 @@ def testFit():
     lpass *= print_results(stats['chi2']  , 95.21248701567058     , text='chi2')
     lpass *= print_results(stats['BAIC']  , 99.21220447790006     , text='BAIC')
     lpass *= print_results(stats['AIC']   , -1080.6240381870934   , text='AIC')
-    lpass *= print_results(stats['AICc']  , -1080.3573715204268   , text='AICc')
+    lpass *= print_results(stats['AICc']  , -1080.3449684196084   , text='AICc')
     lpass *= print_results(stats['Q']     , 1.2269138243695367e-05, text='Q')
 
     timey.printTiming()

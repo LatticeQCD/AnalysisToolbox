@@ -10,6 +10,7 @@ import numpy as np
 from latqcdtools.math.spline import _even_knots, _random_knots, getSpline
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.testing import print_results, concludeTest
+from latqcdtools.statistics.statistics import countParams
 import latqcdtools.base.logger as logger
 from latqcdtools.base.initialize import DEFAULTSEED
 
@@ -32,6 +33,16 @@ def testSpline():
     knots = _random_knots(x, 3, SEED=DEFAULTSEED)
 
     lpass *= print_results(knots,[-0.55, -0.10999999999999999, 0.10999999999999999], text="random_knots")
+
+    # countParams must return the number of free spline parameters, not the padded
+    # length of splrep's coefficient array (which overcounts by order+1) nor len(c)
+    # for a scipy CubicSpline (which is just order+1).
+    for nk in [2, 4, 6]:
+        bspl = getSpline(x, y, num_knots=nk, order=3, edata=ye)
+        # len(interior knots) + order + 1 free B-spline coefficients
+        lpass *= print_results(countParams(bspl, ()), nk + 4, text=f"countParams B-spline nk={nk}")
+    cspl = getSpline(x, y, natural=True)
+    lpass *= print_results(countParams(cspl, ()), len(x), text="countParams natural CubicSpline")
 
     aicc_arr = []
     for knots in [10,30,60]:

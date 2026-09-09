@@ -111,7 +111,8 @@ us out by citing
 - We acknowledge support by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) through the CRC-TR 211 'Strong-interaction matter under extreme conditions'– project number 315477589 – TRR 211.
 - This work was partly performed in the framework of the PUNCH4NFDI consortium supported by DFG fund "NFDI 39/1", Proj.No. 460248186 (PUNCH4NFDI).
 - Thanks to Claude code for: helping iron out some issues with running on MACOS; initial implementation of a Pade approximant framework;
-overhaul of `plotting.py` for x- and y-label locations to be chosen automatically when `labelsintoplot=True`.
+overhaul of `plotting.py` for x- and y-label locations to be chosen automatically when `labelsintoplot=True`; bug fixes in `countParams`
+for splines; fixed AICc formula.
 - DAC acknowledges helpful discussions with 
 [C. DeTar](https://github.com/detar),
 [X.-Y. Jin](https://github.com/jxy),
