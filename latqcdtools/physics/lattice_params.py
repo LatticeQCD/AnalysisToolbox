@@ -102,8 +102,9 @@ class latticeParams:
             try:
                 self.r0 = r0_phys(year=year,units="fm" ,returnErr=False,world=self.world)
             except ToolboxException:
-                logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
-                self.r0 = r1_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
+                if CHECKWORLD:
+                    logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.r0 = r0_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
 
     #           mass1  mass2  mass3
     # Nf=1+1+1     mu     md     ms
@@ -194,6 +195,9 @@ class latticeParams:
             self.cpre = _getMassString(mass2)
             self.m    = _getMassFloat(mass1)
             self.pre  = _getMassFloat(mass2)
+        elif Nf is None:
+            if (mass1 is not None) or (mass2 is not None) or (mass3 is not None):
+                logger.TBRaise('Nf=None (pure gauge) expects no mass parameters.')
         else:
             logger.TBRaise("Unsupported Nf",Nf)
         if (self.ml is not None) and (self.ms is not None):

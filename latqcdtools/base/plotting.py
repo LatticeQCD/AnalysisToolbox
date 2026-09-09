@@ -1,7 +1,7 @@
 #
 # plotting.py
 #
-# H. Sandmeyer, D. Clarke
+# H. Sandmeyer, D. Clarke, CLAUDE
 #
 # Collection of convenience tools for plotting using matplotlib.
 #
@@ -11,6 +11,7 @@ import itertools, os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+from matplotlib.transforms import Bbox
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkEqualLengths, checkType
 from latqcdtools.base.utilities import isHigherDimensional, toNumpy, envector 
@@ -83,7 +84,11 @@ default_params = {
     'ticksintoplot': True,       # Put ticks into plotting area.
     'surroundWithTicks': True,   # Put ticks also on top and right.
     'labelsintoplot': True,      # Put xlabel and ylabel into plotting area.
-    'xlabelpos': None,           # If labelsintplot=True, shift the position (x,y) of the x-label, expressed as percent.
+    'labelpos': 'auto',          # If labelsintoplot=True and xlabelpos/ylabelpos are not given: 'auto' picks the
+                                 #   in-plot corner for each axis label whose text box overlaps the least with
+                                 #   everything already drawn (data, error bars, lines, spans, tick labels, other
+                                 #   text, and any other Axes such as insets); 'fixed' keeps the historical corners.
+    'xlabelpos': None,           # If labelsintoplot=True, shift the position (x,y) of the x-label, expressed as percent.
     'ylabelpos': None,
     'alpha_dots': None,          # Transperancy for different dots
     'alpha_lines': 1,            # Transperancy for different lines
@@ -423,6 +428,214 @@ def _add_optional(params) -> dict:
     return ret
 
 
+# Candidate (x, y, ha, va) anchors, in axes-fraction coordinates, for an in-plot axis
+# label. The first entry in each list is the historical fixed position, so labelpos='fixed'
+# -- and labelpos='auto' whenever that corner is already clear -- reproduces older output.
+_INPLOT_LABEL_CANDIDATES = {
+    'x': [
+        (0.95, 0.027, 'right',  'bottom'),
+        (0.05, 0.027, 'left',   'bottom'),
+        (0.50, 0.027, 'center', 'bottom'),
+        (0.95, 0.973, 'right',  'top'),
+        (0.05, 0.973, 'left',   'top'),
+        (0.50, 0.973, 'center', 'top'),
+    ],
+    'y': [
+        (0.025, 0.972, 'left',  'top'),
+        (0.975, 0.972, 'right', 'top'),
+        (0.025, 0.028, 'left',  'bottom'),
+        (0.975, 0.028, 'right', 'bottom'),
+        (0.025, 0.500, 'left',  'center'),
+        (0.975, 0.500, 'right', 'center'),
+    ],
+}
+
+
+def _canvasRenderer(fig):
+    """ 
+    Return a renderer usable for measuring artist extents, drawing the canvas first so
+    that text layout and data transforms are up to date. 
+    """
+    fig.canvas.draw()
+    if hasattr(fig.canvas, 'get_renderer'):
+        return fig.canvas.get_renderer()
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    return FigureCanvasAgg(fig).get_renderer()
+
+
+def _padBox(bb, p=2.0):
+    """ 
+    Grow a display-space Bbox by p pixels on every side. 
+    """
+    return Bbox.from_extents(bb.x0-p, bb.y0-p, bb.x1+p, bb.y1+p)
+
+
+def _inplotObstacles(ax, renderer, skip=None):
+    """ 
+    Everything already drawn that an in-plot axis label should try not to cover, split
+    into two kinds and expressed in display (pixel) coordinates:
+
+      rects  -- solid rectangles: other text, tick labels, filled spans, and every other
+                Axes in the figure (e.g. an inset) taken as one block.
+      polys  -- (points, connected) for line/marker/error-bar data. The points are kept
+                rather than a bounding box: a sparse scatter or a diagonal curve leaves most
+                of its bounding box empty, and the label is allowed to sit there. 'connected'
+                says whether the points are joined by a drawn line (so a segment passing
+                through the label counts) or are just markers (only points count).
+
+    Everything is clipped to ax; artists fully outside it are dropped. 
+    """
+    axBox = ax.get_window_extent(renderer)
+    rects, polys = [], []
+
+    def addRect(bb):
+        if bb is None:
+            return
+        bb = Bbox.intersection(bb, axBox)
+        if bb is not None and bb.width > 1 and bb.height > 1:
+            rects.append(bb)
+
+    def addPoly(verts, trans, connected):
+        try:
+            pts = np.asarray(trans.transform(np.asarray(verts, dtype=float)))
+        except Exception:
+            return
+        pts = pts[np.isfinite(pts).all(axis=1)]
+        if len(pts):
+            polys.append((pts, connected))
+
+    for t in list(ax.texts):
+        if t is skip or not t.get_visible():
+            continue
+        try:
+            addRect(t.get_window_extent(renderer))
+        except Exception:
+            pass
+    for lab in list(ax.get_xticklabels()) + list(ax.get_yticklabels()):
+        if lab.get_visible() and lab.get_text():
+            try:
+                addRect(lab.get_window_extent(renderer))
+            except Exception:
+                pass
+    for p in list(ax.patches):
+        if not p.get_visible():
+            continue
+        try:
+            addRect(p.get_window_extent(renderer))     # spans / rectangles: bbox == shape
+        except Exception:
+            pass
+    for other in ax.get_figure().axes:
+        if other is ax:
+            continue
+        try:
+            obox = other.get_window_extent(renderer)
+        except Exception:
+            obox = None
+        if obox is not None and obox.containsx(axBox.x0) and obox.containsx(axBox.x1) \
+                and obox.containsy(axBox.y0) and obox.containsy(axBox.y1):
+            continue                                      # a parent/background Axes, not an inset
+        try:
+            addRect(other.get_tightbbox(renderer))
+        except Exception:
+            addRect(obox)
+
+    for ln in list(ax.lines):
+        if not ln.get_visible():
+            continue
+        try:
+            xy = ln.get_xydata()
+            if len(xy):
+                ls = ln.get_linestyle()
+                connected = ls not in ('None', 'none', '', ' ', None) and ln.get_linewidth() > 0
+                addPoly(xy, ln.get_transform(), connected)
+        except Exception:
+            pass
+    for coll in list(ax.collections):
+        if not coll.get_visible():
+            continue
+        try:
+            if hasattr(coll, 'get_segments'):             # LineCollection: error bars
+                for seg in coll.get_segments():
+                    if len(seg):
+                        addPoly(seg, coll.get_transform(), True)
+            else:
+                offs = coll.get_offsets()
+                if offs is not None and len(offs) and not np.allclose(offs, 0.0):
+                    addPoly(offs, coll.get_offset_transform(), False)   # scatter points
+                else:
+                    trans = coll.get_transform()
+                    for pth in coll.get_paths():                        # filled band polygons
+                        if len(pth.vertices):
+                            addPoly(pth.vertices, trans, True)
+        except Exception:
+            pass
+
+    return rects, polys
+
+
+def _placeInplotLabel(ax, text, which, params):
+    """ 
+    Draw an in-plot x- or y-axis label. With labelpos='auto' the anchor is chosen from
+    _INPLOT_LABEL_CANDIDATES[which] to minimize overlap with everything already drawn (see
+    _inplotObstacles); with labelpos='fixed', or if the measurement fails, the first
+    (historical) candidate is used. 
+    """
+    candidates = _INPLOT_LABEL_CANDIDATES[which]
+    alpha = params['alpha_xlabel'] if which == 'x' else params['alpha_ylabel']
+    x, y, ha, va = candidates[0]
+    ann = ax.text(x, y, text, transform=ax.transAxes, color='black',
+                  fontsize=params['font_size'], fontweight=params['font_weight'], ha=ha, va=va,
+                  bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=alpha),
+                  zorder=FOREGROUND)
+    if params['labelpos'] != 'auto':
+        return ann
+    try:
+        from matplotlib.path import Path as _MplPath
+        renderer = _canvasRenderer(ax.get_figure())
+        rects, polys = _inplotObstacles(ax, renderer, skip=ann)
+        axBox = ax.get_window_extent(renderer)
+        best, bestScore = candidates[0], None
+        for cand in candidates:
+            cx, cy, cha, cva = cand
+            ann.set_position((cx, cy))
+            ann.set_horizontalalignment(cha)
+            ann.set_verticalalignment(cva)
+            bb = _padBox(ann.get_window_extent(renderer))
+            # (1) area covered by solid-rectangle obstacles
+            score = 0.0
+            for ob in rects:
+                inter = Bbox.intersection(bb, ob)
+                if inter is not None:
+                    score += inter.width * inter.height
+            # (2) data vertices sitting under the label, plus any connecting line crossing it
+            for pts, connected in polys:
+                nin = int(np.count_nonzero((pts[:, 0] >= bb.x0) & (pts[:, 0] <= bb.x1) &
+                                           (pts[:, 1] >= bb.y0) & (pts[:, 1] <= bb.y1)))
+                score += 60.0 * nin
+                if connected and nin == 0 and len(pts) > 1:
+                    try:
+                        if _MplPath(pts).intersects_bbox(bb, filled=False):
+                            score += 400.0
+                    except Exception:
+                        pass
+            # (3) keep the label inside the axes
+            clipped = Bbox.intersection(bb, axBox)
+            inside = 0.0 if clipped is None else clipped.width * clipped.height
+            score += 3.0 * (bb.width * bb.height - inside)
+            if bestScore is None or score < bestScore - 1e-6:
+                best, bestScore = cand, score
+            if bestScore < 1.0:
+                break
+        cx, cy, cha, cva = best
+    except Exception as e:
+        logger.debug(f'Auto label placement failed ({e}); using default corner.')
+        cx, cy, cha, cva = candidates[0]
+    ann.set_position((cx, cy))
+    ann.set_horizontalalignment(cha)
+    ann.set_verticalalignment(cva)
+    return ann
+
+
 def set_params(**params):
     """ 
     Set additional parameters to the plot. For example set a title or label.
@@ -445,33 +658,7 @@ def set_params(**params):
     if params['ylogscale'] and params['ytick_freq'] is not None:
         logger.warn("ytick_freq assumes no log scale.")
 
-    if params['xlabel'] is not None:
-        checkType(str,xlabel=params['xlabel'])
-        if params['labelsintoplot'] or params['xlabelpos'] is not None:
-            if params['xlabelpos'] is None:
-                params['xlabelpos'] = (0.95,0.027)
-            ax.annotate(params['xlabel'], xy=params['xlabelpos'], xycoords='axes fraction', color='black',
-                        fontsize=params['font_size'], fontweight=params['font_weight'], ha='right', va='bottom',
-                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=params['alpha_xlabel']), 
-                        zorder=FOREGROUND)
-        else:
-            ax.set_xlabel(params['xlabel'])
-            ax.xaxis.get_label().set_fontsize(params['font_size'])
-
-    if params['ylabel'] is not None:
-        checkType(str,ylabel=params['ylabel'])
-        if params['labelsintoplot'] or params['ylabelpos'] is not None:
-            if params['ylabelpos'] is None:
-                params['ylabelpos'] = (0.025,0.972)
-            ax.annotate(params['ylabel'], xy=params['ylabelpos'], xycoords='axes fraction', color='black',
-                        fontsize=params['font_size'], ha='left', va='top', fontweight=params['font_weight'],
-                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=params['alpha_ylabel']), 
-                        zorder=FOREGROUND)
-        else:
-            ax.set_ylabel(params['ylabel'])
-            ax.yaxis.get_label().set_fontsize(params['font_size'])
-
-    ax.tick_params(axis='both', which='major', labelsize=params['font_size']) 
+    ax.tick_params(axis='both', which='major', labelsize=params['font_size'])
 
     if params['title'] is not None:
         checkType(str,title=params['title'])
@@ -495,6 +682,26 @@ def set_params(**params):
 
     set_xrange(params['xmin'],params['xmax'],ax)
     set_yrange(params['ymin'],params['ymax'],ax)
+
+    # Axis labels are placed after the axis ranges/scales are final, so 'auto' placement
+    # measures overlap against the geometry that will actually be saved. An explicit
+    # xlabelpos/ylabelpos keeps its old meaning (fixed position, no overlap check).
+    for which, key, poskey, alphakey in (('x','xlabel','xlabelpos','alpha_xlabel'),
+                                         ('y','ylabel','ylabelpos','alpha_ylabel')):
+        if params[key] is None:
+            continue
+        checkType(str,**{key:params[key]})
+        if params[poskey] is not None:
+            ha = 'right' if which == 'x' else 'left'
+            ax.annotate(params[key], xy=params[poskey], xycoords='axes fraction', color='black',
+                        fontsize=params['font_size'], fontweight=params['font_weight'], ha=ha, va='bottom' if which=='x' else 'top',
+                        bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=params[alphakey]),
+                        zorder=FOREGROUND)
+        elif params['labelsintoplot']:
+            _placeInplotLabel(ax, params[key], which, params)
+        else:
+            getattr(ax, 'set_'+which+'label')(params[key])
+            getattr(ax, which+'axis').get_label().set_fontsize(params['font_size'])
 
     if LEGEND and ax in legend_handles:
         leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
@@ -958,7 +1165,8 @@ def plot_fill(xdata, ydata, yedata, xedata=None, center=False, **params):
 
 
 def plot_matrix(mat,vmin=None,vmax=None):
-    """ Plot matrix as a heatmap.
+    """ 
+    Plot matrix as a heatmap.
 
     Args:
         mat (np.ndarray): correlation matrix
@@ -976,4 +1184,5 @@ def saveFigure(filename,**kwargs):
     Wrapper for plt.savefig that creates the directory path if it doesn't exist already.
     """
     createFilePath(filename)
+    logger.info("Saving figure to "+filename)
     plt.savefig(filename,**kwargs)
