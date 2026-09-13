@@ -1,9 +1,12 @@
+import os
+
 from setuptools import setup, find_packages
 
 
 def read_requirements():
     """Read requirements.txt and return a list of dependencies."""
-    with open("/home/dclarke/GitHub/AnalysisToolbox/requirements.txt", "r") as fh:
+    req_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "requirements.txt")
+    with open(req_path, "r") as fh:
         return fh.read().splitlines()
 
 
