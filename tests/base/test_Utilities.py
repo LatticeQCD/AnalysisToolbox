@@ -151,6 +151,23 @@ def testUtilities():
     except ToolboxException:
         pass
 
+    # Test cleanOutput rejects bool as sspace
+    try:
+        cleanOutput('s1', sspace=True)
+        logger.TBFail('cleanOutput failed to raise on sspace=True')
+        lpass = False
+    except ToolboxException:
+        pass
+
+    # Test isIntType and cleanOutput on unsigned numpy integers
+    lpass *= isIntType(np.uint32(42))
+    lpass *= not isIntType(True)
+    lpass *= isScalar(np.uint32(42))
+    out_uint = cleanOutput(np.uint32(42))
+    if '4.20000000e+01' not in out_uint:
+        logger.TBFail('cleanOutput failed to format np.uint32:', repr(out_uint))
+        lpass = False
+
     # Test printClean executes cleanly
     try:
         printClean('test', 1.23, label='TEST_PRINT')

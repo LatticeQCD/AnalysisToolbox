@@ -94,15 +94,15 @@ def isHigherDimensional(obj) -> bool:
 
 
 def isIntType(obj) -> bool:
-    return isinstance(obj,(int, np.int8, np.int16, np.int32, np.int64))
+    return isinstance(obj, (int, np.integer)) and not isinstance(obj, bool)
 
 
 def isFloatType(obj) -> bool:
-    return isinstance(obj,(float,np.float16,np.float32,np.float64,np.longdouble))
+    return isinstance(obj, (float, np.floating))
 
 
 def isComplexType(obj) -> bool:
-    return isinstance(obj,(complex,np.complex64,np.complex128))
+    return isinstance(obj, (complex, np.complexfloating))
 
 
 def isScalar(obj) -> bool:

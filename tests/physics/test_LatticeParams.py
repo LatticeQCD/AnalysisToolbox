@@ -137,7 +137,10 @@ def testLatticeParams():
     ignoreWorldWarning()
     lp_squelched = latticeParams(Ns, Nt, cbeta, cml, cms, scaleType='r0', paramYear=2017, Nf='21')
     lp_squelched.paramSummary()
-    del lp_squelched
+    # Test zero-temperature ensemble (Nt=None) paramSummary execution
+    lp_zero_temp = latticeParams(Ns, None, 6.5, scaleType='fk')
+    lp_zero_temp.paramSummary()
+    del lp_zero_temp
 
     concludeTest(lpass)
 

@@ -251,7 +251,7 @@ class latticeParams:
         logger.info()
         logger.info("Lattice parameter summary: ")
         logger.info("    Nf =",self.Nf)
-        logger.info("aWorld =",self.aWorld)
+        logger.info(" aWorld =",self.aWorld)
         logger.info("physWorld =",self.physWorld)
         if self.scale == 'fk':
             logger.info("    fK =",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
@@ -261,7 +261,8 @@ class latticeParams:
             logger.info("    r0 =",round(self.r0,4),"[fm] ")
         if self.Ns is not None:
             logger.info("    Ns =",self.Ns)
-        logger.info("    Nt =",self.Nt)
+        if self.Nt is not None:
+            logger.info("    Nt =",self.Nt)
         logger.info("  beta =",self.beta)
         if self.ml is not None:
             logger.info("    ml =",self.ml)
@@ -283,7 +284,8 @@ class latticeParams:
             logger.info(" md/mu =",self.mdmu)
         a = self.geta()
         if a is not None:
-            logger.info("    T  =",round(self.getT(),2), "[MeV]")
+            if self.Nt is not None:
+                logger.info("    T  =",round(self.getT(),2), "[MeV]")
             logger.info("    a  =",round(a,4), "[fm]")
             if self.Ns is not None:
                 logger.info("    Ls =",round(self.getLs(),4), "1/[MeV]")
