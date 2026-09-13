@@ -1,7 +1,7 @@
 # 
-# testLatticepy                                                               
+# test_LatticeParams.py                                                               
 # 
-# D. Clarke
+# D. Clarke, K. Ebira
 # 
 # Some tests of the lattice parameter class using 2021 scales.
 #
@@ -45,6 +45,99 @@ def testLatticeParams():
     logger.info('MILC Nf=1+1+1:',lp.getcparams())
     lp.paramSummary()
     del lp
+
+    # Issue #83 tests: get_aWorld
+    from latqcdtools.physics.referenceScales import get_aWorld
+    from latqcdtools.base.logger import ToolboxException
+    from latqcdtools.physics.lattice_params import ignoreWorldWarning
+
+    if get_aWorld('r0', 2012) != 'Nf21':
+        logger.TBFail("get_aWorld('r0', 2012) != 'Nf21'")
+        lpass = False
+    if get_aWorld('r0', 2012.0) != 'Nf21':
+        logger.TBFail("get_aWorld('r0', 2012.0) != 'Nf21'")
+        lpass = False
+    if get_aWorld('r0', 2017) != 'Nf0':
+        logger.TBFail("get_aWorld('r0', 2017) != 'Nf0'")
+        lpass = False
+    if get_aWorld('r1', 2021) != 'Nf21':
+        logger.TBFail("get_aWorld('r1', 2021) != 'Nf21'")
+        lpass = False
+    if get_aWorld('fk', 2021) != 'Nf21':
+        logger.TBFail("get_aWorld('fk', 2021) != 'Nf21'")
+        lpass = False
+    if get_aWorld('t0') != 'Nf0':
+        logger.TBFail("get_aWorld('t0') != 'Nf0'")
+        lpass = False
+
+    # Check error handling for unsupported scale or year
+    try:
+        get_aWorld('invalid_scale')
+        logger.TBFail("get_aWorld failed to raise on invalid scaleType")
+        lpass = False
+    except ToolboxException:
+        pass
+
+    try:
+        get_aWorld('r0', 1999)
+        logger.TBFail("get_aWorld failed to raise on invalid year")
+        lpass = False
+    except ToolboxException:
+        pass
+
+    # Issue #83 tests: smart paramYear defaults and world disentanglement
+    lp_r0_21 = latticeParams(Ns, Nt, cbeta, cml, cms, scaleType='r0', Nf='21')
+    if lp_r0_21.year != 2012:
+        logger.TBFail("Expected default paramYear 2012 for r0 with Nf='21', got", lp_r0_21.year)
+        lpass = False
+    if lp_r0_21.aWorld != 'Nf21':
+        logger.TBFail("Expected aWorld 'Nf21', got", lp_r0_21.aWorld)
+        lpass = False
+    if lp_r0_21.physWorld != 'Nf21':
+        logger.TBFail("Expected physWorld 'Nf21', got", lp_r0_21.physWorld)
+        lpass = False
+    if lp_r0_21.Nf != '21':
+        logger.TBFail("Expected Nf '21', got", lp_r0_21.Nf)
+        lpass = False
+    del lp_r0_21
+
+    # Issue #83 tests: pure gauge smart default
+    lp_r0_quenched = latticeParams(Ns, Nt, 6.0, scaleType='r0', Nf=None)
+    if lp_r0_quenched.year != 2017:
+        logger.TBFail("Expected default paramYear 2017 for r0 with Nf=None, got", lp_r0_quenched.year)
+        lpass = False
+    if lp_r0_quenched.aWorld != 'Nf0':
+        logger.TBFail("Expected aWorld 'Nf0', got", lp_r0_quenched.aWorld)
+        lpass = False
+    if lp_r0_quenched.physWorld != 'Nf21':
+        logger.TBFail("Expected physWorld 'Nf21', got", lp_r0_quenched.physWorld)
+        lpass = False
+    if lp_r0_quenched.Nf is not None:
+        logger.TBFail("Expected Nf None, got", lp_r0_quenched.Nf)
+        lpass = False
+    del lp_r0_quenched
+
+    # Issue #83 tests: explicit world mismatch triggers warning
+    lp_mismatch = latticeParams(Ns, Nt, cbeta, cml, cms, scaleType='r0', paramYear=2017, Nf='21')
+    if lp_mismatch.aWorld != 'Nf0' or lp_mismatch.Nf != '21':
+        logger.TBFail("Mismatch setup incorrect")
+        lpass = False
+    lp_mismatch.paramSummary()
+    del lp_mismatch
+
+    # Test scaleType='t0'
+    lp_t0 = latticeParams(8, 4, 6.0, scaleType='t0')
+    if lp_t0.physWorld != 'Nf21':
+        logger.TBFail("Expected physWorld 'Nf21' for scaleType='t0', got", lp_t0.physWorld)
+        lpass = False
+    lp_t0.paramSummary()
+    del lp_t0
+
+    # Test ignoreWorldWarning()
+    ignoreWorldWarning()
+    lp_squelched = latticeParams(Ns, Nt, cbeta, cml, cms, scaleType='r0', paramYear=2017, Nf='21')
+    lp_squelched.paramSummary()
+    del lp_squelched
 
     concludeTest(lpass)
 
