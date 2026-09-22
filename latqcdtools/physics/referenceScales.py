@@ -185,9 +185,10 @@ def r1_times_ms_2014(beta):
     m2   = -21760
     m3   = 2.67*10**7
     dm1  = 2420
+    b0nf = b0(nf)/(4*np.pi)**2  # Eq. (B3)/Appendix C of 1407.6387v2 define b0 = 9/(16 pi^2) for nf=3
     num  = 1 +  m1*(10.0/beta)*beta_func(beta)**2+m2*(10.0/beta)**2*beta_func(beta)**2 + m3*(10.0/beta)*beta_func(beta)**4
     den  = 1 + dm1*(10.0/beta)*beta_func(beta)**2
-    return (20*b0(nf)/beta)**(4/9)*mRGI*num/den
+    return (20*b0nf/beta)**(4/9)*mRGI*num/den
 
 
 def a_times_ms_2014(beta):

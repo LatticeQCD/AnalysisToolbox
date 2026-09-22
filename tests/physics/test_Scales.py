@@ -7,7 +7,8 @@
 #
 
 import numpy as np
-from latqcdtools.physics.referenceScales import a_times_fk, a_div_r1, r0_div_a, sqrtt0_div_a
+from latqcdtools.physics.referenceScales import a_times_fk, a_div_r1, r0_div_a, sqrtt0_div_a,\
+    a_times_ms_2014, r1_times_ms_2014
 from latqcdtools.statistics.statistics import gaudif
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.logger import ToolboxException
@@ -54,6 +55,36 @@ def checkStatisticalCompatability(SCALE,SCALENAME) -> bool:
     return lpass 
 
 
+def checkMs2014LCP() -> bool:
+    """
+    Cross-check r1_times_ms_2014/a_times_ms_2014 against the actual bare strange quark masses
+    simulated on the LCP in arXiv:1407.6387v2 (Table III), converted to r1 units with the r1/a
+    values from Table IV of the same paper. The fit values are not expected to match this input
+    data exactly, since the input data include small deviations from the LCP that are corrected
+    for in the fit (up to about 7% at beta=7.825, per the paper's discussion in Appendix C), so we
+    only check for percent-level agreement.
+    """
+    lpass = True
+
+    # beta : (a*m_s from Table III, r1/a from Table IV)
+    table = {
+        6.195: (0.0880, 1.670), 6.354: (0.0728, 1.959), 6.423: (0.0670, 2.096),
+        6.460: (0.0640, 2.165), 6.488: (0.0620, 2.235), 6.550: (0.0582, 2.369),
+        6.608: (0.0542, 2.518), 6.664: (0.0514, 2.644), 6.740: (0.0476, 2.856),
+        6.800: (0.0448, 3.025), 6.880: (0.0412, 3.265), 6.950: (0.0386, 3.485),
+        7.030: (0.0356, 3.763), 7.150: (0.0320, 4.212), 7.280: (0.0284, 4.720),
+        7.373: (0.0250, 5.172), 7.596: (0.0202, 6.336), 7.825: (0.0164, 7.690),
+    }
+
+    for beta, (ams_table, r1_div_a) in table.items():
+        lpass *= print_results( a_times_ms_2014(beta), ams_table,
+                                 text=f"a*ms_2014 vs simulated LCP mass, beta={beta}", prec=0.08 )
+        lpass *= print_results( r1_times_ms_2014(beta), ams_table*r1_div_a,
+                                 text=f"r1*ms_2014 vs simulated LCP mass, beta={beta}", prec=0.08 )
+
+    return lpass
+
+
 def testScales():
 
     lpass = True
@@ -69,6 +100,13 @@ def testScales():
     lpass *= print_results( a_div_r1(7.500, 2012)  , 0.17512946173066155, text="a/r1 2012" , prec=EPSILON )
     lpass *= print_results( r0_div_a(6.800, 2017)  , 16.440532234860257 , text="r0/a"      , prec=EPSILON )
     lpass *= print_results( sqrtt0_div_a(6.800)    , 5.524714874614185  , text="sqrt(t0)/a", prec=EPSILON )
+    lpass *= print_results( r1_times_ms_2014(6.500), 0.13946528965438357, text="r1 ms 2014", prec=EPSILON )
+    lpass *= print_results( a_times_ms_2014(6.500) , 0.06164062487325529, text="a ms 2014"  , prec=EPSILON )
+
+    # Cross-check the r1_times_ms_2014/a_times_ms_2014 LCP fit against the actual simulated bare
+    # masses tabulated in arXiv:1407.6387v2. This catches normalization errors in the fit's
+    # beta-function prefactor that a pure regression test against the current code would not.
+    lpass *= checkMs2014LCP()
 
     # Test some physical scales for particular worlds and years. 
     lpass *= print_results( 105.6583755       , M_mu_phys(year=2022,units="MeV")           , text="muon mass 2022"    )
