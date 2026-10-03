@@ -23,23 +23,23 @@ returns its bias-corrected mean. This value carries a Monte Carlo error of about
 $\sigma$ is the bootstrap error, even when $f$ is linear.
 The method
 ```Python
-bootstr(func, data, numb_samples, sample_size = None, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
-        seed = None, err_by_dist = True, args=(), nproc=DEFAULTTHREADS)
+bootstr(func, data, numb_samples, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
+        seed = None, err_by_dist = True, args=(), nproc=1)
 ```
 accomplishes this for an arbitrary $f$ `func`.
 
-By default, the bootstrap sample size is equal to the original number of measurements. We resample with replacement.
-The size can be adjusted with the `sample_size` argument.
-By default the bootstrap is [parallelized](../base/speedify.md) with `DEFAULTTHREADS`
-processes. Set `nproc=1` if you want to turn off parallelization.
+Each bootstrap sample has the same size as the original number of measurements, and we resample with replacement.
+The bootstrap can be [parallelized](../base/speedify.md) with the `nproc` argument. It is not parallelized by
+default, since starting the parallel pool has an overhead that only pays off when `func` is slow, e.g. if
+`func` carries out a fit.
 
 ## Gaussian bootstrap
 
 The Gaussian bootstrap method,
 ```Python
-bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, same_rand_for_obs = False,
+bootstr_from_gauss(func, data, data_std_dev, numb_samples, same_rand_for_obs = False,
                    return_sample = False, seed = None, err_by_dist = True, useCovariance = False,
-                   Covariance = None, args = (), nproc = DEFAULTTHREADS, asym_err=False)
+                   Covariance = None, args = (), nproc = 1, asym_err=False)
 ```
 will resample as follows: For each element of `data`, random data will be drawn from normal distributions
 with means equal to the values in `data` and standard deviations from `data_std_dev`. This defines one

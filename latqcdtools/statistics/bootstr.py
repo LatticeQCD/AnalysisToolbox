@@ -9,7 +9,7 @@
 
 import numpy as np
 from latqcdtools.statistics.statistics import meanArgWrapper, std_mean, std_dev, dev_by_dist
-from latqcdtools.base.speedify import DEFAULTTHREADS, parallel_function_eval
+from latqcdtools.base.speedify import parallel_function_eval
 from latqcdtools.base.initialize import DEFAULTSEED, TBRNG
 from latqcdtools.base.check import checkType
 import latqcdtools.base.logger as logger
@@ -38,7 +38,7 @@ def _biasCorrect(fbar,sampleval):
 
 class nimbleBoot:
 
-    def __init__(self, func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed,
+    def __init__(self, func, data, numb_samples, same_rand_for_obs, conf_axis, return_sample, seed,
                  err_by_dist, args, nproc):
 
         checkType('int',numb_samples=numb_samples)
@@ -52,9 +52,6 @@ class nimbleBoot:
         except ValueError:
             logger.TBRaise('All observables must have the same number of configurations.')
         self._numb_samples=numb_samples
-        if sample_size is not None:
-            checkType('int',sample_size=sample_size)
-        self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._conf_axis=conf_axis
         self._return_sample=return_sample
@@ -67,6 +64,17 @@ class nimbleBoot:
             self._conf_axis = 0
         if self._conf_axis >= self._data.ndim:
             logger.TBRaise('conf_axis',self._conf_axis,'out of range for data with ndim',self._data.ndim)
+
+        # Every index before conf_axis labels an observable, and indices after conf_axis belong to one
+        # configuration. Flatten the data once so that row nconf*obs + conf holds configuration conf of
+        # observable obs. Then each bootstrap sample needs only one fancy-indexing step.
+        self._obs_shape   = self._data.shape[:self._conf_axis]
+        self._nconf       = self._data.shape[self._conf_axis]
+        self._nobs        = int(np.prod(self._obs_shape))
+        trail_shape       = self._data.shape[self._conf_axis+1:]
+        self._flatData    = self._data.reshape((self._nobs*self._nconf,) + trail_shape)
+        self._rowOffsets  = (np.arange(self._nobs)*self._nconf)[:,None]
+        self._sampleShape = self._data.shape
 
         self._sampleval = parallel_function_eval(self.getBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(self._seed,))
 
@@ -82,27 +90,14 @@ class nimbleBoot:
     def getBootstrapEstimator(self,i,my_seed):
         # Seeding with the pair (seed, i) gives unrelated streams for different seeds and samples.
         rng = TBRNG([my_seed,i])
-        nconf = self._data.shape[self._conf_axis]
-        if self._sample_size is None:
-            sample_size = nconf
-        else:
-            sample_size = self._sample_size
-
-        # Every index before conf_axis labels an observable.
-        obs_shape = self._data.shape[:self._conf_axis]
-        randints  = np.empty(obs_shape + (sample_size,), dtype=int)
         if self._same_rand_for_obs:
             # One draw of configurations, shared by all observables (perfectly correlated)
-            randints[...] = rng.integers(0, nconf, size=sample_size)
+            randints = rng.integers(0, self._nconf, size=self._nconf)
         else:
             # An independent draw of configurations for each observable
-            for obs in np.ndindex(obs_shape):
-                randints[obs] = rng.integers(0, nconf, size=sample_size)
-
-        # Indices after conf_axis belong to one configuration, so they share its random index.
-        randints    = randints.reshape(randints.shape + (1,)*(self._data.ndim - self._conf_axis - 1))
-        sample_data = np.take_along_axis(self._data, randints, axis=self._conf_axis)
-
+            randints = rng.integers(0, self._nconf, size=(self._nobs, self._nconf))
+        rows        = (randints + self._rowOffsets).ravel()
+        sample_data = self._flatData[rows].reshape(self._sampleShape)
         return meanArgWrapper(self._func, sample_data, self._args)
 
     def getResults(self):
@@ -112,8 +107,8 @@ class nimbleBoot:
             return self._mean, self._error
 
 
-def bootstr(func, data, numb_samples, sample_size = None, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
-            seed = None, err_by_dist = True, args=(), nproc=DEFAULTTHREADS):
+def bootstr(func, data, numb_samples, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
+            seed = None, err_by_dist = True, args=(), nproc=1):
     """
     Bootstrap for arbitrary functions. This routine resamples the data and passes them to func in the same
     format as the input, so func should compute an observable from a given data set. The central value is
@@ -127,8 +122,6 @@ def bootstr(func, data, numb_samples, sample_size = None, same_rand_for_obs = Fa
         func (callable): Function that calculates the observable.
         data (array-like): Input data.
         numb_samples (int): Number of bootstrap samples.
-        sample_size (int, optional): Size of each sample. Defaults to None, which uses the number of
-          configurations.
         same_rand_for_obs (bool, optional): Every index before conf_axis labels an observable. If True, all
           observables are resampled with the same random configurations, i.e. they are treated as perfectly
           correlated. If False, each observable gets its own random configurations. Indices after conf_axis
@@ -140,23 +133,24 @@ def bootstr(func, data, numb_samples, sample_size = None, same_rand_for_obs = Fa
           The error is then the distance from the median of the bootstrap distribution to its quantiles, i.e.
           a width of the distribution, applied around the bias-corrected central value. Defaults to True.
         args (tuple or dict, optional): Extra arguments for func. A dict is passed as **args. Defaults to ().
-        nproc (int, optional): Number of threads. nproc=1 turns off parallelization. Defaults to DEFAULTTHREADS.
+        nproc (int, optional): Number of threads. Defaults to 1, i.e. no parallelization. Starting the
+          parallel pool has an overhead, so increasing nproc only helps when func is slow, for example
+          if you do a curve fit in each sample. Feel free to benchmark it for your use-case.
 
     Returns:
         samples (optionally), bias-corrected central value, bootstrap error
     """
-    bts = nimbleBoot(func, data, numb_samples, sample_size, same_rand_for_obs, conf_axis, return_sample, seed,
+    bts = nimbleBoot(func, data, numb_samples, same_rand_for_obs, conf_axis, return_sample, seed,
                      err_by_dist, args, nproc)
     return bts.getResults()
 
 
 class nimbleGaussianBoot:
 
-    def __init__(self, func, data, data_std_dev, numb_samples, sample_size, same_rand_for_obs, return_sample, seed,
+    def __init__(self, func, data, data_std_dev, numb_samples, same_rand_for_obs, return_sample, seed,
                  err_by_dist, useCovariance, Covariance, args, nproc, asym_err):
 
         checkType('int',numb_samples=numb_samples)
-        checkType('int',sample_size=sample_size)
         checkType(bool,same_rand_for_obs=same_rand_for_obs)
         checkType(bool,return_sample=return_sample)
         checkType(bool,err_by_dist=err_by_dist)
@@ -167,7 +161,6 @@ class nimbleGaussianBoot:
         self._data=np.array(data)
         self._data_std_dev=np.array(data_std_dev)
         self._numb_samples=numb_samples
-        self._sample_size=sample_size
         self._same_rand_for_obs=same_rand_for_obs
         self._return_sample=return_sample
         self._seed=_autoSeed(seed)
@@ -178,6 +171,12 @@ class nimbleGaussianBoot:
         self._args=args
         self._numb_observe = len(data)
         self._nproc = nproc
+
+        # Shape of one observable's sample
+        if self._useCovariance:
+            self._sampleShape = (len(self._data[0]),)
+        else:
+            self._sampleShape = np.broadcast_shapes(np.shape(self._data[0]),np.shape(self._data_std_dev[0]))
 
         # Factor F of each covariance, with F^T F = cov, computed as in rng.multivariate_normal
         if self._useCovariance:
@@ -195,7 +194,7 @@ class nimbleGaussianBoot:
         # func of the means, i.e. of a sample with zero noise
         central_data = []
         for k in range(self._numb_observe):
-            central_data.append(self._addNoise(k,np.zeros(self._sampleShape())))
+            central_data.append(self._addNoise(k,np.zeros(self._sampleShape)))
         fbar = meanArgWrapper(self._func, np.array(central_data), self._args)
         self._mean = _biasCorrect(fbar, self._sampleval)
         if not self._err_by_dist:
@@ -206,43 +205,26 @@ class nimbleGaussianBoot:
     def __repr__(self) -> str:
         return "nimbleGaussianBoot"
 
-    def _sampleShape(self):
-        """
-        Shape of one observable's sample.
-        """
-        if self._useCovariance:
-            shape = (len(self._data[0]),)
-            if self._sample_size != 1:
-                shape = (self._sample_size,) + shape
-        else:
-            if self._sample_size == 1:
-                shape = np.broadcast_shapes(np.shape(self._data[0]),np.shape(self._data_std_dev[0]))
-            else:
-                shape = (self._sample_size,)
-        return shape
-
     def _addNoise(self,k,z):
         """
         Turn standard normals z into a sample of observable k.
         """
-        if not self._useCovariance:
+        if self._useCovariance:
+            return self._data[k] + z @ self._covFactors[k]
+        else:
             return self._data[k] + self._data_std_dev[k]*z
-        m = len(self._data[k])
-        x = np.dot(z.reshape(-1,m), self._covFactors[k])
-        x += self._data[k]
-        return x.reshape(z.shape)
 
     def getGaussianBootstrapEstimator(self,i,my_seed):
         sample_data = []
         if self._same_rand_for_obs:
             # One set of random numbers, shared by all observables (perfectly correlated)
-            z = TBRNG([my_seed,i]).standard_normal(self._sampleShape())
+            z = TBRNG([my_seed,i]).standard_normal(self._sampleShape)
             for k in range(self._numb_observe):
                 sample_data.append(self._addNoise(k,z))
         else:
             # Independent random numbers for each observable
             for k in range(self._numb_observe):
-                z = TBRNG([my_seed,i,k]).standard_normal(self._sampleShape())
+                z = TBRNG([my_seed,i,k]).standard_normal(self._sampleShape)
                 sample_data.append(self._addNoise(k,z))
 
         sample_data = np.array(sample_data)
@@ -256,9 +238,9 @@ class nimbleGaussianBoot:
             return self._mean, self._error
 
 
-def bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, same_rand_for_obs = False,
+def bootstr_from_gauss(func, data, data_std_dev, numb_samples, same_rand_for_obs = False,
                        return_sample = False, seed = None, err_by_dist = True, useCovariance = False,
-                       Covariance = None, args = (), nproc = DEFAULTTHREADS, asym_err=False):
+                       Covariance = None, args = (), nproc = 1, asym_err=False):
     """
     Gaussian (parametric) bootstrap. Like bootstr, but each sample is drawn from a normal distribution around
     the mean values in data, with width data_std_dev or covariance Covariance. The central value is the
@@ -267,11 +249,8 @@ def bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, 
     Args:
         func (callable): Function that calculates the observable.
         data (array-like): Mean value of each observable.
-        data_std_dev (array-like): Standard deviation of each observable.
+        data_std_dev (array-like): Error of each value in data, e.g. the error of a mean.
         numb_samples (int): Number of bootstrap samples.
-        sample_size (int, optional): Number of draws per observable in each sample. If sample_size > 1, func
-          has to average over the draws, and data_std_dev should be the standard deviation of a single
-          measurement, not of the mean. Defaults to 1.
         same_rand_for_obs (bool, optional): Use the same random numbers for every observable, i.e. treat them
           as perfectly correlated? Defaults to False.
         return_sample (bool, optional): Also return the results from the individual samples? Defaults to False.
@@ -283,7 +262,9 @@ def bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, 
         Covariance (array-like, optional): Covariance matrix of each observable, used if useCovariance. Defaults
           to None, which uses diag(data_std_dev**2).
         args (tuple or dict, optional): Extra arguments for func. A dict is passed as **args. Defaults to ().
-        nproc (int, optional): Number of threads. nproc=1 turns off parallelization. Defaults to DEFAULTTHREADS.
+        nproc (int, optional): Number of threads. Defaults to 1, i.e. no parallelization. Starting the
+          parallel pool has an overhead, so increasing nproc only helps when func is slow, for example
+          if you do a curve fit in each sample. Feel free to benchmark it for your use-case.
         asym_err (bool, optional): Return both distances from the median to the 68% quantiles, if err_by_dist,
           instead of the larger one. Defaults to False.
 
@@ -294,7 +275,7 @@ def bootstr_from_gauss(func, data, data_std_dev, numb_samples, sample_size = 1, 
     data_std_dev = np.asarray(data_std_dev)
 
     bts_gauss = nimbleGaussianBoot(func=func, data=data, data_std_dev=data_std_dev, numb_samples=numb_samples, 
-                                   sample_size=sample_size, same_rand_for_obs=same_rand_for_obs,return_sample=return_sample, 
+                                   same_rand_for_obs=same_rand_for_obs, return_sample=return_sample, 
                                    seed=seed, err_by_dist=err_by_dist, useCovariance=useCovariance, Covariance=Covariance, 
                                    args=args, nproc=nproc, asym_err=asym_err)
     return bts_gauss.getResults()
