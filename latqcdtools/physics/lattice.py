@@ -11,6 +11,7 @@ import numpy as np
 import itertools
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
+from latqcdtools.base.initialize import TBRNG
 
 
 class Lattice():
@@ -86,17 +87,24 @@ class Lattice():
         return np.sum(self.iterateOverBulk(func))/self.vol
 
 
-    def iterateOverRandom(self,func) -> np.ndarray:
-        """ 
-        Carry out function func on every site of the lattice. 
+    def iterateOverRandom(self,func,rng=None) -> np.ndarray:
+        """
+        Carry out function func on every site of the lattice, visiting the sites in random order.
 
         Args:
             func (func): Action to be carried out on every site. Must take coord as
                          its only argument.
+            rng (np.random.Generator, optional): Random generator, e.g. TBRNG(seed). Defaults to None,
+              which uses a new TBRNG with a random seed.
+
+        Returns:
+            np.ndarray: results of func, in the order the sites were visited
         """
-        permutation = np.random.choice(range(self.vol),size=self.vol,replace=False)
+        if rng is None:
+            rng = TBRNG()
+        permutation = rng.permutation(self.vol)
         container=[]
         for i in permutation:
-            func(self.bulk[i])
+            container.append(func(self.bulk[i]))
         return np.array(container)
 

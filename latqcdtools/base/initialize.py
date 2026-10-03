@@ -16,9 +16,19 @@ from latqcdtools.base.fileSystem import createFilePath
 INITIALIZED = False     # Global flag to check if initialization has already occurred.
 DEFAULTSEED = 7271978   # Default seed for reproducibility (needed in testing). Do not Google this date.
 
-# The default_rng() constructor is what numpy recommends, which at the time of writing 
-# utilizes O'Neill's PCG algorithm. 
-TBRNG = np.random.default_rng
+def TBRNG(seed=None) -> np.random.Generator:
+    """
+    The toolbox random number generator. This is O'Neill's PCG algorithm, which at the time of writing
+    is what numpy's default_rng() uses. We pin PCG64 explicitly, so the random numbers stay the same
+    even if numpy changes its default.
+
+    Args:
+        seed (int or list of int, optional): Seed. Defaults to None, which chooses a random seed.
+
+    Returns:
+        np.random.Generator
+    """
+    return np.random.Generator(np.random.PCG64(seed))
 
 
 def gitHash() -> str:

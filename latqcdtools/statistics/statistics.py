@@ -453,6 +453,22 @@ def cov_to_cor(cov) -> np.ndarray:
     return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
 
 
+def estimateCovariance(data_std_dev) -> np.ndarray:
+    """
+    Covariance matrix of some data, under the assumption that each datum X_i is maximally correlated
+    with every other datum X_j, i.e. cov_ij = std_i std_j. This matrix has rank 1, so it is not invertible.
+
+    Args:
+        data_std_dev (array-like): One-dimensional array of standard deviations.
+
+    Returns:
+        np.ndarray: covariance matrix
+    """
+    data_std_dev = np.asarray(data_std_dev)
+    checkVector(data_std_dev)
+    return np.outer(data_std_dev, data_std_dev)
+
+
 def confidence_ellipse(x,y,CI=None,**params):
     """ 
     Plot a confidence ellipse according to the data x, y. The confidence is only meaningful 
@@ -556,24 +572,33 @@ def forcePositiveSemidefinite(mat):
 
 
 def dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
-    """ 
-    Calculate the distance between the median and 68% quantiles. Returns the larger of the two 
-    distances. This method is used sometimes to estimate error, for example in the bootstrap. 
+    """
+    Calculate the distance between the median and the quantiles enclosing the central percentile of the
+    data. This method is used sometimes to estimate error, for example in the bootstrap. The quantiles
+    are not interpolated; they are rounded outward to the nearest datum. If many data share the median
+    value, both distances can be zero even though the data have a spread.
+
+    Args:
+        data (array-like)
+        axis (int, optional): Axis along which to compute. Defaults to 0.
+        return_both_q (bool, optional): Return both distances instead of the larger one? Defaults to False.
+        percentile (float, optional): Central percentile. Defaults to 68.
+
+    Returns:
+        distance to the lower and upper quantiles, or the larger of the two
     """
     data = np.asarray(data)
-    median = np.nanmedian(data, axis)
-    numb_data = data.shape[axis]
-    idx_dn = max(int(np.floor((numb_data-1) / 2 - percentile/100 * (numb_data-1) / 2)), 0)
-    idx_up = min(int(np.ceil((numb_data-1) / 2 + percentile/100 * (numb_data-1) / 2)), numb_data-1)
-    #TODO: Need to handle the situation idx_dn=idx_up a bit carefully. the SRI project presents
-    # some data with this issue, and you can troubleshoot that.
-    sorted_data = np.sort(data - np.expand_dims(median, axis), axis=axis)
-    q_l = np.take(sorted_data, idx_dn, axis)
-    q_r = np.take(sorted_data, idx_up, axis)
+    if np.isnan(data).any():
+        logger.TBRaise('data contain NaN')
+    p_dn   = 50 - percentile/2
+    p_up   = 50 + percentile/2
+    median = np.median(data, axis=axis)
+    q_dn   = np.percentile(data, p_dn, axis=axis, method='lower')
+    q_up   = np.percentile(data, p_up, axis=axis, method='higher')
     if return_both_q:
-        return np.abs(q_l), np.abs(q_r)
+        return median - q_dn, q_up - median
     else:
-        return np.max(np.stack((np.abs(q_l), np.abs(q_r)), axis=0), axis=0)
+        return np.maximum(median - q_dn, q_up - median)
 
 
 def error_prop(func, means, errors, grad=None, args=()):

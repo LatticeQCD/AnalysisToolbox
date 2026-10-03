@@ -13,6 +13,7 @@ from latqcdtools.math.SU3 import SU3
 import latqcdtools.base.logger as logger
 from latqcdtools.math.math import rel_check, invert, id, ze 
 from latqcdtools.testing import concludeTest
+from latqcdtools.base.initialize import TBRNG, DEFAULTSEED
 
 
 def testSU3():
@@ -66,6 +67,17 @@ def testSU3():
     if not g.isSUN():
         lpass = False
         logger.TBFail('Set to random.')
+
+    # Haar-random SU(3) has <|U_00|^4> = 2/(N(N+1)) = 1/6.
+    rng = TBRNG(DEFAULTSEED)
+    nsamples = 20000
+    U00 = np.zeros(nsamples)
+    for i in range(nsamples):
+        g.setToRandom(rng)
+        U00[i] = abs(g[0,0])**4
+    if abs(np.mean(U00) - 1/6) > 4*np.std(U00)/np.sqrt(nsamples):
+        lpass = False
+        logger.TBFail('Set to random is not Haar: <|U_00|^4> =',np.mean(U00))
 
     g.setToIdentity()
     if not rel_check(g,id(3)):

@@ -10,11 +10,7 @@
 import numpy as np
 from latqcdtools.math.math import SUN
 from latqcdtools.base.speedify import compile
-
-
-# Eventually we would like to use default_rng here too, but it doesn't compile straightforwardly
-# using numba. Will have to think about it.
-rng = np.random
+from latqcdtools.base.initialize import TBRNG
 
 
 @compile
@@ -54,11 +50,13 @@ def fastUnitarize(self):
                         -( self[0,0].imag*self[1,1].real + self[0,0].real*self[1,1].imag ) + ( self[0,1].imag*self[1,0].real + self[0,1].real*self[1,0].imag ) )
 
 
+# Complex Gaussian entries, so that after unitarizing the matrix is Haar-random. numba cannot construct
+# a Generator or use one as a global, but it can take one as an argument.
 @compile
-def fastRandomize(self):
+def fastRandomize(self,rng):
     for i in range(3):
         for j in range(3):
-            self[i,j] = complex( 1 - 2*rng.uniform(0,1), 1 - 2*rng.uniform(0,1) )
+            self[i,j] = complex( rng.standard_normal(), rng.standard_normal() )
 
 
 class SU3(SUN):
@@ -75,9 +73,15 @@ class SU3(SUN):
         """
         fastUnitarize(self)
 
-    def setToRandom(self):
-        """ 
-        Turn into a randomly chosen SU(3) matrix. 
+    def setToRandom(self,rng=None):
         """
-        fastRandomize(self)
+        Turn into a Haar-random (uniformly distributed) SU(3) matrix.
+
+        Args:
+            rng (np.random.Generator, optional): Random generator, e.g. TBRNG(seed). Defaults to None,
+              which uses a new TBRNG with a random seed.
+        """
+        if rng is None:
+            rng = TBRNG()
+        fastRandomize(self,rng)
         self.su3unitarize()

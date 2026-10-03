@@ -15,11 +15,16 @@ you can pass them arbitrary functions.
 
 Starting with our original measurements, one builds a bootstrap sample by drawing $N$ data from the original sample
 with replacement. One repeats this process $K$ times. From bootstrap sample $i$, one gets an estimate of the mean
-of interest. Averaging the $K$ means from each bootstrap sample gives a bootstrap mean.
+of interest. The spread of these $K$ estimates gives the error. For the central value, note that $f$ of the
+full sample, $f(\bar{x})$, has a bias of $\mathcal{O}(1/N)$ when $f$ is nonlinear, and the average over bootstrap
+samples, $\langle f^*\rangle$, has about twice that bias. Their difference therefore estimates the bias, and the
+routines return the bias-corrected value $2f(\bar{x})-\langle f^*\rangle$, just as the [jackknife](jackknife.md)
+returns its bias-corrected mean. This value carries a Monte Carlo error of about $\sigma/\sqrt{K}$, where
+$\sigma$ is the bootstrap error, even when $f$ is linear.
 The method
 ```Python
-bootstr(func, data, numb_samples, sample_size = 0, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
-        seed = None, err_by_dist = False, args=(), nproc=DEFAULTTHREADS)
+bootstr(func, data, numb_samples, sample_size = None, same_rand_for_obs = False, conf_axis = 1, return_sample = False,
+        seed = None, err_by_dist = True, args=(), nproc=DEFAULTTHREADS)
 ```
 accomplishes this for an arbitrary $f$ `func`.
 
@@ -41,6 +46,7 @@ with means equal to the values in `data` and standard deviations from `data_std_
 Gaussian bootstrap sample, and the function `func` is applied to the sample. This process is repeated
 `numb_samples` times.
 
-By default, the Gaussian bootstrap returns the median and 68-percentiles from the sample. You can return
-the standard deviation instead by switching `err_by_dist` to `False`. You also have the option to get
-back asymmetric quantiles/errors using `asymm_err=True`.
+The central value is bias-corrected as above, with $f(\bar{x})$ being $f$ of the values in `data`. By default, both bootstraps get the error from the
+68-percentiles of the bootstrap distribution. You can use the standard deviation instead by switching
+`err_by_dist` to `False`. You also have the option to get
+back asymmetric quantiles/errors using `asym_err=True` (Gaussian bootstrap only).

@@ -7,6 +7,7 @@
 import numpy as np
 from latqcdtools.math.math import SUN, log
 from latqcdtools.base.check import checkType, checkDomain
+from latqcdtools.base.initialize import TBRNG
 
 
 # Pauli matrices
@@ -34,8 +35,17 @@ class SU2(SUN):
         M = -1j*log(self)
         return 0.5 * np.trace(sigma[a] @ M).real
 
-    def setToRandom(self):
-        u0, u1, u2, u3 = np.random.randn(4)
+    def setToRandom(self,rng=None):
+        """
+        Turn into a Haar-random (uniformly distributed) SU(2) matrix.
+
+        Args:
+            rng (np.random.Generator, optional): Random generator, e.g. TBRNG(seed). Defaults to None,
+              which uses a new TBRNG with a random seed.
+        """
+        if rng is None:
+            rng = TBRNG()
+        u0, u1, u2, u3 = rng.standard_normal(4)
         norm = np.sqrt(u0**2 + u1**2 + u2**2 + u3**2)
         u0, u1, u2, u3 = u0/norm, u1/norm, u2/norm, u3/norm
         Urand = np.array([[ u0 + 1j * u3, u1 + 1j * u2],

@@ -45,7 +45,7 @@ def _random_knots(xdata, nknots, randomization_factor=1, SEED=None):
     Return a list of nknots randomly placed knots. Draws a random subset of xdata and applies _even_knots
     to it. randomization_factor=1 draws the smallest subset (most random); 0 uses all the data.
     """
-    rng = np.random.default_rng(SEED)
+    rng = TBRNG(SEED)
     flat_xdata = np.sort(np.asarray(xdata))
     nsample = int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots))
     sample_xdata = rng.choice(flat_xdata,nsample,replace=False)
