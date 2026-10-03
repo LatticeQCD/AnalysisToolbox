@@ -92,18 +92,39 @@ conservative, or for comparison with `gnuplot`, you can pass the option
 ## Splines
 
 There are several methods in the toolbox to fit a 1D spline to some `xdata` and `ydata`.
-These can be found in `latcqdtools.math.spline.py`. The basic method is `getSpline`
+These can be found in `latqcdtools.math.spline`. The basic method is `getSpline`
 ```Python
-getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None)
+getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None,
+          getAICc=False, natural=False, seed=None)
 ```
-This is by default a wrapper for `scipy.interpolate.LSQUnivariateSpline`.
-Here you specify how many knots `num_knots` you want and the order `order` of the spline.
-By default, the spline will create a list of `num_knots` evenly spaced knots, but you can specify
-`rand=True` to have it pick the knot locations randomly. If you need to specify some knot locations
-yourself, this is accomplished by passing a list of specified knots to `fixedKnots`. Note that
-`num_knots` includes these fixed knots in its counting; hence if
+By default this is a least-squares (regression) spline: a B-spline with fixed knots, fit to the data
+by minimizing $\chi^2$ using `scipy.interpolate.splrep` with `task=-1`. (This is the same thing
+`scipy.interpolate.LSQUnivariateSpline` does.) It does not in general pass through the data.
+If you pass `edata`, each point is weighted by `1/edata`.
+Here you specify the number of interior knots `num_knots` and the degree `order` of the spline polynomials.
+Fewer knots give a stiffer curve. By default, the knots are evenly spaced in data index, so that each interval
+between knots holds roughly the same number of data. You can specify `rand=True` to have it pick the knot
+locations randomly; pass `seed` to make this reproducible. If you need to specify some knot locations
+yourself, pass them as a list to `fixedKnots`. Note that `num_knots` includes these fixed knots in its counting;
+hence if
 ```Python
 len(fixedKnots)==num_knots
 ```
-no knots will be generated randomly.
-There also exists the option to use natural splines.
+no knots will be generated automatically. With `getAICc=True`, which requires `edata`, `getSpline` also returns
+the AICc of the fit, which you can use to compare different numbers of knots.
+
+There also exists the option `natural=True` for natural splines, which have zero curvature at the endpoints.
+This does two different things depending on whether you have errors:
+
+- Without `edata`, you get an interpolating natural cubic spline from `scipy.interpolate.CubicSpline`.
+  It has a knot at every data point and passes through all of them. Do not pass `num_knots` in this case.
+- With `edata`, you get the least-squares spline described above, restricted to cubic splines with zero
+  curvature at the endpoints. This removes two fit parameters, which reduces the variance of the spline
+  near the ends of the data.
+
+To propagate the errors of the data into an error band for the spline, use `bootSpline`, which
+refits the spline to Gaussian bootstrap samples of the data:
+```Python
+res = bootSpline(xdata, ydata, edata, num_knots=num_knots)
+plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
+```

@@ -8,6 +8,7 @@
 
 import numpy as np
 from latqcdtools.math.spline import _even_knots, _random_knots, getSpline
+from scipy.interpolate import CubicSpline
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.statistics.statistics import countParams
@@ -43,6 +44,18 @@ def testSpline():
         lpass *= print_results(countParams(bspl, ()), nk + 4, text=f"countParams B-spline nk={nk}")
     cspl = getSpline(x, y, natural=True)
     lpass *= print_results(countParams(cspl, ()), len(x), text="countParams natural CubicSpline")
+
+    # Natural least-squares spline: zero curvature at the endpoints, 2 fewer parameters.
+    nspl = getSpline(x, y, num_knots=4, order=3, edata=ye, natural=True)
+    lpass *= print_results(np.array([nspl(x[0],2),nspl(x[-1],2)]), np.zeros(2), text="natural LSQ S''=0 at ends", abs_prec=1e-10)
+    lpass *= print_results(countParams(nspl, ()), 4 + 2, text="countParams natural LSQ spline")
+
+    # With a knot at every interior datum, it must reproduce the natural interpolating spline.
+    xs  = np.linspace(0, 1, 12)
+    ys  = np.sin(3*xs)
+    ispl = getSpline(xs, ys, num_knots=len(xs)-2, fixedKnots=list(xs[1:-1]), edata=np.ones(len(xs)), natural=True)
+    xf  = np.linspace(0, 1, 50)
+    lpass *= print_results(ispl(xf), CubicSpline(xs, ys, bc_type='natural')(xf), text="natural LSQ -> interpolating limit")
 
     aicc_arr = []
     for knots in [10,30,60]:

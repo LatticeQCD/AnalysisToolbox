@@ -173,6 +173,9 @@ def countParams(func,params) -> int:
     """
     nparam = len(params)
     if nparam == 0:
+        if hasattr(func,'get_nparams'):
+            # TBSpline knows its own count, e.g. natural boundary conditions remove 2.
+            return func.get_nparams()
         try:
             # TBSpline / other splrep-based wrappers. splrep pads tck[1] with k+1
             # trailing zeros, so len(get_coeffs()) overcounts; the number of free
