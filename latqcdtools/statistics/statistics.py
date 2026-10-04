@@ -213,14 +213,15 @@ def DOF(ndat,nparam,priorsigma=None) -> int:
 
     Args:
         ndat (int): number of data 
-        nparam (int): number of model parameters 
+        nparam (int): number of model parameters. May be an effective, non-integer number, e.g. for a 
+          smoothing spline.
         priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
     Returns:
         int: number of degrees of freedom 
     """
     checkType('int',ndat=ndat)
-    checkType('int',nparam=nparam)
+    checkType('real',nparam=nparam)
     nprior = countPriors(priorsigma) 
     dof = ndat + nprior - nparam 
     logger.debug('dof =',dof,'ndat =',ndat,'nparam =',nparam,'nprior =',nprior)

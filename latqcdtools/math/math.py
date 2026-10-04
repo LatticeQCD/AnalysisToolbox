@@ -286,7 +286,10 @@ def logDet(mat) -> float:
     """
     checkType(np.ndarray,mat=mat)
     checkSquare(mat)
-    _, ans = np.linalg.slogdet(mat)
+    # The LU decomposition can underflow in intermediate steps. This is harmless, since the
+    # determinant is accumulated as a logarithm.
+    with np.errstate(under='ignore'):
+        _, ans = np.linalg.slogdet(mat)
     return ans
 
 

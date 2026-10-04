@@ -95,7 +95,7 @@ There are several methods in the toolbox to fit a 1D spline to some `xdata` and 
 These can be found in `latqcdtools.math.spline`. The basic method is `getSpline`
 ```Python
 getSpline(xdata, ydata, num_knots=None, edata=None, order=3, rand=False, fixedKnots=None,
-          getAICc=False, natural=False, seed=None)
+          getAICc=False, natural=False, seed=None, lam=None)
 ```
 By default this is a least-squares (regression) spline: a B-spline with fixed knots, fit to the data
 by minimizing $\chi^2$ using `scipy.interpolate.splrep` with `task=-1`. (This is the same thing
@@ -122,9 +122,81 @@ This does two different things depending on whether you have errors:
   curvature at the endpoints. This removes two fit parameters, which reduces the variance of the spline
   near the ends of the data.
 
+If you pass a smoothing parameter `lam`, you get a cubic smoothing spline instead. It minimizes
+$$
+  \sum_i w_i\,\left(y_i-S(x_i)\right)^2 + \lambda\int dx\, S''(x)^2,
+$$
+with $w_i=1/\sigma_i^2$ from `edata` (or $w_i=1$ without `edata`), the same convention as
+`scipy.interpolate.make_smoothing_spline`. The minimizer over all twice-differentiable functions is a natural
+cubic spline with a knot at every unique $x$, so there are no knots to choose, and `num_knots`, `fixedKnots`,
+and `rand` may not be passed. Unlike SciPy's version, several data may share one $x$.
+Here $\lambda$ controls the smoothness: as $\lambda\to0$ the spline interpolates the data, and as
+$\lambda\to\infty$ it becomes the weighted straight-line fit. Since the fit is linear in the data,
+it has an effective number of parameters $p_{\rm eff}={\rm tr}\,H$, with $H$ the hat matrix mapping
+the data to the fitted values. It runs from the number of unique $x$ down to 2, and it is what
+`get_nparams()` returns and what `getAICc=True` uses. Note that $\lambda$ has units, since
+$\int S''^2$ scales with the $x$ and $y$ ranges of your data, so a given value is only meaningful for one data set.
+If your data are correlated, pass their covariance matrix as `edata`. As in the `Fitter`, a vector `edata`
+is read as errors and a matrix as the covariance matrix. Then the first term above becomes
+$(y-S)^T\,{\rm cov}^{-1}\,(y-S)$, and `getAICc=True` uses the covariance matrix as well. This is only
+implemented for the smoothing spline.
+
+The smoothing spline is the posterior mean of a Bayesian model, in which the penalty is a Gaussian prior
+on the spline with precision $\lambda$ for its curvature, and flat for straight lines, which have no
+curvature. The fit stores the log evidence $\log p(y|\lambda)$ of this model in its `logEvidence`
+attribute, up to a constant that does not depend on $\lambda$. (This is the restricted likelihood, or
+REML, of e.g. Wood, J. R. Stat. Soc. B 73, 3 (2011).)
+
 To propagate the errors of the data into an error band for the spline, use `bootSpline`, which
-refits the spline to Gaussian bootstrap samples of the data:
+refits the spline to Gaussian bootstrap samples of the data using `bootstr_from_gauss`. The knots are the
+same for every sample. Besides the band, it returns the AICc of the fit to the original data, the
+bootstrap-level splines in `res['splineBS']`, and the location of the maximum with its error. If your
+data are correlated, pass their covariance matrix as `edata` to draw correlated samples. The fits themselves
+are then weighted by the square root of its diagonal, unless you also pass `lam`: then each sample gets a
+correlated smoothing spline. Use `nproc` to fit the samples in parallel:
 ```Python
 res = bootSpline(xdata, ydata, edata, num_knots=num_knots)
 plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
 ```
+
+Choosing knots or $\lambda$ is a choice of model. To avoid making it, use `lam='average'`. This averages
+smoothing splines over `nlam` values of $\lambda$, uniform in $\log\lambda$, weighted by their evidence,
+i.e. it integrates $\lambda$ out with a flat prior in $\log\lambda$. Since the smoothing spline has a knot
+at every unique $x$, there are no knots to choose either. The grid runs from $p_{\rm eff}$ close to the
+number of unique $x$ (interpolation) to $p_{\rm eff}$ close to 2 (a straight line), so it does not depend
+on the units of your data. In every bootstrap sample, the weights are recomputed, so the error `res['ysple']`
+includes the uncertainty in $\lambda$. You also get the grid `res['lams']`, the corresponding `res['peffs']`,
+`res['weights']`, and `res['splinesLam']`, the smoothing spline at each $\lambda$ for the original data.
+`res['ysple_lam']` is the weighted spread of these splines. It is a diagnostic only: do not add it to
+`res['ysple']`, which already contains the uncertainty in $\lambda$. If the ends of the grid carry noticeable
+weight, you get a warning. At the large-$\lambda$ end this means the data are consistent with a straight line.
+```Python
+res = bootSpline(xdata, ydata, edata, lam='average')
+plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
+```
+
+A bootstrap measures how much the spline would scatter if you repeated the experiment. It cannot see
+the bias that the smoothing introduces, e.g. when it flattens a peak, and this matters most for derivatives.
+`posteriorSpline` gives a Bayesian error band instead, which does include it. The smoothing spline at fixed
+$\lambda$ is the posterior mean of a Bayesian model, in which the curvature penalty is a Gaussian prior
+on the spline. `posteriorSpline` averages over $\lambda$ as above and draws `numb_samples` splines from
+the resulting posterior: each sample picks a $\lambda$ with probability given by its weight, then a spline
+from the Gaussian posterior at that $\lambda$. This is not a bootstrap; the data are used once, as measured.
+`res['yspl']` is the posterior mean and `res['ysple']` the posterior standard deviation, which by the law
+of total variance splits into `res['ysple_stat']` (the average posterior error at fixed $\lambda$) and
+`res['ysple_sys']` (the spread over $\lambda$), with `ysple**2 = ysple_stat**2 + ysple_sys**2`.
+For a quantity derived from the spline, e.g. an integral or a derivative, compute it for each of the samples
+in `res['splineSamples']` and take their spread. Do not add a systematic error on top of that, since the
+samples already contain the uncertainty in $\lambda$. In a test with a smooth function, both error bands
+covered the truth about as often as they should, but for its derivative the posterior band was conservative
+(89% instead of 68%), while the bootstrap band was close to nominal.
+```Python
+res = posteriorSpline(xdata, ydata, edata)
+plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
+derivs = []
+for spl in res['splineSamples']:
+    derivs.append(spl(res['xspl'], der=1))
+dm, de = std_median(derivs), dev_by_dist(derivs)
+```
+Keep in mind that this is still a model: it assumes the same smoothness everywhere, and the smoothing
+spline has zero curvature at the ends of the data, which biases it there if your data curve strongly.
