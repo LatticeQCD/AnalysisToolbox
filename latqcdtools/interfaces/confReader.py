@@ -1,7 +1,7 @@
 # 
-# gauge.py                                                               
+# confReader.py                                                               
 # 
-# D. Clarke
+# D. Clarke, K. Ebira
 # 
 # Tools for reading and writing gauge configurations in Python. To interact with binary configurations, we can use
 # Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html. NERSC reader inspired
@@ -53,7 +53,12 @@ class confReader:
         self.linkTrace = None  # <tr U>
         self.plaquette = None  # <tr U^[]>
         self.nrows = None      # number of rows
+        self.checksum = None   # checksum
         self.gauge = gaugeField(self.Ns,self.Nt,self.nproc)
+
+
+    def __repr__(self) -> str:
+        return f"confReader(Ns={self.Ns}, Nt={self.Nt})"
 
 
     def unpack(self, data) -> SU3:
@@ -96,6 +101,9 @@ class confReader:
 
 class NERSCReader(confReader):
 
+    def __repr__(self) -> str:
+        return f"NERSCReader(Ns={self.Ns}, Nt={self.Nt})"
+
     def readHeader(self,fileName):
 
         """ 
@@ -124,9 +132,10 @@ class NERSCReader(confReader):
         entries = header[:self.offset-1].split(b'\n')[1:-1]
         metaData = {}
         for entry in entries:
-            LHS = entry.split(b'=')[0].strip()
-            RHS = entry.split(b'=')[1].strip()
-            metaData[LHS] = RHS
+            if b'=' in entry:
+                LHS = entry.split(b'=')[0].strip().upper()
+                RHS = entry.split(b'=')[1].strip()
+                metaData[LHS] = RHS
 
         # Check that the header was read correctly.
         Nx = int(metaData[b'DIMENSION_1'])
@@ -136,17 +145,18 @@ class NERSCReader(confReader):
         self.checkLatDims(Nx, Ny, Nz, Nt)
 
         # Extract endianness
-        if metaData[b'FLOATING_POINT'].endswith(b'SMALL'):
+        fp = metaData[b'FLOATING_POINT'].upper()
+        if fp.endswith(b'SMALL') or fp.endswith(b'LITTLE'):
             self.endianness = '<'
-        elif metaData[b'FLOATING_POINT'].endswith(b'BIG'):
+        elif fp.endswith(b'BIG'):
             self.endianness = '>'
         else:
             logger.TBRaise('Unrecognized endianness.')
 
         # Extract precision
-        if metaData[b'FLOATING_POINT'].startswith(b'IEEE32'):
+        if fp.startswith(b'IEEE32'):
             self.precision = 'f'
-        elif metaData[b'FLOATING_POINT'].startswith(b'IEEE64'):
+        elif fp.startswith(b'IEEE64'):
             self.precision = 'd'
         else:
             logger.TBRaise('Unrecognized precision.')
@@ -169,27 +179,72 @@ class NERSCReader(confReader):
         except:
             pass
 
+        # Extract checksum
+        try:
+            self.checksum = metaData[b'CHECKSUM'].decode('ascii').strip()
+        except:
+            self.checksum = None
 
-    def readConf(self,fileName):
+
+    def readConf(self, fileName):
         """ 
-        Read in the configuration. Check what you find in the binary against its metadata. 
-        """
+        Read in the configuration. Check what you find in the binary against its metadata.
 
+        Parameters
+        ----------
+        fileName : str
+            Path to the NERSC configuration file.
+
+        Returns
+        -------
+        gaugeField
+            The loaded gauge field configuration.
+
+        Raises
+        ------
+        ToolboxException
+            If the header format is invalid, checksum fails, or observables do not match.
+        """
         self.readHeader(fileName)
 
-        bytesPerLink = 3*self.rows*2*self.getByteSize()
-
-        for t in range(self.Nt):
-            for z in range(self.Ns):
-                for y in range(self.Ns):
-                    for x in range(self.Ns):
-                        for mu in range(self.Nd):
-                            byteIndex = self.offset + bytesPerLink*( mu + 4*( x + self.Ns*( y + self.Ns*( z + self.Ns*t ) ) ) )
-                            self.file.seek(byteIndex)
-                            data = self.file.read(bytesPerLink)
-                            link = self.unpack(data)
-                            self.gauge.setLink(link,x,y,z,t,mu)
+        self.file.seek(self.offset)
+        payload = self.file.read()
         self.file.close()
+
+        # Validate 32-bit big-endian unsigned checksum against header if present
+        if self.checksum is not None:
+            expected_checksum = int(self.checksum, 16)
+            if len(payload) % 4 != 0:
+                logger.TBRaise(f'Corrupt configuration {fileName}: payload length {len(payload)} is not a multiple of 4 bytes.')
+            chk_arr = np.frombuffer(payload, dtype='>u4')
+            computed_checksum = int(np.sum(chk_arr, dtype=np.uint64) & 0xffffffff)
+            if expected_checksum != computed_checksum:
+                logger.TBRaise(f'Checksum error: expected {expected_checksum:08x}, computed {computed_checksum:08x}')
+            logger.details('Configuration', fileName, 'has correct checksum.')
+
+        latprec = 8 if self.precision == 'f' else 16
+        dtype_str = f'{self.endianness}c{latprec}'
+        vol = (self.Ns**3) * self.Nt
+        total_elements = vol * self.Nd * self.rows * 3
+        raw = np.frombuffer(payload, dtype=dtype_str, count=total_elements)
+
+        if self.rows == 3:
+            self.gauge.field = raw.reshape((self.Nt, self.Ns, self.Ns, self.Ns, self.Nd, 3, 3)).astype(complex)
+        elif self.rows == 2:
+            subfield = raw.reshape((self.Nt, self.Ns, self.Ns, self.Ns, self.Nd, 2, 3)).astype(complex)
+            r0 = subfield[..., 0, :]
+            r1 = subfield[..., 1, :]
+            norm0 = np.sqrt(np.sum(np.abs(r0)**2, axis=-1, keepdims=True))
+            r0 = r0 / norm0
+            proj = np.sum(r1 * np.conj(r0), axis=-1, keepdims=True)
+            r1 = r1 - proj * r0
+            norm1 = np.sqrt(np.sum(np.abs(r1)**2, axis=-1, keepdims=True))
+            r1 = r1 / norm1
+            r2 = np.conj(np.cross(r0, r1))
+            self.gauge.field = np.stack([r0, r1, r2], axis=-2)
+        else:
+            logger.TBRaise(f'Unsupported number of rows: {self.rows}')
+
         logger.details('Loaded conf into gaugeField.')
 
         # Check <tr U>
@@ -211,6 +266,9 @@ class NERSCReader(confReader):
 
 
 class ILDGReader(confReader):
+
+    def __repr__(self) -> str:
+        return f"ILDGReader(Ns={self.Ns}, Nt={self.Nt})"
 
     def readConf(self,fileName):
         """ 

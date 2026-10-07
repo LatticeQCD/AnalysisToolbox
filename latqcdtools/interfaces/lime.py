@@ -1,7 +1,7 @@
 # 
 # lime.py                                                               
 # 
-# D. Clarke, X.-Y. Jin
+# D. Clarke, X.-Y. Jin, K. Ebira
 # 
 # Some tools for working with the LIME format. This is a port of X.-Y. Jin's original Python code,
 # which can be found here: https://github.com/nftqcd/nthmc/blob/master/lib/fieldio.py. Information
@@ -41,9 +41,9 @@ def limeHeader(mbeg, mend, size, type) -> bytes:
     """
     m = 0
     if mbeg:
-        m = 1<<15 # starting flag in binary
-    elif mend:
-        m = 1<<14 # ending flag in binary
+        m |= 1<<15 # starting flag in binary
+    if mend:
+        m |= 1<<14 # ending flag in binary
 
     # '> ensures big-endian byte order
     # i packs LIMEMAGIC as a 4-byte integer
