@@ -32,7 +32,7 @@ for Nt in Nts:
 
     # Extract Td from inflection point of <|P|> vs T using natural spline
     def getTd(pm):
-        spl  = getSpline(T, pm, natural=True)
+        spl  = getSpline(T, pm)
         dPdT = diff_deriv(t, spl)
         maxIndex = np.argmax(dPdT)
         return t[maxIndex]

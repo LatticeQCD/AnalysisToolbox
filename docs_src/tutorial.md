@@ -300,7 +300,7 @@ for Nt in Nts:
 
     # Extract Td from inflection point of <|P|> vs T using natural spline
     def getTd(pm):
-        spl  = getSpline(T, pm, natural=True)
+        spl  = getSpline(T, pm)
         dPdT = diff_deriv(t, spl)
         maxIndex = np.argmax(dPdT)
         return t[maxIndex]
@@ -358,7 +358,7 @@ Here is `latqcdtools/examples/main_bootstrap.py`
 ```Python
 import numpy as np
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.math.spline import getSpline
+from latqcdtools.math.spline import getSpline, Regression
 from latqcdtools.base.plotting import plt, plot_dots, plot_band, latexify
 from latqcdtools.statistics.bootstr import bootstr_from_gauss
 from latqcdtools.base.initialize import initialize, finalize
@@ -381,7 +381,7 @@ def splineError(data):
     of edata. In this example we simply get a spline, but you wrap anything you want
     inside your bootstrap procedure.
     """
-    ys = getSpline(xdata,data,3)
+    ys = getSpline(xdata,data,kind=Regression(nknots=3))
     return ys(xspline)
 
 ybs, ybserr = bootstr_from_gauss(splineError,data=ydata,data_std_dev=edata,numb_samples=100)
