@@ -1185,6 +1185,37 @@ def getSplineErr(xdata, xspline, ydata, ydatae, kind=None):
     return spline_center, spline_err
 
 
+def _medianBiasCorrect(f0, fBS):
+    """
+    Bias-corrected central value 2 f0 - median(fBS), with f0 the observable for the original data and fBS
+    its bootstrap samples along axis 0. This is _biasCorrect of the bootstrap with the median in place of
+    the mean.
+    """
+    return 2*np.asarray(f0) - std_median(fBS, axis=0)
+
+
+def _steepestInflection(spline, xspl):
+    """
+    The inflection point (x,y) of spline on xspl where |spline'| is largest. Inflection points are where the
+    second derivative changes sign; each root is found between the two grid points that bracket it. Taking
+    the steepest one ignores the small wiggles a smoothed spline can have where the data are flat. A zero of
+    the second derivative at an end of xspl, as for a natural spline, does not count, so the first and last
+    grid intervals are skipped; numerically that zero is not exact. Returns (nan,nan) if there is no
+    inflection point.
+    """
+    d2     = spline(xspl,der=2)
+    change = np.where(d2[1:-2]*d2[2:-1] < 0)[0] + 1
+    if len(change) == 0:
+        return np.nan, np.nan
+    xbest, slopebest = np.nan, -np.inf
+    for i in change:
+        x     = brentq(lambda t: spline(t,der=2), xspl[i], xspl[i+1])
+        slope = abs(float(spline(x,der=1)))
+        if slope > slopebest:
+            xbest, slopebest = x, slope
+    return xbest, float(spline(xbest))
+
+
 def _kindSample(sample, fitter, xspl):
     """
     Fit one bootstrap sample of shape (1,ndata) for bootSpline. Return everything needed to rebuild the
@@ -1226,8 +1257,11 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
     Returns:
         dict: with entries
             xspl: grid
-            yspl, ysple: bias-corrected central value and error on xspl, as in bootstr_from_gauss
+            yspl, ysple: central value and error on xspl. The central value is 2 f - median(f*), with f from
+                the original data and f* from the samples; the error is dev_by_dist of the samples.
             xmax, xmaxe: the same for the x on xspl where the spline is largest
+            xinflect, xinflecte, yinflect, yinflecte: the same for the inflection point with the largest |slope|.
+                Samples without an inflection point are dropped, and all four are nan if splineMean has none.
             splineMean: the spline fit to the original data, not an average over samples
             splineBS: the spline of each bootstrap sample
             AIC: AIC of splineMean, unless the kind is Interpolating or averaged
@@ -1268,10 +1302,11 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
     t, _, k = spline0.tck
     ncoeff  = len(t)
 
-    samples, mean, err = bootstr_from_gauss(_kindSample,data=[y],data_std_dev=[std],
-                                            numb_samples=numb_samples,return_sample=True,seed=seed,
-                                            args={'fitter':fitter,'xspl':xspl},nproc=nproc,
-                                            useCovariance=useCovariance,Covariance=Covariance)
+    samples, _, _ = bootstr_from_gauss(_kindSample,data=[y],data_std_dev=[std],
+                                       numb_samples=numb_samples,return_sample=True,seed=seed,
+                                       args={'fitter':fitter,'xspl':xspl},nproc=nproc,
+                                       useCovariance=useCovariance,Covariance=Covariance)
+    samples = np.asarray(samples)
 
     # Rebuild the bootstrap splines without refitting.
     splines = []
@@ -1288,13 +1323,35 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
     res = {}
     res['splineBS']   = splines # in case you want spline functions at bootstrap level
     res['xspl']       = xspl
-    res['yspl']       = mean[ndata+ncoeff:-2]
-    res['ysple']      = err[ndata+ncoeff:-2]
+    # Central values are 2 f(original data) - median over samples, and errors are dev_by_dist over samples.
+    # spline0 is the fit to the original data, which is what the bootstrap's zero-noise sample would give.
+    ys0               = spline0(xspl)
+    ysBS              = samples[:,ndata+ncoeff:-2]
+    res['yspl']       = _medianBiasCorrect(ys0, ysBS)
+    res['ysple']      = dev_by_dist(ysBS)
     res['splineMean'] = spline0
-    # The second to last entry of each sample is that spline's xmax, so mean[-2] and err[-2] are the
-    # bias-corrected central value and error of xmax over the samples. Hence xmax can lie between grid points.
-    res['xmax']       = mean[-2]
-    res['xmaxe']      = err[-2]
+    # The second to last entry of each sample is that spline's xmax. Because of the bias correction, xmax can
+    # lie between grid points.
+    xmaxBS            = samples[:,-2]
+    res['xmax']       = _medianBiasCorrect(xspl[np.argmax(ys0)], xmaxBS)
+    res['xmaxe']      = dev_by_dist(xmaxBS)
+    # The inflection point is found from the rebuilt splines, so samples without one can be dropped.
+    xinf0, yinf0 = _steepestInflection(spline0, xspl)
+    xinfBS, yinfBS = [], []
+    for spline in splines:
+        xinf, yinf = _steepestInflection(spline, xspl)
+        if not np.isnan(xinf):
+            xinfBS.append(xinf)
+            yinfBS.append(yinf)
+    if len(xinfBS) < len(splines):
+        logger.warn(f'Dropped {len(splines)-len(xinfBS)} of {len(splines)} bootstrap samples without an inflection point.')
+    if np.isnan(xinf0) or len(xinfBS) == 0:
+        res['xinflect'], res['xinflecte'], res['yinflect'], res['yinflecte'] = np.nan, np.nan, np.nan, np.nan
+    else:
+        res['xinflect']  = _medianBiasCorrect(xinf0, xinfBS)
+        res['xinflecte'] = dev_by_dist(xinfBS)
+        res['yinflect']  = _medianBiasCorrect(yinf0, yinfBS)
+        res['yinflecte'] = dev_by_dist(yinfBS)
     if kind.hasAIC:
         res['AIC'] = spline0.get_AIC()
     if isinstance(kind,KnotAverage):
