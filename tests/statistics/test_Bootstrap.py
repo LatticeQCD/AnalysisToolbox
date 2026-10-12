@@ -7,7 +7,7 @@
 # 
 
 from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss
-from latqcdtools.statistics.statistics import KSTest_1side
+from latqcdtools.statistics.statistics import KSTest_1side, pearson
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.initialize import DEFAULTSEED
 import latqcdtools.base.logger as logger
@@ -59,7 +59,7 @@ def testBootstrap():
     samp, _, _ = bootstr_from_gauss(lambda x: x, data=[10,2], data_std_dev=[0.5,0.1], numb_samples=1000,
                                     same_rand_for_obs=True, seed=DEFAULTSEED, return_sample=True)
     samp = np.array(samp)
-    if not np.isclose(np.corrcoef(samp[:,0],samp[:,1])[0,1],1):
+    if not np.isclose(pearson(samp[:,0],samp[:,1]),1):
         lpass = False
         logger.TBFail('same_rand_for_obs gauss not perfectly correlated')
 

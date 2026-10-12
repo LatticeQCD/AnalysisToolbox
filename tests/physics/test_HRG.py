@@ -12,7 +12,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.cleanData import excludeAtCol, restrictAtCol
 from latqcdtools.base.readWrite import readTable
-from latqcdtools.base.plotting import plot_lines, plot_file, set_params, colors, clearPlot
+from latqcdtools.base.plotting import plot_lines, plot_file, set_params, colors, clearPlot, saveFigure
 from latqcdtools.base.utilities import timer
 from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS 
 from latqcdtools.math.num_deriv import diff_deriv
@@ -38,7 +38,7 @@ def testHRG():
             ymax = np.max(y)+0.5
             plot_file(controlFile,style="lines",marker=None,label=controlLabel,color=colors[1])
             set_params(xlabel="$T$",ylabel=testLabel,xmax=175,ymax=ymax)
-            plt.savefig(f'{controlFile}.pdf')
+            saveFigure(f'{controlFile}.pdf')
             plt.show()
             clearPlot()
     

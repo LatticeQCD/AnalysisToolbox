@@ -1006,7 +1006,14 @@ def getModelWeights(IC) -> np.ndarray:
         np.array: Probability weights 
     """
     checkType(np.ndarray,IC=IC)
-    return normalize(np.exp(-0.5*IC),p=1)
+    # Shifting by the smallest IC leaves the normalized weights unchanged and avoids overflow. Weights below
+    # exp(-70) ~ 1e-30 relative to the largest are negligible. Setting them to zero avoids underflow, which
+    # the toolbox treats as an error.
+    dIC  = IC - np.min(IC)
+    w    = np.zeros(np.shape(IC))
+    keep = dIC < 140
+    w[keep] = np.exp(-0.5*dIC[keep])
+    return normalize(w,p=1)
 
 
 def modelAverage(data,err,IC,return_syst=False):

@@ -9,6 +9,7 @@
 import numpy as np
 import itertools
 import latqcdtools.base.logger as logger
+from latqcdtools.base.check import checkDomain
 from latqcdtools.math.math import id
 
 logger.warn("This might be broken... Use with caution.")
@@ -54,7 +55,7 @@ class GammaMatrix:
                               [-1.0, 0.0, 0.0, 0.0],
                               [0.0, -1.0, 0.0, 0.0]], dtype=complex)
         else:
-            raise ValueError("Gamma index must be 1..4")
+            logger.TBRaise("Gamma index must be 1..4")
         return gamma
 
     def g5(self):
@@ -78,13 +79,12 @@ class DiracOp(GammaMatrix):
         """
         self.Lx, self.Ly, self.Lz, self.Lt = Lx, Ly, Lz, Lt
         self.fermion = fermion
-        if bc_t not in ("anti", "peri"):
-            raise ValueError("bc_t must be 'anti' or 'peri'")
+        checkDomain(bc_t, ["anti", "peri"])
         self.bc_t = bc_t
 
         # cache these (avoids rebuilding each call)
         self._gammas = np.array([self.g(1), self.g(2), self.g(3), self.g(4)], dtype=complex)
-        self._I4 = id(4).astype(complex)
+        self._I4 = id(4)
 
     def p(self):
         """Momentum values px,py,pz,pt. Spatial periodic; temporal controlled by bc_t."""
@@ -98,7 +98,7 @@ class DiracOp(GammaMatrix):
         """Free Wilson operator with r=1."""
         p = np.asarray(p, dtype=float)
         if p.shape != (4,):
-            raise ValueError("p must be length 4")
+            logger.TBRaise("p must be length 4")
 
         D = mass * self._I4
         for mu in range(4):
@@ -109,7 +109,7 @@ class DiracOp(GammaMatrix):
         """4D effective Möbius domain-wall operator."""
         p = np.asarray(p, dtype=float)
         if p.shape != (4,):
-            raise ValueError("p must be length 4")
+            logger.TBRaise("p must be length 4")
 
         gamma_5 = self.g5()
         I4 = self._I4

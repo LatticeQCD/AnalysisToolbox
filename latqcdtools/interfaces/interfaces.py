@@ -294,6 +294,23 @@ class redmineTable(markdownTable):
         return "redmineTable"
 
 
+def _tableFromExtension(filename,delimiter):
+    """ 
+    Empty table whose type is determined by the file extension of filename. The delimiter is only used for csv.
+    """
+    fileType = filename.split('.')[-1]
+    if fileType == 'tex':
+        return latexTable()
+    elif fileType == 'redmine':
+        return redmineTable()
+    elif fileType == 'md':
+        return markdownTable()
+    elif fileType == 'csv':
+        return csvTable(delimiter=delimiter)
+    else: 
+        logger.TBRaise('Unknown file type',fileType,frame=3)
+
+
 def convertTable(source,target,sourceDelimiter='',targetDelimiter=''):
     r""" 
     Convert a source table into a target table. The assumption for the source file is that
@@ -308,29 +325,9 @@ def convertTable(source,target,sourceDelimiter='',targetDelimiter=''):
     checkType(str,target=target)
     checkType(str,sourceDelimiter=sourceDelimiter)
     checkType(str,targetDelimiter=targetDelimiter)
-    sourceType = source.split('.')[-1]
-    targetType = target.split('.')[-1]
+    sourceTable = _tableFromExtension(source,sourceDelimiter)
+    targetTable = _tableFromExtension(target,targetDelimiter)
     inFile = open(source,'r')
-    if sourceType == 'tex':
-        sourceTable = latexTable()
-    elif sourceType == 'redmine':
-        sourceTable = redmineTable()
-    elif sourceType == 'md':
-        sourceTable = markdownTable()
-    elif sourceType == 'csv':
-        sourceTable = csvTable(delimiter=sourceDelimiter)
-    else: 
-        logger.TBRaise('Unknown source file type',sourceType)
-    if targetType == 'tex':
-        targetTable = latexTable()
-    elif targetType == 'redmine':
-        targetTable = redmineTable()
-    elif targetType == 'md':
-        targetTable = markdownTable()
-    elif targetType == 'csv':
-        targetTable = csvTable(delimiter=targetDelimiter)
-    else: 
-        logger.TBRaise('Unknown target file type',targetType)
     for row in inFile:
         start = len(sourceTable.pre)
         end = len(sourceTable.post)

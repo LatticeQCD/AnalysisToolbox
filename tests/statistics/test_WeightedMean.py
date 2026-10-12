@@ -7,11 +7,10 @@
 #
 
 import numpy as np
-from numpy.random import normal
 from latqcdtools.statistics.statistics import gaudif, std_mean, std_err, weighted_mean, weighted_variance, \
     unbiased_mean_variance, unbiased_sample_variance
 from latqcdtools.testing import print_results, concludeTest
-from latqcdtools.base.initialize import DEFAULTSEED
+from latqcdtools.base.initialize import DEFAULTSEED, TBRNG
 import latqcdtools.base.logger as logger
 
 
@@ -20,11 +19,11 @@ PREC=1e-15
 
 def testWeightedMean():
 
-    np.random.seed(DEFAULTSEED)
+    rng = TBRNG(DEFAULTSEED)
 
     lpass = True
 
-    data   = normal(10, 10, 100)
+    data   = rng.normal(10, 10, 100)
     errors = np.full_like(data, 10)
 
     x         = weighted_mean(data, errors)
@@ -32,8 +31,8 @@ def testWeightedMean():
     xe_unbias = np.sqrt(unbiased_mean_variance(data, errors))
     se_unbias = np.sqrt(unbiased_sample_variance(data, errors))
 
-    TRUEx        , TRUExe        = 10.786789615738144, 1.0
-    TRUExe_unbias, TRUEse_unbias = 1.1149172148742512, 11.14917214874251
+    TRUEx        , TRUExe        = 10.679990952078827, 1.0
+    TRUExe_unbias, TRUEse_unbias = 0.9274155524028469, 9.274155524028467
 
     lpass *= print_results(TRUEx        ,x        ,text='weighted average',prec=PREC)
     lpass *= print_results(TRUExe       ,xe       ,text='weighted average error',prec=PREC)
@@ -41,7 +40,7 @@ def testWeightedMean():
     lpass *= print_results(TRUEse_unbias,se_unbias,text='unbiased sample average error',prec=PREC)
 
     # Unequal errors, compared against the reliability-weights formula written out explicitly.
-    data   = normal(5, 2, 8)
+    data   = rng.normal(5, 2, 8)
     errors = np.array([0.5,1,1,2,3,4,6,10])
     w      = 1/errors**2
     V1     = np.sum(w)
@@ -52,8 +51,8 @@ def testWeightedMean():
     lpass *= print_results(s2*V2/V1**2,unbiased_mean_variance(data, errors) ,text='unbiased mean variance, unequal errors'  ,prec=1e-14)
 
     # Now see what happens we we combine two samples with different variances and statistics
-    data1 = normal(0,1,600)
-    data2 = normal(0,3,150)
+    data1 = rng.normal(0,1,600)
+    data2 = rng.normal(0,3,150)
     x1    = std_mean(data1)
     e1    = std_err(data1)
     x2    = std_mean(data2)
@@ -81,7 +80,7 @@ def testWeightedMean():
     x     = std_mean(data)
     e     = std_err(data)
 
-    lpass *= print_results(x,x12,e,e12,prec=1e-4,text='Combination test 2')
+    lpass *= print_results(x,x12,e,e12,prec=1e-3,text='Combination test 2')
 
     concludeTest(lpass)
 

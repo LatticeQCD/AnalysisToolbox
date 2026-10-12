@@ -56,4 +56,4 @@ elif muBdivT == 0.0:
     outFileName = "HotQCDEos2022_fixedmuBdivT%0.1f.txt" % muBdivT
     writeTable(outFileName, T, muBdivT * T, p, e, s, header=['T [MeV]', 'muB [MeV]', 'p', 'nB', 'e', 's'])
 else:
-    print("To calculate EOS either provide a fixed muB/T value or fixed s/nB value see : python  main_HotQCDEoS.py -h")
+    logger.TBError("To calculate EOS either provide a fixed muB/T value or fixed s/nB value see : python  main_HotQCDEoS.py -h")

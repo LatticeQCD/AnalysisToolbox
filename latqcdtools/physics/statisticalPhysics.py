@@ -27,10 +27,20 @@ def _printExponent(prefix, exponent):
 
 
 def _getParameter(parameterInfo):
-    """ 
-    Give the weighted average of literature values of some parameter. These are 
-    in units with k_B=J=1 and no magnetic field. If there is only one known value, 
-    give that back. 
+    """
+    Give the weighted average of literature values of some parameter. These are
+    in units with k_B=J=1 and no magnetic field. If there is only one known value,
+    give that back.
+
+    We follow the PDG prescription for averaging measurements x_i +/- s_i, see Section 5.2.2
+    of the introduction to the Review of Particle Physics, DOI: 10.1103/PhysRevD.110.030001.
+    With weights w_i = 1/s_i^2, the average and its error are
+        xbar = sum_i w_i x_i / sum_i w_i,    s = (sum_i w_i)^(-1/2).
+    If the x_i disagree, s underestimates the uncertainty. Therefore compute
+        chi^2 = sum_i w_i (x_i - xbar)^2,    S = sqrt( chi^2/(N-1) ),
+    and if S > 1, scale s up to S*s. The PDG computes S using only the x_i with s_i < 3 sqrt(N) s;
+    we use all of them. The weights are plain numbers, so xbar is a linear combination of the
+    gvars x_i, and gvar still propagates errors into exponents derived from xbar.
     """
     if len(parameterInfo)==1:
         for key in parameterInfo:
@@ -40,7 +50,15 @@ def _getParameter(parameterInfo):
         for key in parameterInfo:
             _params.append(parameterInfo[key])
         _params = np.array(_params)
-        return np.mean(_params) 
+        w    = 1/gv.sdev(_params)**2
+        xbar = np.sum(w*_params)/np.sum(w)
+        chi2 = np.sum(w*(gv.mean(_params) - xbar.mean)**2)
+        S    = np.sqrt(chi2/(len(_params)-1))
+        if S > 1:
+            # Stretch xbar about its mean, so that its error grows by S but it stays a linear
+            # combination of the x_i.
+            xbar = xbar.mean + S*(xbar - xbar.mean)
+        return xbar
 
 
 def _statisticalConsistencyCheck(parameterInfo,obs):
@@ -56,7 +74,17 @@ def _statisticalConsistencyCheck(parameterInfo,obs):
 
 
 def _compareWithZero(err,tol) -> bool:
-    return ( np.abs(gv.mean(err))<=gv.sdev(err) ) or (err<tol)
+    """
+    Check that err is consistent with zero. If err has an error bar, require that the probability of
+    getting a deviation at least this large by chance is above 0.01, as in _statisticalConsistencyCheck.
+    Otherwise require |err| < tol.
+    """
+    m = gv.mean(err)
+    e = gv.sdev(err)
+    if e < tol:
+        return np.abs(m) < tol
+    else:
+        return gaudif(m,e,0,0) > 0.01
 
 
 

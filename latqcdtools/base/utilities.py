@@ -406,6 +406,7 @@ class timer:
             logger.info("Time to finish: %12.8f [s]." % timing)
         else:
             logger.info("Time to finish "+message+": %12.8f [s]." % timing)
+        return timing
 
     def resetTimer(self):
         self._tstart = time.time()

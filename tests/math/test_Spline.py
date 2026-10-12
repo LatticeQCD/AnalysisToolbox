@@ -17,7 +17,7 @@ from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.statistics.statistics import countParams
 import latqcdtools.base.logger as logger
-from latqcdtools.base.initialize import DEFAULTSEED
+from latqcdtools.base.initialize import DEFAULTSEED, TBRNG
 
 
 SHOWPLOT = False
@@ -28,7 +28,7 @@ def testSpline():
     lpass = True
 
     x  = np.linspace(-1, 1, 101)
-    y  = 10*x**2 + np.random.randn(len(x))
+    y  = 10*x**2 + TBRNG(DEFAULTSEED).normal(size=len(x))
     ye = np.repeat(1.,len(y))
 
     knots = _even_knots(x, 3)
@@ -63,7 +63,7 @@ def testSpline():
 
     # Smoothing spline: must agree with scipy, with and without weights. Several data at one x act like one
     # datum with the summed weight and the weighted mean y, which scipy needs since it refuses repeated x.
-    rng = np.random.default_rng(DEFAULTSEED)
+    rng = TBRNG(DEFAULTSEED)
     xs  = np.sort(rng.uniform(0, 5, 30))
     es  = rng.uniform(0.05, 0.2, 30)
     ys  = np.sin(2*xs)/xs + rng.normal(0, es)
@@ -207,7 +207,7 @@ def testSpline():
     # fit is linear in y, so the band can be compared with exact error propagation.
     xb  = np.linspace(0, 3, 40)
     eb  = np.repeat(0.05,len(xb))
-    yb  = np.sin(xb) + np.random.default_rng(DEFAULTSEED).normal(0,0.05,len(xb))
+    yb  = np.sin(xb) + TBRNG(DEFAULTSEED).normal(0,0.05,len(xb))
     kind = Regression(nknots=5, natural=True)
     res = bootSpline(xb, yb, eb, kind, numb_samples=1000)
     sBS = res['splineBS'][0]
@@ -271,7 +271,7 @@ def testSpline():
     # P(k) and average with the chain. This checks the birth/death proposal ratio.
     xt = np.linspace(0, 1, 9)
     et = np.full(9, 0.05)
-    yt = np.sin(4*xt) + et*np.random.default_rng(3).normal(size=9)
+    yt = np.sin(4*xt) + et*TBRNG(3).normal(size=9)
     xf = np.linspace(0, 1, 41)
     for natural in [False, True]:
         f  = KnotAverage(ngrid=8, natural=natural, nupdates=30000, nburn=1000, every=5).fitter(xt, et)

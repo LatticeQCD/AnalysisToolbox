@@ -6,7 +6,7 @@
 # This is some Python code to help assist with managing lattice simulations. 
 # 
 
-from latqcdtools.base.check import checkType
+from latqcdtools.base.check import checkType, checkDomain
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import plt, plot_lines, plot_hist, set_params, clearPlot,\
     saveFigure
@@ -199,10 +199,8 @@ class ensemble:
             lcomplete = False
         if not lcomplete:
             logger.TBRaise('Must minimally specify Nt, Nf, beta, and kind.')
-        if self._ens['kind'] not in _allowedEnsKinds: 
-            logger.TBRaise('Unrecognized kind',self._ens['kind'])
-        if self._ens['Nf'] not in _allowedEnsNf: 
-            logger.TBRaise('Unrecognized Nf',self._ens['Nf'])
+        checkDomain(self._ens['kind'],_allowedEnsKinds)
+        checkDomain(self._ens['Nf'],_allowedEnsNf)
         if self._ens['Nf']=='2+1' or self._ens['Nf']=='2+1+1':
             if (self._ens['mf'] is not None) or (self._ens['mpre'] is not None):
                 logger.TBRaise('Detected degenerate Nf param with Nf=2+1(+1)')

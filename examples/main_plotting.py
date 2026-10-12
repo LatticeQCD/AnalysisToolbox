@@ -8,7 +8,7 @@
 # 
 
 import numpy as np
-from latqcdtools.base.plotting import latexify, set_params, plot_file, clearPlot, preliminary, \
+from latqcdtools.base.plotting import saveFigure, latexify, set_params, plot_file, clearPlot, preliminary, \
     plot_bar, plot_hist, plt
 from latqcdtools.statistics.statistics import plot_func
 from latqcdtools.interfaces.interfaces import readGPL 
@@ -84,8 +84,8 @@ data   = (data1,data2)
 labels = ['hist1','hist2']
 plot_hist(data,bins=20,density=True,xlabel='corr$_{\\rm disc}(0)$',label=labels) 
 
-# You always have to call savefig before show, otherwise savefig prints a blank.
-plt.savefig('exampleHist.pdf')
+# You always have to call saveFigure before show, otherwise saveFigure prints a blank.
+saveFigure('exampleHist.pdf')
 
 plt.show()
 

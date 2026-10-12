@@ -431,8 +431,7 @@ class Fitter:
                               self._max_fev[algorithm], algorithm = algorithm)
 
         if any(np.isnan(params)) or any(np.isinf(params)):
-            logger.TBFail(algorithm,": Fit result is inf or nan!")
-            raise ValueError
+            logger.TBRaise(algorithm,": Fit result is inf or nan!",exception=ValueError)
 
         chi2 = self.calc_chisquare(params)
 
@@ -511,8 +510,7 @@ class Fitter:
                     logger.warn(test)
 
             if np.min(np.diag(pcov)) < 0:
-                logger.TBFail(algorithm + ": Negative entries for the variance!")
-                raise ValueError
+                logger.TBRaise(algorithm,": Negative entries for the variance!",exception=ValueError)
 
         except Exception as e:
             logger.TBFail(algorithm,"hit exception",e)

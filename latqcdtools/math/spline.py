@@ -11,14 +11,14 @@
 
 import numpy as np
 from scipy.interpolate import BSpline, make_interp_spline, splev
-from scipy.linalg import null_space, solve_triangular, cholesky
+from scipy.linalg import null_space, solve_triangular
 from scipy.optimize import brentq
 import latqcdtools.base.logger as logger
-from latqcdtools.statistics.statistics import AIC
+from latqcdtools.statistics.statistics import AIC, whiteningMatrix, getModelWeights
 from latqcdtools.base.check import checkType, checkEqualLengths
 from latqcdtools.base.initialize import TBRNG, DEFAULTSEED
 from latqcdtools.base.speedify import compile
-from latqcdtools.math.math import isMatrix, isVector
+from latqcdtools.math.math import isMatrix, isVector, quadrature
 from latqcdtools.statistics.statistics import std_median, dev_by_dist
 from latqcdtools.statistics.bootstr import bootstr_from_gauss
 
@@ -77,12 +77,12 @@ def _parseEdata(edata):
 def _whitening(edata, ndata):
     """
     Whitening matrix M with M^T M = W, so that a chi^2 (y - S)^T W (y - S) becomes |M y - M S|^2. For
-    errors, M = diag(1/edata). For a covariance matrix, M = C^-1 with C its Cholesky factor. Without
+    errors, M = diag(1/edata). For a covariance matrix, M is the whiteningMatrix of the toolbox. Without
     edata, M = 1.
     """
     weights, cov = _parseEdata(edata)
     if cov is not None:
-        return solve_triangular(cholesky(cov, lower=True), np.eye(ndata), lower=True)
+        return whiteningMatrix(cov)
     elif weights is None:
         return np.eye(ndata)
     else:
@@ -171,13 +171,8 @@ def _averageWeights(y, M, Qd, occam):
     My     = M @ y
     QdTMy  = np.einsum('knb,n->kb', Qd, My)
     logEv  = _logEvidence(My, QdTMy, occam)
-    # Weights below exp(-70) ~ 1e-30 relative to the largest are negligible. Setting them to zero avoids
-    # underflow, which the toolbox treats as an error.
-    dLogEv = logEv - np.max(logEv)
-    w      = np.zeros(len(logEv))
-    keep   = dLogEv > -70
-    w[keep] = np.exp(dLogEv[keep])
-    return w/np.sum(w), logEv, QdTMy
+    # The log evidence plays the role of -IC/2.
+    return getModelWeights(-2*logEv), logEv, QdTMy
 
 
 class TBSpline:
@@ -1467,7 +1462,7 @@ def posteriorSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=3
     res['yspl']          = det['ybar']
     res['ysple_stat']    = ystat
     res['ysple_sys']     = det['ylamSpread']
-    res['ysple']         = np.sqrt(ystat**2 + det['ylamSpread']**2)
+    res['ysple']         = quadrature(np.array([ystat, det['ylamSpread']]),axis=0)
     res['splineMean']    = spline0
     res['splineSamples'] = splines
     res['xmax']          = std_median(xmaxs)

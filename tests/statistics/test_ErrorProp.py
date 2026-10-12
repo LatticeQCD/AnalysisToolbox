@@ -9,6 +9,7 @@
 #
 
 import matplotlib.pyplot as plt
+from latqcdtools.base.plotting import saveFigure
 import numpy as np
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.statistics.statistics import error_prop, error_prop_func, plot_func
@@ -95,7 +96,7 @@ def testErrorProp():
     plot_func(func, domain=(-1,1), params = params, args=(opt,), params_err = params_err, grad = grad,
               title = "Please check if all error bands are the same")
     if MAKEPLOT:
-        plt.savefig("errorprop.pdf")
+        saveFigure("errorprop.pdf")
 
     amean, aerr = 0.09, 0.001
     mean, err   = error_prop(K_G, np.array([1,m_mu_MeV,amean]), np.array([0,m_mu_MeV_err,aerr]))

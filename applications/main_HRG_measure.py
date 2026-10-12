@@ -48,7 +48,8 @@ if (LCP_file is None) and (muBh is None):
     logger.TBError("Either specify an LCP file or muB/T, not both.")
 
 
-print("\n  observable:",args.obs)
+logger.info()
+logger.info("  observable:",args.obs)
 printArg(" hadron_list:",args.hadron_file)
 printArg("  BQSC deriv:",args.BQSC)
 printArg("    LCP file:",LCP_file)
@@ -68,7 +69,8 @@ if muBh is not None:
     muSh = 0.
 else:
     T, muBh, muQh, muSh = readTable(LCP_file, usecols=(0, 1, 2, 3))
-print("     T [MeV]:",T[0],T[-1],"\n")
+logger.info("     T [MeV]:",T[0],T[-1])
+logger.info()
 muCh = 0.
 
 

@@ -9,6 +9,7 @@
 from latqcdtools.statistics.statistics import std_err, std_mean, binSeries
 from latqcdtools.statistics.jackknife import jackknife
 from latqcdtools.testing import print_results, concludeTest
+from latqcdtools.base.initialize import TBRNG
 import numpy as np
 
 
@@ -23,7 +24,7 @@ def nonlinear(data):
 
 def testJackknife():
 
-    testdata = np.random.default_rng(234).normal(0, 1, 200)
+    testdata = TBRNG(234).normal(0, 1, 200)
 
     lpass = True
 

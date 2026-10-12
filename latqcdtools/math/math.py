@@ -532,18 +532,19 @@ def RMS(data) -> float:
     return np.sqrt(np.mean(data**2))
 
 
-def quadrature(data) -> float:
+def quadrature(data,axis=None):
     """
     Add data in quadrature
 
     Args:
         data (np.ndarray)
+        axis (int, optional): Axis along which to add. Defaults to None, meaning all elements.
 
     Returns:
-        float: data added in quadrature 
+        float or np.ndarray: data added in quadrature 
     """
     checkType(np.ndarray,data=data)
-    return np.sqrt(np.sum(data**2))
+    return np.sqrt(np.sum(data**2,axis=axis))
 
 
 def rel_check(a, b, prec = 1e-6, abs_prec = 1e-14) -> bool:

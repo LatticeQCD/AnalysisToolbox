@@ -15,7 +15,7 @@ from latqcdtools.math.math import isPositiveSemidefinite
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.plotting import plt
-from latqcdtools.base.initialize import DEFAULTSEED
+from latqcdtools.base.initialize import DEFAULTSEED, TBRNG
 from latqcdtools.base.utilities import toNumpy
 
 
@@ -207,7 +207,7 @@ def testStats():
         lpass = False
 
     # Whitened residuals z = W r are uncorrelated with unit variance, and z.z = r C^-1 r.
-    rng   = np.random.default_rng(DEFAULTSEED)
+    rng   = TBRNG(DEFAULTSEED)
     A     = rng.normal(size=(5,5))
     C     = A @ A.T + np.eye(5)
     W     = whiteningMatrix(C)
@@ -230,7 +230,7 @@ def testStats():
 
     # Test of the confidence ellipse method.
     Ndraws = 1001
-    rng = np.random.default_rng(seed=DEFAULTSEED)
+    rng = TBRNG(DEFAULTSEED)
     _,ax = plt.subplots()
     x = rng.normal(0,3,Ndraws)
     y = rng.normal(0,1,Ndraws)
