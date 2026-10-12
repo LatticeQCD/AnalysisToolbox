@@ -48,9 +48,10 @@ def testContExtrap():
                                                              prior=prior,priorsigma=priorsigma,error_strat='hessian')
 
     REFresult     = [-0.51193317,  2.53542709, -0.11948167]
-    REFresult_err = [0.013157782255541808,0.1556879617856091,0.14633527794956006]
+    # Exact posterior errors of this linear fit; lsqfit 13.2.3 agrees.
+    REFresult_err = [0.01194069, 0.20158564, 0.93791504]
     REFchidof     = 1.2219934235330452
-    REFlogGBF     = 5.36146864464183
+    REFlogGBF     = 5.457868607878355 # lsqfit 13.2.3
 
     lpass *= print_results(result,REFresult,result_err,REFresult_err,text='O(a^4) with prior',prec=PREC)
     lpass *= print_results(chidof,REFchidof,text='O(a^4) chi^2/d.o.f.',prec=PREC)

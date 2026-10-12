@@ -71,6 +71,14 @@ def checkSquare(mat):
         logger.TBRaise('Expected square matrix. Got shape',np.shape(mat))
 
 
+def _absPrec(mat) -> float:
+    """
+    Absolute tolerance for comparing mat to a transformed copy of itself, relative to the size of its largest
+    element, so that such checks do not depend on the units of mat.
+    """
+    return 1e-14*np.max(np.abs(mat))
+
+
 def dagger(arr) -> np.ndarray:
     checkType(np.ndarray,mat=arr)
     if arr.ndim > 2:
@@ -118,7 +126,7 @@ def isSymmetric(mat) -> bool:
         bool: True if symmetric
     """
     checkSquare(mat)
-    return np.allclose(mat, mat.T)
+    return rel_check(mat, mat.T, abs_prec=_absPrec(mat))
 
 
 def isHermitian(mat) -> bool:
@@ -132,7 +140,7 @@ def isHermitian(mat) -> bool:
         bool: True if hermitian 
     """
     checkSquare(mat)
-    return np.allclose(mat, dagger(mat))
+    return rel_check(mat, dagger(mat), abs_prec=_absPrec(mat))
 
 
 def isAntihermitian(mat) -> bool:
@@ -146,7 +154,7 @@ def isAntihermitian(mat) -> bool:
         bool: True if antihermitian 
     """
     checkSquare(mat)
-    return np.allclose(mat, -dagger(mat))
+    return rel_check(mat, -dagger(mat), abs_prec=_absPrec(mat))
 
 
 def isOrthogonal(mat) -> bool:
@@ -161,7 +169,7 @@ def isOrthogonal(mat) -> bool:
     """
     checkSquare(mat)
     N = len(mat[0])
-    return np.allclose(mat@mat.T, id(N))
+    return rel_check(mat@mat.T, id(N))
 
 
 def isHankel(mat) -> bool:
@@ -200,20 +208,59 @@ def TA(mat) -> np.ndarray:
     return 0.5*(mat-dagger(mat))
 
 
+def eigh(mat):
+    """
+    Eigenvalues and eigenvectors of a Hermitian (or real symmetric) matrix. Unlike a general eigensolver, this
+    guarantees real eigenvalues and orthonormal eigenvectors, also when eigenvalues are degenerate. Rounding
+    errors that make mat slightly non-Hermitian are removed by symmetrizing first.
+
+    Args:
+        mat (np.ndarray): Hermitian matrix
+
+    Returns:
+        np.ndarray, np.ndarray: eigenvalues in ascending order, and eigenvectors as the columns of a matrix 
+    """
+    checkSquare(mat)
+    if not isHermitian(mat):
+        logger.TBRaise('Expected a Hermitian matrix.')
+    return np.linalg.eigh( (mat + dagger(mat))/2 )
+
+
+def applySVDCut(vals, svdcut=1e-12) -> np.ndarray:
+    """
+    Raise all singular values or (non-negative) eigenvalues below svdcut*max(vals) to that floor. This caps the
+    condition number of the corresponding matrix at 1/svdcut.
+
+    Args:
+        vals (np.ndarray): singular values or eigenvalues
+        svdcut (float, optional): condition number threshold. Defaults to 1e-12.
+
+    Returns:
+        np.ndarray: modified copy of vals 
+    """
+    vals  = np.array(vals)
+    floor = svdcut*np.max(vals)
+    vals[vals < floor] = floor
+    return vals
+
+
 def isPositiveSemidefinite(mat,details=False,eps=1e-12) -> bool:
     """ Returns true if mat is positive semidefinite. Otherwise, if details=True,
-    list the eigenvalues that are not >=0.
+    list the eigenvalues that are not >=0. Only the Hermitian part of mat matters, since
+    x^dagger mat x is real only for that part, so we check its eigenvalues.
 
     Args:
         mat (np.ndarray)
         details (bool, optional): If true, report problematic eigenvalues. Defaults to False.
+        eps (float, optional): Tolerance relative to the largest |eigenvalue|, so that the check does not
+          depend on the units of mat. Defaults to 1e-12.
 
     Returns:
         bool: True if positive semidefinite 
     """
     checkSquare(mat)
-    eigenvalues = np.linalg.eigvals(mat)
-    positiveSemidefinite = np.all(eigenvalues >= -eps)
+    eigenvalues, _ = eigh( (mat + dagger(mat))/2 )
+    positiveSemidefinite = np.all(eigenvalues >= -eps*np.max(np.abs(eigenvalues)))
     if details and (not positiveSemidefinite):
         logger.info('Problem eigenvalues:')
         for i in range(len(eigenvalues)):
@@ -237,13 +284,12 @@ def regulate(mat,svdcut=1e-12) -> np.ndarray:
     Returns:
         np.ndarray: regulated matrix 
     """
-    logger.debug('regulate matrix with condition number',cleanOutput(np.linalg.cond(mat)))
     U, s, Vdagger = sp.linalg.svd(mat)
-    smax = np.max(np.linalg.eigvals(mat))
-    s[s < svdcut*smax] = svdcut*smax
-    res = U @ np.diag(s) @ Vdagger 
-    logger.debug('new condition number:',cleanOutput(np.linalg.cond(res)))
-    return res
+    # SVD sorts singular values in descending order, so the condition number is s[0]/s[-1].
+    logger.debug('regulate matrix with condition number',cleanOutput(s[0]/s[-1]))
+    s = applySVDCut(s, svdcut)
+    logger.debug('new condition number:',cleanOutput(s[0]/s[-1]))
+    return U @ np.diag(s) @ Vdagger 
 
 
 def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
@@ -270,12 +316,11 @@ def invert(mat,method='scipy',svdcut=1e-12) -> np.ndarray:
         U, s, Vdagger = sp.linalg.svd(mat)
         return dagger(Vdagger) @ np.diag(1/s) @ dagger(U)
     elif method=='auto':
-        condition_number = np.linalg.cond(mat)
-        if condition_number > 1/svdcut:
-            res = invert(regulate(mat,svdcut=svdcut),'pinv')
-            return res
-        else:
-            return invert(mat,'scipy')
+        # Invert with the SVD, applying the SVD cut if the matrix is ill-conditioned. 
+        U, s, Vdagger = sp.linalg.svd(mat)
+        if s[0]/s[-1] > 1/svdcut:
+            s = applySVDCut(s, svdcut)
+        return dagger(Vdagger) @ np.diag(1/s) @ dagger(U)
     else:
         logger.TBRaise('Unrecognized inverter',method)
 

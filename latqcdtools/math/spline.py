@@ -14,7 +14,7 @@ from scipy.interpolate import BSpline, make_interp_spline, splev
 from scipy.linalg import null_space, solve_triangular, cholesky
 from scipy.optimize import brentq
 import latqcdtools.base.logger as logger
-from latqcdtools.statistics.statistics import AICc
+from latqcdtools.statistics.statistics import AIC
 from latqcdtools.base.check import checkType, checkEqualLengths
 from latqcdtools.base.initialize import TBRNG, DEFAULTSEED
 from latqcdtools.base.speedify import compile
@@ -215,16 +215,16 @@ class TBSpline:
             nparams -= 2
         return nparams
 
-    def get_AICc(self):
+    def get_AIC(self):
         """
-        AICc of the fit, using the covariance matrix if edata is one. Requires edata.
+        AIC of the fit, using the covariance matrix if edata is one. Requires edata.
         """
         if self.edata is None:
-            logger.TBRaise('AICc needs edata.')
+            logger.TBRaise('AIC needs edata.')
         cov = self.cov
         if cov is None:
             cov = np.diag(1/self.weights**2)
-        return AICc(self.xspline, self.yspline, cov, self)
+        return AIC(self.xspline, self.yspline, cov, self)
 
     def __repr__(self) -> str:
         return "TBSpline"
@@ -274,11 +274,11 @@ class TBSpline:
 class SplineKind:
 
     """
-    Base class of the kinds of spline. hasAICc is False for kinds without a meaningful AICc, i.e.
+    Base class of the kinds of spline. hasAIC is False for kinds without a meaningful AIC, i.e.
     interpolation and averages over models.
     """
 
-    hasAICc = True
+    hasAIC = True
 
     def fitter(self, xdata, edata=None):
         logger.TBRaise('Not implemented for',self)
@@ -297,7 +297,7 @@ class Interpolating(SplineKind):
     are not used in the fit.
     """
 
-    hasAICc = False
+    hasAIC = False
 
     def __repr__(self) -> str:
         return "Interpolating()"
@@ -388,13 +388,13 @@ class Smoothing(SplineKind):
                 logger.TBRaise("lam must be a number or 'average'. lam =",lam)
             checkType('int',nlam=nlam)
             self.averaged = True
-            self.hasAICc  = False
+            self.hasAIC  = False
         else:
             checkType('real',lam=lam)
             if lam <= 0:
                 logger.TBRaise('Need lam > 0. lam =',lam)
             self.averaged = False
-            self.hasAICc  = True
+            self.hasAIC  = True
 
     def __repr__(self) -> str:
         if self.averaged:
@@ -437,7 +437,7 @@ class KnotAverage(SplineKind):
             sample gets its own reproducible chain. Defaults to DEFAULTSEED.
     """
 
-    hasAICc = False
+    hasAIC = False
 
     def __init__(self, kmax=None, ngrid=None, natural=False, nupdates=10000, nburn=1000, every=10, nchains=1, 
                  seed=DEFAULTSEED):
@@ -1230,7 +1230,7 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
             xmax, xmaxe: the same for the x on xspl where the spline is largest
             splineMean: the spline fit to the original data, not an average over samples
             splineBS: the spline of each bootstrap sample
-            AICc: AICc of splineMean, unless the kind is Interpolating or averaged
+            AIC: AIC of splineMean, unless the kind is Interpolating or averaged
         For Smoothing(lam='average') also:
             lams, peffs, weights, logEvidences: the grid of lam, the effective numbers of parameters, the
                 weights, and the log evidences, for the original data.
@@ -1295,8 +1295,8 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
     # bias-corrected central value and error of xmax over the samples. Hence xmax can lie between grid points.
     res['xmax']       = mean[-2]
     res['xmaxe']      = err[-2]
-    if kind.hasAICc:
-        res['AICc'] = spline0.get_AICc()  # inf if nparams >= ndata-1
+    if kind.hasAIC:
+        res['AIC'] = spline0.get_AIC()
     if isinstance(kind,KnotAverage):
         det = fitter.details(y, xspl)
         res['ysple_knots']  = det['yknotSpread']

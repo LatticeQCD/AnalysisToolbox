@@ -181,13 +181,13 @@ def testSpline():
     lpass *= print_results(res['yspl'], bootSpline(xs, ys, es, Smoothing(nlam=40), numb_samples=10)['splineMean'](res['xspl']),
                            text="posterior mean = bootSpline splineMean", prec=1e-8)
 
-    aicc_arr = []
+    aic_arr = []
     for knots in [10,30,60]:
 
         spline = getSpline(x,y,ye,Regression(nknots=knots))
-        aicc   = spline.get_AICc()
+        aic    = spline.get_AIC()
 
-        aicc_arr.append(aicc)
+        aic_arr.append(aic)
 
         if SHOWPLOT:
             set_params(xlabel='x',ylabel='y')
@@ -195,13 +195,13 @@ def testSpline():
             plot_lines(x,spline(x),marker=None)
             plt.show()
 
-        logger.info('Try spline with knots =',knots,'AICc =',aicc)
+        logger.info('Try spline with knots =',knots,'AIC =',aic)
 
-    if aicc_arr[0]>aicc_arr[-1]:
-        logger.TBFail("AICc should penalize overfitting.")
+    if aic_arr[0]>aic_arr[-1]:
+        logger.TBFail("AIC should penalize overfitting.")
         lpass=False
     else:
-        logger.TBPass("AICc penalizes overfitting.")
+        logger.TBPass("AIC penalizes overfitting.")
 
     # bootSpline: the rebuilt bootstrap splines must equal refits to the same samples. For fixed knots the
     # fit is linear in y, so the band can be compared with exact error propagation.
@@ -213,8 +213,8 @@ def testSpline():
     sBS = res['splineBS'][0]
     lpass *= print_results(sBS(res['xspl']), getSpline(xb, sBS.get_y(), eb, kind)(res['xspl']),
                            text="bootSpline rebuilt spline = refit")
-    lpass *= print_results(res['AICc'], getSpline(xb, yb, eb, kind).get_AICc(),
-                           text="bootSpline AICc of original data")
+    lpass *= print_results(res['AIC'], getSpline(xb, yb, eb, kind).get_AIC(),
+                           text="bootSpline AIC of original data")
     M = []
     for unit in np.eye(len(xb)):
         M.append(getSpline(xb, unit, eb, kind)(res['xspl']))

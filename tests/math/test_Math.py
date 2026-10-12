@@ -9,8 +9,9 @@ import numpy as np
 import math
 from latqcdtools.math.math import fallFactorial, invert, RMS, isMatrix, isSquare, isUnitary, \
     isSpecial, isSymmetric, isHermitian, isAntihermitian, isOrthogonal, isHankel, TA, pnorm, \
-    normalize, exp, pow, log, ze
+    normalize, exp, pow, log, ze, regulate, eigh, applySVDCut
 from latqcdtools.testing import print_results, concludeTest
+import latqcdtools.base.logger as logger
 
 
 mat = np.array( 
@@ -92,6 +93,30 @@ def testMath():
 
     data = np.array([7,12,48,1/2,np.pi])
     lpass *= print_results(22.392496977340823,RMS(data),text='RMS')
+
+    # Indefinite matrix: the cut is relative to the largest singular value 10, not to the largest eigenvalue 1e-3,
+    # so the condition number is capped at 1/svdcut.
+    lpass *= print_results(1e12,np.linalg.cond(regulate(np.diag([-10.,1e-3,1e-15]),svdcut=1e-12)),
+                           text='regulate indefinite',prec=1e-10)
+
+    # Symmetry checks are relative to the size of the matrix, so they do not depend on its units.
+    asym = np.array([[1.,2.],[2.1,1.]])
+    if isSymmetric(1e-20*asym) or not isSymmetric(1e-20*(asym+asym.T)):
+        logger.TBFail('isSymmetric depends on scale')
+        lpass = False
+
+    # eigh returns orthonormal eigenvectors also for degenerate eigenvalues.
+    J = np.ones((3,3))
+    vals, vecs = eigh(1.6*np.eye(3)-0.6*J)
+    lpass *= print_results(np.array([-0.2,1.6,1.6]),vals,text='eigh eigenvalues',prec=1e-14)
+    lpass *= print_results(np.eye(3),vecs.T @ vecs,text='eigh orthonormal',prec=1e-14)
+
+    lpass *= print_results(np.array([1e-6,1e-6,1.]),applySVDCut(np.array([1e-9,1e-6,1.]),1e-6),text='applySVDCut',prec=1e-14)
+
+    # For an ill-conditioned matrix, invert 'auto' is the inverse of the regulated matrix.
+    ill = np.array([[1.,1.],[1.,1.+1e-10]])
+    lpass *= print_results(invert(regulate(ill,svdcut=1e-6),'scipy'),invert(ill,'auto',svdcut=1e-6),
+                           text='invert auto',prec=1e-8)
 
     concludeTest(lpass)
 

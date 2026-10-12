@@ -17,12 +17,11 @@ from latqcdtools.base.plotting import plot_dots, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy 
 from latqcdtools.base.fileSystem import createFilePath
-from latqcdtools.math.math import invert, regulate, checkSquare, isSymmetric, isPositiveSemidefinite, \
-    isMatrix, isVector
+from latqcdtools.math.math import invert, checkSquare, isMatrix, isVector
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_grad
-from latqcdtools.statistics.statistics import plot_func, error_prop_func, cov_to_cor, chisquare, logGBF, DOF, \
-    expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior, goodnessOfFit
+from latqcdtools.statistics.statistics import plot_func, error_prop_func, chisquare, logGBF, DOF, \
+    expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior, goodnessOfFit, CovarianceDecomposition
 from latqcdtools.base.printErrorBars import get_err_str
 
 
@@ -78,9 +77,9 @@ class Fitter:
     The derivatives of the actual chisquare are then computed via error propagation. Another way is to use numerical
     derivatives.
 
-    There are two ways to compute the derivatives of the chisqare numerically. Either compute the
-    numerical derivative of the whole chisquare (error_strat='hessian') or compute the derivatives of the fitting
-    function and use error propagation (error_strat='propagation'). The latter is the default case.
+    The parameter covariance is pcov = (J^T C^-1 J + Sigma_prior^-1)^-1, with J the Jacobian of the fit function.
+    This is error propagation (error_strat='propagation'). It is also the inverse of half the Hessian of the
+    chi^2 when terms of O(f(p)-y) are dropped, so error_strat='hessian' gives the same result. 
     """
 
     def __init__(self, func, xdata, ydata, edata = None, **kwargs):
@@ -165,10 +164,6 @@ class Fitter:
         logger.debug('         svdcut:',self._svdcut)
         logger.debug('          nproc:',self._nproc) 
 
-        if (self._errorAlg=='hessian') and (self._derive_chisq) and (not self._nowarn):
-            self._errorAlg='propagation'
-            logger.warn('hessian strategy not yet compatible with derive_chisq; switching to propagation.')
-
         if self._grad_args is None:
             self._grad_args = self._args
 
@@ -219,19 +214,18 @@ class Fitter:
             self._cov = np.diag(np.ones(len(self._ydata)))
 
         checkSquare(self._cov)
-        if not isSymmetric(self._cov):
-            logger.TBRaise('Covariance matrix is not symmetric.')
-        if not isPositiveSemidefinite(self._cov):
-            logger.TBRaise('Covariance matrix is not positive semidefinite.')
+        if np.any(np.diag(self._cov) == 0):
+            logger.TBRaise('Some data have zero error, which gives them infinite weight in the fit.')
 
-        # Compute a correlation matrix. Note that if the incoming data are highly correlated, then
-        # the covariance matrix is likely to be ill-conditioned. This results in numerical stability
-        # issues, most obviously when trying to invert the matrix, but also when trying to do things
-        # like compute its jacobian. Therefore regulate it. 
-        self._cov     = regulate( self._cov, svdcut=self._svdcut )
-        self._cor     = cov_to_cor( self._cov )
-        self._inv_cor = invert( self._cor, 'scipy' )
-        self._inv_cov = invert( self._cov, 'scipy' )
+        # Note that if the incoming data are highly correlated, then the covariance matrix is likely to be
+        # ill-conditioned. This results in numerical stability issues, most obviously when trying to invert the
+        # matrix, but also when trying to do things like compute its jacobian. Therefore regulate it with an SVD
+        # cut on the correlation matrix. Everything else, in particular chi^2, its derivatives, and pcov, is 
+        # computed from the whitening matrix of this one decomposition. 
+        covDecomp     = CovarianceDecomposition( self._cov, svdcut=self._svdcut )
+        self._cor     = covDecomp.cor()
+        self._cov     = covDecomp.cov()
+        self._whiten  = covDecomp.whiteningMatrix()
 
 
     def __repr__(self) -> str:
@@ -304,32 +298,55 @@ class Fitter:
 
     def jacobian_fit_ansatz_array(self, params):
         """ 
-        If f is the fit function, return the array df / dp_i evaluated at each _fit_xdata. 
+        If f is the fit function, return the array df / dp_i evaluated at each _fit_xdata. Without self.grad,
+        e.g. when derive_chisq=True, use numerical derivatives. 
         """
         params = np.array(params)
-        # Note that the function is passed in secret here.
-        return self.grad(self._xdata, params).T
+        if self.grad is None:
+            jac = self._num_func_jacobian(params)
+        else:
+            # Note that the function is passed in secret here.
+            jac = self.grad(self._xdata, params).T
+        return jac
 
 
     def calc_chisquare(self, params):
         """ 
-        Compute chi^2. This is the function that will be minimized. 
+        Compute chi^2 = sum(z^2), with z the whitened residuals. This is the function that will be minimized. 
         """
-        return chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, params, 
-                         prior=self._priorval,priorsigma=self._priorsigma)
+        z = self.whitened_residuals(params)
+        return z @ z
+
+
+    def whitened_residuals(self, params):
+        """ 
+        Whitened residuals z with chi^2 = sum(z^2), as in lsqfit. Priors are appended as extra data with
+        residuals (p - prior)/priorsigma. We assume priors are not correlated with data. An infinite priorsigma
+        gives a zero residual, so that parameter has no prior. See whiteningMatrix. 
+        """
+        params = np.array(params)
+        res = self._whiten @ ( self.fit_ansatz_array(params) - self._ydata )
+        if self._priorsigma is not None:
+            res = np.concatenate(( res, (params - self._priorval)/self._priorsigma ))
+        return res
+
+
+    def jacobian_whitened_residuals(self, params):
+        """ 
+        Jacobian J_z = dz/dp of the whitened residuals. The derivatives of chi^2 and the parameter covariance
+        all follow from z and J_z. 
+        """
+        jac = self._whiten @ self.jacobian_fit_ansatz_array(params)
+        if self._priorsigma is not None:
+            jac = np.concatenate(( jac, np.diag(1/self._priorsigma) ))
+        return jac
 
 
     def grad_chisquare(self, params):
         """ 
-        Compute the gradient of the chisquare, see e.g. eq. (A3) in 10.1103/PhysRevD.90.054506. 
-        We assume priors are not correlated with data. 
+        Compute the gradient of the chisquare, 2 J_z^T z, see e.g. eq. (A3) in 10.1103/PhysRevD.90.054506. 
         """
-        jac  = self.jacobian_fit_ansatz_array(params).T     # df/dp
-        diff = self.fit_ansatz_array(params) - self._ydata  # Dy
-        res  = 2 * jac @ self._inv_cov @ diff
-        if self._priorsigma is not None:
-            res += np.sum( 2*( np.array(params) - self._priorval ) / self._priorsigma**2 )
-        return res
+        return 2 * self.jacobian_whitened_residuals(params).T @ self.whitened_residuals(params)
 
 
     def hess_chisquare(self, params):
@@ -337,13 +354,10 @@ class Fitter:
         Compute the Hessian of the chisquare. Terms of O(f(p)-y) are discarded, which is reasonable when
         the fit is relatively good. This also ensures non-negative eigenvalues for pcov and saves computational
         time computing the Hessian. See e.g. eq. (A4) in 10.1103/PhysRevD.90.054506. We assume priors are not 
-        correlated with data. 
+        correlated with data. Then the Hessian is 2 J_z^T J_z. 
         """
-        jac = self.jacobian_fit_ansatz_array(params).T
-        res = 2*( jac @ self._inv_cov @ jac.T )
-        if self._priorsigma is not None:
-            res += np.sum( 2/self._priorsigma**2 )
-        return res
+        jz = self.jacobian_whitened_residuals(params)
+        return 2 * jz.T @ jz
 
 
     def _num_func_jacobian(self, params):
@@ -402,6 +416,16 @@ class Fitter:
             params, _ = curve_fit(func, self._xdata, self._ydata, sigma = cov, p0 = start_params, jac = grad,
                                   ftol = self._tol, maxfev = self._max_fev["curve_fit"], method='trf')
 
+        elif algorithm == "nonlin":
+            # Least squares on the whitened residuals, as in lsqfit. Without an analytic gradient, use
+            # central differences.
+            if self.grad is not None:
+                res_jac = self.jacobian_whitened_residuals
+            else:
+                res_jac = '3-point'
+            params = minimize(self.whitened_residuals, res_jac, None, start_params, self._tol,
+                              self._max_fev[algorithm], algorithm = algorithm)
+
         else:
             params = minimize(self.calc_chisquare, jac_func, hess_func, start_params, self._tol,
                               self._max_fev[algorithm], algorithm = algorithm)
@@ -440,22 +464,23 @@ class Fitter:
         dof = DOF(len(self._ydata),len(params),self._priorsigma)    
 
         logger.debug('using error alg',self._errorAlg)
-        if dof <= 0:
-            pcov = np.full((len(params),len(params)), np.nan)
+        # pcov does not depend on dof, so it is well defined also when dof == 0. (DOF raises for dof < 0.)
+        # Both error strategies give the same pcov; see the Fitter docstring. 
+        if self._errorAlg=='propagation' or self._errorAlg=='hessian':
+            pcov = self.pcov_error_prop(params,algorithm)
         else:
-            if self._errorAlg=='propagation':
-                pcov = self.pcov_error_prop(params,algorithm)
-            elif self._errorAlg=='hessian':
-                pcov = self.pcov_hessian(params,algorithm)
-            else:
-                logger.TBRaise('Unknown fitting algorithm', self._errorAlg)
+            logger.TBRaise('Unknown error strategy', self._errorAlg)
 
         # Sometimes people like to rescale the parameter covariance matrix by the chi^2/dof. This tries to
         # take the fit quality in account into the error directly, and to my understanding it is what
         # gnuplot does. In a physics context, this procedure seems to be unjustified, and it doesn't come 
         # naturally out of the mathematics, so this is not done by default.
         if self._norm_err_chi2:
-            pcov *= chi2/dof
+            if dof == 0:
+                logger.warn('Cannot rescale pcov by chi^2/dof when dof == 0. Setting pcov to NaN.')
+                pcov = np.full((len(params),len(params)), np.nan)
+            else:
+                pcov *= chi2/dof
         fit_errors = np.sqrt(np.diag(pcov))
 
         self._pcov = pcov
@@ -466,21 +491,21 @@ class Fitter:
     def pcov_error_prop(self, params, algorithm):
         """ 
         Compute the parameter's covariance matrix through error propagation, i.e. pcov = (J^t * C^-1 * J)^-1, where
-        J is the Jacobian of the fit function and C is the covariance matrix of the data points. 
+        J is the Jacobian of the fit function and C is the covariance matrix of the data points. With priors,
+        pcov = (J^t * C^-1 * J + Sigma_prior^-1)^-1. We assume priors are not correlated with data. Both are 
+        computed as pcov = (J_z^T J_z)^-1, with J_z the Jacobian of the whitened residuals.
         """
-        if self.grad is None:
-            jac = self._num_func_jacobian(params)
-        else:
-            jac = self.jacobian_fit_ansatz_array(params)
-
-        jej = jac.T @ self._inv_cov @ jac
+        jz  = self.jacobian_whitened_residuals(params)
+        jej = jz.T @ jz
 
         try:
-            pcov = invert(jej,'pinv')
+            # Not pinv: if jej is singular, some parameter is unconstrained, and pinv would hide that by
+            # giving it a finite error. 
+            pcov = invert(jej,'scipy')
 
             # Test that the inversion went relatively OK
             test = pcov @ jej
-            if abs(np.sum(test) - np.sum(np.diag(test))) > self._test_tol:
+            if np.max(np.abs(test - np.eye(len(test)))) > self._test_tol:
                 if not self._nowarn:
                     logger.warn(algorithm,"pcov @ jej not close to id")
                     logger.warn(test)
@@ -494,17 +519,6 @@ class Fitter:
             raise e 
 
         return pcov 
-
-
-    def pcov_hessian(self, params, algorithm):
-        """ 
-        Obtain the parameter's covariance matrix by inverting the hessian of the chi^2. 
-        """
-        pcov = invert(self.hess_chisquare(params)/2.)
-        if np.min(np.diag(pcov)) < 0:
-            logger.TBFail(algorithm + ": Negative entries for the variance!")
-            raise ValueError
-        return pcov
 
 
     def _general_fit(self, algorithm="curve_fit"): 
@@ -579,10 +593,6 @@ class Fitter:
         if isinstance(algorithms,str):
             algorithms=[algorithms]
 
-        if ('curve_fit' in algorithms) and (self._errorAlg=='hessian') and (not self._nowarn):
-            self._errorAlg='propagation'
-            logger.warn('hessian strategy not yet compatible with curve_fit; switching strategy to propagation.')
-
         # Prior values are a good point for starting the fit, if you don't have another guess.
         if (priorval is not None) and (start_params is None):
             start_params = priorval
@@ -636,14 +646,14 @@ class Fitter:
         else:
             chidof = all_chi2[min_ind]/dof
 
-        aicc = AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params, self._priorval, self._priorsigma)
+        aic = AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params)
 
         if show_results:
             logger.info('Fit Results:')
             for i in range(len(all_fit_errors[min_ind])):
                 logger.info(f'          p[{i}] =',get_err_str(self._saved_params[i],all_fit_errors[min_ind][i]))
             logger.info('  chi^2/d.o.f. =',chidof)
-            logger.info('          AICc =',aicc)
+            logger.info('           AIC =',aic)
 
 
         if detailedInfo:
@@ -651,15 +661,15 @@ class Fitter:
                      all_fit_errors[min_ind],
                      chidof,
                      {  'logGBF'   : logGBF(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                                           prior=self._priorval,priorsigma=self._priorsigma),
+                                           prior=self._priorval,priorsigma=self._priorsigma,
+                                           jac=self.jacobian_fit_ansatz_array(self._saved_params)),
                         'pcov'     : np.copy(self._saved_pcov),
                         'chi2'     : all_chi2[min_ind],
                         'chi2data' : chisquare(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
                                                None, None),
                         'BAIC'     : BAIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,Ncut=Ncut),
-                        'AIC'      : AIC(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params,
-                                         self._priorval, self._priorsigma),
-                        'AICc'     : aicc, 
+                        'AIC'      : aic,
+                        'AICc'     : AICc(self._xdata, self._ydata, self._cov, self._func, self._args, self._saved_params),
                         'DOF'      : dof,
                         'Q'        : goodnessOfFit(dof,all_chi2[min_ind])
                      }

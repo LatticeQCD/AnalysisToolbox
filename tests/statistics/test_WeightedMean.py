@@ -40,6 +40,17 @@ def testWeightedMean():
     lpass *= print_results(TRUExe_unbias,xe_unbias,text='unbiased weighted average error',prec=PREC)
     lpass *= print_results(TRUEse_unbias,se_unbias,text='unbiased sample average error',prec=PREC)
 
+    # Unequal errors, compared against the reliability-weights formula written out explicitly.
+    data   = normal(5, 2, 8)
+    errors = np.array([0.5,1,1,2,3,4,6,10])
+    w      = 1/errors**2
+    V1     = np.sum(w)
+    V2     = np.sum(w**2)
+    mu     = w @ data / V1
+    s2     = w @ (data-mu)**2 / (V1 - V2/V1)
+    lpass *= print_results(s2        ,unbiased_sample_variance(data, errors),text='unbiased sample variance, unequal errors',prec=1e-14)
+    lpass *= print_results(s2*V2/V1**2,unbiased_mean_variance(data, errors) ,text='unbiased mean variance, unequal errors'  ,prec=1e-14)
+
     # Now see what happens we we combine two samples with different variances and statistics
     data1 = normal(0,1,600)
     data2 = normal(0,3,150)

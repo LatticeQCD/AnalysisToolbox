@@ -114,7 +114,7 @@ Every kind can take a covariance matrix. If you pass no kind, `getSpline` gives 
 without `edata` and the average over $\lambda$ (see below) with `edata`, while `bootSpline` and
 `posteriorSpline` use the average over $\lambda$. The result of `getSpline` is a `TBSpline`, which you call like a
 SciPy spline, e.g. `spl(x, der=1)` for its first derivative. `spl.get_nparams()` gives its number of parameters,
-and `spl.get_AICc()`, which requires `edata`, its AICc, which you can use to compare e.g. different numbers of knots.
+and `spl.get_AIC()`, which requires `edata`, its AIC, which you can use to compare e.g. different numbers of knots.
 
 ### Regression splines
 
@@ -148,7 +148,7 @@ Here $\lambda$ controls the smoothness: as $\lambda\to0$ the spline interpolates
 $\lambda\to\infty$ it becomes the weighted straight-line fit. Since the fit is linear in the data,
 it has an effective number of parameters $p_{\rm eff}={\rm tr}\,H$, with $H$ the hat matrix mapping
 the data to the fitted values. It runs from the number of unique $x$ down to 2, and it is what
-`get_nparams()` returns and what `get_AICc()` uses. Note that $\lambda$ has units, since
+`get_nparams()` returns and what `get_AIC()` uses. Note that $\lambda$ has units, since
 $\int S''^2$ scales with the $x$ and $y$ ranges of your data, so a given value is only meaningful for one data set.
 
 The smoothing spline is the posterior mean of a Bayesian model, in which the penalty is a Gaussian prior
@@ -205,7 +205,7 @@ Gaussian bootstrap samples of the data with `bootstr_from_gauss` (correlated one
 matrix) and fits each with the given kind. For a `Regression` the knots are the same for every sample.
 Besides the band, it returns the fit to the original data in `res['splineMean']`, the bootstrap-level splines
 in `res['splineBS']`, the location of the maximum with its error, and, for kinds other than `Interpolating` and
-averages, the AICc of the fit to the original data. Use `nproc` to fit the samples in parallel:
+averages, the AIC of the fit to the original data. Use `nproc` to fit the samples in parallel:
 ```Python
 res = bootSpline(xdata, ydata, edata, Regression(nknots=5))
 plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])

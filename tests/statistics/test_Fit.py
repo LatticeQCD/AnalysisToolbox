@@ -229,18 +229,62 @@ def testFit():
 
     prior        = np.array([5e-05,3e-01])
     priorsigma   = np.array([5e-05,3e-01])
-    res_err_true = [1.148967933055725e-06, 0.0005445077355994696]
+    # lsqfit 13.2.3 errors times sqrt(chi^2/dof), since norm_err_chi2=True.
+    res_err_true = [1.148828061442774e-06, 0.0005444934695280138]
     res, res_err, _, stats = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = priorsigma, 
                                      args=(64,), norm_err_chi2=True, detailedInfo=True,
                                      algorithms = ["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead", "dogleg", "trust-ncg"])
     lpass *= print_results(res, res_true, res_err, res_err_true, "Constraint fit",prec=EPSILON)
+    res, res_err, _ = try_fit(one_state, xdata, ydata, cov / nconfs, priorval = prior, priorsigma = priorsigma, 
+                              args=(64,), norm_err_chi2=True, algorithms = ["nonlin"])
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Constraint fit, nonlin",prec=EPSILON)
 
-    lpass *= print_results(stats['logGBF'], 542.3120190935467     , text='logGBF')
+    # lsqfit 13.2.3 gives 542.4454270481813 for this fit.
+    lpass *= print_results(stats['logGBF'], 542.4454270418508     , text='logGBF', prec=1e-9)
     lpass *= print_results(stats['chi2']  , 95.21248701567058     , text='chi2')
     lpass *= print_results(stats['BAIC']  , 99.21220447790006     , text='BAIC')
-    lpass *= print_results(stats['AIC']   , -1080.6240381870934   , text='AIC')
-    lpass *= print_results(stats['AICc']  , -1080.3449684196084   , text='AICc')
+    lpass *= print_results(stats['AIC']   , -1102.839241438541    , text='AIC')
+    lpass *= print_results(stats['AICc']  , -1102.5465585117117   , text='AICc')
     lpass *= print_results(stats['Q']     , 1.2269138243695367e-05, text='Q')
+
+    # A fit with more parameters than data, so the priors determine the errors of the higher coefficients.
+    # Reference values are from lsqfit 13.2.3.
+    def quartic(x, p):
+        return p[0] + p[1]*x + p[2]*x**2 + p[3]*x**3 + p[4]*x**4
+    res_true     = [0.96554345, 1.38433448, 0.15002567, 0.04753187, 0.0143223]
+    res_err_true = [0.07654904, 0.47778756, 0.92638066, 0.98949346, 0.99866696]
+    for strat in ['propagation','hessian']:
+        res, res_err, _ = try_fit(quartic, np.array([0.1,0.2,0.3]), np.array([1.1,1.25,1.4]), np.array([0.05,0.05,0.05]),
+                                  priorval=np.array([1.,1.,0.,0.,0.]), priorsigma=np.ones(5), error_strat=strat,
+                                  algorithms=["L-BFGS-B", "TNC", "Powell" ,"Nelder-Mead"])
+        lpass *= print_results(res, res_true, res_err, res_err_true, "Prior-dominated fit, "+strat, prec=1e-6)
+    res, res_err, _ = try_fit(quartic, np.array([0.1,0.2,0.3]), np.array([1.1,1.25,1.4]), np.array([0.05,0.05,0.05]),
+                              priorval=np.array([1.,1.,0.,0.,0.]), priorsigma=np.ones(5), algorithms=["nonlin"])
+    lpass *= print_results(res, res_true, res_err, res_err_true, "Prior-dominated fit, nonlin", prec=1e-6)
+
+    # Uncorrelated line fit whose errors span seven orders of magnitude. The SVD cut acts on the correlation
+    # matrix, so it must leave these errors alone, and the fit errors must equal the exact weighted least squares.
+    xline = np.array([0.,1.,2.,3.])
+    yline = np.array([1.1,2.9,5.0,7.2])
+    eline = np.array([1e-7,1.,1.,1.])
+    J     = np.array([np.ones(4), xline]).T
+    pcov  = np.linalg.inv(J.T @ np.diag(1/eline**2) @ J)
+    def line(x, p):
+        return p[0] + p[1]*x
+    res, res_err, _ = try_fit(line, xline, yline, eline, start_params=[0,0], algorithms=["curve_fit"])
+    lpass *= print_results(res_err, np.sqrt(np.diag(pcov)), text="Errors spanning many orders of magnitude", prec=1e-8)
+
+    # Only p[0]+p[1] is constrained, so pcov does not exist. The fit must fail rather than report finite errors.
+    def degenerate(x, p):
+        return (p[0]+p[1])*x
+    def grad_degenerate(x, p):
+        return np.array([x, x])
+    try:
+        try_fit(degenerate, xline, yline, np.ones(4), grad=grad_degenerate, start_params=[1,1], algorithms=["curve_fit"])
+        logger.TBFail('Degenerate fit did not fail')
+        lpass = False
+    except Exception:
+        logger.TBPass('Degenerate fit fails')
 
     timey.printTiming()
 

@@ -100,9 +100,20 @@ def testErrorProp():
     amean, aerr = 0.09, 0.001
     mean, err   = error_prop(K_G, np.array([1,m_mu_MeV,amean]), np.array([0,m_mu_MeV_err,aerr]))
     REFmean     = 176798.90810433426
-    REFerr      = 21366.184730206216
+    REFerr      = 21366.18385452646 # exact, from mpmath derivatives
 
-    lpass *= print_results(mean, REFmean, err, REFerr, text = "Test on BM kernel.")
+    lpass *= print_results(mean, REFmean, err, REFerr, text = "Test on BM kernel.", prec=1e-9)
+
+    # Means of very different size, including zero. Each term contributes 1 to the variance, so the exact error
+    # is sqrt(3). A tiny mean must not be stepped across zero, where 1/x is singular.
+    def mixed(x):
+        return x[0] + 1e-15/x[1] + (x[2]/1e3)**2
+    mean, err = error_prop(mixed, np.array([0, 1e-15, 1e3]), np.array([1, 1e-15, 500]))
+    lpass *= print_results(mean, 2, err, np.sqrt(3), text = "Means of mixed size.", prec=1e-8)
+
+    # A user-supplied gradient that returns a scalar.
+    mean, err = error_prop(lambda x: 3*x[0], np.array([2.]), np.array([0.1]), grad=lambda x: 3.0)
+    lpass *= print_results(mean, 6, err, 0.3, text = "Scalar gradient.", prec=1e-14)
 
     concludeTest(lpass)
 

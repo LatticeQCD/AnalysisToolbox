@@ -11,8 +11,8 @@
 
 import numpy as np
 import scipy as sp
-from latqcdtools.math.num_deriv import diff_jac 
-from latqcdtools.math.math import logDet, normalize, invert, isVector, checkVector
+from latqcdtools.math.num_deriv import diff_jac, relative_h
+from latqcdtools.math.math import logDet, normalize, isVector, checkVector, eigh, applySVDCut, isSymmetric
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, plt, _initializePlt,\
     _add_optional, _getAxObject, _update_handles, _update_labels, set_params, ZOD
 from latqcdtools.base.utilities import appendToDocstring, unvector
@@ -39,6 +39,15 @@ ICARGCOMMENTS = """
         params (tuple, optional): model parameters. Defaults to ().
         prior (array-like, optional): Bayesian priors. Defaults to None.
         priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+    """
+
+LIKEARGCOMMENTS = """
+        xdata (array-like)
+        ydata (array-like)
+        cov (array-like): covariance matrix 
+        func (func)
+        args (tuple, optional): arguments to func. Defaults to ().
+        params (tuple, optional): model parameters. Defaults to ().
     """
 
 
@@ -238,59 +247,113 @@ def chisquare(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigm
     """
     checkPrior(prior,priorsigma)
     y    = expandArgs(func,xdata,params,args)
-    diff = ydata-y
-    res  = diff @ invert(cov) @ diff
+    z    = whiteningMatrix(cov) @ (ydata-y)
+    res  = z @ z
     if prior is not None:
         res += np.sum((np.array(params) - prior)**2 / priorsigma**2)
     return res
 
 
 @appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: log( Gaussian Bayes factor )\n' ) 
-def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+def logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None, jac=None) -> float:
     """ 
     log P(data|model). This quantity is useful for comparing fits of the same data to different models that
     have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
     Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
+
+    The evidence is the integral over parameters of likelihood times prior. Expanding chi^2 to second order
+    about its minimum (the Laplace approximation, exact for a linear model) gives
+        logGBF = 1/2 [ log det Sigma_post - log det C - log det Sigma_prior - chi^2 - dof log(2 pi) ],
+    with C the data covariance, chi^2 the augmented chi^2 at params, and
+        Sigma_post^{-1} = J^T C^{-1} J + Sigma_prior^{-1},   J_ij = d f(x_i) / d p_j.
+    The J^T C^{-1} J term drops second derivatives of f, as in lsqfit. A parameter with infinite priorsigma
+    gets a flat prior of unit density: it drops out of Sigma_prior and the prior count in dof. With no priors
+    at all, this is the flat-prior evidence. Each factor of 2 pi comes from one data point, one finite prior,
+    or (with the opposite sign) one integrated parameter, so the 2 pi factors combine to dof log(2 pi). When
+    every parameter has a finite prior, dof equals the number of data, and this matches logGBF of lsqfit.
+    If jac is not given, J is computed with numerical derivatives. A Fitter passes the J it used for its
+    parameter covariance, so that Sigma_post and pcov agree.
     """
-    chi2   = chisquare(xdata, ydata, cov, func, args, params, prior, priorsigma)
-    nparam = countParams(func,params)
-    dof    = DOF(len(ydata),nparam,priorsigma)
-    if prior is None:
-        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) )
+    nparam = len(params)
+    if nparam == 0:
+        logger.TBRaise('logGBF needs the fit parameters explicitly.')
+    chi2 = chisquare(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    dof  = DOF(len(ydata),nparam,priorsigma)
+
+    if jac is None:
+        def f(p):
+            return expandArgs(func,xdata,p,args)
+        J = diff_jac(np.array(params,dtype=float), f)
     else:
-        return 0.5*( - logDet(cov) - chi2 - dof*np.log(2*np.pi) + logDet(np.diag(clipRange(priorsigma)**2)) )
+        J = jac
+    covDecomp    = CovarianceDecomposition(cov)
+    invSigmaPost = J.T @ covDecomp.inverse() @ J
+    logDetPrior  = 0.
+    if prior is not None:
+        # 1/inf = 0, so infinite prior errors add nothing here.
+        invSigmaPost += np.diag(1/np.asarray(priorsigma)**2)
+        logDetPrior   = logDet(np.diag(clipRange(np.asarray(priorsigma))**2))
+
+    return 0.5*( - logDet(invSigmaPost) - covDecomp.logDet() - logDetPrior - chi2 - dof*np.log(2*np.pi) )
 
 
-@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: AIC\n')
-def AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: log of the likelihood\n')
+def logLikelihood(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+    """
+    Log of the Gaussian likelihood P(data|params) at params, which is usually the best fit:
+        log L = -1/2 [ chi^2 + log det C + N log(2 pi) ],
+    with C the data covariance and N the number of data. With priors, each finite prior is treated as one
+    more Gaussian datum, so that L is the likelihood times the prior, P(data|params) P(params):
+        log L = -1/2 [ chi^2 + log det C + log det Sigma_prior + (N + nprior) log(2 pi) ],
+    with chi^2 the augmented chi^2 and Sigma_prior = diag(priorsigma^2) over the nprior finite priors.
+    """
+    chi2 = chisquare(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    ndat = len(ydata)
+    res  = chi2 + CovarianceDecomposition(cov).logDet()
+    if prior is not None:
+        finiteSigma = clipRange(np.asarray(priorsigma))
+        res  += logDet(np.diag(finiteSigma**2))
+        ndat += len(finiteSigma)
+    return -0.5*( res + ndat*np.log(2*np.pi) )
+
+
+@appendToDocstring(args=LIKEARGCOMMENTS,returns='\n        float: AIC\n')
+def AIC(xdata, ydata, cov, func, args=(), params=()) -> float:
     """ 
     The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
     function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
     choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
-    overfitting. The preferred model minimizes the AIC.
-    """
-    nparam     = countParams(func,params)
-    likelihood = logGBF(xdata, ydata, cov, func, args, params, prior, priorsigma)
-    return 2*nparam - 2*likelihood
+    overfitting. The preferred model minimizes the AIC. With k the number of parameters,
+        AIC = 2k - 2 log L = chi^2 + 2k + log det C + N log(2 pi).
+    The chi^2 of a fit is lower than the chi^2 the same fit would have on fresh data, since the fit adapts to
+    the noise. The 2k corrects this bias. For a model linear in its parameters and a known C, the bias is
+    exactly 2k for any N. For a smoothing spline, k is the effective number tr(H). The last two terms are the
+    same for every model of the same data, so they drop out of comparisons.
 
-
-@appendToDocstring(args=ICARGCOMMENTS,returns='\n        float: corrected AIC\n')
-def AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
-    """
-    Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
-    many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
-    infinity, one recovers the AIC.
-
-    The correction term is AICc = AIC + 2k(k+1)/(n-k-1), with k the number of parameters and n the sample size.
-    See Sugiura, Commun. Stat. Theory Methods 7, 13 (1978); Hurvich & Tsai, Biometrika 76, 297 (1989);
-    Burnham & Anderson, "Model Selection and Multimodel Inference" (2nd ed., Springer, 2002), Eq. (2.4). The
-    correction diverges as n -> k+1 from above and is undefined for n <= k+1. In that saturated regime we return
-    +inf, so that in a model average (weight ~ exp(-AICc/2)) such a model is simply assigned zero weight.
+    The AIC does not know about priors: it uses the data-only chi^2 and counts every parameter fully. For a
+    fit with priors it is therefore not the right criterion. Use logGBF or BAIC instead.
     """
     nparam = countParams(func,params)
-    nprior = countPriors(priorsigma)
-    ndat   = len(ydata) + nprior
-    aic    = AIC(xdata, ydata, cov, func, args, params, prior, priorsigma)
+    return 2*nparam - 2*logLikelihood(xdata, ydata, cov, func, args, params)
+
+
+@appendToDocstring(args=LIKEARGCOMMENTS,returns='\n        float: corrected AIC\n')
+def AICc(xdata, ydata, cov, func, args=(), params=()) -> float:
+    """
+    Corrected AIC (AICc) of Sugiura, Commun. Stat. Theory Methods 7, 13 (1978) and Hurvich & Tsai, Biometrika 76,
+    297 (1989); see also Burnham & Anderson, "Model Selection and Multimodel Inference" (2nd ed., Springer, 2002),
+    Eq. (2.4). With k the number of parameters and N the number of data,
+        AICc = AIC + 2k(k+1)/(N-k-1).
+    The extra term corrects the small-sample bias that comes from estimating the noise variance from the
+    residuals. Here the covariance C is given rather than estimated from the residuals, and then the AIC
+    is already unbiased for a model linear in its parameters, so the AICc over-penalizes parameters at small N.
+    Prefer AIC. Like the AIC, the AICc does not know about priors, so it is not the right criterion for a fit
+    with priors. For N <= k+1 the correction is undefined, and we return +inf, so that in a model average
+    (weight ~ exp(-AICc/2)) such a model gets zero weight.
+    """
+    nparam = countParams(func,params)
+    ndat   = len(ydata)
+    aic    = AIC(xdata, ydata, cov, func, args, params)
     denom  = ndat - nparam - 1
     if denom <= 0:
         logger.warn(f'AICc undefined for ndat - nparam - 1 = {denom} <= 0 (too few data). Returning inf.')
@@ -359,6 +422,14 @@ def covariance(x,y) -> float:
     return np.cov(x,y,ddof=1)[0,1]
 
 
+def _inverseVarianceWeights(err) -> np.ndarray:
+    """ 
+    Weights 1/err^2 for the weighted-mean methods below. 
+    """
+    checkType(np.ndarray,err=err) 
+    return 1/err**2
+
+
 def weighted_mean(data, err) -> float:
     """ 
     Compute the weighted mean. Here the weights are Gaussian error bars.
@@ -372,9 +443,8 @@ def weighted_mean(data, err) -> float:
         float: weighted mean 
     """
     checkType(np.ndarray,data=data) 
-    checkType(np.ndarray,err=err) 
-    weights  = 1/err**2
-    return np.sum( weights @ data )/np.sum(weights)
+    weights = _inverseVarianceWeights(err)
+    return (weights @ data)/np.sum(weights)
 
 
 def weighted_variance(err) -> float:
@@ -387,9 +457,7 @@ def weighted_variance(err) -> float:
     Returns:
         float: weighted variance 
     """
-    checkType(np.ndarray,err=err) 
-    weights = 1/err**2
-    return 1/np.sum(weights)
+    return 1/np.sum(_inverseVarianceWeights(err))
 
 
 def biased_sample_variance(data, err) -> float:
@@ -405,9 +473,8 @@ def biased_sample_variance(data, err) -> float:
         float: sample variance 
     """
     checkType(np.ndarray,data=data) 
-    checkType(np.ndarray,err=err) 
     mean = weighted_mean(data, err)
-    weights = 1/err**2
+    weights = _inverseVarianceWeights(err)
     V1 = np.sum(weights)
     return weights.dot((data - mean)**2) / V1
 
@@ -415,28 +482,28 @@ def biased_sample_variance(data, err) -> float:
 def unbiased_sample_variance(data, err) -> float:
     """ 
     Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
-    the variance of the mean. Do not use this function if your weights are frequency weights. 
+    the variance of the mean. Do not use this function if your weights are frequency weights. This assumes all
+    data share one unknown variance; err only sets the relative weights 1/err^2 (reliability weights). 
     """
     checkType(np.ndarray,data=data) 
-    checkType(np.ndarray,err=err) 
-    weights = 1/err**2
+    weights = _inverseVarianceWeights(err)
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
-    return biased_sample_variance(data, weights) / ( 1 - (V2 / V1**2))
+    return biased_sample_variance(data, err) / ( 1 - (V2 / V1**2))
 
 
 def unbiased_mean_variance(data, err) -> float:
     """ 
     Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
     weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
-    constructed using the deviations of the individual data points. 
+    constructed using the deviations of the individual data points. This assumes all data share one unknown
+    variance; err only sets the relative weights 1/err^2 (reliability weights). 
     """
     checkType(np.ndarray,data=data) 
-    checkType(np.ndarray,err=err) 
-    weights = 1/err**2
+    weights = _inverseVarianceWeights(err)
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
-    return biased_sample_variance(data, weights) * V2 / ( V1**2 - V2)
+    return biased_sample_variance(data, err) * V2 / ( V1**2 - V2)
 
 
 def cov_to_cor(cov) -> np.ndarray:
@@ -452,6 +519,87 @@ def cov_to_cor(cov) -> np.ndarray:
     checkType(np.ndarray,cov=cov) 
     diagonal_sqrt = np.sqrt(np.diag(cov))
     return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
+
+
+class CovarianceDecomposition:
+    """ 
+    Decomposition of a covariance matrix C, following gvar/lsqfit. Write C = D cor D, with D = diag(sigma) and
+    cor the correlation matrix, and diagonalize cor = V Lambda V^T. Everything a fit needs follows from this one
+    decomposition:
+        whitening matrix   W = Lambda^(-1/2) V^T D^(-1),
+        inverse            C^(-1) = W^T W,
+        log determinant    log det C = 2 sum_i log sigma_i + sum_i log lambda_i.
+    The SVD cut is applied to the eigenvalues of cor, so that it does not depend on the units of the data. 
+    For a positive semidefinite matrix this is the same as regulate(cor). 
+
+    Args:
+        cov (np.ndarray): covariance matrix 
+        svdcut (float, optional): Raise eigenvalues of cor below svdcut*max to that floor. Defaults to None,
+          meaning no cut.
+    """
+
+    def __init__(self, cov, svdcut=None):
+        checkType(np.ndarray,cov=cov) 
+        if not isSymmetric(cov):
+            logger.TBRaise('Covariance matrix is not symmetric.')
+        self.sigma = np.sqrt(np.diag(cov))
+        if np.any(self.sigma == 0):
+            logger.TBRaise('Some data have zero variance, so the correlation matrix is undefined.')
+        self.eigvals, self.V = eigh(cov_to_cor(cov))
+        # Same tolerance as isPositiveSemidefinite. 
+        if self.eigvals[0] < -1e-12*np.max(np.abs(self.eigvals)):
+            logger.TBRaise('Covariance matrix is not positive semidefinite.')
+        if svdcut is not None:
+            self.eigvals = applySVDCut(self.eigvals, svdcut)
+        if self.eigvals[0] <= 0:
+            logger.TBRaise('Correlation matrix is singular. Use an SVD cut.')
+
+    def cor(self) -> np.ndarray:
+        """ Correlation matrix, after the SVD cut. """
+        return (self.V * self.eigvals[None,:]) @ self.V.T
+
+    def cov(self) -> np.ndarray:
+        """ Covariance matrix, after the SVD cut. """
+        return np.outer(self.sigma, self.sigma) * self.cor()
+
+    def whiteningMatrix(self) -> np.ndarray:
+        """ Whitening matrix W = Lambda^(-1/2) V^T D^(-1). See whiteningMatrix for what whitening does. """
+        return (self.V.T / np.sqrt(self.eigvals)[:,None]) / self.sigma[None,:]
+
+    def inverse(self) -> np.ndarray:
+        """ C^(-1) = W^T W. """
+        W = self.whiteningMatrix()
+        return W.T @ W
+
+    def logDet(self) -> float:
+        """ log det C. """
+        return 2*np.sum(np.log(self.sigma)) + np.sum(np.log(self.eigvals))
+
+
+def whiteningMatrix(cov, svdcut=None) -> np.ndarray:
+    """ 
+    Whitening matrix W of a covariance matrix C, i.e. a matrix satisfying W^T W = C^-1.
+
+    Let r = f(p) - y be the residuals of a fit. Their whitened version z = W r has two properties:
+        1. chi^2 = r^T C^-1 r = z^T z, i.e. chi^2 is a plain sum of squares;
+        2. Cov(z) = W C W^T = 1, i.e. the components of z are uncorrelated with unit variance. 
+    For uncorrelated data, W = diag(1/sigma), so z_i = r_i/sigma_i. For correlated data, W also rotates the
+    residuals into the eigenbasis of the correlation matrix. Whitening turns a correlated fit into an
+    ordinary least-squares problem, which lets a least-squares solver use the Jacobian dz/dp = W df/dp to take
+    Gauss-Newton steps. These converge quickly and precisely near the minimum. 
+
+    Many matrices satisfy W^T W = C^-1. Following gvar/lsqfit, we diagonalize the correlation matrix
+    cor = V Lambda V^T and use W = Lambda^(-1/2) V^T diag(1/sigma); see CovarianceDecomposition. Small
+    eigenvalues of cor get inverted here, so an ill-conditioned cor needs an SVD cut. 
+
+    Args:
+        cov (np.ndarray): covariance matrix 
+        svdcut (float, optional): SVD cut applied to the correlation matrix. Defaults to None, meaning no cut.
+
+    Returns:
+        np.ndarray: whitening matrix W 
+    """
+    return CovarianceDecomposition(cov, svdcut).whiteningMatrix()
 
 
 def estimateCovariance(data_std_dev) -> np.ndarray:
@@ -517,7 +665,7 @@ def confidence_ellipse(x,y,CI=None,**params):
 
     data = np.vstack((x, y))
     cov  = np.cov(data)
-    eigvals, eigvecs = np.linalg.eigh(cov)
+    eigvals, eigvecs = eigh(cov)
     maj_eigvec = eigvecs[:,np.argmax(eigvals)]
     theta = np.rad2deg( np.arctan2(maj_eigvec[1],maj_eigvec[0]) )
     a = s*np.sqrt(np.max(eigvals))
@@ -561,7 +709,8 @@ def forcePositiveSemidefinite(mat):
     Returns:
         np.ndarray: positive semidefinite matrix 
     """
-    eigvals, S = np.linalg.eig(mat)
+    # eigh guarantees real eigenvalues and orthonormal eigenvectors, which the algorithm needs.
+    eigvals, S = eigh(mat)
     eigvals[eigvals<0] = 0
     sqrtLambda = np.diag(np.sqrt(eigvals))
 
@@ -633,20 +782,19 @@ def error_prop(func, means, errors, grad=None, args=()):
     if grad is not None:
         grad = grad(means, *args)
     else:
-        h = None 
-        minVal = np.min(np.abs(means))
-        if minVal<1e-10 and grad==None:
-            h = 1e-2*minVal 
+        # A zero mean is stepped relative to its error, the scale over which error propagation linearizes func.
+        h    = relative_h(means, np.sqrt(np.abs(np.diag(errors))))
         grad = diff_jac(means, func, args, h).T
 
+    # A user-supplied grad may return a scalar when there is one parameter.
+    if isinstance(grad,(int,float,np.number)) or (isinstance(grad,np.ndarray) and grad.ndim==0):
+        grad = np.array([grad])
+
     error = 0
-    try:
-        for i in range(len(grad)):
-            for j in range(len(grad)):
-                error += grad[i] * grad[j] * errors[i, j]
-        error = np.sqrt(error)
-    except TypeError:
-        error += abs(grad * errors[0])
+    for i in range(len(grad)):
+        for j in range(len(grad)):
+            error += grad[i] * grad[j] * errors[i, j]
+    error = np.sqrt(error)
     return unvector(mean), unvector(error)
 
 

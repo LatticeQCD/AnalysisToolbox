@@ -9,7 +9,8 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse,\
-    KSTest_1side, KSTest_2side, covariance, std_var, symmetrizeError, forcePositiveSemidefinite
+    KSTest_1side, KSTest_2side, covariance, std_var, symmetrizeError, forcePositiveSemidefinite, whiteningMatrix, \
+    CovarianceDecomposition
 from latqcdtools.math.math import isPositiveSemidefinite
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
@@ -190,6 +191,36 @@ def testStats():
     lpass *= print_results(pearson(ts1,ts2),R,text='pearson explicit')
 
     lpass *= print_results(psd,forcePositiveSemidefinite(mat),text='positive semidefinite',prec=1e-7)
+
+    # Eigenvalues 1.6 (twice) and -0.2. Clipping -0.2 and restoring the unit diagonal gives exactly 1.5 I - 0.5 J. 
+    # The degenerate pair needs orthonormal eigenvectors. 
+    J = np.ones((3,3))
+    lpass *= print_results(1.5*np.eye(3)-0.5*J,forcePositiveSemidefinite(1.6*np.eye(3)-0.6*J),
+                           text='positive semidefinite, degenerate eigenvalues',prec=1e-14)
+
+    # The PSD check must not depend on units. A negative eigenvalue at 1e-6 of the largest is real, at any scale.
+    if isPositiveSemidefinite(1e-20*np.diag([1.,-1e-6])):
+        logger.TBFail('Small-scale matrix with negative eigenvalue counted as PSD')
+        lpass = False
+    if not isPositiveSemidefinite(1e10*np.diag([1.,-1e-14])):
+        logger.TBFail('Large-scale matrix with rounding-level negative eigenvalue counted as not PSD')
+        lpass = False
+
+    # Whitened residuals z = W r are uncorrelated with unit variance, and z.z = r C^-1 r.
+    rng   = np.random.default_rng(DEFAULTSEED)
+    A     = rng.normal(size=(5,5))
+    C     = A @ A.T + np.eye(5)
+    W     = whiteningMatrix(C)
+    r     = rng.normal(size=5)
+    z     = W @ r
+    lpass *= print_results(np.eye(5),W @ C @ W.T,text='whitening, Cov(z) = 1',prec=1e-12)
+    lpass *= print_results(r @ np.linalg.inv(C) @ r,z @ z,text='whitening, chi^2',prec=1e-12)
+
+    # Everything from one decomposition agrees with the direct computations.
+    covDecomp = CovarianceDecomposition(C)
+    lpass *= print_results(C,covDecomp.cov(),text='decomposition, cov',prec=1e-12)
+    lpass *= print_results(np.linalg.inv(C),covDecomp.inverse(),text='decomposition, inverse',prec=1e-12)
+    lpass *= print_results(np.linalg.slogdet(C)[1],covDecomp.logDet(),text='decomposition, logDet',prec=1e-12)
     if not isPositiveSemidefinite(psd):
         logger.TBFail('psd not positive semidefinite')
         lpass = False

@@ -10,6 +10,11 @@
 import numpy as np
 
 
+# eps^(1/3), the relative step size that balances truncation and rounding error for central differences.
+# See _best_h for the derivation and the choice of eps. 
+_SMALL = pow(1.1e-16,1/3)
+
+
 def _best_h(x):
     """ 
     This routine attempts to automatically determine the best possible step size h when calculating numerical
@@ -30,9 +35,31 @@ def _best_h(x):
     We choose eps = 1.1e-16, which is roughly the difference between 1.0 and the next-smallest representable float less
     than 1.0 in 64-bit. The difference between 1.0 and the next-largest float is slightly bigger. 
     """
-    eps   = 1.1e-16
-    small = pow(eps,1/3)
-    h     = small*(abs(x) + small) # Want something meaningful also when x = 0.
+    h = _SMALL*(abs(x) + _SMALL) # Want something meaningful also when x = 0.
+    return h
+
+
+def relative_h(x, scale) -> np.ndarray:
+    """ 
+    Step sizes for each component of x that are relative to that component, so that a tiny x_i is never stepped
+    across zero. This matters for functions that are singular at zero, like 1/x. A zero x_i is stepped relative
+    to scale_i instead, e.g. its error bar. If that is also zero, fall back to _best_h(0). 
+
+    Args:
+        x (np.ndarray): point at which to differentiate
+        scale (np.ndarray): natural scale of each component, used when x_i = 0
+
+    Returns:
+        np.ndarray: step sizes 
+    """
+    h = np.zeros(len(x))
+    for i in range(len(x)):
+        if x[i] != 0:
+            h[i] = _SMALL*abs(x[i])
+        elif scale[i] > 0:
+            h[i] = _SMALL*scale[i]
+        else:
+            h[i] = _best_h(0)
     return h
 
 
@@ -49,17 +76,21 @@ def diff_deriv(x, func, args = (), h = None):
 
 def diff_grad(params, func, args = (), h = None, floatT=np.float64) -> np.ndarray:
     """ 
-    Gradient using difference quotient. 
+    Gradient using difference quotient. h may be None, a scalar, or an array with one step size per parameter.
     """
     ret  = [0.0]*len(params)
     up   = np.array(params, dtype = floatT)
     down = np.array(params, dtype = floatT)
     for i in range(len(params)):
         if h is None:
-            h = _best_h(params[i])
-        up[i] += h
-        down[i] -= h
-        ret[i] = (func(up, *args) - func(down, *args)) / (2*h)
+            hi = _best_h(params[i])
+        elif np.ndim(h) == 0:
+            hi = h
+        else:
+            hi = h[i]
+        up[i] += hi
+        down[i] -= hi
+        ret[i] = (func(up, *args) - func(down, *args)) / (2*hi)
         up[i] = params[i]
         down[i] = params[i]
     return np.array(ret,dtype=floatT)

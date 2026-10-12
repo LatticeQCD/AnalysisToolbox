@@ -84,7 +84,9 @@ def persistentSolve(LHS, guess, tol=1e-8, maxiter=300):
 
 def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
     """ 
-    Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.
+    Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax. The exception is
+    algorithm="nonlin", which calls scipy.optimize.least_squares: then func must return the vector of residuals z,
+    so that sum(z^2) is minimized, and jac is the Jacobian dz/dp or a scipy finite-difference scheme like '3-point'.
 
     Args:
         func: to-be-minimized function 
@@ -134,7 +136,7 @@ def minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10
     else:
         try:
             res = opt.least_squares(func, start_params, max_nfev=maxiter, ftol=1e-15, xtol=tol, gtol=tol, 
-                                    jac=jac,  method='trf', loss='huber')
+                                    jac=jac,  method='trf')
         except Exception as e:
             raise e
 
