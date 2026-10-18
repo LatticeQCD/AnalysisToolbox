@@ -8,13 +8,13 @@
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.physics.constants import convert, fk_phys, r0_phys, r1_phys
-from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, CY_param, CY_phys, get_aWorld
+from latqcdtools.physics.referenceScales import a_div_r1, a_times_fk, r0_div_a, CY_param, CY_phys
 from latqcdtools.base.check import checkDomain
 from latqcdtools.base.utilities import isReal
 from latqcdtools.base.logger import ToolboxException
 
 
-CHECKWORLD = True
+CHECKWORLD = False
 
 
 def ignoreWorldWarning():
@@ -72,47 +72,39 @@ class latticeParams:
         self.fK = None 
         self.r1 = None 
         self.r0 = None 
-        self.physWorld = None
-
-        ensemble_world = 'Nf0' if self.Nf is None else f'Nf{self.Nf}'
-        self.world = ensemble_world
-
-        # Smart paramYear default:
+        if self.Nf is None:
+            self.world = 'SU3'
+        else:
+            self.world = f'Nf{self.Nf}'
         if paramYear is None:
-            if self.scale == 'r0':
-                if self.Nf == '21':
-                    self.year = 2012
-                else:
-                    self.year = CY_param['r0']
-            else:
-                self.year = CY_param[self.scale]
+            self.year = CY_param[self.scale] 
         else:
             self.year = paramYear
-
-        self.aWorld = get_aWorld(self.scale, self.year)
-
-        if CHECKWORLD and (ensemble_world != self.aWorld):
-            logger.warn(f"Ensemble world '{ensemble_world}' does not match parameterization world '{self.aWorld}'.")
-
         if scaleYear is None:
             year = CY_phys[self.scale]
         else:
             year = scaleYear
-
         if self.scale == 'fk':
-            if ensemble_world in ('Nf211', 'Nf21', 'Nf2'):
-                self.physWorld = ensemble_world
-            else:
-                self.physWorld = 'Nf21'
-            self.fK = fk_phys(year=year, units="MeV", returnErr=False, world=self.physWorld)
+            try:
+                self.fK = fk_phys(year=year,units="MeV",returnErr=False,world=self.world)
+            except ToolboxException:
+                if CHECKWORLD:
+                    logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.fK = fk_phys(year=year,units="MeV",returnErr=False,world='Nf21')
         elif self.scale == 'r1':
-            self.physWorld = 'Nf21'
-            self.r1 = r1_phys(year=year, units="fm", returnErr=False, world=self.physWorld)
+            try:
+                self.r1 = r1_phys(year=year,units="fm" ,returnErr=False,world=self.world)
+            except ToolboxException:
+                if CHECKWORLD:
+                    logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.r1 = r1_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
         elif self.scale == 'r0':
-            self.physWorld = 'Nf21'
-            self.r0 = r0_phys(year=year, units="fm", returnErr=False, world=self.physWorld)
-        else:
-            self.physWorld = 'Nf21'
+            try:
+                self.r0 = r0_phys(year=year,units="fm" ,returnErr=False,world=self.world)
+            except ToolboxException:
+                if CHECKWORLD:
+                    logger.warn(f'world {self.world} has no matching scale setting. Using Nf=2+1 for physical units.')
+                self.r0 = r0_phys(year=year,units="fm" ,returnErr=False,world='Nf21')
 
     #           mass1  mass2  mass3
     # Nf=1+1+1     mu     md     ms
@@ -251,8 +243,6 @@ class latticeParams:
         logger.info()
         logger.info("Lattice parameter summary: ")
         logger.info("    Nf =",self.Nf)
-        logger.info(" aWorld =",self.aWorld)
-        logger.info("physWorld =",self.physWorld)
         if self.scale == 'fk':
             logger.info("    fK =",round(self.fK*np.sqrt(2),2),"/sqrt(2) [MeV] ")
         elif self.scale == 'r1':
