@@ -126,6 +126,17 @@ def testReadWriteConf():
         else:
             logger.details('Single precision roundtrip test passed.')
 
+        # The checksum is computed from the link values, so it must not depend on endianness. For the
+        # original conf it must reproduce the checksum in that file's header.
+        reader_orig = NERSCReader(Ns=8, Nt=4)
+        reader_orig.readHeader(path_nersc)
+        reader_orig.file.close()
+        if reader_le.checksum != reader_3x3.checksum or int(reader_3x3.checksum,16) != int(reader_orig.checksum,16):
+            logger.TBFail('Checksum depends on endianness:',reader_3x3.checksum,reader_le.checksum,reader_orig.checksum)
+            lpass = False
+        else:
+            logger.details('Endianness-independent checksum test passed.')
+
         # Test 5: Swapped argument order for writeConf
         writeConf(gauge1, file_swap)
         reader_swap = NERSCReader(Ns=8, Nt=4)

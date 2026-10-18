@@ -24,6 +24,29 @@ DYNISOMILCMAGIC  = 20103 # Magic number at the start of dyniso's MILC-format fil
 DYNISOASCIIMAGIC = 59354 # Version number at the start of dyniso's ascii files
 
 
+def nerscChecksum(data, precision) -> int:
+    """
+    NERSC checksum: the sum, modulo 2^32, of the link data viewed as unsigned 32-bit words. The words are
+    formed from the values of the floats, not from their byte order on disk, so files with different
+    endianness but the same links have the same checksum. This matches SIMULATeQCD.
+
+    Args:
+        data (array-like): complex link entries in the order they appear in the file 
+        precision (str): 'f' for IEEE32 or 'd' for IEEE64 
+
+    Returns:
+        int: checksum 
+    """
+    if precision == 'f':
+        dtype = '>c8'
+    elif precision == 'd':
+        dtype = '>c16'
+    else:
+        logger.TBRaise('Unrecognized precision',precision)
+    words = np.frombuffer(np.asarray(data).astype(dtype).tobytes(), dtype='>u4')
+    return int(np.sum(words, dtype=np.uint64) & 0xffffffff)
+
+
 class confReader:
 
     """ 
@@ -152,7 +175,8 @@ class NERSCReader(confReader):
         fp = metaData[b'FLOATING_POINT'].upper()
         if fp.endswith(b'SMALL') or fp.endswith(b'LITTLE'):
             self.endianness = '<'
-        elif fp.endswith(b'BIG'):
+        elif fp.endswith(b'BIG') or fp in (b'IEEE32', b'IEEE64'):
+            # Like SIMULATeQCD, treat a missing endianness suffix as big endian.
             self.endianness = '>'
         else:
             logger.TBRaise('Unrecognized endianness.')
@@ -215,22 +239,19 @@ class NERSCReader(confReader):
         payload = self.file.read()
         self.file.close()
 
-        # Validate 32-bit big-endian unsigned checksum against header if present
-        if self.checksum is not None:
-            expected_checksum = int(self.checksum, 16)
-            if len(payload) % 4 != 0:
-                logger.TBRaise(f'Corrupt configuration {fileName}: payload length {len(payload)} is not a multiple of 4 bytes.')
-            chk_arr = np.frombuffer(payload, dtype='>u4')
-            computed_checksum = int(np.sum(chk_arr, dtype=np.uint64) & 0xffffffff)
-            if expected_checksum != computed_checksum:
-                logger.TBRaise(f'Checksum error: expected {expected_checksum:08x}, computed {computed_checksum:08x}')
-            logger.details('Configuration', fileName, 'has correct checksum.')
-
         latprec = 8 if self.precision == 'f' else 16
         dtype_str = f'{self.endianness}c{latprec}'
         vol = (self.Ns**3) * self.Nt
         total_elements = vol * self.Nd * self.rows * 3
         raw = np.frombuffer(payload, dtype=dtype_str, count=total_elements)
+
+        # Validate checksum against header if present
+        if self.checksum is not None:
+            expected_checksum = int(self.checksum, 16)
+            computed_checksum = nerscChecksum(raw, self.precision)
+            if expected_checksum != computed_checksum:
+                logger.TBRaise(f'Checksum error: expected {expected_checksum:08x}, computed {computed_checksum:08x}')
+            logger.details('Configuration', fileName, 'has correct checksum.')
 
         if self.rows == 3:
             self.gauge.field = raw.reshape((self.Nt, self.Ns, self.Ns, self.Ns, self.Nd, 3, 3)).astype(complex)

@@ -11,6 +11,7 @@ import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.base.fileSystem import createFilePath
 from latqcdtools.physics.gauge import gaugeField
+from latqcdtools.interfaces.confReader import nerscChecksum
 
 
 class confWriter:
@@ -94,18 +95,18 @@ class NERSCWriter(confWriter):
         prec_u = str(precision).upper()
         if prec_u in ('D', '64', 'IEEE64', 'DOUBLE'):
             c_dtype = 'c16'
+            prec_code = 'd'
             prec_str = 'IEEE64'
         elif prec_u in ('F', '32', 'IEEE32', 'SINGLE'):
             c_dtype = 'c8'
+            prec_code = 'f'
             prec_str = 'IEEE32'
         else:
             logger.TBRaise(f"Unsupported precision '{precision}'.")
 
         payload = subfield.astype(f'{end_code}{c_dtype}').tobytes()
 
-        # NERSC 32-bit checksum: sum of big-endian unsigned 32-bit words
-        chk_arr = np.frombuffer(payload, dtype='>u4')
-        checksum = int(np.sum(chk_arr, dtype=np.uint64) & 0xffffffff)
+        checksum = nerscChecksum(subfield, prec_code)
 
         link_trace = self.gauge.getLinkTrace()
         plaquette = self.gauge.getPlaquette()
