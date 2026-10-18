@@ -9,7 +9,7 @@ It is sometimes convenient to have the ability to read these configurations in P
 machine learning code is in Python. It may also be easier to use Python to write short scripts to convert between
 one format and another. To this end, we have implemented `latqcdtools/interfaces/confReader.py`.
 
-At the moment it only reads NERSC and ILDG format, but one can easily extend this, by following the example of e.g.
+At the moment it reads NERSC and ILDG format, as well as the formats written by the dyniso code, but one can easily extend this, by following the example of e.g.
 the `NERSCReader` class, which inherits from a more general `confReader` class. If you want to implement your own class,
 please have it inherit from `confReader` as well.
 
@@ -25,3 +25,17 @@ You can access the link at site $(0,0,1,1)$ pointing in the 0-direction through
 ```Python
 gauge.getLink(0,0,1,1,0)
 ```
+
+## dyniso
+
+The `DynisoReader` reads the three formats of dyniso's `save_lattice`: the compressed format, in which dyniso also
+writes its checkpoints, the MILC format, and the ascii format. You do not need to say which one; the reader detects
+it from the file:
+```Python
+reader = DynisoReader(Ns=8, Nt=4)
+gauge = reader.readConf('chk0')
+```
+The compressed format stores each link $U$ through the eight numbers $a_k = \mathrm{Im}\,\mathrm{tr}(\lambda_k \log U)$,
+with $\lambda_k$ the Gell-Mann matrices, and the reader rebuilds $U = \exp(\tfrac{i}{2}\sum_k a_k\lambda_k)$. dyniso
+writes all three formats in single precision, and the ascii format with 6 significant digits, so the links are only
+that precise. Like dyniso, the reader reunitarizes the links after reading them.

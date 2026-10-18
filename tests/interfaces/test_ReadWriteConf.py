@@ -6,10 +6,12 @@
 # To test correct read/write of configurations.
 # 
 
-from latqcdtools.interfaces.confReader import NERSCReader, ILDGReader
+import numpy as np
+from latqcdtools.interfaces.confReader import NERSCReader, ILDGReader, DynisoReader
 from latqcdtools.base.utilities import timer
 from latqcdtools.math.math import rel_check
 from latqcdtools.testing import concludeTest
+import latqcdtools.base.logger as logger
 
 
 def testReadWriteConf():
@@ -38,7 +40,21 @@ def testReadWriteConf():
                         link2 = gauge2.getLink(x,y,z,t,mu)
                         lpass *= rel_check(link1, link2)
 
-    concludeTest(lpass) 
+    # The dyniso files were written by dyniso's save_lattice code from the NERSC conf, in single precision. The
+    # ascii format keeps 6 significant digits.
+    for fmt, prec in [('comp',1e-6), ('milc',1e-6), ('ascii',1e-5)]:
+        reader = DynisoReader(Ns=8, Nt=4)
+        gauge3 = reader.readConf('../../datasets/dyniso_'+fmt+'.l8t4b3360')
+        timing.printTiming()
+        gauge3.checkSU3()
+        diff = np.max(np.abs(gauge3.field-gauge1.field))
+        if diff > prec:
+            logger.TBFail('dyniso',fmt,'differs from NERSC conf by',diff)
+            lpass = False
+        else:
+            logger.TBPass('dyniso',fmt,'agrees with NERSC conf.')
+
+    concludeTest(lpass)
 
 if __name__ == '__main__':
     testReadWriteConf()

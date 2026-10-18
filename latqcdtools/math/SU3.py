@@ -13,6 +13,35 @@ from latqcdtools.base.speedify import compile
 from latqcdtools.base.initialize import TBRNG
 
 
+# Gell-Mann matrices, normalized as tr(lam[a] lam[b]) = 2 delta_ab
+lam = {
+    1: np.array([[0, 1, 0],
+                 [1, 0, 0],
+                 [0, 0, 0]]),
+    2: np.array([[0, -1j, 0],
+                 [1j, 0, 0],
+                 [0, 0, 0]]),
+    3: np.array([[1, 0, 0],
+                 [0, -1, 0],
+                 [0, 0, 0]]),
+    4: np.array([[0, 0, 1],
+                 [0, 0, 0],
+                 [1, 0, 0]]),
+    5: np.array([[0, 0, -1j],
+                 [0, 0, 0],
+                 [1j, 0, 0]]),
+    6: np.array([[0, 0, 0],
+                 [0, 0, 1],
+                 [0, 1, 0]]),
+    7: np.array([[0, 0, 0],
+                 [0, 0, -1j],
+                 [0, 1j, 0]]),
+    8: np.array([[1, 0, 0],
+                 [0, 1, 0],
+                 [0, 0, -2]])/np.sqrt(3)
+}
+
+
 @compile
 def fastUnitarize(self):
 

@@ -3,7 +3,7 @@
 # 
 # D. Clarke
 # 
-# Tools for reading and writing gauge configurations in Python. To interact with binary configurations, we can use
+# Tools for reading gauge configurations in Python. To interact with binary configurations, we can use
 # Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html. NERSC reader inspired
 # by https://github.com/mdipierro/qcdutils. ILDG reader from https://github.com/nftqcd/nthmc/blob/master/lib/fieldio.py
 #
@@ -16,8 +16,12 @@ from latqcdtools.math.math import rel_check
 from latqcdtools.base.check import checkType
 from latqcdtools.interfaces.lime import LIMEMAGIC,trimNull,xmlFind,scidacChecksum
 numbaON()
-from latqcdtools.math.SU3 import SU3
+from latqcdtools.math.SU3 import SU3, fastUnitarize, lam
 from latqcdtools.physics.gauge import gaugeField
+
+
+DYNISOMILCMAGIC  = 20103 # Magic number at the start of dyniso's MILC-format files
+DYNISOASCIIMAGIC = 59354 # Version number at the start of dyniso's ascii files
 
 
 class confReader:
@@ -350,3 +354,98 @@ class ILDGReader(confReader):
         logger.details('Loaded conf into gaugeField.')
 
         return self.gauge 
+
+
+
+class DynisoReader(confReader):
+
+    """
+    Read the configurations written by dyniso's save_lattice. The format is detected from the file:
+        comp:  4 ints nx, ny, nz, nt. Then each link U is stored as the 8 floats a_k = Im tr(log(U) lambda_k), with
+               lambda_k the Gell-Mann matrices, so that U = exp(i/2 sum_k a_k lambda_k). dyniso's checkpoints
+               are in this format.
+        milc:  MILC header (magic number 20103, nx, ny, nz, nt, 64-character date, order, two checksums,
+               which dyniso leaves at 0), then each link as a 3x3 complex float matrix.
+        ascii: version number 59354, nx ny nz nt, two couplings, then each element of each link as a line
+               "re im". The files read by dyniso's reload_ascii start directly with nx ny nz nt.
+    The links run over t, z, y, x, then direction, in all three formats. The binary formats are in the byte order
+    of the machine that wrote them, which is detected from the header. Like dyniso, we reunitarize the links
+    after reading them.
+    """
+
+    def readConf(self,fileName):
+        """
+        Read in the configuration.
+        """
+        nlinks = self.Nd*self.Ns**3*self.Nt
+        fileSize = os.path.getsize(fileName)
+        if fileSize == 16 + 32*nlinks:
+            links = self._readComp(fileName)
+        elif fileSize == 96 + 72*nlinks:
+            links = self._readMILC(fileName)
+        else:
+            links = self._readASCII(fileName,nlinks)
+        self.gauge.field[:] = np.reshape(links,(self.Nt,self.Ns,self.Ns,self.Ns,self.Nd,self.Nc,self.Nc))
+        for t in range(self.Nt):
+            for z in range(self.Ns):
+                for y in range(self.Ns):
+                    for x in range(self.Ns):
+                        for mu in range(self.Nd):
+                            fastUnitarize(self.gauge.field[t,z,y,x,mu])
+        logger.details('Loaded conf into gaugeField.')
+        return self.gauge
+
+
+    def _endianness(self, header, nskip):
+        """
+        Find the byte order for which the 4 ints after the first nskip ints of header are the lattice dimensions.
+        """
+        for endianness in ['<','>']:
+            dims = struct.unpack(endianness+str(nskip+4)+'i',header[:4*(nskip+4)])[nskip:]
+            if dims == (self.Ns,self.Ns,self.Ns,self.Nt):
+                return endianness
+        logger.TBRaise('Could not find lattice dimensions',self.Ns,self.Ns,self.Ns,self.Nt,'in the header.')
+
+
+    def _readComp(self, fileName):
+        with open(fileName,'rb') as f:
+            data = f.read()
+        endianness = self._endianness(data,0)
+        alpha = np.frombuffer(data,dtype=endianness+'f4',offset=16).astype(float)
+        alpha = np.reshape(alpha,(-1,8))
+        # U = exp(iM) with Hermitian M = sum_k a_k lambda_k / 2. Exponentiate in the eigenbasis of M, as dyniso does.
+        M = np.zeros((len(alpha),self.Nc,self.Nc),dtype=complex)
+        for k in range(1,9):
+            M += alpha[:,k-1,None,None]*lam[k]/2
+        w, V = np.linalg.eigh(M)
+        return (V*np.exp(1j*w)[:,None,:]) @ np.conj(np.swapaxes(V,1,2))
+
+
+    def _readMILC(self, fileName):
+        with open(fileName,'rb') as f:
+            data = f.read()
+        endianness = self._endianness(data,1)
+        magic = struct.unpack(endianness+'i',data[:4])[0]
+        if magic != DYNISOMILCMAGIC:
+            logger.TBRaise('Expected MILC magic number',DYNISOMILCMAGIC,'but got',magic)
+        return np.frombuffer(data,dtype=endianness+'c8',offset=96).astype(complex)
+
+
+    def _readASCII(self, fileName, nlinks):
+        try:
+            with open(fileName,'r') as f:
+                tokens = f.read().split()
+        except UnicodeDecodeError:
+            logger.TBRaise(fileName,'is not a dyniso configuration of size',self.Ns,self.Ns,self.Ns,self.Nt)
+        nvalues = 2*self.Nc*self.Nc*nlinks
+        if len(tokens) == 7 + nvalues:
+            if int(tokens[0]) != DYNISOASCIIMAGIC:
+                logger.TBRaise('Expected version number',DYNISOASCIIMAGIC,'but got',tokens[0])
+            dims = tokens[1:5]
+        elif len(tokens) == 4 + nvalues:
+            dims = tokens[0:4]
+        else:
+            logger.TBRaise(fileName,'is not a dyniso configuration of size',self.Ns,self.Ns,self.Ns,self.Nt)
+        self.checkLatDims(int(dims[0]),int(dims[1]),int(dims[2]),int(dims[3]))
+        values = np.array(tokens[len(tokens)-nvalues:],dtype=float)
+        return values[0::2] + 1j*values[1::2]
