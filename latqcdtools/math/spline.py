@@ -3,10 +3,9 @@
 #
 # D. Clarke, Claude Code
 #
-# Splines with control over knot placement, endpoints, and smoothing, and their error bands. What kind of
-# spline you get is set by a kind object: Interpolating, Regression, Smoothing, or KnotAverage. Pass it to
-# getSpline for a single fit, to bootSpline for a bootstrap error band, or to posteriorSpline for a Bayesian
-# one.
+# Splines with control over knot placement and endpoints, and their error bands. What kind of spline you
+# get is set by a kind object: Interpolating, Regression, or KnotAverage. Pass it to
+# getSpline for a single fit, or to bootSpline for a bootstrap error band.
 #
 
 import numpy as np
@@ -14,26 +13,24 @@ from scipy.interpolate import BSpline, make_interp_spline, splev
 from scipy.linalg import null_space, solve_triangular
 from scipy.optimize import brentq
 import latqcdtools.base.logger as logger
-from latqcdtools.statistics.statistics import AIC, whiteningMatrix, getModelWeights
+from latqcdtools.statistics.statistics import AIC, whiteningMatrix, std_median, dev_by_dist
 from latqcdtools.base.check import checkType, checkEqualLengths
 from latqcdtools.base.initialize import TBRNG, DEFAULTSEED
 from latqcdtools.base.speedify import compile
 from latqcdtools.math.math import isMatrix, isVector, quadrature
-from latqcdtools.statistics.statistics import std_median, dev_by_dist
 from latqcdtools.statistics.bootstr import bootstr_from_gauss
 
 
 def _even_knots(xdata, nknots):
     """
-    Return a list of nknots knots, evenly spaced in data index (not in x), so that each interval holds
+    Return a list of nknots knots, evenly spaced in data index, so that each interval holds
     roughly the same number of data. Each knot is the midpoint of two neighboring unique data, or a datum
     itself when the index lands exactly on one.
     """
     if len(xdata)<nknots:
         logger.TBRaise('number of data < number of knots')
-    flat_xdata = np.sort(np.asarray(xdata))
-    # remove duplicate x values
-    flat_xdata = np.unique(flat_xdata)
+    # sorted, without duplicate x values
+    flat_xdata = np.unique(np.asarray(xdata))
     jump_step = (len(flat_xdata) - 1) / (nknots + 1)
     knots = []
     for i in range(1, nknots + 1):
@@ -43,17 +40,17 @@ def _even_knots(xdata, nknots):
     return knots
 
 
-def _random_knots(xdata, nknots, randomization_factor=1, SEED=None):
+def _random_knots(xdata, nknots, SEED=None):
     """
-    Return a list of nknots randomly placed knots. Draws a random subset of xdata and applies _even_knots
-    to it. randomization_factor=1 draws the smallest subset (most random); 0 uses all the data.
+    Return a list of nknots randomly placed knots. Draws a random subset of nknots+1 data and applies
+    _even_knots to it.
     """
     rng = TBRNG(SEED)
     flat_xdata = np.sort(np.asarray(xdata))
-    nsample = int(nknots+1+(1-randomization_factor)*(len(flat_xdata)-nknots))
+    nsample = nknots+1
     sample_xdata = rng.choice(flat_xdata,nsample,replace=False)
     # Retry if too many data points are removed by np.unique
-    while len(np.unique(sample_xdata)) < nknots + 1:
+    while len(np.unique(sample_xdata)) < nsample:
         sample_xdata = rng.choice(flat_xdata,nsample,replace=False)
     return _even_knots(sample_xdata, nknots)
 
@@ -89,120 +86,30 @@ def _whitening(edata, ndata):
         return np.diag(weights)
 
 
-def _smoothingSystem(xdata, edata, lam):
-    """
-    Set up and solve by QR the least-squares problem of a cubic smoothing spline, which minimizes
-    (y - S)^T W (y - S) + lam int S''^2. The minimizer over all twice-differentiable functions is a natural
-    cubic spline with a knot at every unique x, so we work in that B-spline basis. With S = B c and
-    int S''^2 = |L c|^2, the problem is |X c - b|^2 with X = (M B, sqrt(lam) L) and b = (M y, 0) stacked,
-    where M is the whitening matrix. QR, X = Q R, stays accurate for large lam, unlike the normal equations.
-    None of this depends on y.
-
-    Returns:
-        t: full knot vector
-        M: whitening matrix
-        Qd: rows of Q belonging to the data, so that c = R^-1 Qd^T M y
-        R: triangular factor
-        occam: the part of the log evidence that does not depend on y, see _logEvidence
-    """
-    x = np.asarray(xdata,dtype=float)
-    u = np.unique(x)
-    t = np.r_[[u[0]]*4, u[1:-1], [u[-1]]*4]
-    nB = len(t) - 4
-    B  = BSpline.design_matrix(x, t, 3).toarray()
-    M  = _whitening(edata, len(x))
-    # B_j'' is linear between neighboring knots, so B_i'' B_j'' is quadratic there, and 2-point
-    # Gauss-Legendre quadrature on each interval gives int S''^2 = sum_q wq S''(xq)^2 exactly.
-    half = np.diff(u)/2
-    mid  = (u[:-1]+u[1:])/2
-    xq   = np.r_[mid - half/np.sqrt(3), mid + half/np.sqrt(3)]
-    wq   = np.r_[half, half]
-    L    = np.sqrt(wq)[:,None]*BSpline(t, np.eye(nB), 3).derivative(2)(xq)
-    Q, R = np.linalg.qr(np.r_[M@B, np.sqrt(lam)*L])
-    Qd   = Q[:len(x)]
-    # Omega = L^T L misses the straight lines, so its rank is nB-2.
-    occam = -np.sum(np.log(np.abs(np.diag(R)))) + 0.5*(nB-2)*np.log(lam)
-    return t, M, Qd, R, occam
-
-
-def _logEvidence(My, QdTMy, occam):
-    """
-    Log evidence log p(y|lam) of a smoothing spline, up to a constant that does not depend on lam. The
-    penalty is a Gaussian prior on the coefficients with precision lam Omega, flat in the straight-line
-    directions, which Omega does not see. Integrating out c gives
-        -2 log p(y|lam) = chi^2 + lam c^T Omega c + log det(X^T X) - log det+(lam Omega) + const,
-    evaluated at the spline c, where det+ is the product of nonzero eigenvalues (REML). The first two terms
-    are the minimum of |X c - b|^2, which is |M y|^2 - |Qd^T M y|^2, and log det(X^T X) = 2 sum log|R_ii|.
-    """
-    return -0.5*(My@My - np.sum(QdTMy**2,axis=-1)) + occam
-
-
-def _lamGrid(xdata, edata, nlam):
-    """
-    Grid of nlam values of lam, uniform in log lam, for averaging smoothing splines. tr(H) falls
-    monotonically with lam and does not depend on y, so we bracket the grid by the lam where tr(H) is
-    close to the number of unique x (interpolation) and where it is close to 2 (straight line). This
-    makes the grid independent of the units of x and y.
-    """
-    nu = len(np.unique(xdata))
-    if nu < 3:
-        logger.TBRaise('Averaging over lam needs at least 3 unique x.')
-
-    def peffDiff(loglam,target):
-        _, _, Qd, _, _ = _smoothingSystem(xdata, edata, np.exp(loglam))
-        return np.sum(Qd**2) - target
-
-    loglams = []
-    for target in [nu-0.1, 2.01]:
-        lo, hi = -5., 5.
-        while peffDiff(lo,target) < 0:
-            lo -= 10
-        while peffDiff(hi,target) > 0:
-            hi += 10
-        loglams.append(brentq(peffDiff,lo,hi,args=(target,)))
-    return np.exp(np.linspace(loglams[0],loglams[1],nlam))
-
-
-def _averageWeights(y, M, Qd, occam):
-    """
-    Weights of the smoothing splines on the lam grid, proportional to their evidence, together with the
-    log evidences. The arrays Qd and occam have the lam grid as their first axis.
-    """
-    My     = M @ y
-    QdTMy  = np.einsum('knb,n->kb', Qd, My)
-    logEv  = _logEvidence(My, QdTMy, occam)
-    # The log evidence plays the role of -IC/2.
-    return getModelWeights(-2*logEv), logEv, QdTMy
-
-
 class TBSpline:
 
     """
-    A fitted B-spline, as returned by getSpline, bootSpline, and posteriorSpline. It holds the data it was
-    fit to, the tck of the fit in the format of splrep, and the kind of spline. Call it like a SciPy spline.
-    For a smoothing spline, lam is the smoothing parameter, or 'average' for an average over lam, and peff
-    is the effective number of parameters. A smoothing spline at fixed lam also knows its logEvidence.
+    A fitted B-spline, as returned by getSpline and bootSpline. It holds the data it was
+    fit to, the tck of the fit in the format of splrep, and the kind of spline, which also says whether
+    the spline is natural. Call it like a SciPy spline. For a spline averaged over knot configurations,
+    peff is the average number of parameters.
     """
 
-    def __init__(self,xdata,ydata,tck,edata=None,kind=None,natural=False,lam=None,peff=None,logEvidence=None):
+    def __init__(self,xdata,ydata,tck,kind,edata=None,peff=None):
         self.xspline     = np.copy(xdata)
         self.yspline     = np.copy(ydata)
         self.tck         = tck
-        self.edata       = edata
         self.kind        = kind
-        self.natural     = natural
-        self.lam         = lam
+        self.edata       = edata
         self.peff        = peff
-        self.logEvidence = logEvidence
         # For a covariance matrix, weights holds 1/sqrt of its diagonal, for information.
         self.weights, self.cov = _parseEdata(edata)
 
+    @property
+    def natural(self):
+        return self.kind.natural
+
     def get_nparams(self):
-        """
-        Number of free parameters. Natural boundary conditions remove 2. For a smoothing spline this
-        is the effective number tr(H), which is not an integer. For a spline averaged over lam, it is
-        the weighted average of tr(H).
-        """
         if self.peff is not None:
             return self.peff
         nparams = len(self.get_knots()) - self.get_order() - 1
@@ -212,8 +119,11 @@ class TBSpline:
 
     def get_AIC(self):
         """
-        AIC of the fit, using the covariance matrix if edata is one. Requires edata.
+        AIC of the fit, using the covariance matrix if edata is one. Requires edata, and a kind with a
+        meaningful AIC.
         """
+        if not self.kind.hasAIC:
+            logger.TBRaise('AIC is not meaningful for',self.kind)
         if self.edata is None:
             logger.TBRaise('AIC needs edata.')
         cov = self.cov
@@ -270,10 +180,11 @@ class SplineKind:
 
     """
     Base class of the kinds of spline. hasAIC is False for kinds without a meaningful AIC, i.e.
-    interpolation and averages over models.
+    interpolation and averages over models. natural is True for kinds with zero curvature at the endpoints.
     """
 
-    hasAIC = True
+    hasAIC  = True
+    natural = False
 
     def fitter(self, xdata, edata=None):
         logger.TBRaise('Not implemented for',self)
@@ -292,7 +203,8 @@ class Interpolating(SplineKind):
     are not used in the fit.
     """
 
-    hasAIC = False
+    hasAIC  = False
+    natural = True
 
     def __repr__(self) -> str:
         return "Interpolating()"
@@ -354,50 +266,6 @@ class Regression(SplineKind):
 
     def fitter(self, xdata, edata=None):
         return _RegressionFitter(self, xdata, edata)
-
-
-class Smoothing(SplineKind):
-
-    """
-    Cubic smoothing spline. It minimizes (y - S)^T W (y - S) + lam int S''^2, with W as for Regression.
-    For W = diag(w), this is the convention of scipy.interpolate.make_smoothing_spline. The minimizer is
-    a natural cubic spline with a knot at every unique x, so there are no knots to choose. With
-    lam='average', the result is instead an average of smoothing splines over nlam values of lam, uniform
-    in log lam, weighted by their evidence. The grid runs from (almost) interpolating the data to (almost)
-    a straight line. This needs edata.
-
-    Args:
-        lam (float or str, optional):
-            Smoothing parameter > 0, or 'average'. Defaults to 'average'.
-        nlam (int, optional):
-            Number of values of lam for lam='average'. Defaults to 100.
-    """
-
-    def __init__(self, lam='average', nlam=100):
-        # Set the attributes first, so that __repr__ works in error messages.
-        self.lam      = lam
-        self.nlam     = nlam
-        self.averaged = isinstance(lam,str)
-        if isinstance(lam,str):
-            if lam != 'average':
-                logger.TBRaise("lam must be a number or 'average'. lam =",lam)
-            checkType('int',nlam=nlam)
-            self.averaged = True
-            self.hasAIC  = False
-        else:
-            checkType('real',lam=lam)
-            if lam <= 0:
-                logger.TBRaise('Need lam > 0. lam =',lam)
-            self.averaged = False
-            self.hasAIC  = True
-
-    def __repr__(self) -> str:
-        if self.averaged:
-            return f"Smoothing(lam='average', nlam={self.nlam})"
-        return f"Smoothing(lam={self.lam})"
-
-    def fitter(self, xdata, edata=None):
-        return _SmoothingFitter(self, xdata, edata)
 
 
 class KnotAverage(SplineKind):
@@ -466,7 +334,13 @@ class KnotAverage(SplineKind):
         return _KnotAverageFitter(self, xdata, edata)
 
 
-class _InterpolatingFitter:
+class _Fitter:
+
+    """
+    Base class of the fitters. Every fitter has fit(y, warn), which returns a TBSpline; warn turns on
+    warnings about the fit, where a fitter has any. Fitters of averaged kinds also have details(y, xspl),
+    which returns the models of the average for the data y and their weighted spreads.
+    """
 
     def __init__(self, kind, xdata, edata):
         self.kind  = kind
@@ -474,10 +348,23 @@ class _InterpolatingFitter:
         self.edata = edata
 
     def fit(self, y, warn=False):
+        logger.TBRaise('Not implemented for',self.kind)
+
+
+class _InterpolatingFitter(_Fitter):
+
+    def fit(self, y, warn=False):
         spl = make_interp_spline(self.x, y, k=3, bc_type='natural')
         # splrep pads the coefficients with order+1 zeros
         tck = (spl.t, np.r_[spl.c, np.zeros(4)], 3)
-        return TBSpline(self.x, y, tck, edata=self.edata, kind=self.kind, natural=True)
+        return TBSpline(self.x, y, tck, self.kind, edata=self.edata)
+
+
+def _knotVector(xmin, xmax, interior, order=3):
+    """
+    Full knot vector as in splrep: each endpoint repeated order+1 times around the interior knots.
+    """
+    return np.r_[[xmin]*(order+1), interior, [xmax]*(order+1)]
 
 
 def _lsqSystem(x, M, t, order, natural):
@@ -502,15 +389,13 @@ def _lsqSystem(x, M, t, order, natural):
     return N, Q, R, np.min(d) <= 1e-10*np.max(d)
 
 
-class _RegressionFitter:
+class _RegressionFitter(_Fitter):
 
     def __init__(self, kind, xdata, edata):
         """
         Place the knots and set up the least-squares problem, see _lsqSystem.
         """
-        self.kind  = kind
-        self.x     = np.asarray(xdata,dtype=float)
-        self.edata = edata
+        super().__init__(kind, xdata, edata)
         order      = kind.order
         xmin, xmax = np.min(self.x), np.max(self.x)
         nauto = kind.nknots - len(kind.knots)
@@ -528,8 +413,7 @@ class _RegressionFitter:
             logger.TBRaise("You can't put a knot to the left of the x-data. knots, min(xdata) = ",knots,xmin)
         if len(knots)>0 and knots[-1]>xmax:
             logger.TBRaise("You can't put a knot to the right of the x-data. knots, max(xdata) = ",knots,xmax)
-        # Full knot vector: each endpoint repeated order+1 times around the interior knots, as in splrep.
-        self.t = np.r_[[xmin]*(order+1), knots, [xmax]*(order+1)]
+        self.t = _knotVector(xmin, xmax, knots, order)
         self.M = _whitening(edata, len(self.x))
         self.N, self.Q, self.R, singular = _lsqSystem(self.x, self.M, self.t, order, kind.natural)
         if singular:
@@ -539,91 +423,7 @@ class _RegressionFitter:
         d = solve_triangular(self.R, self.Q.T @ (self.M @ y))
         # splrep pads the coefficients with order+1 zeros
         tck = (self.t, np.r_[self.N @ d, np.zeros(self.kind.order+1)], self.kind.order)
-        return TBSpline(self.x, y, tck, edata=self.edata, kind=self.kind, natural=self.kind.natural)
-
-
-class _SmoothingFitter:
-
-    def __init__(self, kind, xdata, edata):
-        """
-        Set up the system of _smoothingSystem for each lam: the given one, or the grid for lam='average'.
-        Everything except the weights is linear in y.
-        """
-        self.kind  = kind
-        self.x     = np.asarray(xdata,dtype=float)
-        self.edata = edata
-        if kind.averaged:
-            if edata is None:
-                logger.TBRaise("Averaging over lam needs edata, since the evidence depends on the errors.")
-            self.lams = _lamGrid(self.x, edata, kind.nlam)
-        else:
-            self.lams = np.array([kind.lam])
-        Qd, R, occam = [], [], []
-        for lam in self.lams:
-            t, M, Qdk, Rk, occamk = _smoothingSystem(self.x, edata, lam)
-            Qd.append(Qdk)
-            R.append(Rk)
-            occam.append(occamk)
-        self.t     = t
-        self.M     = M
-        self.Qd    = np.array(Qd)
-        self.R     = np.array(R)
-        self.occam = np.array(occam)
-        # tr(H) = |Qd|^2, since H = Qd Qd^T
-        self.peffs = np.sum(self.Qd**2,axis=(1,2))
-
-    def _coeffs(self, y, warn):
-        """
-        Weights, log evidences, and coefficients at each lam.
-        """
-        w, logEv, QdTMy = _averageWeights(y, self.M, self.Qd, self.occam)
-        if warn and self.kind.averaged and ((w[0] > 0.01) or (w[-1] > 0.01)):
-            logger.warn('Weights at the ends of the lam grid are',w[0],'and',w[-1],'which may make the result',
-                        'depend on the grid. Large weight at large lam means the data are consistent with a straight line.')
-        c = []
-        for k in range(len(self.lams)):
-            c.append(solve_triangular(self.R[k], QdTMy[k]))
-        return w, logEv, np.array(c)
-
-    def fit(self, y, warn=False):
-        """
-        All splines share the knots, so their weighted average is again a spline, whose coefficients are the
-        weighted average of the coefficients.
-        """
-        w, logEv, c = self._coeffs(y, warn)
-        tck = (self.t, np.r_[w @ c, np.zeros(4)], 3)
-        if self.kind.averaged:
-            return TBSpline(self.x, y, tck, edata=self.edata, kind=self.kind, natural=True, lam='average',
-                            peff=w @ self.peffs)
-        return TBSpline(self.x, y, tck, edata=self.edata, kind=self.kind, natural=True, lam=self.lams[0],
-                        peff=self.peffs[0], logEvidence=logEv[0])
-
-    def details(self, y, xspl):
-        """
-        Everything about the average over lam for the data y: the weights, the smoothing spline at each lam,
-        the averaged spline, and the weighted spreads over lam of the spline and of its xmax on xspl.
-        """
-        w, logEv, c = self._coeffs(y, False)
-        Bspl = BSpline.design_matrix(xspl, self.t, 3).toarray()
-        ylam, splinesLam = [], []
-        for k in range(len(self.lams)):
-            tck = (self.t, np.r_[c[k], np.zeros(4)], 3)
-            splinesLam.append(TBSpline(self.x, y, tck, edata=self.edata, kind=Smoothing(lam=self.lams[k]),
-                                       natural=True, lam=self.lams[k], peff=self.peffs[k], logEvidence=logEv[k]))
-            ylam.append(Bspl @ c[k])
-        ylam  = np.array(ylam)
-        ybar  = w @ ylam
-        xmaxs = xspl[np.argmax(ylam,axis=1)]
-        det = {}
-        det['weights']    = w
-        det['logEv']      = logEv
-        det['coeffs']     = c
-        det['Bspl']       = Bspl
-        det['splinesLam'] = splinesLam
-        det['ybar']       = ybar
-        det['ylamSpread'] = np.sqrt(w @ (ylam - ybar)**2)
-        det['xmaxSpread'] = np.sqrt(w @ (xmaxs - w @ xmaxs)**2)
-        return det
+        return TBSpline(self.x, y, tck, self.kind, edata=self.edata)
 
 
 # The Metropolis-Hastings chain of KnotAverage. These functions use only arrays, loops, and numpy functions that numba
@@ -862,6 +662,16 @@ def _knotChain(x, M, My, grid, lt, le, nu, kmax, natural, idx0, k0, u, nburn, ev
     return savedIdx, savedK, savedAIC, savedC, stats
 
 
+def _nparams(k, natural):
+    """
+    Number of parameters of a cubic regression spline with k interior knots. Natural boundary conditions
+    remove 2.
+    """
+    if natural:
+        return k+2
+    return k+4
+
+
 def _dataSeed(seed, ichain, y):
     """
     Seed for one chain from the seed of the kind, the chain index, and the bits of the data.
@@ -870,7 +680,7 @@ def _dataSeed(seed, ichain, y):
     return [seed, ichain] + words.astype(np.int64).tolist()
 
 
-class _KnotAverageFitter:
+class _KnotAverageFitter(_Fitter):
 
     # Probability to propose a birth (death) when k < kmax (k > 0); the rest are moves.
     PBIRTH = 1/3
@@ -886,9 +696,7 @@ class _KnotAverageFitter:
         """
         if edata is None:
             logger.TBRaise('KnotAverage needs edata, since the AIC depends on the errors.')
-        self.kind  = kind
-        self.x     = np.asarray(xdata,dtype=float)
-        self.edata = edata
+        super().__init__(kind, xdata, edata)
         self.M     = _whitening(edata, len(self.x))
         u          = np.unique(self.x)
         nu         = len(u)
@@ -920,42 +728,29 @@ class _KnotAverageFitter:
             self.kmax = kind.kmax
         # Basis with a knot at every grid point. Every configuration is a spline in this basis, so its 
         # coefficients follow from its values at the Greville abscissae z of this basis.
-        self.tFull = np.r_[[self.xmin]*4, self.grid, [self.xmax]*4]
-        self.z     = (self.tFull[1:-3] + self.tFull[2:-2] + self.tFull[3:-1])/3
+        self.tFull = _knotVector(self.xmin, self.xmax, self.grid)
+        # Clip, since rounding can put the end abscissae just outside [xmin, xmax], e.g. (3*1.6)/3 > 1.6.
+        self.z     = np.clip((self.tFull[1:-3] + self.tFull[2:-2] + self.tFull[3:-1])/3, self.xmin, self.xmax)
         self.Pz    = np.linalg.inv(BSpline.design_matrix(self.z, self.tFull, 3).toarray())
         self._cacheKey = None
         self._cacheRun = None
 
-    def _valid(self, idx):
-        """
-        Is there a unique datum strictly inside each interval of the configuration with grid indices idx?
-        """
-        if len(idx) == 0:
-            return True
-        if self.lt[idx[0]] < 2:
-            return False
-        if self.nu - self.le[idx[-1]] < 2:
-            return False
-        for i in range(len(idx)-1):
-            if self.lt[idx[i+1]] - self.le[idx[i]] < 1:
-                return False
-        return True
-
     def _system(self, idx, My):
         """
-        Fit of the configuration with grid indices idx to the whitened data My. Returns its AIC, knot vector, 
-        and coefficients, or None if the configuration is not allowed.
+        Fit of the configuration with grid indices idx to the whitened data My, by the same _knotValid and 
+        _knotFit as the chain. Returns its AIC, knot vector, coefficients, and number of parameters, or None if 
+        the configuration is not allowed.
         """
-        if not self._valid(idx):
+        idx = np.asarray(idx,dtype=np.int64)
+        k   = len(idx)
+        if not _knotValid(idx, k, self.lt, self.le, self.nu):
             return None
-        t = np.r_[[self.xmin]*4, self.grid[idx], [self.xmax]*4]
-        N, Q, R, singular = _lsqSystem(self.x, self.M, t, 3, self.kind.natural)
-        if singular:
+        ok, aic, c = _knotFit(self.x, np.ascontiguousarray(self.M,dtype=float), np.ascontiguousarray(My,dtype=float),
+                              self.grid, idx, k, self.kind.natural)
+        if not ok:
             return None
-        QTMy = Q.T @ My
-        chi2 = My @ My - QTMy @ QTMy
-        c    = N @ solve_triangular(R, QTMy)
-        return {'AIC':chi2 + 2*N.shape[1], 't':t, 'c':c, 'p':N.shape[1]}
+        t = _knotVector(self.xmin, self.xmax, self.grid[idx])
+        return {'AIC':aic, 't':t, 'c':c, 'p':_nparams(k, self.kind.natural)}
 
     def _chain(self, My, rng, saved, stats, trace):
         """
@@ -992,13 +787,9 @@ class _KnotAverageFitter:
             if key in saved:
                 saved[key][0] += 1
             else:
-                t = np.r_[[self.xmin]*4, self.grid[list(key)], [self.xmax]*4]
+                t = _knotVector(self.xmin, self.xmax, self.grid[list(key)])
                 c = savedC[isave,:k+4].copy()
-                if kind.natural:
-                    p = k+2
-                else:
-                    p = k+4
-                saved[key] = [1, {'AIC':savedAIC[isave], 't':t, 'c':c, 'p':p}]
+                saved[key] = [1, {'AIC':savedAIC[isave], 't':t, 'c':c, 'p':_nparams(k, kind.natural)}]
 
     def _run(self, y):
         """
@@ -1023,7 +814,11 @@ class _KnotAverageFitter:
             counts.append(saved[cfg][0])
             fits.append(saved[cfg][1])
         counts = np.array(counts)
-        run = {'configs':configs, 'counts':counts, 'fits':fits, 'stats':stats, 'traces':traces}
+        # How often each number of knots 0,...,kmax was saved
+        kHist  = np.zeros(self.kmax+1,dtype=int)
+        for i in range(len(configs)):
+            kHist[len(configs[i])] += counts[i]
+        run = {'configs':configs, 'counts':counts, 'fits':fits, 'stats':stats, 'traces':traces, 'kHistogram':kHist}
         self._cacheKey = key
         self._cacheRun = run
         return run
@@ -1037,22 +832,21 @@ class _KnotAverageFitter:
         counts = run['counts']
         sz     = np.zeros(len(self.z))
         peff   = 0.
-        kcount = np.zeros(self.kmax+1)
         for i in range(len(counts)):
             fit   = run['fits'][i]
             sz   += counts[i]*(BSpline.design_matrix(self.z, fit['t'], 3).toarray() @ fit['c'])
             peff += counts[i]*fit['p']
-            kcount[len(run['configs'][i])] += counts[i]
         ntot  = np.sum(counts)
         sz   /= ntot
         peff /= ntot
-        if warn and (kcount[self.kmax]/ntot > 0.01):
-            logger.warn('The chain spends',kcount[self.kmax]/ntot,'of its time at kmax =',self.kmax,'knots. The data',
+        atMax = run['kHistogram'][self.kmax]/ntot
+        if warn and (atMax > 0.01):
+            logger.warn('The chain spends',atMax,'of its time at kmax =',self.kmax,'knots. The data',
                         'may want more knots than allowed, or the configurations are fitting noise.')
         if warn:
             self._checkDrift(run['traces'])
         tck = (self.tFull, np.r_[self.Pz @ sz, np.zeros(4)], 3)
-        return TBSpline(self.x, y, tck, edata=self.edata, kind=self.kind, natural=self.kind.natural, peff=peff)
+        return TBSpline(self.x, y, tck, self.kind, edata=self.edata, peff=peff)
 
     def _checkDrift(self, traces):
         """
@@ -1085,20 +879,19 @@ class _KnotAverageFitter:
     def details(self, y, xspl):
         """
         The saved configurations for the data y, their counts, the histogram of k, the acceptance rates, and the
-        weighted spreads over configurations of the spline and of its xmax on xspl.
+        weighted spreads over configurations of the spline and its observables, see _modelSpreads.
         """
         run    = self._run(y)
         counts = run['counts']
         w      = counts/np.sum(counts)
-        ycfg   = []
-        kHist  = np.zeros(self.kmax+1,dtype=int)
+        ycfg, splines = [], []
         for i in range(len(counts)):
-            fit = run['fits'][i]
-            ycfg.append(BSpline.design_matrix(xspl, fit['t'], 3).toarray() @ fit['c'])
-            kHist[len(run['configs'][i])] += counts[i]
-        ycfg  = np.array(ycfg)
-        ybar  = w @ ycfg
-        xmaxs = xspl[np.argmax(ycfg,axis=1)]
+            fit     = run['fits'][i]
+            cfgKind = Regression(knots=run['configs'][i], natural=self.kind.natural)
+            spline  = TBSpline(self.x, y, (fit['t'], np.r_[fit['c'], np.zeros(4)], 3), cfgKind, edata=self.edata)
+            splines.append(spline)
+            ycfg.append(spline(xspl))
+        ycfg = np.array(ycfg)
         acceptance = {}
         for move in run['stats']:
             nprop, nacc = run['stats'][move]
@@ -1107,14 +900,15 @@ class _KnotAverageFitter:
             else:
                 acceptance[move] = 0.
         det = {}
+        det['splines']     = splines
+        det['weights']     = w
         det['configs']     = run['configs']
         det['counts']      = counts
-        det['kHistogram']  = kHist
+        det['kHistogram']  = run['kHistogram']
         det['acceptance']  = acceptance
         det['ngrid']       = self.ngrid
         det['kmax']        = self.kmax
-        det['yknotSpread'] = np.sqrt(w @ (ycfg - ybar)**2)
-        det['xmaxSpread']  = np.sqrt(w @ (xmaxs - w @ xmaxs)**2)
+        det['spread']      = _modelSpreads(splines, ycfg, w, xspl)
         return det
 
 
@@ -1147,8 +941,7 @@ def getSpline(xdata, ydata, edata=None, kind=None):
         edata (array-like, optional):
             Error data, either a vector of errors or the covariance matrix of ydata. Defaults to None.
         kind (SplineKind, optional):
-            Interpolating(), Regression(...), Smoothing(...), or KnotAverage(...). Defaults to Interpolating() without edata
-            and Smoothing(), i.e. the average over lam, with edata.
+            Interpolating(), Regression(...), or KnotAverage(...). Defaults to Interpolating().
 
     Returns:
         TBSpline
@@ -1156,10 +949,7 @@ def getSpline(xdata, ydata, edata=None, kind=None):
     checkEqualLengths(xdata,ydata)
     _checkEdata(xdata,edata)
     if kind is None:
-        if edata is None:
-            kind = Interpolating()
-        else:
-            kind = Smoothing()
+        kind = Interpolating()
     return kind.fit(xdata, ydata, edata)
 
 
@@ -1171,8 +961,6 @@ def getSplineErr(xdata, xspline, ydata, ydatae, kind=None):
     """
     if np.ndim(ydatae) != 1:
         logger.TBRaise('getSplineErr needs a vector of errors ydatae.')
-    if kind is None:
-        kind = Interpolating()
     spline_lower  = getSpline(xdata, ydata - ydatae, kind=kind)(xspline)
     spline_upper  = getSpline(xdata, ydata + ydatae, kind=kind)(xspline)
     spline_center = (spline_lower+spline_upper)/2
@@ -1211,27 +999,125 @@ def _steepestInflection(spline, xspl):
     return xbest, float(spline(xbest))
 
 
-def _kindSample(sample, fitter, xspl):
+def _weightedSpread(w, a):
     """
-    Fit one bootstrap sample of shape (1,ndata) for bootSpline. Return everything needed to rebuild the
-    spline, plus the observables, as one flat array: yBS, coefficients, spline on xspl, the x on xspl where
-    the spline is largest, and the number of parameters. This lives at module level so that it can be
-    pickled for nproc>1.
+    Spread sqrt(sum_k w_k (a_k - abar)^2) of a along axis 0, with abar = sum_k w_k a_k and normalized w.
+    """
+    return np.sqrt(w @ (a - w @ a)**2)
+
+
+def _spreadOf(splines, w, f):
+    """
+    Weighted spread over the models splines, with weights w, of f(spline), which may be a number or an array.
+    Models where f has a nan are dropped, and the remaining weights are renormalized. Returns nan if f has a
+    nan for every model.
+    """
+    vals, wkeep = [], []
+    for i in range(len(splines)):
+        val = np.asarray(f(splines[i]),dtype=float)
+        if not np.any(np.isnan(val)):
+            vals.append(val)
+            wkeep.append(w[i])
+    if len(wkeep) == 0:
+        return np.nan
+    wkeep = np.array(wkeep)
+    if np.sum(wkeep) < 0.99:
+        logger.warn(f'Models where the quantity is undefined carry weight {1-np.sum(wkeep):.3f}; they are dropped from its systematic error.')
+    return _weightedSpread(wkeep/np.sum(wkeep), np.array(vals))
+
+
+def _maxOnGrid(ys, xspl):
+    """
+    For curves ys on xspl, one per row, the x on xspl where each is largest, and its value there.
+    """
+    imax = np.argmax(ys,axis=1)
+    return xspl[imax], ys[np.arange(len(ys)),imax]
+
+
+def _modelSpreads(splines, ys, w, xspl):
+    """
+    Systematic errors of an average over models (knot configurations): the weighted spreads over the
+    models, with weights w, of each model's spline on xspl (ys holds them), its maximum (x and y on xspl), and
+    its steepest inflection point. Models without an inflection point are dropped from that spread, see
+    _spreadOf.
+    """
+    xmax, ymax = _maxOnGrid(ys, xspl)
+    sp = {}
+    sp['y']    = _weightedSpread(w, ys)
+    sp['xmax'] = _weightedSpread(w, xmax)
+    sp['ymax'] = _weightedSpread(w, ymax)
+    def inflection(spline):
+        return _steepestInflection(spline, xspl)
+    spread = _spreadOf(splines, w, inflection)
+    if np.all(np.isnan(spread)):
+        sp['xinflect'], sp['yinflect'] = np.nan, np.nan
+    else:
+        sp['xinflect'], sp['yinflect'] = spread[0], spread[1]
+    return sp
+
+
+def modelSpread(res, f):
+    """
+    Systematic error of a quantity f(spline) derived from a bootSpline result res: its weighted spread over
+    the models of the average (the knot configurations) for the original data, the same
+    systematic error bootSpline gives its own observables. Add it in quadrature to the statistical error,
+    i.e. the spread of f over res['splineBS']. Models where f is nan are dropped. For kinds that are not
+    averages, there are no models, and the result is 0.
+
+    Args:
+        res (dict): result of bootSpline
+        f (func): takes a TBSpline and returns a number or an array
+
+    Returns:
+        float or np.ndarray: systematic error of f
+    """
+    if 'splinesModel' not in res:
+        return 0.
+    return _spreadOf(res['splinesModel'], res['weightsModel'], f)
+
+
+def _kindSample(sample, fitter):
+    """
+    Fit one bootstrap sample of shape (1,ndata) for bootSpline. The bootstrap needs numbers, so pack what
+    is needed to rebuild the spline into one flat array: yBS, the coefficients, and the number of parameters.
+    _unpackSample undoes this. This lives at module level so that it can be pickled for nproc>1.
     """
     yBS = sample[0]
     spl = fitter.fit(yBS)
-    ys  = spl(xspl)
-    return np.r_[yBS, spl.get_coeffs(), ys, xspl[np.argmax(ys)], spl.get_nparams()]
+    return np.r_[yBS, spl.get_coeffs(), spl.get_nparams()]
+
+
+def _unpackSample(sample, ndata):
+    """
+    yBS, the coefficients, and the number of parameters from an array packed by _kindSample.
+    """
+    return sample[:ndata], sample[ndata:-1], sample[-1]
+
+
+def _setErrors(res, name, ename, f0, fBS, sys):
+    """
+    Put the bias-corrected central value of an observable into res[name], and its statistical error over
+    the bootstrap samples fBS, its systematic error sys, and their sum in quadrature into res[ename+'_stat'],
+    res[ename+'_sys'], and res[ename].
+    """
+    stat = dev_by_dist(fBS)
+    res[name]          = _medianBiasCorrect(f0, fBS)
+    res[ename+'_stat'] = stat
+    res[ename+'_sys']  = sys
+    res[ename]         = quadrature(np.array([stat, sys]),axis=0)
 
 
 def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, seed=DEFAULTSEED, nproc=1) -> dict:
     """
     Given xdata, ydata, edata, create a spline of the given kind. Use a Gaussian (parametric) bootstrap,
     drawing ydata from normal distributions of width edata, to propagate uncertainties of the data into an
-    error band for the spline. Every bootstrap sample is fit with the same kind; e.g. for an average over
-    lam, the weights are recomputed in every sample, so the error includes the uncertainty in lam. If edata
-    is the covariance matrix of ydata, the samples are drawn from a multivariate normal, and the fits use
-    the covariance matrix as well.
+    error band for the spline. Every bootstrap sample is fit with the same kind; e.g. for KnotAverage,
+    the chain is rerun in every sample. This bootstrap error is the statistical error. It does
+    not contain how much the models in an average (the knot configurations) disagree with each
+    other, since the averaged spline can stay put while they disagree. For averaged kinds, the weighted
+    spread over models for the original data is therefore the systematic error, and every error below is
+    the statistical and systematic errors added in quadrature. If edata is the covariance matrix of ydata,
+    the samples are drawn from a multivariate normal, and the fits use the covariance matrix as well.
 
     Args:
         xdata (array-like)
@@ -1239,7 +1125,7 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
         edata (array-like):
             Errors of ydata, or their covariance matrix.
         kind (SplineKind, optional):
-            Kind of spline. Defaults to Smoothing(), i.e. the average over lam.
+            Kind of spline. Defaults to Interpolating().
         numb_samples (int, optional):
             Number of bootstrap samples. Defaults to 300.
         nsupport (int, optional):
@@ -1253,33 +1139,33 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
         dict: with entries
             xspl: grid
             yspl, ysple: central value and error on xspl. The central value is 2 f - median(f*), with f from
-                the original data and f* from the samples; the error is dev_by_dist of the samples.
-            xmax, xmaxe: the same for the x on xspl where the spline is largest
+                the original data and f* from the samples. ysple^2 = ysple_stat^2 + ysple_sys^2, where
+                ysple_stat is dev_by_dist of the samples and ysple_sys the weighted spread over models for
+                the original data, which is 0 unless the kind is averaged.
+            xmax, xmaxe, ymax, ymaxe: the same for the x on xspl where the spline is largest and the spline
+                there, each error with its _stat and _sys parts
             xinflect, xinflecte, yinflect, yinflecte: the same for the inflection point with the largest |slope|.
-                Samples without an inflection point are dropped, and all four are nan if splineMean has none.
+                Samples and models without an inflection point are dropped, and all are nan if splineMean
+                has none.
             splineMean: the spline fit to the original data, not an average over samples
             splineBS: the spline of each bootstrap sample
             AIC: AIC of splineMean, unless the kind is Interpolating or averaged
-        For Smoothing(lam='average') also:
-            lams, peffs, weights, logEvidences: the grid of lam, the effective numbers of parameters, the
-                weights, and the log evidences, for the original data.
-            splinesLam: the smoothing spline at each lam for the original data.
-            ysple_lam, xmaxe_lam: the weighted spreads over lam for the original data. They are diagnostics
-                only: the bootstrap already contains the uncertainty in lam, so adding them to ysple or
-                xmaxe would count it twice.
         For KnotAverage also, for the original data:
             knotConfigs, knotCounts: the distinct saved knot configurations and how often each was saved.
             kHistogram: how often each number of knots 0,...,kmax was saved.
             acceptance: acceptance rates of birth, death, and move proposals.
             ngrid, kmax: the number of candidate knots and the largest number of knots.
-            ysple_knots, xmaxe_knots: the weighted spreads over configurations. Diagnostics only, like
-                ysple_lam.
+        For averaged kinds also:
+            splinesModel, weightsModel: the spline of each model (knot configuration) for the original
+                data and its weight. Use modelSpread for the systematic error of your own observables.
     """
     checkType("int",seed=seed)
-    checkEqualLengths(xdata,ydata,edata)
+    checkEqualLengths(xdata,ydata)
+    if edata is None:
+        logger.TBRaise('bootSpline draws its samples from edata, so it needs edata. For a spline without errors, use getSpline.')
     _checkEdata(xdata,edata)
     if kind is None:
-        kind = Smoothing()
+        kind = Interpolating()
     y = np.asarray(ydata,dtype=float)
     weights, cov = _parseEdata(edata)
     std = 1/weights
@@ -1295,41 +1181,49 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
     fitter  = kind.fitter(xdata, edata)
     spline0 = fitter.fit(y, warn=True)
     t, _, k = spline0.tck
-    ncoeff  = len(t)
 
     samples, _, _ = bootstr_from_gauss(_kindSample,data=[y],data_std_dev=[std],
                                        numb_samples=numb_samples,return_sample=True,seed=seed,
-                                       args={'fitter':fitter,'xspl':xspl},nproc=nproc,
+                                       args={'fitter':fitter},nproc=nproc,
                                        useCovariance=useCovariance,Covariance=Covariance)
     samples = np.asarray(samples)
 
     # Rebuild the bootstrap splines without refitting.
     splines = []
     for sample in samples:
-        yBS = sample[:ndata]
-        c   = sample[ndata:ndata+ncoeff]
+        yBS, c, nparams = _unpackSample(sample, ndata)
         if spline0.peff is None:
             peff = None
         else:
-            peff = sample[-1]
-        splines.append(TBSpline(xdata,yBS,(t,c,k),edata=edata,kind=kind,natural=spline0.natural,
-                                lam=spline0.lam,peff=peff))
+            peff = nparams
+        splines.append(TBSpline(xdata,yBS,(t,c,k),kind,edata=edata,peff=peff))
+
+    # Systematic errors from the spread over models for the original data. Kinds that are not averages have none.
+    if isinstance(kind,KnotAverage):
+        det    = fitter.details(y, xspl)
+        spread = det['spread']
+    else:
+        det    = None
+        spread = {'y':np.zeros(len(xspl)), 'xmax':0., 'ymax':0., 'xinflect':0., 'yinflect':0.}
 
     res = {}
     res['splineBS']   = splines # in case you want spline functions at bootstrap level
     res['xspl']       = xspl
-    # Central values are 2 f(original data) - median over samples, and errors are dev_by_dist over samples.
-    # spline0 is the fit to the original data, which is what the bootstrap's zero-noise sample would give.
-    ys0               = spline0(xspl)
-    ysBS              = samples[:,ndata+ncoeff:-2]
-    res['yspl']       = _medianBiasCorrect(ys0, ysBS)
-    res['ysple']      = dev_by_dist(ysBS)
     res['splineMean'] = spline0
-    # The second to last entry of each sample is that spline's xmax. Because of the bias correction, xmax can
-    # lie between grid points.
-    xmaxBS            = samples[:,-2]
-    res['xmax']       = _medianBiasCorrect(xspl[np.argmax(ys0)], xmaxBS)
-    res['xmaxe']      = dev_by_dist(xmaxBS)
+    # Central values are 2 f(original data) - median over samples. The statistical errors are dev_by_dist over 
+    # samples, and the totals add the systematic ones in quadrature. spline0 is the fit to the original data,
+    # which is what the bootstrap's zero-noise sample would give.
+    ys0     = spline0(xspl)
+    xmax0, ymax0 = _maxOnGrid(np.array([ys0]), xspl)
+    ysBS    = []
+    for spline in splines:
+        ysBS.append(spline(xspl))
+    ysBS    = np.array(ysBS)
+    xmaxBS, ymaxBS = _maxOnGrid(ysBS, xspl)
+    # Because of the bias correction, xmax can lie between grid points.
+    _setErrors(res, 'yspl', 'ysple', ys0, ysBS, spread['y'])
+    _setErrors(res, 'xmax', 'xmaxe', xmax0[0], xmaxBS, spread['xmax'])
+    _setErrors(res, 'ymax', 'ymaxe', ymax0[0], ymaxBS, spread['ymax'])
     # The inflection point is found from the rebuilt splines, so samples without one can be dropped.
     xinf0, yinf0 = _steepestInflection(spline0, xspl)
     xinfBS, yinfBS = [], []
@@ -1341,137 +1235,21 @@ def bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, s
     if len(xinfBS) < len(splines):
         logger.warn(f'Dropped {len(splines)-len(xinfBS)} of {len(splines)} bootstrap samples without an inflection point.')
     if np.isnan(xinf0) or len(xinfBS) == 0:
-        res['xinflect'], res['xinflecte'], res['yinflect'], res['yinflecte'] = np.nan, np.nan, np.nan, np.nan
+        for key in ['xinflect', 'xinflecte', 'xinflecte_stat', 'xinflecte_sys',
+                    'yinflect', 'yinflecte', 'yinflecte_stat', 'yinflecte_sys']:
+            res[key] = np.nan
     else:
-        res['xinflect']  = _medianBiasCorrect(xinf0, xinfBS)
-        res['xinflecte'] = dev_by_dist(xinfBS)
-        res['yinflect']  = _medianBiasCorrect(yinf0, yinfBS)
-        res['yinflecte'] = dev_by_dist(yinfBS)
+        _setErrors(res, 'xinflect', 'xinflecte', xinf0, xinfBS, spread['xinflect'])
+        _setErrors(res, 'yinflect', 'yinflecte', yinf0, yinfBS, spread['yinflect'])
     if kind.hasAIC:
         res['AIC'] = spline0.get_AIC()
     if isinstance(kind,KnotAverage):
-        det = fitter.details(y, xspl)
-        res['ysple_knots']  = det['yknotSpread']
-        res['xmaxe_knots']  = det['xmaxSpread']
+        res['splinesModel'] = det['splines']
+        res['weightsModel'] = det['weights']
         res['knotConfigs']  = det['configs']
         res['knotCounts']   = det['counts']
         res['kHistogram']   = det['kHistogram']
         res['acceptance']   = det['acceptance']
         res['ngrid']        = det['ngrid']
         res['kmax']         = det['kmax']
-    if isinstance(kind,Smoothing) and kind.averaged:
-        det = fitter.details(y, xspl)
-        res['ysple_lam']    = det['ylamSpread']
-        res['xmaxe_lam']    = det['xmaxSpread']
-        res['lams']         = fitter.lams
-        res['peffs']        = fitter.peffs
-        res['weights']      = det['weights']
-        res['logEvidences'] = det['logEv']
-        res['splinesLam']   = det['splinesLam']
-    return res
-
-
-def posteriorSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, seed=DEFAULTSEED) -> dict:
-    """
-    Smoothing spline and its Bayesian error band. The smoothing spline at fixed lam is the posterior mean
-    of a Bayesian model, in which the curvature penalty is a Gaussian prior on the B-spline coefficients.
-    Their posterior is Gaussian with covariance (B^T W B + lam Omega)^-1. With lam='average', we average
-    over the lam grid, weighted by the evidence, i.e. integrate lam out with a flat prior in log lam. This
-    is not a bootstrap: the data are used once, as measured, and the error band says how uncertain the true
-    curve is, given the data and the assumption that it is smooth. Unlike the bootstrap error of bootSpline,
-    this includes the uncertainty coming from the smoothing itself.
-
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        edata (array-like):
-            Errors of ydata, or their covariance matrix.
-        kind (Smoothing, optional):
-            Defaults to Smoothing(), i.e. the average over lam.
-        numb_samples (int, optional):
-            Number of samples drawn from the posterior. Defaults to 300.
-        nsupport (int, optional):
-            Number of points of the grid xspl, on which the spline is evaluated. Defaults to 301.
-        seed (int, optional):
-            Seed for the samples. Defaults to DEFAULTSEED.
-
-    Returns:
-        dict: with entries
-            xspl: grid
-            yspl: posterior mean on xspl
-            ysple: posterior standard deviation on xspl. ysple^2 = ysple_stat^2 + ysple_sys^2, where
-                ysple_stat^2 = sum_k weights[k] Var[S|lam_k] is the average posterior variance at fixed
-                lam and ysple_sys^2 the weighted variance of the posterior means over lam (law of total
-                variance). These three are exact.
-            splineMean: the posterior mean as a TBSpline
-            splineSamples: numb_samples TBSplines drawn from the posterior. For a quantity derived from
-                the spline, e.g. an integral or a derivative, take its spread over these samples. Do
-                not add a systematic error on top; the spread already contains the uncertainty in lam.
-            xmax, xmaxe: median and spread (dev_by_dist) over the samples of the x on xspl where the
-                spline is largest. xmaxe_sys is the weighted spread over lam of the xmax of the
-                posterior means, and xmaxe_stat = sqrt(xmaxe^2 - xmaxe_sys^2).
-            lams, peffs, weights, logEvidences: the grid of lam, the effective numbers of parameters,
-                the weights, and the log evidences.
-            splinesLam: the smoothing spline at each lam, i.e. the posterior mean at fixed lam. Each
-                has covPost, the posterior covariance of its coefficients.
-    """
-    checkType("int",seed=seed)
-    checkType("int",numb_samples=numb_samples)
-    checkEqualLengths(xdata,ydata,edata)
-    _checkEdata(xdata,edata)
-    if kind is None:
-        kind = Smoothing()
-    if not isinstance(kind,Smoothing):
-        logger.TBRaise('posteriorSpline needs a Smoothing kind. Got',kind)
-    y       = np.asarray(ydata,dtype=float)
-    xspl    = np.linspace(np.min(xdata),np.max(xdata),nsupport)
-    fitter  = kind.fitter(xdata, edata)
-    spline0 = fitter.fit(y, warn=True)
-    det     = fitter.details(y, xspl)
-    w       = det['weights']
-    Bspl    = det['Bspl']
-    nlam    = len(fitter.lams)
-    nB      = fitter.R.shape[2]
-
-    # At fixed lam, the posterior covariance of the coefficients is A^-1 = R^-1 R^-T, so c_k + R^-1 z with
-    # standard normal z is a draw from the posterior. Also accumulate the exact posterior variance on xspl.
-    Rinv  = []
-    ystat = np.zeros(len(xspl))
-    for k in range(nlam):
-        Rinvk = solve_triangular(fitter.R[k], np.eye(nB))
-        Rinv.append(Rinvk)
-        det['splinesLam'][k].covPost = Rinvk @ Rinvk.T
-        ystat += w[k]*np.sum((Bspl @ Rinvk)**2,axis=1)
-    ystat = np.sqrt(ystat)
-
-    # Draw lam_k with probability w_k, then the coefficients
-    rng = TBRNG(seed)
-    ks  = rng.choice(nlam, size=numb_samples, p=w)
-    z   = rng.standard_normal((numb_samples, nB))
-    splines, xmaxs = [], []
-    for i in range(numb_samples):
-        k = ks[i]
-        c = det['coeffs'][k] + Rinv[k] @ z[i]
-        splines.append(TBSpline(xdata,y,(fitter.t,np.r_[c,np.zeros(4)],3),edata=edata,kind=kind,natural=True,
-                                lam=spline0.lam,peff=spline0.peff))
-        xmaxs.append(xspl[np.argmax(Bspl @ c)])
-    xmaxs = np.array(xmaxs)
-
-    res = {}
-    res['xspl']          = xspl
-    res['yspl']          = det['ybar']
-    res['ysple_stat']    = ystat
-    res['ysple_sys']     = det['ylamSpread']
-    res['ysple']         = quadrature(np.array([ystat, det['ylamSpread']]),axis=0)
-    res['splineMean']    = spline0
-    res['splineSamples'] = splines
-    res['xmax']          = std_median(xmaxs)
-    res['xmaxe']         = dev_by_dist(xmaxs)
-    res['xmaxe_sys']     = det['xmaxSpread']
-    res['xmaxe_stat']    = np.sqrt(max(res['xmaxe']**2 - det['xmaxSpread']**2, 0))
-    res['lams']          = fitter.lams
-    res['peffs']         = fitter.peffs
-    res['weights']       = w
-    res['logEvidences']  = det['logEv']
-    res['splinesLam']    = det['splinesLam']
     return res

@@ -326,67 +326,333 @@
         <article role="main" id="furo-main-content">
           <section id="latqcdtools-math-spline">
 <h1>latqcdtools.math.spline<a class="headerlink" href="#latqcdtools-math-spline" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_batchMeanError</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">nbatch</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Error of the mean of the time series a from the spread of the means of nbatch consecutive batches.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_checkEdata</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">edata</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_dataSeed</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">ichain</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Seed for one chain from the seed of the kind, the chain index, and the bits of the data.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_even_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Return a list of nknots evenly spaced knots. </span>
+<span class="sd">Return a list of nknots knots, evenly spaced in data index, so that each interval holds</span>
+<span class="sd">roughly the same number of data. Each knot is the midpoint of two neighboring unique data, or a datum</span>
+<span class="sd">itself when the index lands exactly on one.</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_random_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">,</span> <span class="n">randomization_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SEED</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_kindSample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">fitter</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Return a list of nknots randomly spaced knots. </span>
-<span class="sd">"""</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">numb_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">nsupport</span><span class="o">=</span><span class="mi">301</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7271978</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="sd">"""</span>
-<span class="sd">Given xdata, ydata, edata, create a spline. Use bootstrap to propagate uncertainties of the data into an</span>
-<span class="sd">error band for the spline. Gives back a dictionary whose xspl, yspl, and ysple entries can be used</span>
-<span class="sd">to plot a spline with error bars </span>
+<span class="sd">Fit one bootstrap sample of shape (1,ndata) for bootSpline. The bootstrap needs numbers, so pack what</span>
+<span class="sd">is needed to rebuild the spline into one flat array: yBS, the coefficients, and the number of parameters.</span>
+<span class="sd">_unpackSample undoes this. This lives at module level so that it can be pickled for nproc&gt;1.</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getAICc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_knotVector</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">interior</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">This is a wrapper that calls SciPy spline interpolation methods, depending on your needs. Generally</span>
-<span class="sd">this uses scipy.interpolate.splrep, which uses B-splines. If natural=True and edata=None, it will</span>
-<span class="sd">use scipy.interpolate.CubicSpline to solve. If natural=True and edata are provided, it will do a</span>
-<span class="sd">smoothing spline that attempts to force no curvature at the endpoints, based on the penultimate points. </span>
+<span class="sd">Full knot vector as in splrep: each endpoint repeated order+1 times around the interior knots.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_lsqSystem</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">natural</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Set up the least-squares problem |M B N d - M y|^2 of a regression spline with full knot vector t by QR, </span>
+<span class="sd">where c = N d. For a natural spline, the conditions S''(a) = S''(b) = 0 are C c = 0 and N is a basis of </span>
+<span class="sd">the null space of C; otherwise N = 1. Returns N, Q, R, and whether the fit is underdetermined, i.e. </span>
+<span class="sd">whether the Schoenberg-Whitney conditions fail.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_maxOnGrid</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">xspl</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">For curves ys on xspl, one per row, the x on xspl where each is largest, and its value there.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_medianBiasCorrect</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">fBS</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Bias-corrected central value 2 f0 - median(fBS), with f0 the observable for the original data and fBS</span>
+<span class="sd">its bootstrap samples along axis 0. This is _biasCorrect of the bootstrap with the median in place of</span>
+<span class="sd">the mean.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_modelSpreads</span><span class="p">(</span><span class="n">splines</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">xspl</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Systematic errors of an average over models (knot configurations): the weighted spreads over the</span>
+<span class="sd">models, with weights w, of each model's spline on xspl (ys holds them), its maximum (x and y on xspl), and</span>
+<span class="sd">its steepest inflection point. Models without an inflection point are dropped from that spread, see</span>
+<span class="sd">_spreadOf.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_nparams</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">natural</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Number of parameters of a cubic regression spline with k interior knots. Natural boundary conditions</span>
+<span class="sd">remove 2.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_parseEdata</span><span class="p">(</span><span class="n">edata</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Interpret edata like the Fitter does: a vector holds errors and a matrix is the covariance matrix.</span>
+<span class="sd">Returns the weights 1/sigma and the covariance matrix, which is None unless edata is a matrix.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_random_knots</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">nknots</span><span class="p">,</span> <span class="n">SEED</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Return a list of nknots randomly placed knots. Draws a random subset of nknots+1 data and applies</span>
+<span class="sd">_even_knots to it.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_setErrors</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ename</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">fBS</span><span class="p">,</span> <span class="n">sys</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Put the bias-corrected central value of an observable into res[name], and its statistical error over</span>
+<span class="sd">the bootstrap samples fBS, its systematic error sys, and their sum in quadrature into res[ename+'_stat'],</span>
+<span class="sd">res[ename+'_sys'], and res[ename].</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_spreadOf</span><span class="p">(</span><span class="n">splines</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Weighted spread over the models splines, with weights w, of f(spline), which may be a number or an array.</span>
+<span class="sd">Models where f has a nan are dropped, and the remaining weights are renormalized. Returns nan if f has a</span>
+<span class="sd">nan for every model.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_steepestInflection</span><span class="p">(</span><span class="n">spline</span><span class="p">,</span> <span class="n">xspl</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">The inflection point (x,y) of spline on xspl where |spline'| is largest. Inflection points are where the</span>
+<span class="sd">second derivative changes sign; each root is found between the two grid points that bracket it. Taking</span>
+<span class="sd">the steepest one ignores the small wiggles a smoothed spline can have where the data are flat. A zero of</span>
+<span class="sd">the second derivative at an end of xspl, as for a natural spline, does not count, so the first and last</span>
+<span class="sd">grid intervals are skipped; numerically that zero is not exact. Returns (nan,nan) if there is no</span>
+<span class="sd">inflection point.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_unpackSample</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">ndata</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">yBS, the coefficients, and the number of parameters from an array packed by _kindSample.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_weightedSpread</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Spread sqrt(sum_k w_k (a_k - abar)^2) of a along axis 0, with abar = sum_k w_k a_k and normalized w.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_whitening</span><span class="p">(</span><span class="n">edata</span><span class="p">,</span> <span class="n">ndata</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Whitening matrix M with M^T M = W, so that a chi^2 (y - S)^T W (y - S) becomes |M y - M S|^2. For</span>
+<span class="sd">errors, M = diag(1/edata). For a covariance matrix, M is the whiteningMatrix of the toolbox. Without</span>
+<span class="sd">edata, M = 1.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numb_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">nsupport</span><span class="o">=</span><span class="mi">301</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7271978</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="sd">"""</span>
+<span class="sd">Given xdata, ydata, edata, create a spline of the given kind. Use a Gaussian (parametric) bootstrap,</span>
+<span class="sd">drawing ydata from normal distributions of width edata, to propagate uncertainties of the data into an</span>
+<span class="sd">error band for the spline. Every bootstrap sample is fit with the same kind; e.g. for KnotAverage,</span>
+<span class="sd">the chain is rerun in every sample. This bootstrap error is the statistical error. It does</span>
+<span class="sd">not contain how much the models in an average (the knot configurations) disagree with each</span>
+<span class="sd">other, since the averaged spline can stay put while they disagree. For averaged kinds, the weighted</span>
+<span class="sd">spread over models for the original data is therefore the systematic error, and every error below is</span>
+<span class="sd">the statistical and systematic errors added in quadrature. If edata is the covariance matrix of ydata,</span>
+<span class="sd">the samples are drawn from a multivariate normal, and the fits use the covariance matrix as well.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    xdata (array-like)</span>
 <span class="sd">    ydata (array-like)</span>
-<span class="sd">    num_knots (int):</span>
-<span class="sd">        The number of knots.</span>
-<span class="sd">    edata (array-like, optional): </span>
-<span class="sd">        Error data. Defaults to None.</span>
-<span class="sd">    order (int, optional):</span>
-<span class="sd">        Order of the spline. Defaults to 3.</span>
-<span class="sd">    rand (bool, optional): </span>
-<span class="sd">        Use randomly placed knots? Defaults to False.</span>
-<span class="sd">    fixedKnots (array-like, optional):</span>
-<span class="sd">        List of user-specified knots. Defaults to None.</span>
-<span class="sd">    getAICc (bool, optional): </span>
-<span class="sd">        Return corrected Aikake information criterion? Defaults to False.</span>
-<span class="sd">    natural (bool, optional): </span>
-<span class="sd">        Try a natural (no change in slope at the endpoints) cubic spline. Defaults to False. </span>
+<span class="sd">    edata (array-like):</span>
+<span class="sd">        Errors of ydata, or their covariance matrix.</span>
+<span class="sd">    kind (SplineKind, optional):</span>
+<span class="sd">        Kind of spline. Defaults to Interpolating().</span>
+<span class="sd">    numb_samples (int, optional):</span>
+<span class="sd">        Number of bootstrap samples. Defaults to 300.</span>
+<span class="sd">    nsupport (int, optional):</span>
+<span class="sd">        Number of points of the grid xspl, on which the spline is evaluated. Defaults to 301.</span>
+<span class="sd">    seed (int, optional):</span>
+<span class="sd">        Seed for the samples. Defaults to DEFAULTSEED.</span>
+<span class="sd">    nproc (int, optional):</span>
+<span class="sd">        Number of processes, passed to bootstr_from_gauss. Defaults to 1.</span>
 
 <span class="sd">Returns:</span>
-<span class="sd">    callable spline object</span>
-<span class="sd">    AICc (optionally)</span>
+<span class="sd">    dict: with entries</span>
+<span class="sd">        xspl: grid</span>
+<span class="sd">        yspl, ysple: central value and error on xspl. The central value is 2 f - median(f*), with f from</span>
+<span class="sd">            the original data and f* from the samples. ysple^2 = ysple_stat^2 + ysple_sys^2, where</span>
+<span class="sd">            ysple_stat is dev_by_dist of the samples and ysple_sys the weighted spread over models for</span>
+<span class="sd">            the original data, which is 0 unless the kind is averaged.</span>
+<span class="sd">        xmax, xmaxe, ymax, ymaxe: the same for the x on xspl where the spline is largest and the spline</span>
+<span class="sd">            there, each error with its _stat and _sys parts</span>
+<span class="sd">        xinflect, xinflecte, yinflect, yinflecte: the same for the inflection point with the largest |slope|.</span>
+<span class="sd">            Samples and models without an inflection point are dropped, and all are nan if splineMean</span>
+<span class="sd">            has none.</span>
+<span class="sd">        splineMean: the spline fit to the original data, not an average over samples</span>
+<span class="sd">        splineBS: the spline of each bootstrap sample</span>
+<span class="sd">        AIC: AIC of splineMean, unless the kind is Interpolating or averaged</span>
+<span class="sd">    For KnotAverage also, for the original data:</span>
+<span class="sd">        knotConfigs, knotCounts: the distinct saved knot configurations and how often each was saved.</span>
+<span class="sd">        kHistogram: how often each number of knots 0,...,kmax was saved.</span>
+<span class="sd">        acceptance: acceptance rates of birth, death, and move proposals.</span>
+<span class="sd">        ngrid, kmax: the number of candidate knots and the largest number of knots.</span>
+<span class="sd">    For averaged kinds also:</span>
+<span class="sd">        splinesModel, weightsModel: the spline of each model (knot configuration) for the original</span>
+<span class="sd">            data and its weight. Use modelSpread for the systematic error of your own observables.</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getSplineErr</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">xspline</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">ydatae</span><span class="p">,</span> <span class="n">num_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Use getSpline to smooth mean and error bars. Create a spline-smooth band from that. </span>
+<span class="sd">Fit a spline of the given kind to the data.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    xdata (array-like)</span>
+<span class="sd">    ydata (array-like)</span>
+<span class="sd">    edata (array-like, optional):</span>
+<span class="sd">        Error data, either a vector of errors or the covariance matrix of ydata. Defaults to None.</span>
+<span class="sd">    kind (SplineKind, optional):</span>
+<span class="sd">        Interpolating(), Regression(...), or KnotAverage(...). Defaults to Interpolating().</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    TBSpline</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TBSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">naturalLike</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">getSplineErr</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">xspline</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">ydatae</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">A class that prepares a splrep and wraps it with splev.</span>
+<span class="sd">Fit unweighted splines of the given kind to ydata-ydatae and ydata+ydatae, evaluate them at xspline,</span>
+<span class="sd">and return their midpoint and half-difference. This gives a smooth band, but it is not a statistical</span>
+<span class="sd">error propagation; for that use bootSpline. kind defaults to Interpolating().</span>
 <span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">modelSpread</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Systematic error of a quantity f(spline) derived from a bootSpline result res: its weighted spread over</span>
+<span class="sd">the models of the average (the knot configurations) for the original data, the same</span>
+<span class="sd">systematic error bootSpline gives its own observables. Add it in quadrature to the statistical error,</span>
+<span class="sd">i.e. the spread of f over res['splineBS']. Models where f is nan are dropped. For kinds that are not</span>
+<span class="sd">averages, there are no models, and the result is 0.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    res (dict): result of bootSpline</span>
+<span class="sd">    f (func): takes a TBSpline and returns a number or an array</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    float or np.ndarray: systematic error of f</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Interpolating</span><span class="p">():</span>
+<span class="sd">"""</span>
+<span class="sd">Natural cubic interpolating spline, with a knot at every datum. It passes through the data, so edata</span>
+<span class="sd">are not used in the fit.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">KnotAverage</span><span class="p">(</span><span class="n">kmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nupdates</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">nburn</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nchains</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">7271978</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Cubic regression spline averaged over the number and positions of its interior knots, with AIC weights</span>
+<span class="sd">p(k) p(t|k) exp(-AIC/2), AIC = chi^2_min + 2 p. The knots lie on a grid of ngrid candidate positions </span>
+<span class="sd">strictly inside the data range; p(k) is uniform on 0,...,kmax and p(t|k) uniform over the configurations </span>
+<span class="sd">with k knots on the grid. Configurations are sampled by Metropolis-Hastings with birth, death, and move </span>
+<span class="sd">steps, and every configuration needs at least one unique datum strictly between neighboring knots and </span>
+<span class="sd">between the ends of the data and the outermost knots. The average is again a cubic spline, with a knot </span>
+<span class="sd">at every grid point. This needs edata. In bootSpline the chain is rerun for every bootstrap sample.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    kmax (int, optional):</span>
+<span class="sd">        Largest number of interior knots. Defaults to the largest number the data allow.</span>
+<span class="sd">    ngrid (int, optional):</span>
+<span class="sd">        Number of candidate knot positions. Defaults to max(100, 4 (xmax-xmin)/(smallest gap between </span>
+<span class="sd">        unique x)), so that the grid resolves every gap between data.</span>
+<span class="sd">    natural (bool, optional):</span>
+<span class="sd">        Zero curvature at the endpoints, which removes 2 parameters. Defaults to False.</span>
+<span class="sd">    nupdates (int, optional):</span>
+<span class="sd">        Number of Metropolis-Hastings updates per chain, including nburn. Defaults to 10000.</span>
+<span class="sd">    nburn (int, optional):</span>
+<span class="sd">        Number of updates discarded for thermalization. Defaults to 1000.</span>
+<span class="sd">    every (int, optional):</span>
+<span class="sd">        Save every this many updates after nburn. Defaults to 10.</span>
+<span class="sd">    nchains (int, optional):</span>
+<span class="sd">        Number of independent chains, whose saved configurations are pooled. Defaults to 1.</span>
+<span class="sd">    seed (int, optional):</span>
+<span class="sd">        Seed of the chains. Each chain is seeded by seed, its index, and the data, so that every bootstrap </span>
+<span class="sd">        sample gets its own reproducible chain. Defaults to DEFAULTSEED.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Regression</span><span class="p">(</span><span class="n">nknots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Least-squares (regression) spline with fixed interior knots. It minimizes (y - S)^T W (y - S), with</span>
+<span class="sd">W = diag(1/edata^2), or edata^-1 if edata is a covariance matrix, or 1 without edata. By default the</span>
+<span class="sd">knots are evenly spaced in data index, so that each interval between knots holds roughly the same</span>
+<span class="sd">number of data.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    nknots (int, optional):</span>
+<span class="sd">        Number of interior knots, including knots. Defaults to len(knots).</span>
+<span class="sd">    knots (list, optional):</span>
+<span class="sd">        Interior knots you choose yourself. These count toward nknots. Defaults to None.</span>
+<span class="sd">    rand (bool, optional):</span>
+<span class="sd">        Place the remaining knots randomly? Defaults to False.</span>
+<span class="sd">    seed (int, optional):</span>
+<span class="sd">        Seed for rand. Defaults to None, which draws a seed once, so that every fit with this kind</span>
+<span class="sd">        uses the same knots.</span>
+<span class="sd">    natural (bool, optional):</span>
+<span class="sd">        Zero curvature at the endpoints, which removes 2 parameters. Defaults to False.</span>
+<span class="sd">    order (int, optional):</span>
+<span class="sd">        Degree of the spline polynomials (SciPy's k). Defaults to 3.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SplineKind</span><span class="p">():</span>
+<span class="sd">"""</span>
+<span class="sd">Base class of the kinds of spline. hasAIC is False for kinds without a meaningful AIC, i.e.</span>
+<span class="sd">interpolation and averages over models. natural is True for kinds with zero curvature at the endpoints.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TBSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">peff</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">A fitted B-spline, as returned by getSpline and bootSpline. It holds the data it was</span>
+<span class="sd">fit to, the tck of the fit in the format of splrep, and the kind of spline, which also says whether</span>
+<span class="sd">the spline is natural. Call it like a SciPy spline. For a spline averaged over knot configurations,</span>
+<span class="sd">peff is the average number of parameters.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">_Fitter</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">edata</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Base class of the fitters. Every fitter has fit(y, warn), which returns a TBSpline; warn turns on</span>
+<span class="sd">warnings about the fit, where a fitter has any. Fitters of averaged kinds also have details(y, xspl),</span>
+<span class="sd">which returns the models of the average for the data y and their weighted spreads.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">_InterpolatingFitter</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">edata</span><span class="p">):</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">_KnotAverageFitter</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">edata</span><span class="p">):</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">_RegressionFitter</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">edata</span><span class="p">):</span>
 </pre></div>
 </div>
 </section>

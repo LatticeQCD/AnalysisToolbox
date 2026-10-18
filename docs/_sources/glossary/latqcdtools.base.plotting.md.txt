@@ -14,6 +14,13 @@ Returns:
 """
 ```
 ```python
+_canvasRenderer(fig):
+"""
+Return a renderer usable for measuring artist extents, drawing the canvas first so
+that text layout and data transforms are up to date. 
+"""
+```
+```python
 _getAxObject(params)
 ```
 ```python
@@ -24,6 +31,38 @@ _initializePlt(params):
 """
 Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks
 so that this only gets called once per plot. 
+"""
+```
+```python
+_inplotObstacles(ax, renderer, skip=None):
+"""
+Everything already drawn that an in-plot axis label should try not to cover, split
+into two kinds and expressed in display (pixel) coordinates:
+
+  rects  -- solid rectangles: other text, tick labels, filled spans, and every other
+            Axes in the figure (e.g. an inset) taken as one block.
+  polys  -- (points, connected) for line/marker/error-bar data. The points are kept
+            rather than a bounding box: a sparse scatter or a diagonal curve leaves most
+            of its bounding box empty, and the label is allowed to sit there. 'connected'
+            says whether the points are joined by a drawn line (so a segment passing
+            through the label counts) or are just markers (only points count).
+
+Everything is clipped to ax; artists fully outside it are dropped. 
+"""
+```
+```python
+_padBox(bb, p=2.0):
+"""
+Grow a display-space Bbox by p pixels on every side. 
+"""
+```
+```python
+_placeInplotLabel(ax, text, which, params):
+"""
+Draw an in-plot x- or y-axis label. With labelpos='auto' the anchor is chosen from
+_INPLOT_LABEL_CANDIDATES[which] to minimize overlap with everything already drawn (see
+_inplotObstacles); with labelpos='fixed', or if the measurement fails, the first
+(historical) candidate is used. 
 """
 ```
 ```python
@@ -220,7 +259,8 @@ Args:
 ```
 ```python
 plot_matrix(mat, vmin=None, vmax=None):
-"""Plot matrix as a heatmap.
+"""
+Plot matrix as a heatmap.
 
 Args:
     mat (np.ndarray): correlation matrix
@@ -279,8 +319,8 @@ Args:
 """
 ```
 ```python
-set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>)
+set_xrange(xmin=None, xmax=None, ax=<module 'matplotlib.pyplot' from '/Users/dclarke/GitHub/AnalysisToolbox/venv/AnalysisToolbox/lib/python3.9/site-packages/matplotlib/pyplot.py'>)
 ```
 ```python
-set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>)
+set_yrange(ymin=None, ymax=None, ax=<module 'matplotlib.pyplot' from '/Users/dclarke/GitHub/AnalysisToolbox/venv/AnalysisToolbox/lib/python3.9/site-packages/matplotlib/pyplot.py'>)
 ```

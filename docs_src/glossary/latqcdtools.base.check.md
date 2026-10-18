@@ -2,6 +2,18 @@ latqcdtools.base.check
 =============
 
 ```python
+_usesAccelerateBLAS() -> bool:
+"""
+Apple's Accelerate BLAS/LAPACK, used by the default macOS arm64 numpy wheels, is known to leave the
+hardware FPU status flags "tainted" after certain matmul/linalg calls involving matrices with many
+exact-zero entries (e.g. diagonal or orthogonal matrices), even though the numerical result is fine.
+Once tainted, numpy reports ALL FOUR floating-point exception bits (divide, overflow, underflow,
+invalid; flag=15) simultaneously for essentially any later operation, whether or not it actually did
+anything problematic. This has no equivalent on the OpenBLAS/MKL backends normally used on Linux, so
+we only need to work around it when Accelerate is actually in use.
+"""
+```
+```python
 checkDomain(obj, expectedDomain):
 """
 Check that obj lies in expectedDomain.
@@ -44,7 +56,7 @@ Args:
 ```python
 err_handler(err, flag):
 """
-This method lets us control in detail how different types of errors are treated. 
+This method lets us control in detail how different types of errors are treated.
 """
 ```
 ```python

@@ -46,7 +46,7 @@ its parameters rather than x.
 ```python
 diff_grad(params, func, args=(), h=None, floatT=numpy.float64) -> numpy.ndarray:
 """
-Gradient using difference quotient. 
+Gradient using difference quotient. h may be None, a scalar, or an array with one step size per parameter.
 """
 ```
 ```python
@@ -57,4 +57,19 @@ Hessian using difference quotient.
 ```
 ```python
 diff_jac(params, func, args=(), h=None) -> numpy.ndarray
+```
+```python
+relative_h(x, scale) -> numpy.ndarray:
+"""
+Step sizes for each component of x that are relative to that component, so that a tiny x_i is never stepped
+across zero. This matters for functions that are singular at zero, like 1/x. A zero x_i is stepped relative
+to scale_i instead, e.g. its error bar. If that is also zero, fall back to _best_h(0). 
+
+Args:
+    x (np.ndarray): point at which to differentiate
+    scale (np.ndarray): natural scale of each component, used when x_i = 0
+
+Returns:
+    np.ndarray: step sizes 
+"""
 ```

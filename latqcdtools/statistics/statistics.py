@@ -186,7 +186,7 @@ def countParams(func,params) -> int:
             # TBSpline knows its own count, e.g. natural boundary conditions remove 2.
             return func.get_nparams()
         try:
-            # TBSpline / other splrep-based wrappers. splrep pads tck[1] with k+1
+            # splrep-based wrappers without get_nparams. splrep pads tck[1] with k+1
             # trailing zeros, so len(get_coeffs()) overcounts; the number of free
             # B-spline coefficients is len(knots) - order - 1.
             nparam = len(func.get_knots()) - func.get_order() - 1

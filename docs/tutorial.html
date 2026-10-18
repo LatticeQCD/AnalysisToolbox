@@ -614,7 +614,7 @@ inflection point of the curve.</p>
 
     <span class="c1"># Extract Td from inflection point of &lt;|P|&gt; vs T using natural spline</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">getTd</span><span class="p">(</span><span class="n">pm</span><span class="p">):</span>
-        <span class="n">spl</span>  <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">pm</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">spl</span>  <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">pm</span><span class="p">)</span>
         <span class="n">dPdT</span> <span class="o">=</span> <span class="n">diff_deriv</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">spl</span><span class="p">)</span>
         <span class="n">maxIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dPdT</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="n">maxIndex</span><span class="p">]</span>
@@ -669,7 +669,7 @@ Z-test, which is implemented in our <a class="reference internal" href="dataAnal
 <p>Here is <code class="docutils literal notranslate"><span class="pre">latqcdtools/examples/main_bootstrap.py</span></code></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.readWrite</span><span class="w"> </span><span class="kn">import</span> <span class="n">readTable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.math.spline</span><span class="w"> </span><span class="kn">import</span> <span class="n">getSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.math.spline</span><span class="w"> </span><span class="kn">import</span> <span class="n">getSpline</span><span class="p">,</span> <span class="n">Regression</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plt</span><span class="p">,</span> <span class="n">plot_dots</span><span class="p">,</span> <span class="n">plot_band</span><span class="p">,</span> <span class="n">latexify</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.statistics.bootstr</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstr_from_gauss</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">latqcdtools.base.initialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">finalize</span>
@@ -692,7 +692,7 @@ Z-test, which is implemented in our <a class="reference internal" href="dataAnal
 <span class="sd">    of edata. In this example we simply get a spline, but you wrap anything you want</span>
 <span class="sd">    inside your bootstrap procedure.</span>
 <span class="sd">    """</span>
-    <span class="n">ys</span> <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="n">Regression</span><span class="p">(</span><span class="n">nknots</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">ys</span><span class="p">(</span><span class="n">xspline</span><span class="p">)</span>
 
 <span class="n">ybs</span><span class="p">,</span> <span class="n">ybserr</span> <span class="o">=</span> <span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">splineError</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">ydata</span><span class="p">,</span><span class="n">data_std_dev</span><span class="o">=</span><span class="n">edata</span><span class="p">,</span><span class="n">numb_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>

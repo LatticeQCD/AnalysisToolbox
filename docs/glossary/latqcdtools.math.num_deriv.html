@@ -370,7 +370,7 @@
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diff_grad</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">h</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">floatT</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="sd">"""</span>
-<span class="sd">Gradient using difference quotient. </span>
+<span class="sd">Gradient using difference quotient. h may be None, a scalar, or an array with one step size per parameter.</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
@@ -381,6 +381,21 @@
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diff_jac</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">h</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">relative_h</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="sd">"""</span>
+<span class="sd">Step sizes for each component of x that are relative to that component, so that a tiny x_i is never stepped</span>
+<span class="sd">across zero. This matters for functions that are singular at zero, like 1/x. A zero x_i is stepped relative</span>
+<span class="sd">to scale_i instead, e.g. its error bar. If that is also zero, fall back to _best_h(0). </span>
+
+<span class="sd">Args:</span>
+<span class="sd">    x (np.ndarray): point at which to differentiate</span>
+<span class="sd">    scale (np.ndarray): natural scale of each component, used when x_i = 0</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    np.ndarray: step sizes </span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 </section>

@@ -338,6 +338,13 @@
 <span class="sd">"""</span>
 </pre></div>
 </div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_canvasRenderer</span><span class="p">(</span><span class="n">fig</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Return a renderer usable for measuring artist extents, drawing the canvas first so</span>
+<span class="sd">that text layout and data transforms are up to date. </span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_getAxObject</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -348,6 +355,38 @@
 <span class="sd">"""</span>
 <span class="sd">Set up inital plot parameters, like its size. I tried to introduce a global variable INITIALIZE that checks</span>
 <span class="sd">so that this only gets called once per plot. </span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_inplotObstacles</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">renderer</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Everything already drawn that an in-plot axis label should try not to cover, split</span>
+<span class="sd">into two kinds and expressed in display (pixel) coordinates:</span>
+
+<span class="sd">  rects  -- solid rectangles: other text, tick labels, filled spans, and every other</span>
+<span class="sd">            Axes in the figure (e.g. an inset) taken as one block.</span>
+<span class="sd">  polys  -- (points, connected) for line/marker/error-bar data. The points are kept</span>
+<span class="sd">            rather than a bounding box: a sparse scatter or a diagonal curve leaves most</span>
+<span class="sd">            of its bounding box empty, and the label is allowed to sit there. 'connected'</span>
+<span class="sd">            says whether the points are joined by a drawn line (so a segment passing</span>
+<span class="sd">            through the label counts) or are just markers (only points count).</span>
+
+<span class="sd">Everything is clipped to ax; artists fully outside it are dropped. </span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_padBox</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Grow a display-space Bbox by p pixels on every side. </span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_placeInplotLabel</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Draw an in-plot x- or y-axis label. With labelpos='auto' the anchor is chosen from</span>
+<span class="sd">_INPLOT_LABEL_CANDIDATES[which] to minimize overlap with everything already drawn (see</span>
+<span class="sd">_inplotObstacles); with labelpos='fixed', or if the measurement fails, the first</span>
+<span class="sd">(historical) candidate is used. </span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
@@ -544,7 +583,8 @@
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="sd">"""Plot matrix as a heatmap.</span>
+<span class="sd">"""</span>
+<span class="sd">Plot matrix as a heatmap.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    mat (np.ndarray): correlation matrix</span>
@@ -603,10 +643,10 @@
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">set_xrange</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">'matplotlib.pyplot'</span> <span class="kn">from</span><span class="w"> </span><span class="s1">'/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'</span><span class="o">&gt;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">set_xrange</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">'matplotlib.pyplot'</span> <span class="kn">from</span><span class="w"> </span><span class="s1">'/Users/dclarke/GitHub/AnalysisToolbox/venv/AnalysisToolbox/lib/python3.9/site-packages/matplotlib/pyplot.py'</span><span class="o">&gt;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">set_yrange</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">'matplotlib.pyplot'</span> <span class="kn">from</span><span class="w"> </span><span class="s1">'/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'</span><span class="o">&gt;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">set_yrange</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=&lt;</span><span class="n">module</span> <span class="s1">'matplotlib.pyplot'</span> <span class="kn">from</span><span class="w"> </span><span class="s1">'/Users/dclarke/GitHub/AnalysisToolbox/venv/AnalysisToolbox/lib/python3.9/site-packages/matplotlib/pyplot.py'</span><span class="o">&gt;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

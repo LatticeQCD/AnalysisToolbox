@@ -326,6 +326,18 @@
         <article role="main" id="furo-main-content">
           <section id="latqcdtools-base-check">
 <h1>latqcdtools.base.check<a class="headerlink" href="#latqcdtools-base-check" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_usesAccelerateBLAS</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">"""</span>
+<span class="sd">Apple's Accelerate BLAS/LAPACK, used by the default macOS arm64 numpy wheels, is known to leave the</span>
+<span class="sd">hardware FPU status flags "tainted" after certain matmul/linalg calls involving matrices with many</span>
+<span class="sd">exact-zero entries (e.g. diagonal or orthogonal matrices), even though the numerical result is fine.</span>
+<span class="sd">Once tainted, numpy reports ALL FOUR floating-point exception bits (divide, overflow, underflow,</span>
+<span class="sd">invalid; flag=15) simultaneously for essentially any later operation, whether or not it actually did</span>
+<span class="sd">anything problematic. This has no equivalent on the OpenBLAS/MKL backends normally used on Linux, so</span>
+<span class="sd">we only need to work around it when Accelerate is actually in use.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checkDomain</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">expectedDomain</span><span class="p">):</span>
 <span class="sd">"""</span>
 <span class="sd">Check that obj lies in expectedDomain.</span>
@@ -368,7 +380,7 @@
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">err_handler</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">This method lets us control in detail how different types of errors are treated. </span>
+<span class="sd">This method lets us control in detail how different types of errors are treated.</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>

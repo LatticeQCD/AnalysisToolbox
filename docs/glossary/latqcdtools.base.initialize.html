@@ -326,6 +326,20 @@
         <article role="main" id="furo-main-content">
           <section id="latqcdtools-base-initialize">
 <h1>latqcdtools.base.initialize<a class="headerlink" href="#latqcdtools-base-initialize" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TBRNG</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">_generator</span><span class="o">.</span><span class="n">Generator</span><span class="p">:</span>
+<span class="sd">"""</span>
+<span class="sd">The toolbox random number generator. This is O'Neill's PCG algorithm, which at the time of writing</span>
+<span class="sd">is what numpy's default_rng() uses. We pin PCG64 explicitly, so the random numbers stay the same</span>
+<span class="sd">even if numpy changes its default.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    seed (int or list of int, optional): Seed. Defaults to None, which chooses a random seed.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    np.random.Generator</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">finalize</span><span class="p">():</span>
 <span class="sd">"""</span>
 <span class="sd">Some common tasks to do when you're done. </span>

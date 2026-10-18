@@ -2,6 +2,12 @@ latqcdtools.interfaces.interfaces
 =============
 
 ```python
+_tableFromExtension(filename, delimiter):
+"""
+Empty table whose type is determined by the file extension of filename. The delimiter is only used for csv.
+"""
+```
+```python
 convertTable(source, target, sourceDelimiter='', targetDelimiter=''):
 """
 Convert a source table into a target table. The assumption for the source file is that

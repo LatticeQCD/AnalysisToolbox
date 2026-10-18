@@ -11,6 +11,18 @@ Give a good initial guess for NS=0 LCP.
 RMS_mass(Nt, T)
 ```
 ```python
+_checkMus(muB, muQ, muS, muC, muI):
+"""
+Want to avoid simultaneous muQ and muI. 
+"""
+```
+```python
+_checkOrders(B, Q, S, C, I):
+"""
+Want to avoid simultaneous muQ and muI derivatives.
+"""
+```
+```python
 dmuh(order, muh):
 """
 d^order/dmuh^order derivative of muh 
@@ -45,11 +57,5 @@ class HRGbase(Mass, g, w, B, S, Q, C=None):
 Hadron resonance gas base class. Here we collect methods and attributes that all HRG-type classes should have
 in common. Mass=mass of the Hadron/resonance , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.
 B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. 
-"""
-```
-```python
-class HRGexact(Mass, g, w, B, S, Q, C=None):
-"""
-HRG implemented through numerical integration. 
 """
 ```

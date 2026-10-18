@@ -326,14 +326,29 @@
         <article role="main" id="furo-main-content">
           <section id="latqcdtools-physics-statisticalphysics">
 <h1>latqcdtools.physics.statisticalPhysics<a class="headerlink" href="#latqcdtools-physics-statisticalphysics" title="Link to this heading">¶</a></h1>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_compareWithZero</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_compareWithZero</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">"""</span>
+<span class="sd">Check that err is consistent with zero. If err has an error bar, require that the probability of</span>
+<span class="sd">getting a deviation at least this large by chance is above 0.01, as in _statisticalConsistencyCheck.</span>
+<span class="sd">Otherwise require |err| &lt; tol.</span>
+<span class="sd">"""</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_getParameter</span><span class="p">(</span><span class="n">parameterInfo</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Give the weighted average of literature values of some parameter. These are </span>
-<span class="sd">in units with k_B=J=1 and no magnetic field. If there is only one known value, </span>
-<span class="sd">give that back. </span>
+<span class="sd">Give the weighted average of literature values of some parameter. These are</span>
+<span class="sd">in units with k_B=J=1 and no magnetic field. If there is only one known value,</span>
+<span class="sd">give that back.</span>
+
+<span class="sd">We follow the PDG prescription for averaging measurements x_i +/- s_i, see Section 5.2.2</span>
+<span class="sd">of the introduction to the Review of Particle Physics, DOI: 10.1103/PhysRevD.110.030001.</span>
+<span class="sd">With weights w_i = 1/s_i^2, the average and its error are</span>
+<span class="sd">    xbar = sum_i w_i x_i / sum_i w_i,    s = (sum_i w_i)^(-1/2).</span>
+<span class="sd">If the x_i disagree, s underestimates the uncertainty. Therefore compute</span>
+<span class="sd">    chi^2 = sum_i w_i (x_i - xbar)^2,    S = sqrt( chi^2/(N-1) ),</span>
+<span class="sd">and if S &gt; 1, scale s up to S*s. The PDG computes S using only the x_i with s_i &lt; 3 sqrt(N) s;</span>
+<span class="sd">we use all of them. The weights are plain numbers, so xbar is a linear combination of the</span>
+<span class="sd">gvars x_i, and gvar still propagates errors into exponents derived from xbar.</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>

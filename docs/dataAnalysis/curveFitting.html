@@ -411,22 +411,104 @@ conservative, or for comparison with <code class="docutils literal notranslate">
 </section>
 <section id="splines">
 <h2>Splines<a class="headerlink" href="#splines" title="Link to this heading">¶</a></h2>
-<p>There are several methods in the toolbox to fit a 1D spline to some <code class="docutils literal notranslate"><span class="pre">xdata</span></code> and <code class="docutils literal notranslate"><span class="pre">ydata</span></code>.
-These can be found in <code class="docutils literal notranslate"><span class="pre">latcqdtools.math.spline.py</span></code>. The basic method is <code class="docutils literal notranslate"><span class="pre">getSpline</span></code></p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">num_knots</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fixedKnots</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<p>The spline methods can be found in <code class="docutils literal notranslate"><span class="pre">latqcdtools.math.spline</span></code>. You choose what kind of spline you want by
+passing a <em>kind</em> object. There are three kinds:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Interpolating()</span></code>: the natural cubic interpolating spline. It has a knot at every data point and
+passes through all of them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Regression(nknots=None,</span> <span class="pre">knots=None,</span> <span class="pre">rand=False,</span> <span class="pre">seed=None,</span> <span class="pre">natural=False,</span> <span class="pre">order=3)</span></code>: a least-squares
+(regression) spline with fixed knots. It does not in general pass through the data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">KnotAverage(kmax=None,</span> <span class="pre">ngrid=None,</span> <span class="pre">natural=False,</span> <span class="pre">nupdates=10000,</span> <span class="pre">nburn=1000,</span> <span class="pre">every=10,</span> <span class="pre">nchains=1,</span> <span class="pre">seed=DEFAULTSEED)</span></code>:
+a cubic regression spline averaged over the number and positions of its knots.</p></li>
+</ul>
+<p>The same kind can then be passed to either of the two main functions, which share their first four arguments:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">spl</span> <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>          <span class="c1"># one fit, returns a TBSpline</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">bootSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>         <span class="c1"># bootstrap error band, returns a dict</span>
 </pre></div>
 </div>
-<p>This is by default a wrapper for <code class="docutils literal notranslate"><span class="pre">scipy.interpolate.LSQUnivariateSpline</span></code>.
-Here you specify how many knots <code class="docutils literal notranslate"><span class="pre">num_knots</span></code> you want and the order <code class="docutils literal notranslate"><span class="pre">order</span></code> of the spline.
-By default, the spline will create a list of <code class="docutils literal notranslate"><span class="pre">num_knots</span></code> evenly spaced knots, but you can specify
-<code class="docutils literal notranslate"><span class="pre">rand=True</span></code> to have it pick the knot locations randomly. If you need to specify some knot locations
-yourself, this is accomplished by passing a list of specified knots to <code class="docutils literal notranslate"><span class="pre">fixedKnots</span></code>. Note that
-<code class="docutils literal notranslate"><span class="pre">num_knots</span></code> includes these fixed knots in its counting; hence if</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">fixedKnots</span><span class="p">)</span><span class="o">==</span><span class="n">num_knots</span>
+<p>As in the <code class="docutils literal notranslate"><span class="pre">Fitter</span></code>, a vector <code class="docutils literal notranslate"><span class="pre">edata</span></code> is read as errors and a matrix as the covariance matrix of <code class="docutils literal notranslate"><span class="pre">ydata</span></code>.
+Every kind can take a covariance matrix. If you pass no kind, you get <code class="docutils literal notranslate"><span class="pre">Interpolating()</span></code>. The result of <code class="docutils literal notranslate"><span class="pre">getSpline</span></code> is a <code class="docutils literal notranslate"><span class="pre">TBSpline</span></code>, which you call like a
+SciPy spline, e.g. <code class="docutils literal notranslate"><span class="pre">spl(x,</span> <span class="pre">der=1)</span></code> for its first derivative. <code class="docutils literal notranslate"><span class="pre">spl.get_nparams()</span></code> gives its number of parameters,
+and <code class="docutils literal notranslate"><span class="pre">spl.get_AIC()</span></code>, which requires <code class="docutils literal notranslate"><span class="pre">edata</span></code>, its AIC, which you can use to compare e.g. different numbers of knots.
+The AIC is not defined for <code class="docutils literal notranslate"><span class="pre">Interpolating</span></code>, which has no free parameters to compare, or for <code class="docutils literal notranslate"><span class="pre">KnotAverage</span></code>, which
+already averages over models.</p>
+<section id="regression-splines">
+<h3>Regression splines<a class="headerlink" href="#regression-splines" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Regression</span></code> minimizes $\chi^2$ for B-splines with fixed knots. (Without correlations, this is the same thing
+<code class="docutils literal notranslate"><span class="pre">scipy.interpolate.splrep</span></code> with <code class="docutils literal notranslate"><span class="pre">task=-1</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy.interpolate.LSQUnivariateSpline</span></code> do.)
+Here you specify the number of interior knots <code class="docutils literal notranslate"><span class="pre">nknots</span></code> and the degree <code class="docutils literal notranslate"><span class="pre">order</span></code> of the spline polynomials.
+Fewer knots give a stiffer curve. By default, the knots are evenly spaced in data index, so that each interval
+between knots holds roughly the same number of data. You can specify <code class="docutils literal notranslate"><span class="pre">rand=True</span></code> to have it pick the knot
+locations randomly; pass <code class="docutils literal notranslate"><span class="pre">seed</span></code> to make this reproducible. Without <code class="docutils literal notranslate"><span class="pre">seed</span></code>, a seed is drawn once when the
+kind is made, so all fits with this kind, e.g. in a bootstrap, use the same knots. If you need to specify some
+knot locations yourself, pass them as a list to <code class="docutils literal notranslate"><span class="pre">knots</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">nknots</span></code> includes these knots in its counting,
+and defaults to <code class="docutils literal notranslate"><span class="pre">len(knots)</span></code>, in which case no knots are generated automatically.
+With <code class="docutils literal notranslate"><span class="pre">natural=True</span></code> the spline has zero curvature at the endpoints. This removes two fit parameters, which
+reduces the variance of the spline near the ends of the data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">spl</span> <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">Regression</span><span class="p">(</span><span class="n">nknots</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">natural</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>no knots will be generated randomly.
-There also exists the option to use natural splines.</p>
+</section>
+<section id="averaging-over-knots">
+<h3>Averaging over knots<a class="headerlink" href="#averaging-over-knots" title="Link to this heading">¶</a></h3>
+<p>Choosing the knots of a regression spline is a choice of model. To avoid making it, <code class="docutils literal notranslate"><span class="pre">KnotAverage</span></code> averages
+regression splines over the number $k$ and the positions of their interior knots, so that knots can crowd
+where the data demand structure. Each knot configuration gets the weight
+$$
+p(k),p(t|k),e^{-{\rm AIC}/2},\qquad {\rm AIC}=\chi^2_{\rm min}+2p,
+$$
+with $p=k+4$ parameters ($k+2$ with <code class="docutils literal notranslate"><span class="pre">natural=True</span></code>). The knots lie on a grid of <code class="docutils literal notranslate"><span class="pre">ngrid</span></code> candidate positions,
+by default fine enough to resolve every gap between data. $p(k)$ is uniform up to <code class="docutils literal notranslate"><span class="pre">kmax</span></code>, by default the largest
+number of knots the data allow, and $p(t|k)$ is uniform over the configurations with $k$ knots on the grid.
+Every interval between knots must contain at least one datum. The configurations are sampled by a Markov
+chain (Metropolis–Hastings with birth, death, and move steps) of <code class="docutils literal notranslate"><span class="pre">nupdates</span></code> updates, of which the first
+<code class="docutils literal notranslate"><span class="pre">nburn</span></code> are discarded and then every <code class="docutils literal notranslate"><span class="pre">every</span></code>-th is saved. The averaged spline is again a cubic spline, with a
+knot at every grid point, and <code class="docutils literal notranslate"><span class="pre">get_nparams()</span></code> gives the average number of parameters. This needs <code class="docutils literal notranslate"><span class="pre">edata</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">spl</span> <span class="o">=</span> <span class="n">getSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">KnotAverage</span><span class="p">())</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">bootSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">KnotAverage</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">bootSpline</span></code> the chain is rerun for every bootstrap sample, and the spread over configurations for the
+original data is added as a systematic error, see below; with the defaults, one chain takes about a second for 30 data, so use <code class="docutils literal notranslate"><span class="pre">nproc</span></code>. The chain is about
+3 times faster if you call <code class="docutils literal notranslate"><span class="pre">numbaON()</span></code> before importing <code class="docutils literal notranslate"><span class="pre">latqcdtools.math.spline</span></code>, see <a class="reference internal" href="../base/speedify.html"><span class="std std-doc">here</span></a>;
+the result is the same either way. Each chain is seeded by
+<code class="docutils literal notranslate"><span class="pre">seed</span></code>, the chain index, and the data, so results are reproducible and do not depend on <code class="docutils literal notranslate"><span class="pre">nproc</span></code>. The result
+also contains diagnostics for the original data: the saved configurations <code class="docutils literal notranslate"><span class="pre">res['knotConfigs']</span></code> and their
+counts <code class="docutils literal notranslate"><span class="pre">res['knotCounts']</span></code>, the histogram of $k$ in <code class="docutils literal notranslate"><span class="pre">res['kHistogram']</span></code>, and the acceptance rates. If the
+histogram piles up at <code class="docutils literal notranslate"><span class="pre">kmax</span></code>, you get a warning. You also get a warning if a chain has not thermalized: the mean AIC
+of the first 10% of its saved configurations is compared with that of the last 50% (Geweke test, errors from
+batch means), and a difference of more than 3 standard errors, or fewer than 50 saved configurations, is flagged.
+To check convergence further, compare runs with different <code class="docutils literal notranslate"><span class="pre">seed</span></code>, or longer chains.</p>
+</section>
+<section id="error-bands-from-the-bootstrap">
+<h3>Error bands from the bootstrap<a class="headerlink" href="#error-bands-from-the-bootstrap" title="Link to this heading">¶</a></h3>
+<p>To propagate the errors of the data into an error band for the spline, use <code class="docutils literal notranslate"><span class="pre">bootSpline</span></code>. It draws
+Gaussian bootstrap samples of the data with <code class="docutils literal notranslate"><span class="pre">bootstr_from_gauss</span></code> (correlated ones, if <code class="docutils literal notranslate"><span class="pre">edata</span></code> is a covariance
+matrix) and fits each with the given kind. For a <code class="docutils literal notranslate"><span class="pre">Regression</span></code> the knots are the same for every sample.
+Besides the band, it returns the fit to the original data in <code class="docutils literal notranslate"><span class="pre">res['splineMean']</span></code>, the bootstrap-level splines
+in <code class="docutils literal notranslate"><span class="pre">res['splineBS']</span></code>, the location <code class="docutils literal notranslate"><span class="pre">res['xmax']</span></code> and height <code class="docutils literal notranslate"><span class="pre">res['ymax']</span></code> of the maximum and the steepest
+inflection point <code class="docutils literal notranslate"><span class="pre">res['xinflect']</span></code>, <code class="docutils literal notranslate"><span class="pre">res['yinflect']</span></code>, all with errors, and, for kinds other than
+<code class="docutils literal notranslate"><span class="pre">Interpolating</span></code> and averages, the AIC of the fit to the original data. Use <code class="docutils literal notranslate"><span class="pre">nproc</span></code> to fit the samples in parallel:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">bootSpline</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">Regression</span><span class="p">(</span><span class="n">nknots</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plot_band</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">'xspl'</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s1">'yspl'</span><span class="p">]</span><span class="o">-</span><span class="n">res</span><span class="p">[</span><span class="s1">'ysple'</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s1">'yspl'</span><span class="p">]</span><span class="o">+</span><span class="n">res</span><span class="p">[</span><span class="s1">'ysple'</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The spread of the bootstrap samples is the statistical error. For an average over models, i.e. over
+knot configurations, the weights are recomputed in every bootstrap sample, but this does not
+capture how much the models disagree with each other: if the weights hardly change between samples, the
+average hardly moves, however different the models are. For these kinds, the weighted spread over models for
+the original data is added as a systematic error, as in a model average of fits. Every error comes with its
+two parts, e.g. <code class="docutils literal notranslate"><span class="pre">ysple**2</span> <span class="pre">=</span> <span class="pre">ysple_stat**2</span> <span class="pre">+</span> <span class="pre">ysple_sys**2</span></code>, and likewise for <code class="docutils literal notranslate"><span class="pre">xmaxe</span></code>, <code class="docutils literal notranslate"><span class="pre">ymaxe</span></code>, <code class="docutils literal notranslate"><span class="pre">xinflecte</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">yinflecte</span></code>. For kinds that are not averages, the systematic part is 0. For a quantity of your own
+derived from the spline, <code class="docutils literal notranslate"><span class="pre">res['splinesModel']</span></code> and <code class="docutils literal notranslate"><span class="pre">res['weightsModel']</span></code> hold the models for the original data
+and their weights, and <code class="docutils literal notranslate"><span class="pre">modelSpread(res,</span> <span class="pre">f)</span></code> gives the weighted spread of <code class="docutils literal notranslate"><span class="pre">f(spline)</span></code> over them, to add in
+quadrature to the spread of <code class="docutils literal notranslate"><span class="pre">f</span></code> over <code class="docutils literal notranslate"><span class="pre">res['splineBS']</span></code>. Being added in quadrature, the
+total is somewhat conservative: the models also disagree partly because the noise affects them differently,
+which the statistical error already contains.</p>
+<p>Finally, <code class="docutils literal notranslate"><span class="pre">getSplineErr(xdata,</span> <span class="pre">xspline,</span> <span class="pre">ydata,</span> <span class="pre">ydatae,</span> <span class="pre">kind=None)</span></code> fits splines of the given kind (by default
+<code class="docutils literal notranslate"><span class="pre">Interpolating()</span></code>) to <code class="docutils literal notranslate"><span class="pre">ydata-ydatae</span></code> and <code class="docutils literal notranslate"><span class="pre">ydata+ydatae</span></code> and returns their midpoint and half-difference on
+<code class="docutils literal notranslate"><span class="pre">xspline</span></code>. This gives a smooth band, but it is not a statistical error propagation.</p>
+</section>
 </section>
 </section>
 
@@ -487,7 +569,12 @@ There also exists the option to use natural splines.</p>
             <ul>
 <li><a class="reference internal" href="#">Curve fitting and splines</a><ul>
 <li><a class="reference internal" href="#chi-2-minimization">$\chi^2$ minimization</a></li>
-<li><a class="reference internal" href="#splines">Splines</a></li>
+<li><a class="reference internal" href="#splines">Splines</a><ul>
+<li><a class="reference internal" href="#regression-splines">Regression splines</a></li>
+<li><a class="reference internal" href="#averaging-over-knots">Averaging over knots</a></li>
+<li><a class="reference internal" href="#error-bands-from-the-bootstrap">Error bands from the bootstrap</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

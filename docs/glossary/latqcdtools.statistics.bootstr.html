@@ -333,85 +333,85 @@
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_biasCorrect</span><span class="p">(</span><span class="n">fbar</span><span class="p">,</span> <span class="n">sampleval</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Bootstrap for arbitrary functions. This routine resamples the data and passes them to the function in the same</span>
-<span class="sd">format as in the input. So the idea is to write a function that computes an observable from a given data set. This</span>
-<span class="sd">function can be put into this bootstrap routine and will get bootstrap samples as input. Based on the output of the</span>
-<span class="sd">function, the bootstrap mean and error are computed. The function may return multiple observables that are either</span>
-<span class="sd">scalars or numpy objects. You can pass a multidimensional object as data, but the bootstrap function has to know</span>
-<span class="sd">which axis should be resampled which is controlled by conf_axis (default = 0 for one dimensional arrays and</span>
-<span class="sd">default = 1 for higher order arrays.)</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    func : callable</span>
-<span class="sd">        The function that calculates the observable</span>
-
-<span class="sd">    data : array_like</span>
-<span class="sd">        Input data</span>
-
-<span class="sd">    numb_samples : integer</span>
-<span class="sd">        Number of bootstrap samples</span>
-
-<span class="sd">    sample_size : integer, optional, default = 0</span>
-<span class="sd">        Size of sample</span>
-
-<span class="sd">    same_rand_for_obs : boolean, optional, default = False</span>
-<span class="sd">        Use the same random numbers for each observable accessed by index conf_axis - 1. Please note:</span>
-<span class="sd">            - Objects that are accessed by an axis &gt;= conf_axis + 1 do always have the same random numbers.</span>
-<span class="sd">            - Objects that are accessed by axis conf_axis &lt; conf_axis - 1 never share the same random numbers.</span>
-
-<span class="sd">    conf_axis : integer, optional, default = 0 for dim(data) = 1 or default = 1 for dim(data) &gt;= 2</span>
-<span class="sd">        Axis that should be resampled</span>
-
-<span class="sd">    return_sample : boolean, optional, default = False</span>
-<span class="sd">        Along with the mean and the error also return the results from the individual samples</span>
-
-<span class="sd">    seed: integer, optional, default = None</span>
-<span class="sd">        seed for the random generator. If None, the default seed from numpy is used (probably from time)</span>
-
-<span class="sd">    same_rand_for_obs : boolean, optional, default = False</span>
-<span class="sd">        same random numbers per observable</span>
-
-<span class="sd">    err_by_dist : boolean, optional, default = False</span>
-<span class="sd">        Compute the error from the distribution using the median and the 68% quantile</span>
-
-<span class="sd">    args : array_like or dict, default = ()</span>
-<span class="sd">        optional arguments to be passed to func. If a dictionary the are passed as **args.</span>
-
-<span class="sd">    nproc : integer</span>
-<span class="sd">        Number of threads to use if you choose to parallelize. nproc=1 turns off parallelization.</span>
+<span class="sd">Bias-corrected central value 2 f(xbar) - &lt;f*&gt;. Here f(xbar) is func of the full data, &lt;f*&gt; is the</span>
+<span class="sd">average over bootstrap samples, and &lt;f*&gt; - f(xbar) estimates the O(1/N) bias of f(xbar). The result</span>
+<span class="sd">carries a Monte Carlo error of about (bootstrap error)/sqrt(numb_samples), even for linear func. </span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">useCovariance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Covariance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">asym_err</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conf_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Same as standard bootstrap routine, but the data are generated by gaussian noise around the mean values in data.</span>
-<span class="sd">The width of the distribution is controlled by data_std_dev. Note, that the function has to average over samples.</span>
-<span class="sd">This means that data_std_dev should always be the standard deviation of a single measurement and not the standard</span>
-<span class="sd">deviation of a mean.</span>
+<span class="sd">Bootstrap for arbitrary functions. This routine resamples the data and passes them to func in the same</span>
+<span class="sd">format as the input, so func should compute an observable from a given data set. The central value is</span>
+<span class="sd">the bias-corrected estimate 2 f(xbar) - &lt;f*&gt;, where f(xbar) is func of the full data and &lt;f*&gt; is the</span>
+<span class="sd">average over bootstrap samples. Like the jackknife, this removes the O(1/N) bias of f(xbar). It carries</span>
+<span class="sd">a Monte Carlo error of about (bootstrap error)/sqrt(numb_samples). The error is computed from the spread</span>
+<span class="sd">of func over the bootstrap samples. The output of func may be a scalar or a numpy object. For multidimensional </span>
+<span class="sd">data, conf_axis says which axis holds the configurations to be resampled.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    func (callable): Function that calculates the observable.</span>
+<span class="sd">    data (array-like): Input data.</span>
+<span class="sd">    numb_samples (int): Number of bootstrap samples.</span>
+<span class="sd">    same_rand_for_obs (bool, optional): Every index before conf_axis labels an observable. If True, all</span>
+<span class="sd">      observables are resampled with the same random configurations, i.e. they are treated as perfectly</span>
+<span class="sd">      correlated. If False, each observable gets its own random configurations. Indices after conf_axis</span>
+<span class="sd">      always share the random configuration. Defaults to False.</span>
+<span class="sd">    conf_axis (int, optional): Axis to resample. Defaults to 1; it is set to 0 for one-dimensional data.</span>
+<span class="sd">    return_sample (bool, optional): Also return the results from the individual samples? Defaults to False.</span>
+<span class="sd">    seed (int, optional): Seed for the random generator. Defaults to None, which chooses a random seed.</span>
+<span class="sd">    err_by_dist (bool, optional): Take the error from the 68% quantiles instead of the standard deviation?</span>
+<span class="sd">      The error is then the distance from the median of the bootstrap distribution to its quantiles, i.e.</span>
+<span class="sd">      a width of the distribution, applied around the bias-corrected central value. Defaults to True.</span>
+<span class="sd">    args (tuple or dict, optional): Extra arguments for func. A dict is passed as **args. Defaults to ().</span>
+<span class="sd">    nproc (int, optional): Number of threads. Defaults to 1, i.e. no parallelization. Starting the</span>
+<span class="sd">      parallel pool has an overhead, so increasing nproc only helps when func is slow, for example</span>
+<span class="sd">      if you do a curve fit in each sample. Feel free to benchmark it for your use-case.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    samples (optionally), bias-corrected central value, bootstrap error</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">estimateCovariance</span><span class="p">(</span><span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bootstr_from_gauss</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">useCovariance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Covariance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">asym_err</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Estimate a covariance matrix using data and their corresponding std_dev. The idea is to estimate this with a</span>
-<span class="sd">bootstrap under the assumption that each datum X_i is maximally correlated with every other datum X_j. Here</span>
-<span class="sd">data should be 1-dimensional.</span>
+<span class="sd">Gaussian (parametric) bootstrap. Like bootstr, but each sample is drawn from a normal distribution around</span>
+<span class="sd">the mean values in data, with width data_std_dev or covariance Covariance. The central value is the</span>
+<span class="sd">bias-corrected estimate 2 f(xbar) - &lt;f*&gt;, as in bootstr, with f(xbar) being func of the mean values.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    func (callable): Function that calculates the observable.</span>
+<span class="sd">    data (array-like): Mean value of each observable.</span>
+<span class="sd">    data_std_dev (array-like): Error of each value in data, e.g. the error of a mean.</span>
+<span class="sd">    numb_samples (int): Number of bootstrap samples.</span>
+<span class="sd">    same_rand_for_obs (bool, optional): Use the same random numbers for every observable, i.e. treat them</span>
+<span class="sd">      as perfectly correlated? Defaults to False.</span>
+<span class="sd">    return_sample (bool, optional): Also return the results from the individual samples? Defaults to False.</span>
+<span class="sd">    seed (int, optional): Seed for the random generator. Defaults to None, which chooses a random seed.</span>
+<span class="sd">    err_by_dist (bool, optional): Take the error from the 68% quantiles instead of the standard deviation?</span>
+<span class="sd">      The error is then the distance from the median of the bootstrap distribution to its quantiles, i.e.</span>
+<span class="sd">      a width of the distribution, applied around the bias-corrected central value. Defaults to True.</span>
+<span class="sd">    useCovariance (bool, optional): Draw each observable from a multivariate normal? Defaults to False.</span>
+<span class="sd">    Covariance (array-like, optional): Covariance matrix of each observable, used if useCovariance. Defaults</span>
+<span class="sd">      to None, which uses diag(data_std_dev**2).</span>
+<span class="sd">    args (tuple or dict, optional): Extra arguments for func. A dict is passed as **args. Defaults to ().</span>
+<span class="sd">    nproc (int, optional): Number of threads. Defaults to 1, i.e. no parallelization. Starting the</span>
+<span class="sd">      parallel pool has an overhead, so increasing nproc only helps when func is slow, for example</span>
+<span class="sd">      if you do a curve fit in each sample. Feel free to benchmark it for your use-case.</span>
+<span class="sd">    asym_err (bool, optional): Return both distances from the median to the 68% quantiles, if err_by_dist,</span>
+<span class="sd">      instead of the larger one. Defaults to False.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    samples (optionally), bias-corrected central value, bootstrap error</span>
 <span class="sd">"""</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">recurs_append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_data</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">my_seed</span><span class="p">):</span>
-<span class="sd">"""</span>
-<span class="sd">Recursive function to fill the sample. </span>
-<span class="sd">"""</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">):</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">conf_axis</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">):</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleGaussianBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">useCovariance</span><span class="p">,</span> <span class="n">Covariance</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">asym_err</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">nimbleGaussianBoot</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_std_dev</span><span class="p">,</span> <span class="n">numb_samples</span><span class="p">,</span> <span class="n">same_rand_for_obs</span><span class="p">,</span> <span class="n">return_sample</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">err_by_dist</span><span class="p">,</span> <span class="n">useCovariance</span><span class="p">,</span> <span class="n">Covariance</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">asym_err</span><span class="p">):</span>
 </pre></div>
 </div>
 </section>

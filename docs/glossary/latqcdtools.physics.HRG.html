@@ -335,6 +335,18 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RMS_mass</span><span class="p">(</span><span class="n">Nt</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_checkMus</span><span class="p">(</span><span class="n">muB</span><span class="p">,</span> <span class="n">muQ</span><span class="p">,</span> <span class="n">muS</span><span class="p">,</span> <span class="n">muC</span><span class="p">,</span> <span class="n">muI</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Want to avoid simultaneous muQ and muI. </span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_checkOrders</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">I</span><span class="p">):</span>
+<span class="sd">"""</span>
+<span class="sd">Want to avoid simultaneous muQ and muI derivatives.</span>
+<span class="sd">"""</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dmuh</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">muh</span><span class="p">):</span>
 <span class="sd">"""</span>
 <span class="sd">d^order/dmuh^order derivative of muh </span>
@@ -369,12 +381,6 @@
 <span class="sd">Hadron resonance gas base class. Here we collect methods and attributes that all HRG-type classes should have</span>
 <span class="sd">in common. Mass=mass of the Hadron/resonance , g=spin degenerecy , w= fermi(-1)/bose(1) statistics.</span>
 <span class="sd">B, Q, S, and C are respectively the baryon number, electric charge, strangeness, and charm of each state. </span>
-<span class="sd">"""</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">HRGexact</span><span class="p">(</span><span class="n">Mass</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="sd">"""</span>
-<span class="sd">HRG implemented through numerical integration. </span>
 <span class="sd">"""</span>
 </pre></div>
 </div>

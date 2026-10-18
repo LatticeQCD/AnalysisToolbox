@@ -52,8 +52,8 @@ gradient or hessian of the chisquare. One way is to set the derivatives of the f
 The derivatives of the actual chisquare are then computed via error propagation. Another way is to use numerical
 derivatives.
 
-There are two ways to compute the derivatives of the chisqare numerically. Either compute the
-numerical derivative of the whole chisquare (error_strat='hessian') or compute the derivatives of the fitting
-function and use error propagation (error_strat='propagation'). The latter is the default case.
+The parameter covariance is pcov = (J^T C^-1 J + Sigma_prior^-1)^-1, with J the Jacobian of the fit function.
+This is error propagation (error_strat='propagation'). It is also the inverse of half the Hessian of the
+chi^2 when terms of O(f(p)-y) are dropped, so error_strat='hessian' gives the same result. 
 """
 ```

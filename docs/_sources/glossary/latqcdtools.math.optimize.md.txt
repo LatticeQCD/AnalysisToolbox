@@ -4,7 +4,9 @@ latqcdtools.math.optimize
 ```python
 minimize(func, jac=None, hess=None, start_params=None, tol=1e-12, maxiter=10000, algorithm=None):
 """
-Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.
+Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax. The exception is
+algorithm="nonlin", which calls scipy.optimize.least_squares: then func must return the vector of residuals z,
+so that sum(z^2) is minimized, and jac is the Jacobian dz/dp or a scipy finite-difference scheme like '3-point'.
 
 Args:
     func: to-be-minimized function 

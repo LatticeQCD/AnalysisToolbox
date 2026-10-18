@@ -26,6 +26,27 @@ Returns:
 """
 ```
 ```python
+_absPrec(mat) -> float:
+"""
+Absolute tolerance for comparing mat to a transformed copy of itself, relative to the size of its largest
+element, so that such checks do not depend on the units of mat.
+"""
+```
+```python
+applySVDCut(vals, svdcut=1e-12) -> numpy.ndarray:
+"""
+Raise all singular values or (non-negative) eigenvalues below svdcut*max(vals) to that floor. This caps the
+condition number of the corresponding matrix at 1/svdcut.
+
+Args:
+    vals (np.ndarray): singular values or eigenvalues
+    svdcut (float, optional): condition number threshold. Defaults to 1e-12.
+
+Returns:
+    np.ndarray: modified copy of vals 
+"""
+```
+```python
 checkMatrix(mat)
 ```
 ```python
@@ -42,6 +63,20 @@ checkVector(vec)
 ```
 ```python
 dagger(arr) -> numpy.ndarray
+```
+```python
+eigh(mat):
+"""
+Eigenvalues and eigenvectors of a Hermitian (or real symmetric) matrix. Unlike a general eigensolver, this
+guarantees real eigenvalues and orthonormal eigenvectors, also when eigenvalues are degenerate. Rounding
+errors that make mat slightly non-Hermitian are removed by symmetrizing first.
+
+Args:
+    mat (np.ndarray): Hermitian matrix
+
+Returns:
+    np.ndarray, np.ndarray: eigenvalues in ascending order, and eigenvectors as the columns of a matrix 
+"""
 ```
 ```python
 exp(mat) -> numpy.ndarray:
@@ -131,11 +166,14 @@ Returns:
 ```python
 isPositiveSemidefinite(mat, details=False, eps=1e-12) -> bool:
 """Returns true if mat is positive semidefinite. Otherwise, if details=True,
-list the eigenvalues that are not >=0.
+list the eigenvalues that are not >=0. Only the Hermitian part of mat matters, since
+x^dagger mat x is real only for that part, so we check its eigenvalues.
 
 Args:
     mat (np.ndarray)
     details (bool, optional): If true, report problematic eigenvalues. Defaults to False.
+    eps (float, optional): Tolerance relative to the largest |eigenvalue|, so that the check does not
+      depend on the units of mat. Defaults to 1e-12.
 
 Returns:
     bool: True if positive semidefinite 
@@ -228,15 +266,16 @@ Matrix power.
 """
 ```
 ```python
-quadrature(data) -> float:
+quadrature(data, axis=None):
 """
 Add data in quadrature
 
 Args:
     data (np.ndarray)
+    axis (int, optional): Axis along which to add. Defaults to None, meaning all elements.
 
 Returns:
-    float: data added in quadrature 
+    float or np.ndarray: data added in quadrature 
 """
 ```
 ```python

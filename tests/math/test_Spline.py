@@ -9,10 +9,9 @@
 import numpy as np
 import itertools
 from math import comb
-from latqcdtools.math.spline import _even_knots, _random_knots, getSpline, bootSpline, posteriorSpline, getSplineErr, \
-    Interpolating, Regression, Smoothing, KnotAverage
-from scipy.interpolate import CubicSpline, make_smoothing_spline, BSpline, splrep, splev
-from scipy.linalg import null_space
+from latqcdtools.math.spline import _even_knots, _random_knots, getSpline, bootSpline, getSplineErr, modelSpread, \
+    Interpolating, Regression, KnotAverage
+from scipy.interpolate import CubicSpline, BSpline, splrep, splev
 from latqcdtools.base.plotting import plt, plot_dots, plot_lines, set_params
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.statistics.statistics import countParams
@@ -61,126 +60,6 @@ def testSpline():
     xf  = np.linspace(0, 1, 50)
     lpass *= print_results(ispl(xf), CubicSpline(xs, ys, bc_type='natural')(xf), text="natural LSQ -> interpolating limit")
 
-    # Smoothing spline: must agree with scipy, with and without weights. Several data at one x act like one
-    # datum with the summed weight and the weighted mean y, which scipy needs since it refuses repeated x.
-    rng = TBRNG(DEFAULTSEED)
-    xs  = np.sort(rng.uniform(0, 5, 30))
-    es  = rng.uniform(0.05, 0.2, 30)
-    ys  = np.sin(2*xs)/xs + rng.normal(0, es)
-    xf  = np.linspace(xs[0], xs[-1], 200)
-    sspl = getSpline(xs, ys, es, Smoothing(lam=0.1))
-    lpass *= print_results(sspl(xf), make_smoothing_spline(xs, ys, w=1/es**2, lam=0.1)(xf), text="smoothing spline = scipy", prec=1e-8)
-    lpass *= print_results(getSpline(xs, ys, kind=Smoothing(lam=0.1))(xf), make_smoothing_spline(xs, ys, lam=0.1)(xf), text="unweighted smoothing spline = scipy", prec=1e-8)
-    lpass *= print_results(np.array([sspl(xs[0],2),sspl(xs[-1],2)]), np.zeros(2), text="smoothing spline S''=0 at ends", abs_prec=1e-10)
-    xd   = np.r_[xs, xs[5]]
-    yd   = np.r_[ys, ys[5]+0.1]
-    ed   = np.r_[es, 0.1]
-    order = np.argsort(xd, kind='stable')
-    xd, yd, ed = xd[order], yd[order], ed[order]
-    wm   = 1/es**2
-    ym   = np.copy(ys)
-    wm[5] = 1/es[5]**2 + 1/0.1**2
-    ym[5] = (ys[5]/es[5]**2 + (ys[5]+0.1)/0.1**2)/wm[5]
-    lpass *= print_results(getSpline(xd, yd, ed, Smoothing(lam=0.1))(xf), make_smoothing_spline(xs, ym, w=wm, lam=0.1)(xf), 
-                           text="smoothing spline with repeated x", prec=1e-8)
-    # Effective number of parameters runs from ndata (interpolation) to 2 (weighted straight line).
-    lpass *= print_results(getSpline(xs, ys, es, Smoothing(lam=1e-12)).get_nparams(), len(xs), text="peff lam->0", prec=1e-6)
-    lspl = getSpline(xs, ys, es, Smoothing(lam=1e12))
-    lpass *= print_results(lspl.get_nparams(), 2, text="peff lam->inf", prec=1e-6)
-    lpass *= print_results(lspl(xf), np.polyval(np.polyfit(xs, ys, 1, w=1/es), xf), text="lam->inf straight line", prec=1e-6)
-
-    # Correlated smoothing spline. Compare with the normal equations c = (B^T W B + lam Omega)^-1 B^T W y, 
-    # computing Omega independently with Simpson's rule on each interval, which is exact for B_i'' B_j''.
-    covs = np.outer(es,es)*np.exp(-np.abs(np.subtract.outer(xs,xs))/0.7)
-    lpass *= print_results(getSpline(xs, ys, np.diag(es**2), Smoothing(lam=0.1))(xf), sspl(xf), text="smoothing spline diagonal covariance", prec=1e-8)
-    t  = np.r_[[xs[0]]*4, xs[1:-1], [xs[-1]]*4]
-    nB = len(t) - 4
-    xq, wq = [], []
-    for i in range(len(xs)-1):
-        a, b = xs[i], xs[i+1]
-        xq += [a, (a+b)/2, b]
-        wq += [(b-a)/6, 4*(b-a)/6, (b-a)/6]
-    D2    = BSpline(t, np.eye(nB), 3).derivative(2)(np.array(xq))
-    Omega = D2.T @ (np.array(wq)[:,None]*D2)
-    Bmat  = BSpline.design_matrix(xs, t, 3).toarray()
-    Winv  = np.linalg.inv(covs)
-    c     = np.linalg.solve(Bmat.T @ Winv @ Bmat + 0.1*Omega, Bmat.T @ Winv @ ys)
-    cspl  = getSpline(xs, ys, covs, Smoothing(lam=0.1))
-    lpass *= print_results(cspl(xf), BSpline(t, c, 3)(xf), text="correlated smoothing spline", prec=1e-8)
-    H = []
-    for unit in np.eye(len(xs)):
-        H.append(getSpline(xs, unit, covs, Smoothing(lam=0.1))(xs))
-    lpass *= print_results(cspl.get_nparams(), np.trace(np.array(H).T), text="peff = tr(H)", prec=1e-8)
-
-    # bootSpline with a correlated smoothing spline: the band must follow exact error propagation.
-    res = bootSpline(xs, ys, covs, Smoothing(lam=0.1), numb_samples=1000)
-    M   = []
-    for unit in np.eye(len(xs)):
-        M.append(getSpline(xs, unit, covs, Smoothing(lam=0.1))(res['xspl']))
-    M   = np.array(M).T
-    lpass *= print_results(res['ysple'], np.sqrt(np.diag(M @ covs @ M.T)), text="bootSpline correlated smoothing spline band", prec=0.15)
-    lpass *= print_results(res['splineBS'][0].get_nparams(), cspl.get_nparams(), text="bootSpline smoothing spline peff", prec=1e-8)
-
-    # Log evidence, compared up to a constant with the textbook REML formula: c = Z a + (prior covariance 
-    # pinv(Omega)/lam part), flat prior on a, with Z spanning the straight lines.
-    Z    = null_space(Omega, rcond=1e-10)
-    Opi  = np.linalg.pinv(Omega, rcond=1e-10, hermitian=True)
-    X0   = Bmat @ Z
-    ours, ref = [], []
-    for lam in [1e-3, 0.1, 10]:
-        K   = covs + Bmat @ Opi @ Bmat.T / lam
-        Ki  = np.linalg.inv(K)
-        A   = X0.T @ Ki @ X0
-        P   = Ki - Ki @ X0 @ np.linalg.solve(A, X0.T @ Ki)
-        with np.errstate(under='ignore'):
-            ref.append(-0.5*ys @ P @ ys - 0.5*np.linalg.slogdet(K)[1] - 0.5*np.linalg.slogdet(A)[1])
-        ours.append(getSpline(xs, ys, covs, Smoothing(lam=lam)).logEvidence)
-    ours, ref = np.array(ours), np.array(ref)
-    lpass *= print_results(ours - ours[0], ref - ref[0], text="log evidence = REML", abs_prec=1e-8)
-
-    # Averaging over lam: rebuild the average for the original data and for one bootstrap sample from
-    # getSpline, with weights proportional to the evidence.
-    res = bootSpline(xs, ys, es, Smoothing(nlam=40), numb_samples=100)
-    lpass *= print_results(np.sum(res['weights']), 1., text="lam average weights normalized")
-    for spl in [res['splineMean'], res['splineBS'][0]]:
-        logEv, curves = [], []
-        for lam in res['lams']:
-            lspl = getSpline(xs, spl.get_y(), es, Smoothing(lam=lam))
-            logEv.append(lspl.logEvidence)
-            curves.append(lspl(res['xspl']))
-        with np.errstate(under='ignore'):
-            w = np.exp(np.array(logEv) - np.max(logEv))
-        w[w < np.exp(-70)] = 0
-        w /= np.sum(w)
-        lpass *= print_results(spl(res['xspl']), w @ np.array(curves), text="lam average = evidence-weighted splines", prec=1e-8)
-    k     = np.argmax(res['weights'])
-    kspl  = getSpline(xs, ys, es, Smoothing(lam=res['lams'][k]))
-    lpass *= print_results(res['splinesLam'][k](res['xspl']), kspl(res['xspl']), text="splinesLam = getSpline", prec=1e-8)
-    lpass *= print_results(res['splinesLam'][k].logEvidence, kspl.logEvidence, text="splinesLam logEvidence", prec=1e-8)
-    lpass *= print_results(res['splinesLam'][k].get_nparams(), kspl.get_nparams(), text="splinesLam peff", prec=1e-8)
-    ylam  = []
-    for spl in res['splinesLam']:
-        ylam.append(spl(res['xspl']))
-    ylam  = np.array(ylam)
-    lpass *= print_results(np.sqrt(res['weights'] @ (ylam - res['weights'] @ ylam)**2), res['ysple_lam'], text="splinesLam reproduce ysple_lam", prec=1e-8)
-
-    # posteriorSpline: the posterior covariance at fixed lam is (B^T W B + lam Omega)^-1 (Omega from 
-    # Simpson above), the mean is the evidence-weighted average, and the samples reproduce the exact 
-    # posterior variance (law of total variance) within Monte Carlo accuracy.
-    res  = posteriorSpline(xs, ys, es, Smoothing(nlam=40), numb_samples=4000)
-    k    = np.argmax(res['weights'])
-    lpass *= print_results(res['splinesLam'][k].covPost, np.linalg.inv(Bmat.T @ np.diag(1/es**2) @ Bmat + res['lams'][k]*Omega), 
-                           text="posterior covariance", prec=1e-6)
-    lpass *= print_results(res['yspl'], res['splineMean'](res['xspl']), text="posterior mean = splineMean", prec=1e-8)
-    ypost = []
-    for spl in res['splineSamples']:
-        ypost.append(spl(res['xspl']))
-    ypost = np.array(ypost)
-    lpass *= print_results(np.std(ypost, axis=0), res['ysple'], text="posterior samples reproduce ysple", prec=0.08)
-    lpass *= print_results(res['ysple']**2, res['ysple_stat']**2 + res['ysple_sys']**2, text="posterior total variance")
-    lpass *= print_results(res['yspl'], bootSpline(xs, ys, es, Smoothing(nlam=40), numb_samples=10)['splineMean'](res['xspl']),
-                           text="posterior mean = bootSpline splineMean", prec=1e-8)
-
     aic_arr = []
     for knots in [10,30,60]:
 
@@ -221,6 +100,14 @@ def testSpline():
     M     = np.array(M).T
     exact = np.sqrt(np.diag(M @ np.diag(eb**2) @ M.T))
     lpass *= print_results(res['ysple'], exact, text="bootSpline error band", prec=0.15)
+    lpass *= print_results(res['ymaxe'], res['ymaxe_stat'], text="fixed knots: no systematic error", prec=1e-12)
+    def ymax(spl):
+        return np.max(spl(res['xspl']))
+    lpass *= print_results(modelSpread(res, ymax), 0., text="fixed knots: modelSpread is 0", abs_prec=1e-12)
+    ymaxBS = []
+    for spl in res['splineBS']:
+        ymaxBS.append(ymax(spl))
+    lpass *= print_results(res['ymax'], 2*ymax(res['splineMean']) - np.median(ymaxBS), text="ymax bias corrected", prec=1e-8)
 
     # Same with correlated data, which are now also fit with the covariance matrix: the band must follow 
     # sqrt(diag(M cov M^T)) with M the map from the data to the correlated fit.
@@ -250,22 +137,16 @@ def testSpline():
     c     = np.linalg.solve(Bmat.T @ Winv @ Bmat, Bmat.T @ Winv @ yb)
     lpass *= print_results(getSpline(xb, yb, cov, Regression(nknots=5))(xf), BSpline(t, c, 3)(xf), text="correlated Regression", prec=1e-8)
 
-    # Interpolating: the natural cubic interpolant. Default kinds: Interpolating without edata, the average over
-    # lam with edata.
+    # Interpolating: the natural cubic interpolant. It is the default kind, with and without edata.
     lpass *= print_results(getSpline(xb, yb, kind=Interpolating())(xf), CubicSpline(xb, yb, bc_type='natural')(xf), text="Interpolating = CubicSpline")
     lpass *= print_results(getSpline(xb, yb)(xf), CubicSpline(xb, yb, bc_type='natural')(xf), text="default kind without edata")
-    lpass *= print_results(getSpline(xb, yb, eb)(xf), bootSpline(xb, yb, eb, numb_samples=10)['splineMean'](xf), text="default kind with edata", prec=1e-8)
+    lpass *= print_results(getSpline(xb, yb, eb)(xf), CubicSpline(xb, yb, bc_type='natural')(xf), text="default kind with edata")
+    lpass *= print_results(bootSpline(xb, yb, eb, numb_samples=10)['splineMean'](xf), CubicSpline(xb, yb, bc_type='natural')(xf), text="bootSpline default kind")
 
     # getSplineErr with random knots: both fits must use the same knots, so the center is the fit to y.
     kind   = Regression(nknots=4, rand=True)
     center = getSplineErr(xb, xf, yb, eb, kind=kind)[0]
     lpass *= print_results(center, getSpline(xb, yb, kind=kind)(xf), text="getSplineErr same random knots", prec=1e-8)
-
-    # posteriorSpline at fixed lam: the mean is the smoothing spline, and the band is exact.
-    res   = posteriorSpline(xb, yb, eb, Smoothing(lam=1e-3), numb_samples=10)
-    lpass *= print_results(res['yspl'], getSpline(xb, yb, eb, Smoothing(lam=1e-3))(res['xspl']), text="posterior fixed lam mean", prec=1e-8)
-    Bspl  = BSpline.design_matrix(res['xspl'], res['splinesLam'][0].get_knots(), 3).toarray()[:,:len(xb)+2]
-    lpass *= print_results(res['ysple'], np.sqrt(np.diag(Bspl @ res['splinesLam'][0].covPost @ Bspl.T)), text="posterior fixed lam band", prec=1e-8)
 
     # KnotAverage: on a tiny problem, enumerate every configuration on the grid and compare the exact AIC-weighted
     # P(k) and average with the chain. This checks the birth/death proposal ratio.
@@ -306,6 +187,20 @@ def testSpline():
     res1 = bootSpline(xb, yb, eb, kind, numb_samples=8)
     res2 = bootSpline(xb, yb, eb, kind, numb_samples=8, nproc=2)
     lpass *= print_results(res1['ysple'], res2['ysple'], text="KnotAverage bootSpline nproc")
+    det  = kind.fitter(xb, eb).details(yb, res1['xspl'])
+    w    = det['counts']/np.sum(det['counts'])
+    ycfg = []
+    for cfg in det['configs']:
+        ycfg.append(getSpline(xb, yb, eb, Regression(knots=cfg))(res1['xspl']))
+    ycfg = np.array(ycfg)
+    lpass *= print_results(res1['ysple_sys'], np.sqrt(w @ (ycfg - w @ ycfg)**2), text="KnotAverage ysple_sys = spread of Regression fits", prec=1e-8)
+    lpass *= print_results(res1['ysple']**2, res1['ysple_stat']**2 + res1['ysple_sys']**2, text="KnotAverage ysple = stat + sys", prec=1e-8)
+    def curve(spl):
+        return spl(res1['xspl'])
+    def ymax(spl):
+        return np.max(spl(res1['xspl']))
+    lpass *= print_results(modelSpread(res1, curve), res1['ysple_sys'], text="modelSpread reproduces ysple_sys", prec=1e-8)
+    lpass *= print_results(modelSpread(res1, ymax), res1['ymaxe_sys'], text="modelSpread reproduces ymaxe_sys", prec=1e-8)
     lpass *= print_results(res1['splineMean'](xf), getSpline(xb, yb, eb, KnotAverage(nupdates=500, nburn=100))(xf),
                            text="KnotAverage bootSpline splineMean = getSpline")
 
@@ -316,6 +211,14 @@ def testSpline():
         lpass = False
     except Exception:
         logger.TBPass("getSpline with scalar edata fails.")
+
+    # bootSpline samples from edata, so edata=None must fail.
+    try:
+        bootSpline(xb, yb, None)
+        logger.TBFail("bootSpline without edata should fail.")
+        lpass = False
+    except Exception:
+        logger.TBPass("bootSpline without edata fails.")
 
     concludeTest(lpass)
 

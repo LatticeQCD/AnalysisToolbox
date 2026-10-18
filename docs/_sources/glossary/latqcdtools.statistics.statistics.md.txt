@@ -2,46 +2,57 @@ latqcdtools.statistics.statistics
 =============
 
 ```python
-AIC(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+AIC(xdata, ydata, cov, func, args=(), params=()) -> float:
 """
 The Akaike information criterion (AIC) is a measure of how well a fit performs. It builds on the likelihood
 function by including a penalty for each d.o.f. This is useful in a context where you have multiple models to
 choose from,and hence different numbers of d.o.f. possible. It's also useful when you are worried about
-overfitting. The preferred model minimizes the AIC.
+overfitting. The preferred model minimizes the AIC. With k the number of parameters,
+    AIC = 2k - 2 log L = chi^2 + 2k + log det C + N log(2 pi).
+The chi^2 of a fit is lower than the chi^2 the same fit would have on fresh data, since the fit adapts to
+the noise. The 2k corrects this bias. For a model linear in its parameters and a known C, the bias is
+exactly 2k for any N. For a smoothing spline, k is the effective number tr(H). The last two terms are the
+same for every model of the same data, so they drop out of comparisons.
 
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-    
-    Returns:
-        float: AIC
+The AIC does not know about priors: it uses the data-only chi^2 and counts every parameter fully. For a
+fit with priors it is therefore not the right criterion. Use logGBF or BAIC instead.
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    cov (array-like): covariance matrix 
+    func (func)
+    args (tuple, optional): arguments to func. Defaults to ().
+    params (tuple, optional): model parameters. Defaults to ().
+
+Returns:
+    float: AIC
 """
 ```
 ```python
-AICc(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+AICc(xdata, ydata, cov, func, args=(), params=()) -> float:
 """
-Corrected AIC (AICc). When the sample size is smaller, it increases the chance AIC will select a model with too
-many parameters. The AICc tries to further correct for this. In the limit that the number of data points goes to
-infinity, one recovers the AIC.
+Corrected AIC (AICc) of Sugiura, Commun. Stat. Theory Methods 7, 13 (1978) and Hurvich & Tsai, Biometrika 76,
+297 (1989); see also Burnham & Anderson, "Model Selection and Multimodel Inference" (2nd ed., Springer, 2002),
+Eq. (2.4). With k the number of parameters and N the number of data,
+    AICc = AIC + 2k(k+1)/(N-k-1).
+The extra term corrects the small-sample bias that comes from estimating the noise variance from the
+residuals. Here the covariance C is given rather than estimated from the residuals, and then the AIC
+is already unbiased for a model linear in its parameters, so the AICc over-penalizes parameters at small N.
+Prefer AIC. Like the AIC, the AICc does not know about priors, so it is not the right criterion for a fit
+with priors. For N <= k+1 the correction is undefined, and we return +inf, so that in a model average
+(weight ~ exp(-AICc/2)) such a model gets zero weight.
 
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-    
-    Returns:
-        float: corrected AIC
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    cov (array-like): covariance matrix 
+    func (func)
+    args (tuple, optional): arguments to func. Defaults to ().
+    params (tuple, optional): model parameters. Defaults to ().
+
+Returns:
+    float: corrected AIC
 """
 ```
 ```python
@@ -77,7 +88,8 @@ are priors, the number of degrees of freedom equals the number of ydata, less th
 
 Args:
     ndat (int): number of data 
-    nparam (int): number of model parameters 
+    nparam (int): number of model parameters. May be an effective, non-integer number, e.g. for a 
+      smoothing spline.
     priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
 
 Returns:
@@ -110,6 +122,12 @@ Args:
 
 Returns:
     float: 1-p 
+"""
+```
+```python
+_inverseVarianceWeights(err) -> numpy.ndarray:
+"""
+Weights 1/err^2 for the weighted-mean methods below. 
 """
 ```
 ```python
@@ -175,18 +193,18 @@ chisquare(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=No
 Calculate chi^2, see e.g. eq. (8.28) of Sivia and Skilling or eq. (A1) of
 10.1103/PhysRevD.90.054506. We assume priors are not correlated with data.
 
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-    
-    Returns:
-        float: chi^2
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    cov (array-like): covariance matrix 
+    func (func)
+    args (tuple, optional): arguments to func. Defaults to ().
+    params (tuple, optional): model parameters. Defaults to ().
+    prior (array-like, optional): Bayesian priors. Defaults to None.
+    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+
+Returns:
+    float: chi^2
 """
 ```
 ```python
@@ -262,8 +280,19 @@ Returns:
 ```python
 dev_by_dist(data, axis=0, return_both_q=False, percentile=68):
 """
-Calculate the distance between the median and 68% quantiles. Returns the larger of the two 
-distances. This method is used sometimes to estimate error, for example in the bootstrap. 
+Calculate the distance between the median and the quantiles enclosing the central percentile of the
+data. This method is used sometimes to estimate error, for example in the bootstrap. The quantiles
+are not interpolated; they are rounded outward to the nearest datum. If many data share the median
+value, both distances can be zero even though the data have a spread.
+
+Args:
+    data (array-like)
+    axis (int, optional): Axis along which to compute. Defaults to 0.
+    return_both_q (bool, optional): Return both distances instead of the larger one? Defaults to False.
+    percentile (float, optional): Central percentile. Defaults to 68.
+
+Returns:
+    distance to the lower and upper quantiles, or the larger of the two
 """
 ```
 ```python
@@ -310,6 +339,19 @@ Args:
     params_err (array-like): Covariance matrix of model parameters
     grad (func, optional): Gradient function. Defaults to None.
     args (tuple, optional): Arguments of func. Defaults to ().
+"""
+```
+```python
+estimateCovariance(data_std_dev) -> numpy.ndarray:
+"""
+Covariance matrix of some data, under the assumption that each datum X_i is maximally correlated
+with every other datum X_j, i.e. cov_ij = std_i std_j. This matrix has rank 1, so it is not invertible.
+
+Args:
+    data_std_dev (array-like): One-dimensional array of standard deviations.
+
+Returns:
+    np.ndarray: covariance matrix
 """
 ```
 ```python
@@ -384,24 +426,61 @@ Returns:
 """
 ```
 ```python
-logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+logGBF(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None, jac=None) -> float:
 """
 log P(data|model). This quantity is useful for comparing fits of the same data to different models that
 have different priors and/or fit functions. The model with the largest logGBF is the one preferred by the data.
 Differences in logGBF smaller than 1 are not very significant. Gaussian statistics are assumed.
 
-    Args:
-        xdata (array-like)
-        ydata (array-like)
-        cov (array-like): covariance matrix 
-        func (func)
-        args (tuple, optional): arguments to func. Defaults to ().
-        params (tuple, optional): model parameters. Defaults to ().
-        prior (array-like, optional): Bayesian priors. Defaults to None.
-        priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
-    
-    Returns:
-        float: log( Gaussian Bayes factor )
+The evidence is the integral over parameters of likelihood times prior. Expanding chi^2 to second order
+about its minimum (the Laplace approximation, exact for a linear model) gives
+    logGBF = 1/2 [ log det Sigma_post - log det C - log det Sigma_prior - chi^2 - dof log(2 pi) ],
+with C the data covariance, chi^2 the augmented chi^2 at params, and
+    Sigma_post^{-1} = J^T C^{-1} J + Sigma_prior^{-1},   J_ij = d f(x_i) / d p_j.
+The J^T C^{-1} J term drops second derivatives of f, as in lsqfit. A parameter with infinite priorsigma
+gets a flat prior of unit density: it drops out of Sigma_prior and the prior count in dof. With no priors
+at all, this is the flat-prior evidence. Each factor of 2 pi comes from one data point, one finite prior,
+or (with the opposite sign) one integrated parameter, so the 2 pi factors combine to dof log(2 pi). When
+every parameter has a finite prior, dof equals the number of data, and this matches logGBF of lsqfit.
+If jac is not given, J is computed with numerical derivatives. A Fitter passes the J it used for its
+parameter covariance, so that Sigma_post and pcov agree.
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    cov (array-like): covariance matrix 
+    func (func)
+    args (tuple, optional): arguments to func. Defaults to ().
+    params (tuple, optional): model parameters. Defaults to ().
+    prior (array-like, optional): Bayesian priors. Defaults to None.
+    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+
+Returns:
+    float: log( Gaussian Bayes factor )
+"""
+```
+```python
+logLikelihood(xdata, ydata, cov, func, args=(), params=(), prior=None, priorsigma=None) -> float:
+"""
+Log of the Gaussian likelihood P(data|params) at params, which is usually the best fit:
+    log L = -1/2 [ chi^2 + log det C + N log(2 pi) ],
+with C the data covariance and N the number of data. With priors, each finite prior is treated as one
+more Gaussian datum, so that L is the likelihood times the prior, P(data|params) P(params):
+    log L = -1/2 [ chi^2 + log det C + log det Sigma_prior + (N + nprior) log(2 pi) ],
+with chi^2 the augmented chi^2 and Sigma_prior = diag(priorsigma^2) over the nprior finite priors.
+
+Args:
+    xdata (array-like)
+    ydata (array-like)
+    cov (array-like): covariance matrix 
+    func (func)
+    args (tuple, optional): arguments to func. Defaults to ().
+    params (tuple, optional): model parameters. Defaults to ().
+    prior (array-like, optional): Bayesian priors. Defaults to None.
+    priorsigma (array-like, optional): Bayesian prior errors. Defaults to None.
+
+Returns:
+    float: log of the likelihood
 """
 ```
 ```python
@@ -450,7 +529,7 @@ Returns:
 """
 ```
 ```python
-plot_correlation(mat, ax=<module 'matplotlib.pyplot' from '/home/dclarke/.local/lib/python3.14/site-packages/matplotlib/pyplot.py'>, vmin=-1, vmax=1):
+plot_correlation(mat, ax=<module 'matplotlib.pyplot' from '/Users/dclarke/GitHub/AnalysisToolbox/venv/AnalysisToolbox/lib/python3.9/site-packages/matplotlib/pyplot.py'>, vmin=-1, vmax=1):
 """Plot correlation matrix as a heatmap.
 
 Args:
@@ -497,50 +576,50 @@ std_dev(data, axis=0):
 """
 Calculate unbiased (ddof = 1) estimator for the standard deviation. 
  
-    The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-    something that is never needed in our context. Changing the default to axis=0 means
-    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-    """
+The default behavior of numpy is to flatten the data, flagged by axis=None. This is
+something that is never needed in our context. Changing the default to axis=0 means
+applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
+"""
 ```
 ```python
 std_err(data, axis=0):
 """
 Standard deviation of the sample mean according to the CLT. 
  
-    The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-    something that is never needed in our context. Changing the default to axis=0 means
-    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-    """
+The default behavior of numpy is to flatten the data, flagged by axis=None. This is
+something that is never needed in our context. Changing the default to axis=0 means
+applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
+"""
 ```
 ```python
 std_mean(data, axis=0):
 """
 Compute the mean. 
  
-    The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-    something that is never needed in our context. Changing the default to axis=0 means
-    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-    """
+The default behavior of numpy is to flatten the data, flagged by axis=None. This is
+something that is never needed in our context. Changing the default to axis=0 means
+applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
+"""
 ```
 ```python
 std_median(data, axis=0):
 """
 Compute the median. 
  
-    The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-    something that is never needed in our context. Changing the default to axis=0 means
-    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-    """
+The default behavior of numpy is to flatten the data, flagged by axis=None. This is
+something that is never needed in our context. Changing the default to axis=0 means
+applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
+"""
 ```
 ```python
 std_var(data, axis=0):
 """
 Calculate unbiased (ddof = 1) estimator for the variance. 
  
-    The default behavior of numpy is to flatten the data, flagged by axis=None. This is
-    something that is never needed in our context. Changing the default to axis=0 means
-    applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
-    """
+The default behavior of numpy is to flatten the data, flagged by axis=None. This is
+something that is never needed in our context. Changing the default to axis=0 means
+applying this function to an np.ndarray of shape (N,M) yields an array of shape (M,). 
+"""
 ```
 ```python
 studif(x1, e1, ndat1, x2, e2, ndat2) -> float:
@@ -582,14 +661,16 @@ unbiased_mean_variance(data, err) -> float:
 """
 Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
 weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
-constructed using the deviations of the individual data points. 
+constructed using the deviations of the individual data points. This assumes all data share one unknown
+variance; err only sets the relative weights 1/err^2 (reliability weights). 
 """
 ```
 ```python
 unbiased_sample_variance(data, err) -> float:
 """
 Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
-the variance of the mean. Do not use this function if your weights are frequency weights. 
+the variance of the mean. Do not use this function if your weights are frequency weights. This assumes all
+data share one unknown variance; err only sets the relative weights 1/err^2 (reliability weights). 
 """
 ```
 ```python
@@ -616,5 +697,48 @@ Args:
 
 Returns:
     float: weighted variance 
+"""
+```
+```python
+whiteningMatrix(cov, svdcut=None) -> numpy.ndarray:
+"""
+Whitening matrix W of a covariance matrix C, i.e. a matrix satisfying W^T W = C^-1.
+
+Let r = f(p) - y be the residuals of a fit. Their whitened version z = W r has two properties:
+    1. chi^2 = r^T C^-1 r = z^T z, i.e. chi^2 is a plain sum of squares;
+    2. Cov(z) = W C W^T = 1, i.e. the components of z are uncorrelated with unit variance. 
+For uncorrelated data, W = diag(1/sigma), so z_i = r_i/sigma_i. For correlated data, W also rotates the
+residuals into the eigenbasis of the correlation matrix. Whitening turns a correlated fit into an
+ordinary least-squares problem, which lets a least-squares solver use the Jacobian dz/dp = W df/dp to take
+Gauss-Newton steps. These converge quickly and precisely near the minimum. 
+
+Many matrices satisfy W^T W = C^-1. Following gvar/lsqfit, we diagonalize the correlation matrix
+cor = V Lambda V^T and use W = Lambda^(-1/2) V^T diag(1/sigma); see CovarianceDecomposition. Small
+eigenvalues of cor get inverted here, so an ill-conditioned cor needs an SVD cut. 
+
+Args:
+    cov (np.ndarray): covariance matrix 
+    svdcut (float, optional): SVD cut applied to the correlation matrix. Defaults to None, meaning no cut.
+
+Returns:
+    np.ndarray: whitening matrix W 
+"""
+```
+```python
+class CovarianceDecomposition(cov, svdcut=None):
+"""
+Decomposition of a covariance matrix C, following gvar/lsqfit. Write C = D cor D, with D = diag(sigma) and
+cor the correlation matrix, and diagonalize cor = V Lambda V^T. Everything a fit needs follows from this one
+decomposition:
+    whitening matrix   W = Lambda^(-1/2) V^T D^(-1),
+    inverse            C^(-1) = W^T W,
+    log determinant    log det C = 2 sum_i log sigma_i + sum_i log lambda_i.
+The SVD cut is applied to the eigenvalues of cor, so that it does not depend on the units of the data. 
+For a positive semidefinite matrix this is the same as regulate(cor). 
+
+Args:
+    cov (np.ndarray): covariance matrix 
+    svdcut (float, optional): Raise eigenvalues of cor below svdcut*max to that floor. Defaults to None,
+      meaning no cut.
 """
 ```

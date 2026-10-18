@@ -91,19 +91,102 @@ conservative, or for comparison with `gnuplot`, you can pass the option
 
 ## Splines
 
-There are several methods in the toolbox to fit a 1D spline to some `xdata` and `ydata`.
-These can be found in `latcqdtools.math.spline.py`. The basic method is `getSpline`
+The spline methods can be found in `latqcdtools.math.spline`. You choose what kind of spline you want by
+passing a *kind* object. There are three kinds:
+
+- `Interpolating()`: the natural cubic interpolating spline. It has a knot at every data point and
+  passes through all of them.
+- `Regression(nknots=None, knots=None, rand=False, seed=None, natural=False, order=3)`: a least-squares
+  (regression) spline with fixed knots. It does not in general pass through the data.
+- `KnotAverage(kmax=None, ngrid=None, natural=False, nupdates=10000, nburn=1000, every=10, nchains=1, seed=DEFAULTSEED)`:
+  a cubic regression spline averaged over the number and positions of its knots.
+
+The same kind can then be passed to either of the two main functions, which share their first four arguments:
 ```Python
-getSpline(xdata, ydata, num_knots, order=3, rand=False, fixedKnots=None)
+spl = getSpline(xdata, ydata, edata=None, kind=None)          # one fit, returns a TBSpline
+res = bootSpline(xdata, ydata, edata, kind=None, ...)         # bootstrap error band, returns a dict
 ```
-This is by default a wrapper for `scipy.interpolate.LSQUnivariateSpline`.
-Here you specify how many knots `num_knots` you want and the order `order` of the spline.
-By default, the spline will create a list of `num_knots` evenly spaced knots, but you can specify
-`rand=True` to have it pick the knot locations randomly. If you need to specify some knot locations
-yourself, this is accomplished by passing a list of specified knots to `fixedKnots`. Note that
-`num_knots` includes these fixed knots in its counting; hence if
+As in the `Fitter`, a vector `edata` is read as errors and a matrix as the covariance matrix of `ydata`.
+Every kind can take a covariance matrix. If you pass no kind, you get `Interpolating()`. The result of `getSpline` is a `TBSpline`, which you call like a
+SciPy spline, e.g. `spl(x, der=1)` for its first derivative. `spl.get_nparams()` gives its number of parameters,
+and `spl.get_AIC()`, which requires `edata`, its AIC, which you can use to compare e.g. different numbers of knots.
+The AIC is not defined for `Interpolating`, which has no free parameters to compare, or for `KnotAverage`, which
+already averages over models.
+
+### Regression splines
+
+`Regression` minimizes $\chi^2$ for B-splines with fixed knots. (Without correlations, this is the same thing
+`scipy.interpolate.splrep` with `task=-1` and `scipy.interpolate.LSQUnivariateSpline` do.)
+Here you specify the number of interior knots `nknots` and the degree `order` of the spline polynomials.
+Fewer knots give a stiffer curve. By default, the knots are evenly spaced in data index, so that each interval
+between knots holds roughly the same number of data. You can specify `rand=True` to have it pick the knot
+locations randomly; pass `seed` to make this reproducible. Without `seed`, a seed is drawn once when the
+kind is made, so all fits with this kind, e.g. in a bootstrap, use the same knots. If you need to specify some
+knot locations yourself, pass them as a list to `knots`. Note that `nknots` includes these knots in its counting,
+and defaults to `len(knots)`, in which case no knots are generated automatically.
+With `natural=True` the spline has zero curvature at the endpoints. This removes two fit parameters, which
+reduces the variance of the spline near the ends of the data.
 ```Python
-len(fixedKnots)==num_knots
+spl = getSpline(xdata, ydata, edata, Regression(nknots=5, natural=True))
 ```
-no knots will be generated randomly.
-There also exists the option to use natural splines.
+
+### Averaging over knots
+
+Choosing the knots of a regression spline is a choice of model. To avoid making it, `KnotAverage` averages
+regression splines over the number $k$ and the positions of their interior knots, so that knots can crowd
+where the data demand structure. Each knot configuration gets the weight
+$$
+  p(k)\,p(t|k)\,e^{-{\rm AIC}/2},\qquad {\rm AIC}=\chi^2_{\rm min}+2p,
+$$
+with $p=k+4$ parameters ($k+2$ with `natural=True`). The knots lie on a grid of `ngrid` candidate positions,
+by default fine enough to resolve every gap between data. $p(k)$ is uniform up to `kmax`, by default the largest
+number of knots the data allow, and $p(t|k)$ is uniform over the configurations with $k$ knots on the grid.
+Every interval between knots must contain at least one datum. The configurations are sampled by a Markov
+chain (Metropolis–Hastings with birth, death, and move steps) of `nupdates` updates, of which the first
+`nburn` are discarded and then every `every`-th is saved. The averaged spline is again a cubic spline, with a
+knot at every grid point, and `get_nparams()` gives the average number of parameters. This needs `edata`.
+```Python
+spl = getSpline(xdata, ydata, edata, KnotAverage())
+res = bootSpline(xdata, ydata, edata, KnotAverage(), nproc=8)
+```
+In `bootSpline` the chain is rerun for every bootstrap sample, and the spread over configurations for the
+original data is added as a systematic error, see below; with the defaults, one chain takes about a second for 30 data, so use `nproc`. The chain is about
+3 times faster if you call `numbaON()` before importing `latqcdtools.math.spline`, see [here](../base/speedify.md);
+the result is the same either way. Each chain is seeded by
+`seed`, the chain index, and the data, so results are reproducible and do not depend on `nproc`. The result
+also contains diagnostics for the original data: the saved configurations `res['knotConfigs']` and their
+counts `res['knotCounts']`, the histogram of $k$ in `res['kHistogram']`, and the acceptance rates. If the
+histogram piles up at `kmax`, you get a warning. You also get a warning if a chain has not thermalized: the mean AIC
+of the first 10% of its saved configurations is compared with that of the last 50% (Geweke test, errors from
+batch means), and a difference of more than 3 standard errors, or fewer than 50 saved configurations, is flagged.
+To check convergence further, compare runs with different `seed`, or longer chains.
+
+### Error bands from the bootstrap
+
+To propagate the errors of the data into an error band for the spline, use `bootSpline`. It draws
+Gaussian bootstrap samples of the data with `bootstr_from_gauss` (correlated ones, if `edata` is a covariance
+matrix) and fits each with the given kind. For a `Regression` the knots are the same for every sample.
+Besides the band, it returns the fit to the original data in `res['splineMean']`, the bootstrap-level splines
+in `res['splineBS']`, the location `res['xmax']` and height `res['ymax']` of the maximum and the steepest
+inflection point `res['xinflect']`, `res['yinflect']`, all with errors, and, for kinds other than
+`Interpolating` and averages, the AIC of the fit to the original data. Use `nproc` to fit the samples in parallel:
+```Python
+res = bootSpline(xdata, ydata, edata, Regression(nknots=5))
+plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
+```
+The spread of the bootstrap samples is the statistical error. For an average over models, i.e. over
+knot configurations, the weights are recomputed in every bootstrap sample, but this does not
+capture how much the models disagree with each other: if the weights hardly change between samples, the
+average hardly moves, however different the models are. For these kinds, the weighted spread over models for
+the original data is added as a systematic error, as in a model average of fits. Every error comes with its
+two parts, e.g. `ysple**2 = ysple_stat**2 + ysple_sys**2`, and likewise for `xmaxe`, `ymaxe`, `xinflecte`,
+and `yinflecte`. For kinds that are not averages, the systematic part is 0. For a quantity of your own
+derived from the spline, `res['splinesModel']` and `res['weightsModel']` hold the models for the original data
+and their weights, and `modelSpread(res, f)` gives the weighted spread of `f(spline)` over them, to add in
+quadrature to the spread of `f` over `res['splineBS']`. Being added in quadrature, the
+total is somewhat conservative: the models also disagree partly because the noise affects them differently,
+which the statistical error already contains.
+
+Finally, `getSplineErr(xdata, xspline, ydata, ydatae, kind=None)` fits splines of the given kind (by default
+`Interpolating()`) to `ydata-ydatae` and `ydata+ydatae` and returns their midpoint and half-difference on
+`xspline`. This gives a smooth band, but it is not a statistical error propagation.

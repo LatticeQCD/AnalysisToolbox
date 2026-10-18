@@ -376,9 +376,9 @@
 <span class="sd">The derivatives of the actual chisquare are then computed via error propagation. Another way is to use numerical</span>
 <span class="sd">derivatives.</span>
 
-<span class="sd">There are two ways to compute the derivatives of the chisqare numerically. Either compute the</span>
-<span class="sd">numerical derivative of the whole chisquare (error_strat='hessian') or compute the derivatives of the fitting</span>
-<span class="sd">function and use error propagation (error_strat='propagation'). The latter is the default case.</span>
+<span class="sd">The parameter covariance is pcov = (J^T C^-1 J + Sigma_prior^-1)^-1, with J the Jacobian of the fit function.</span>
+<span class="sd">This is error propagation (error_strat='propagation'). It is also the inverse of half the Hessian of the</span>
+<span class="sd">chi^2 when terms of O(f(p)-y) are dropped, so error_strat='hessian' gives the same result. </span>
 <span class="sd">"""</span>
 </pre></div>
 </div>

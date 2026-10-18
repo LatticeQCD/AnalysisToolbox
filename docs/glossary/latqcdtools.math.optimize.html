@@ -328,7 +328,9 @@
 <h1>latqcdtools.math.optimize<a class="headerlink" href="#latqcdtools-math-optimize" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="sd">"""</span>
-<span class="sd">Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax.</span>
+<span class="sd">Wrapper for scipy.optimize.minimize. Helps that all algorithms have common syntax. The exception is</span>
+<span class="sd">algorithm="nonlin", which calls scipy.optimize.least_squares: then func must return the vector of residuals z,</span>
+<span class="sd">so that sum(z^2) is minimized, and jac is the Jacobian dz/dp or a scipy finite-difference scheme like '3-point'.</span>
 
 <span class="sd">Args:</span>
 <span class="sd">    func: to-be-minimized function </span>

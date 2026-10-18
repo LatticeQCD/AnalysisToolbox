@@ -98,23 +98,20 @@ passing a *kind* object. There are three kinds:
   passes through all of them.
 - `Regression(nknots=None, knots=None, rand=False, seed=None, natural=False, order=3)`: a least-squares
   (regression) spline with fixed knots. It does not in general pass through the data.
-- `Smoothing(lam='average', nlam=100)`: a cubic smoothing spline with a curvature penalty, or an average of
-  such splines over the smoothing parameter.
 - `KnotAverage(kmax=None, ngrid=None, natural=False, nupdates=10000, nburn=1000, every=10, nchains=1, seed=DEFAULTSEED)`:
   a cubic regression spline averaged over the number and positions of its knots.
 
-The same kind can then be passed to each of the three main functions, which share their first four arguments:
+The same kind can then be passed to either of the two main functions, which share their first four arguments:
 ```Python
 spl = getSpline(xdata, ydata, edata=None, kind=None)          # one fit, returns a TBSpline
 res = bootSpline(xdata, ydata, edata, kind=None, ...)         # bootstrap error band, returns a dict
-res = posteriorSpline(xdata, ydata, edata, kind=None, ...)    # Bayesian error band, Smoothing kinds only
 ```
 As in the `Fitter`, a vector `edata` is read as errors and a matrix as the covariance matrix of `ydata`.
-Every kind can take a covariance matrix. If you pass no kind, `getSpline` gives the interpolating spline
-without `edata` and the average over $\lambda$ (see below) with `edata`, while `bootSpline` and
-`posteriorSpline` use the average over $\lambda$. The result of `getSpline` is a `TBSpline`, which you call like a
+Every kind can take a covariance matrix. If you pass no kind, you get `Interpolating()`. The result of `getSpline` is a `TBSpline`, which you call like a
 SciPy spline, e.g. `spl(x, der=1)` for its first derivative. `spl.get_nparams()` gives its number of parameters,
 and `spl.get_AIC()`, which requires `edata`, its AIC, which you can use to compare e.g. different numbers of knots.
+The AIC is not defined for `Interpolating`, which has no free parameters to compare, or for `KnotAverage`, which
+already averages over models.
 
 ### Regression splines
 
@@ -133,42 +130,9 @@ reduces the variance of the spline near the ends of the data.
 spl = getSpline(xdata, ydata, edata, Regression(nknots=5, natural=True))
 ```
 
-### Smoothing splines
-
-`Smoothing(lam=lam)` with a number `lam` gives a cubic smoothing spline. It minimizes
-$$
-  \sum_i w_i\,\left(y_i-S(x_i)\right)^2 + \lambda\int dx\, S''(x)^2,
-$$
-with $w_i=1/\sigma_i^2$ from `edata` (or $w_i=1$ without `edata`), the same convention as
-`scipy.interpolate.make_smoothing_spline`. For a covariance matrix, the first term becomes
-$(y-S)^T\,{\rm cov}^{-1}\,(y-S)$. The minimizer over all twice-differentiable functions is a natural
-cubic spline with a knot at every unique $x$, so there are no knots to choose.
-Unlike SciPy's version, several data may share one $x$.
-Here $\lambda$ controls the smoothness: as $\lambda\to0$ the spline interpolates the data, and as
-$\lambda\to\infty$ it becomes the weighted straight-line fit. Since the fit is linear in the data,
-it has an effective number of parameters $p_{\rm eff}={\rm tr}\,H$, with $H$ the hat matrix mapping
-the data to the fitted values. It runs from the number of unique $x$ down to 2, and it is what
-`get_nparams()` returns and what `get_AIC()` uses. Note that $\lambda$ has units, since
-$\int S''^2$ scales with the $x$ and $y$ ranges of your data, so a given value is only meaningful for one data set.
-
-The smoothing spline is the posterior mean of a Bayesian model, in which the penalty is a Gaussian prior
-on the spline with precision $\lambda$ for its curvature, and flat for straight lines, which have no
-curvature. The fit stores the log evidence $\log p(y|\lambda)$ of this model in its `logEvidence`
-attribute, up to a constant that does not depend on $\lambda$. (This is the restricted likelihood, or
-REML, of e.g. Wood, J. R. Stat. Soc. B 73, 3 (2011).)
-
-Choosing knots or $\lambda$ is a choice of model. To avoid making it, use `Smoothing()`, i.e.
-`lam='average'`, which needs `edata`. This averages smoothing splines over `nlam` values of $\lambda$,
-uniform in $\log\lambda$, weighted by their evidence, i.e. it integrates $\lambda$ out with a flat prior in
-$\log\lambda$. The grid runs from $p_{\rm eff}$ close to the number of unique $x$ (interpolation) to
-$p_{\rm eff}$ close to 2 (a straight line), so it does not depend on the units of your data. If the ends of the
-grid carry noticeable weight, you get a warning. At the large-$\lambda$ end this means the data are consistent
-with a straight line.
-
 ### Averaging over knots
 
-The smoothing spline uses one $\lambda$ everywhere, so it cannot be stiff in one region and flexible in another.
-This is a problem when the errors or the spacing of the data vary strongly. `KnotAverage` instead averages
+Choosing the knots of a regression spline is a choice of model. To avoid making it, `KnotAverage` averages
 regression splines over the number $k$ and the positions of their interior knots, so that knots can crowd
 where the data demand structure. Each knot configuration gets the weight
 $$
@@ -185,15 +149,14 @@ knot at every grid point, and `get_nparams()` gives the average number of parame
 spl = getSpline(xdata, ydata, edata, KnotAverage())
 res = bootSpline(xdata, ydata, edata, KnotAverage(), nproc=8)
 ```
-In `bootSpline` the chain is rerun for every bootstrap sample, so the error includes the uncertainty in the
-knots; with the defaults, one chain takes about a second for 30 data, so use `nproc`. The chain is about
+In `bootSpline` the chain is rerun for every bootstrap sample, and the spread over configurations for the
+original data is added as a systematic error, see below; with the defaults, one chain takes about a second for 30 data, so use `nproc`. The chain is about
 3 times faster if you call `numbaON()` before importing `latqcdtools.math.spline`, see [here](../base/speedify.md);
 the result is the same either way. Each chain is seeded by
 `seed`, the chain index, and the data, so results are reproducible and do not depend on `nproc`. The result
 also contains diagnostics for the original data: the saved configurations `res['knotConfigs']` and their
 counts `res['knotCounts']`, the histogram of $k$ in `res['kHistogram']`, and the acceptance rates. If the
-histogram piles up at `kmax`, you get a warning. `res['ysple_knots']`, the spread over configurations, is
-a diagnostic only, like `res['ysple_lam']`. You also get a warning if a chain has not thermalized: the mean AIC
+histogram piles up at `kmax`, you get a warning. You also get a warning if a chain has not thermalized: the mean AIC
 of the first 10% of its saved configurations is compared with that of the last 50% (Geweke test, errors from
 batch means), and a difference of more than 3 standard errors, or fewer than 50 saved configurations, is flagged.
 To check convergence further, compare runs with different `seed`, or longer chains.
@@ -204,49 +167,25 @@ To propagate the errors of the data into an error band for the spline, use `boot
 Gaussian bootstrap samples of the data with `bootstr_from_gauss` (correlated ones, if `edata` is a covariance
 matrix) and fits each with the given kind. For a `Regression` the knots are the same for every sample.
 Besides the band, it returns the fit to the original data in `res['splineMean']`, the bootstrap-level splines
-in `res['splineBS']`, the location of the maximum with its error, and, for kinds other than `Interpolating` and
-averages, the AIC of the fit to the original data. Use `nproc` to fit the samples in parallel:
+in `res['splineBS']`, the location `res['xmax']` and height `res['ymax']` of the maximum and the steepest
+inflection point `res['xinflect']`, `res['yinflect']`, all with errors, and, for kinds other than
+`Interpolating` and averages, the AIC of the fit to the original data. Use `nproc` to fit the samples in parallel:
 ```Python
 res = bootSpline(xdata, ydata, edata, Regression(nknots=5))
 plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
 ```
-For the average over $\lambda$, the weights are recomputed in every bootstrap sample, so the error `res['ysple']`
-includes the uncertainty in $\lambda$. You also get the grid `res['lams']`, the corresponding `res['peffs']`,
-`res['weights']`, and `res['splinesLam']`, the smoothing spline at each $\lambda$ for the original data.
-`res['ysple_lam']` is the weighted spread of these splines. It is a diagnostic only: do not add it to
-`res['ysple']`, which already contains the uncertainty in $\lambda$.
-```Python
-res = bootSpline(xdata, ydata, edata, Smoothing())
-plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
-```
-
-### Error bands from the posterior
-
-A bootstrap measures how much the spline would scatter if you repeated the experiment. It cannot see
-the bias that the smoothing introduces, e.g. when it flattens a peak, and this matters most for derivatives.
-`posteriorSpline` gives a Bayesian error band instead, which does include it. It takes `Smoothing` kinds only.
-The smoothing spline at fixed $\lambda$ is the posterior mean of a Bayesian model, in which the curvature
-penalty is a Gaussian prior on the spline. For the average over $\lambda$, `posteriorSpline` draws
-`numb_samples` splines from the resulting posterior: each sample picks a $\lambda$ with probability given by
-its weight, then a spline from the Gaussian posterior at that $\lambda$. This is not a bootstrap; the data are
-used once, as measured. `res['yspl']` is the posterior mean and `res['ysple']` the posterior standard deviation,
-which by the law of total variance splits into `res['ysple_stat']` (the average posterior error at fixed
-$\lambda$) and `res['ysple_sys']` (the spread over $\lambda$), with `ysple**2 = ysple_stat**2 + ysple_sys**2`.
-For a quantity derived from the spline, e.g. an integral or a derivative, compute it for each of the samples
-in `res['splineSamples']` and take their spread. Do not add a systematic error on top of that, since the
-samples already contain the uncertainty in $\lambda$. In a test with a smooth function, both error bands
-covered the truth about as often as they should, but for its derivative the posterior band was conservative
-(89% instead of 68%), while the bootstrap band was close to nominal.
-```Python
-res = posteriorSpline(xdata, ydata, edata)
-plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
-derivs = []
-for spl in res['splineSamples']:
-    derivs.append(spl(res['xspl'], der=1))
-dm, de = std_median(derivs), dev_by_dist(derivs)
-```
-Keep in mind that this is still a model: it assumes the same smoothness everywhere, and the smoothing
-spline has zero curvature at the ends of the data, which biases it there if your data curve strongly.
+The spread of the bootstrap samples is the statistical error. For an average over models, i.e. over
+knot configurations, the weights are recomputed in every bootstrap sample, but this does not
+capture how much the models disagree with each other: if the weights hardly change between samples, the
+average hardly moves, however different the models are. For these kinds, the weighted spread over models for
+the original data is added as a systematic error, as in a model average of fits. Every error comes with its
+two parts, e.g. `ysple**2 = ysple_stat**2 + ysple_sys**2`, and likewise for `xmaxe`, `ymaxe`, `xinflecte`,
+and `yinflecte`. For kinds that are not averages, the systematic part is 0. For a quantity of your own
+derived from the spline, `res['splinesModel']` and `res['weightsModel']` hold the models for the original data
+and their weights, and `modelSpread(res, f)` gives the weighted spread of `f(spline)` over them, to add in
+quadrature to the spread of `f` over `res['splineBS']`. Being added in quadrature, the
+total is somewhat conservative: the models also disagree partly because the noise affects them differently,
+which the statistical error already contains.
 
 Finally, `getSplineErr(xdata, xspline, ydata, ydatae, kind=None)` fits splines of the given kind (by default
 `Interpolating()`) to `ydata-ydatae` and `ydata+ydatae` and returns their midpoint and half-difference on

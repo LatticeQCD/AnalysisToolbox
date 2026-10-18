@@ -2,14 +2,29 @@ latqcdtools.physics.statisticalPhysics
 =============
 
 ```python
-_compareWithZero(err, tol) -> bool
+_compareWithZero(err, tol) -> bool:
+"""
+Check that err is consistent with zero. If err has an error bar, require that the probability of
+getting a deviation at least this large by chance is above 0.01, as in _statisticalConsistencyCheck.
+Otherwise require |err| < tol.
+"""
 ```
 ```python
 _getParameter(parameterInfo):
 """
-Give the weighted average of literature values of some parameter. These are 
-in units with k_B=J=1 and no magnetic field. If there is only one known value, 
-give that back. 
+Give the weighted average of literature values of some parameter. These are
+in units with k_B=J=1 and no magnetic field. If there is only one known value,
+give that back.
+
+We follow the PDG prescription for averaging measurements x_i +/- s_i, see Section 5.2.2
+of the introduction to the Review of Particle Physics, DOI: 10.1103/PhysRevD.110.030001.
+With weights w_i = 1/s_i^2, the average and its error are
+    xbar = sum_i w_i x_i / sum_i w_i,    s = (sum_i w_i)^(-1/2).
+If the x_i disagree, s underestimates the uncertainty. Therefore compute
+    chi^2 = sum_i w_i (x_i - xbar)^2,    S = sqrt( chi^2/(N-1) ),
+and if S > 1, scale s up to S*s. The PDG computes S using only the x_i with s_i < 3 sqrt(N) s;
+we use all of them. The weights are plain numbers, so xbar is a linear combination of the
+gvars x_i, and gvar still propagates errors into exponents derived from xbar.
 """
 ```
 ```python
