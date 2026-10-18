@@ -1,6 +1,8 @@
 #
 # referenceScales.py
 #
+# D. Clarke, K. Ebira
+#
 # A collection of scales computed as a function of beta. 
 #
 
@@ -29,6 +31,63 @@ CY_param = {
             'r0' : 2017,
             't0' : 2015 
             }
+
+
+def get_aWorld(scaleType, year=None) -> str:
+    """
+    Get the underlying QCD world ('Nf21', 'Nf0', etc.) for a given scale parameterization.
+
+    Parameters
+    ----------
+    scaleType : str
+        Name of reference scale ('fk', 'r1', 'r0', 't0').
+    year : int or str, optional
+        Parameterization year. If None, defaults to CY_param[scaleType].
+
+    Returns
+    -------
+    str
+        World identifier ('Nf21' or 'Nf0').
+
+    Raises
+    ------
+    ToolboxException
+        If scaleType or year is unsupported.
+    """
+    stype = str(scaleType).lower()
+    if year is None:
+        if stype in CY_param:
+            year = CY_param[stype]
+        else:
+            logger.TBRaise(f"Unknown scaleType '{scaleType}'.")
+    if isinstance(year, (int, float, np.integer, np.floating)):
+        syear = str(int(year))
+    else:
+        syear = str(year)
+    if stype == 'r0':
+        if syear == '2012':
+            return 'Nf21'
+        elif syear in ('2015', '2017'):
+            return 'Nf0'
+        else:
+            logger.TBRaise(f"No r0 fit parameters for year {year}")
+    elif stype == 'r1':
+        if syear in ('2012', '2014', '2018', '2021'):
+            return 'Nf21'
+        else:
+            logger.TBRaise(f"No r1 fit parameters for year {year}")
+    elif stype == 'fk':
+        if syear in ('2012', '2014', '2021'):
+            return 'Nf21'
+        else:
+            logger.TBRaise(f"No fk fit parameters for year {year}")
+    elif stype == 't0':
+        if syear == '2015':
+            return 'Nf0'
+        else:
+            logger.TBRaise(f"No t0 fit parameters for year {year}")
+    else:
+        logger.TBRaise(f"Unknown scaleType '{scaleType}'.")
 
 
 def ignoreBetaRange():

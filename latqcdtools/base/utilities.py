@@ -1,7 +1,7 @@
 #
 # utilities.py
 #
-# D. Clarke
+# D. Clarke, K. Ebira
 #
 # Some utilities that you might use in any program.
 #
@@ -65,10 +65,12 @@ def isArrayLike(obj) -> bool:
     Returns:
         bool: True if there is at least one index, false otherwise. 
     """
+    if isinstance(obj, (dict, set)):
+        return False
     try:
         obj[0]
         return True
-    except (TypeError,IndexError):
+    except (TypeError, IndexError, KeyError):
         return False
 
 
@@ -82,23 +84,25 @@ def isHigherDimensional(obj) -> bool:
     Returns:
         bool: True if there are at least two indices, false otherwise. 
     """
+    if isinstance(obj, (dict, set)):
+        return False
     try:
         obj[0][0]
         return True
-    except (TypeError, IndexError):
+    except (TypeError, IndexError, KeyError):
         return False
 
 
 def isIntType(obj) -> bool:
-    return isinstance(obj,(int, np.int8, np.int16, np.int32, np.int64))
+    return isinstance(obj, (int, np.integer)) and not isinstance(obj, bool)
 
 
 def isFloatType(obj) -> bool:
-    return isinstance(obj,(float,np.float16,np.float32,np.float64,np.longdouble))
+    return isinstance(obj, (float, np.floating))
 
 
 def isComplexType(obj) -> bool:
-    return isinstance(obj,(complex,np.complex64,np.complex128))
+    return isinstance(obj, (complex, np.complexfloating))
 
 
 def isScalar(obj) -> bool:
@@ -203,16 +207,41 @@ def printArg(message,param):
 
 def cleanOutput(*args,label=None,sspace=20) -> str:
     """ 
-    This method takes a bunch of args and formats them automatically for output. The idea is
-    that you can use this method to ensure that columns are well lined up.
+    Format arguments automatically for lined-up column output.
 
-    Args:
-        *args: The numbers you want to output, separated by commas. 
-        label (str, optional): Put label to the left of your output. Defaults to None.
+    Parameters
+    ----------
+    *args : tuple
+        Values to format (scalars or strings).
+    label : str, optional
+        Put label to the left of your output. Defaults to None.
+    sspace : int or collections.abc.Iterable of int, optional
+        Width for string columns. Can be an integer applied to all string
+        columns, or an iterable of integers specifying per-string-column widths.
+        Defaults to 20.
 
-    Returns:
-        str: formatted output string 
+    Returns
+    -------
+    str
+        Formatted output string.
+
+    Raises
+    ------
+    ToolboxException
+        If label is not a string, or if an array-like/nested object is passed in args,
+        or if sspace is invalid or has insufficient entries.
     """
+    if isIntType(sspace):
+        sspace_list = None
+        single_sspace = sspace
+    elif not isinstance(sspace, str) and (isArrayLike(sspace) or hasattr(sspace, '__iter__')):
+        sspace_list = list(sspace)
+        for s in sspace_list:
+            if not isIntType(s):
+                logger.TBRaise('sspace elements must be integers.')
+    else:
+        logger.TBRaise('sspace must be an integer or iterable of integers.')
+
     data = ()
     form = ''
     if label is not None:
@@ -220,34 +249,54 @@ def cleanOutput(*args,label=None,sspace=20) -> str:
             logger.TBRaise('label must be a string')
         form += '%'+str(len(label))+'s'
         data += (label,)
-    spacing = ''
+        spacing = '  '
+    else:
+        spacing = ''
+
+    str_idx = 0
     for col in args:
         if col is None:
             data += ('',)
             form += spacing+'%15s'
         elif isinstance(col,str):
+            if sspace_list is None:
+                width = single_sspace
+            else:
+                if str_idx >= len(sspace_list):
+                    logger.TBRaise('Not enough sspace entries for the number of string columns.')
+                width = sspace_list[str_idx]
+                str_idx += 1
             data += (col,)
-            form += spacing+f'%{sspace}s'
-        elif isinstance(col,complex):
+            form += spacing+f'%{width}s'
+        elif isComplexType(col):
             data += (col.real,)
             data += (col.imag,)
             form += spacing+'%15.8e  %15.8e'
-        elif isinstance(col,list):
-            logger.TBRaise('Expected list of scalars rather than list of lists.')
-        else:
+        elif isArrayLike(col) or hasattr(col, '__iter__') or isinstance(col, (list, tuple, np.ndarray, set, dict, range)):
+            logger.TBRaise('Expected scalars or strings rather than array-like objects.')
+        elif isScalar(col):
             data += (col,)
             form += spacing+'%15.8e'
+        else:
+            logger.TBRaise('Expected scalars or strings rather than array-like objects.')
         spacing = '  '
     return form % data
 
 
 def printClean(*args,label=None,sspace=20):
     """ 
-    Wrapper for cleanOutput that prints to screen.
+    Wrapper for cleanOutput that prints formatted output to screen.
 
-    Args:
-        *args: The numbers you want to output, separated by commas. 
-        label (str, optional): Put label to the left of your output. Defaults to None.
+    Parameters
+    ----------
+    *args : tuple
+        Values to format (scalars or strings).
+    label : str, optional
+        Put label to the left of your output. Defaults to None.
+    sspace : int or collections.abc.Iterable of int, optional
+        Width for string columns. Can be an integer applied to all string
+        columns, or an iterable of integers specifying per-string-column widths.
+        Defaults to 20.
     """
     logger.info(cleanOutput(*args,label=label,sspace=sspace).strip())
 
