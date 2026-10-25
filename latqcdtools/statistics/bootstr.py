@@ -8,7 +8,7 @@
 
 
 import numpy as np
-from latqcdtools.statistics.statistics import meanArgWrapper, std_mean, std_dev, dev_by_dist
+from latqcdtools.statistics.statistics import meanArgWrapper, std_mean, std_median, std_dev, dev_by_dist
 from latqcdtools.base.speedify import parallel_function_eval
 from latqcdtools.base.initialize import DEFAULTSEED, TBRNG
 from latqcdtools.base.check import checkType
@@ -27,13 +27,26 @@ def _autoSeed(seed) -> int:
         return seed
 
 
-def _biasCorrect(fbar,sampleval):
+def biasCorrect(fbar,sampleval,average='mean'):
     """ 
     Bias-corrected central value 2 f(xbar) - <f*>. Here f(xbar) is func of the full data, <f*> is the
-    average over bootstrap samples, and <f*> - f(xbar) estimates the O(1/N) bias of f(xbar). The result
-    carries a Monte Carlo error of about (bootstrap error)/sqrt(numb_samples), even for linear func. 
+    average over bootstrap samples, and <f*> - f(xbar) estimates the O(1/N) bias of f(xbar).
+
+    Args:
+        fbar (array-like): f(xbar), func of the full data
+        sampleval (array-like): f of each bootstrap sample, along axis 0
+        average (str, optional): 'mean' or 'median' over the samples. The median is robust against a few
+          outlying samples. Defaults to 'mean'.
+
+    Returns:
+        np.ndarray: bias-corrected central value
     """
-    return 2*np.asarray(fbar) - std_mean(sampleval)
+    if average == 'mean':
+        return 2*np.asarray(fbar) - std_mean(sampleval)
+    elif average == 'median':
+        return 2*np.asarray(fbar) - std_median(sampleval)
+    else:
+        logger.TBRaise("average must be 'mean' or 'median'. Got",average)
 
 
 class nimbleBoot:
@@ -78,7 +91,7 @@ class nimbleBoot:
 
         self._sampleval = parallel_function_eval(self.getBootstrapEstimator,range(self._numb_samples),nproc=self._nproc,args=(self._seed,))
 
-        self._mean = _biasCorrect(meanArgWrapper(self._func, self._data, self._args), self._sampleval)
+        self._mean = biasCorrect(meanArgWrapper(self._func, self._data, self._args), self._sampleval)
         if not self._err_by_dist:
             self._error = std_dev(self._sampleval)
         else:
@@ -196,7 +209,7 @@ class nimbleGaussianBoot:
         for k in range(self._numb_observe):
             central_data.append(self._addNoise(k,np.zeros(self._sampleShape)))
         fbar = meanArgWrapper(self._func, np.array(central_data), self._args)
-        self._mean = _biasCorrect(fbar, self._sampleval)
+        self._mean = biasCorrect(fbar, self._sampleval)
         if not self._err_by_dist:
             self._error = std_dev(self._sampleval)
         else:
@@ -276,6 +289,6 @@ def bootstr_from_gauss(func, data, data_std_dev, numb_samples, same_rand_for_obs
 
     bts_gauss = nimbleGaussianBoot(func=func, data=data, data_std_dev=data_std_dev, numb_samples=numb_samples, 
                                    same_rand_for_obs=same_rand_for_obs, return_sample=return_sample, 
-                                   seed=seed, err_by_dist=err_by_dist, useCovariance=useCovariance, Covariance=Covariance, 
-                                   args=args, nproc=nproc, asym_err=asym_err)
+                                   seed=seed, err_by_dist=err_by_dist, useCovariance=useCovariance, 
+                                   Covariance=Covariance, args=args, nproc=nproc, asym_err=asym_err)
     return bts_gauss.getResults()

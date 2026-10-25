@@ -10,7 +10,7 @@ import os
 import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.logger import ToolboxException
-from latqcdtools.interfaces.confReader import NERSCReader, ILDGReader, DynisoReader
+from latqcdtools.interfaces.confReader import NERSCReader, ILDGReader, DynisoReader, detectConf
 from latqcdtools.interfaces.confWriter import NERSCWriter, writeConf
 from latqcdtools.base.utilities import timer
 from latqcdtools.math.math import rel_check
@@ -64,6 +64,13 @@ def testReadWriteConf():
             lpass = False
         else:
             logger.TBPass('dyniso',fmt,'agrees with NERSC conf.')
+
+    # The format and lattice size should be detected from each file.
+    for fileName, fmt in [(path_nersc,'NERSC'), (path_ildg,'ILDG'), ('../../datasets/dyniso_comp.l8t4b3360','dyniso'),
+                          ('../../datasets/dyniso_milc.l8t4b3360','dyniso'), ('../../datasets/dyniso_ascii.l8t4b3360','dyniso')]:
+        if detectConf(fileName) != (fmt, 8, 4):
+            logger.TBFail('detectConf gave',detectConf(fileName),'for',fileName)
+            lpass = False
 
     # Temporary test files for writeConf testing
     file_3x3 = 'temp_test_3x3.nersc'

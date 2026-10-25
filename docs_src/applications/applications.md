@@ -20,6 +20,16 @@ example calling is
 For more details about the scale setting, please look into the 
 [reference scales](../physicsAnalysis/referenceScales.md) article.
 
+## main_confConvert.py
+Convert a gauge configuration to another format. The format of the input configuration (NERSC, ILDG, or dyniso)
+and its lattice size are detected from the file, so you only need to give the input, the output, and the output
+format. At the moment the only output format is NERSC. An example calling is
+```shell
+./main_confConvert.py --inconf conf_dyniso --outconf conf.nersc --outformat NERSC
+```
+To add an output format, implement a writer in `latqcdtools/interfaces/confWriter.py` and add it to the
+`writers` dictionary at the top of the script.
+
 ## main_HRG_measure.py
 The goal of this script is to calculate some observables in the [HRG model](../physicsAnalysis/HRG.md) given some
 external control parameters, like a range of temperatures with fixed $\mu_B/T$. By default, this program uses

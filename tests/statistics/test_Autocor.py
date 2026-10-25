@@ -8,7 +8,10 @@
 #
 
 import numpy as np
-from latqcdtools.statistics.autocorrelation import getTauInt
+from latqcdtools.statistics.autocorrelation import getTauInt, gewekeZ
+from latqcdtools.interfaces.simulationManagement import analyzeChain
+from latqcdtools.base.initialize import TBRNG, DEFAULTSEED
+import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
 
 
@@ -33,6 +36,24 @@ def testAutocor():
     TESTtau_inte = 5.7219342257755175
 
     lpass *= print_results( [TESTitpick,TESTtau_int,TESTtau_inte],[itpick,tau_int,tau_inte], None, None, "tau_int", 1e-14 )
+
+    # Geweke test: an autocorrelated but stationary chain gives |z| of order 1, while a chain that starts far
+    # from equilibrium and relaxes slowly gives a large |z|.
+    rng      = TBRNG(DEFAULTSEED)
+    nchain   = 5000
+    chain    = np.zeros(nchain)
+    for t in range(1,nchain):
+        chain[t] = 0.9*chain[t-1] + rng.normal()
+    drifting = chain + 5*np.exp(-np.arange(nchain)/1000)
+    zstat    = gewekeZ(chain)
+    zdrift   = gewekeZ(drifting)
+    if abs(zstat) < 3 and abs(zdrift) > 3:
+        logger.TBPass('Geweke test, z =',round(zstat,2),'for a stationary chain and',round(zdrift,2),'for a drifting one.')
+    else:
+        logger.TBFail('Geweke test, z =',zstat,'for a stationary chain and',zdrift,'for a drifting one.')
+        lpass = False
+    res = analyzeChain(np.arange(nchain), drifting, tpickMax=200)
+    lpass *= print_results(res['gewekeZ'], zdrift, text='analyzeChain gewekeZ')
 
     concludeTest(lpass)
 

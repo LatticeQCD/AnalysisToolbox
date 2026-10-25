@@ -9,7 +9,7 @@
 
 import numpy as np
 import latqcdtools.base.logger as logger
-from latqcdtools.statistics.statistics import std_mean, std_err, checkTS
+from latqcdtools.statistics.statistics import std_mean, std_err, checkTS, binSeries
 from latqcdtools.base.plotting import plt, clearPlot, plot_dots, set_params
 from latqcdtools.statistics.jackknife import jackknife 
 from latqcdtools.base.readWrite import writeTable
@@ -183,3 +183,49 @@ def getTauInt(ts, nbins, tpickMax, acoutfileName = None, showPlot = False):
         clearPlot()
 
     return tau_int, tau_inte, itpick
+
+
+def gewekeZ(ts, first=0.1, last=0.5, nbins=5) -> float:
+    """ 
+    Geweke's test of whether a Markov chain has thermalized [1]. If it has, the beginning and the end of the
+    time series sample the same distribution, so their means agree. Compare the mean A of the first fraction
+    first of ts with the mean B of the last fraction last,
+        z = (A - B)/sqrt(err_A^2 + err_B^2).
+    For a thermalized chain, z is approximately a standard normal number, so |z| of order 1 is expected, while a
+    large |z| means the chain was still drifting at its beginning. Successive measurements are autocorrelated,
+    so each error is the error of the mean of nbins bins (batch means). This is valid when a bin is longer than
+    the integrated autocorrelation time. Geweke estimated these errors from the spectral density at zero
+    frequency instead, which is equivalent. The test checks only the observable in ts, and it cannot notice a
+    chain that is stuck in one region the whole time.
+
+    [1] J. Geweke, Evaluating the accuracy of sampling-based approaches to the calculation of posterior moments, 
+        in Bayesian Statistics 4, edited by J. M. Bernardo, J. O. Berger, A. P. Dawid, and A. F. M. Smith 
+        (Oxford University Press, 1992), pp. 169-193.
+
+    Args:
+        ts (array-like): time series of measurements, in the order of the Markov chain
+        first (float, optional): fraction of ts at its beginning. Defaults to 0.1.
+        last (float, optional): fraction of ts at its end. Defaults to 0.5.
+        nbins (int, optional): number of bins in each fraction. Defaults to 5.
+
+    Returns:
+        float: z 
+    """
+    checkTS(ts)
+    checkType('int',nbins=nbins)
+    if (first <= 0) or (last <= 0) or (first + last > 1):
+        logger.TBRaise('Need 0 < first, 0 < last, and first + last <= 1. Got first, last =',first,last)
+    n  = len(ts)
+    nA = int(first*n)
+    nB = int(last*n)
+    if (nA < nbins) or (nB < nbins):
+        logger.TBRaise('Need at least nbins =',nbins,'measurements in each fraction. Got',nA,'and',nB)
+    A    = ts[:nA]
+    B    = ts[n-nB:]
+    diff = std_mean(A) - std_mean(B)
+    err2 = std_err(binSeries(A,nbins))**2 + std_err(binSeries(B,nbins))**2
+    if err2 == 0:
+        if diff == 0:
+            return 0.
+        return np.copysign(np.inf, diff)
+    return diff/np.sqrt(err2)

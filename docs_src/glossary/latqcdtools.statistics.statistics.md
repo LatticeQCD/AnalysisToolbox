@@ -125,26 +125,6 @@ Returns:
 """
 ```
 ```python
-_inverseVarianceWeights(err) -> numpy.ndarray:
-"""
-Weights 1/err^2 for the weighted-mean methods below. 
-"""
-```
-```python
-biased_sample_variance(data, err) -> float:
-"""
-Compute the biased weighted sample variance, i.e. the biased variance of an 
-individual measurement and not the variance of the mean.
-
-Args:
-    data (array-like)
-    err (array-like)
-
-Returns:
-    float: sample variance 
-"""
-```
-```python
 binSeries(data, nbins) -> numpy.ndarray:
 """
 Take a time series and bin it. Bin 0 is the average over the first binsize elements,
@@ -516,6 +496,20 @@ Returns:
 """
 ```
 ```python
+parseEdata(edata, ndata=None) -> numpy.ndarray:
+"""
+Covariance matrix of data with errors edata, read the way the toolbox's fitting routines read edata: a
+vector holds the errors of the data, a matrix is their covariance matrix, and None means unit errors.
+
+Args:
+    edata (array-like or None): errors of the data, or their covariance matrix
+    ndata (int, optional): number of data. Needed only when edata is None. 
+
+Returns:
+    np.ndarray: covariance matrix 
+"""
+```
+```python
 pearson(x, y) -> float:
 """
 Get the Pearson correlation coefficient between the time series x and y.
@@ -654,23 +648,6 @@ Args:
 
 Returns:
     mean and symmetric error
-"""
-```
-```python
-unbiased_mean_variance(data, err) -> float:
-"""
-Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
-weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
-constructed using the deviations of the individual data points. This assumes all data share one unknown
-variance; err only sets the relative weights 1/err^2 (reliability weights). 
-"""
-```
-```python
-unbiased_sample_variance(data, err) -> float:
-"""
-Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
-the variance of the mean. Do not use this function if your weights are frequency weights. This assumes all
-data share one unknown variance; err only sets the relative weights 1/err^2 (reliability weights). 
 """
 ```
 ```python

@@ -26,6 +26,23 @@ You can access the link at site $(0,0,1,1)$ pointing in the 0-direction through
 gauge.getLink(0,0,1,1,0)
 ```
 
+If you do not know the format or size of a configuration, `detectConf` finds them from the file:
+```Python
+fmt, Ns, Nt = detectConf('nersc.l8t4b3360')   # ('NERSC', 8, 4)
+```
+
+## Writing configurations
+
+`latqcdtools/interfaces/confWriter.py` writes a `gaugeField` in NERSC format:
+```Python
+writer = NERSCWriter(gauge)
+writer.writeConf('out.nersc')
+```
+By default the writer stores all 3 rows of each link in big-endian double precision; the `format`, `endianness`, and
+`precision` arguments change this. The checksum in the header is computed from the link values as in
+[SIMULATeQCD](https://github.com/LatticeQCD/SIMULATeQCD), so it does not depend on the endianness. The application
+`main_confConvert.py` combines `detectConf`, the readers, and the writer to convert between formats.
+
 ## dyniso
 
 The `DynisoReader` reads the three formats of dyniso's `save_lattice`: the compressed format, in which dyniso also

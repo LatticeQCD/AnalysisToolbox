@@ -10,7 +10,7 @@ import numpy as np
 import scipy as sp
 from latqcdtools.statistics.statistics import gaudif, studif, pearson, std_mean, cov_to_cor, confidence_ellipse,\
     KSTest_1side, KSTest_2side, covariance, std_var, symmetrizeError, forcePositiveSemidefinite, whiteningMatrix, \
-    CovarianceDecomposition
+    CovarianceDecomposition, parseEdata, checkEdata, weightedSpread
 from latqcdtools.math.math import isPositiveSemidefinite
 import latqcdtools.base.logger as logger
 from latqcdtools.testing import print_results, concludeTest
@@ -257,6 +257,27 @@ def testStats():
 
     m, e = symmetrizeError(lo=0.0067,hi=0.015,central=0.4529,method='FLAG')
     lpass *= print_results(m,0.454975,e, 0.012924999999999999,text='FLAG symmetric')
+
+    # edata: errors, a covariance matrix, or None for unit errors. Zero errors must fail.
+    errs = np.array([0.1, 0.2, 0.3])
+    lpass *= print_results(parseEdata(errs), np.diag(errs**2), text='parseEdata errors')
+    lpass *= print_results(parseEdata(np.diag(errs**2)), np.diag(errs**2), text='parseEdata covariance')
+    lpass *= print_results(parseEdata(None, 3), np.eye(3), text='parseEdata None')
+    try:
+        parseEdata(np.array([0.1, 0., 0.3]))
+        logger.TBFail('parseEdata with a zero error should fail.')
+        lpass = False
+    except Exception:
+        logger.TBPass('parseEdata with a zero error fails.')
+    try:
+        checkEdata(errs, 4)
+        logger.TBFail('checkEdata with the wrong number of data should fail.')
+        lpass = False
+    except Exception:
+        logger.TBPass('checkEdata with the wrong number of data fails.')
+
+    # Weighted spread: weights 1,1,2 normalize to 1/4,1/4,1/2, so the mean of 0,1,3 is 7/4 and the variance 27/16.
+    lpass *= print_results(weightedSpread([1.,1.,2.], [0.,1.,3.]), np.sqrt(27/16), text='weightedSpread')
 
     concludeTest(lpass)
 

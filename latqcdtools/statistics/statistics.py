@@ -12,7 +12,8 @@
 import numpy as np
 import scipy as sp
 from latqcdtools.math.num_deriv import diff_jac, relative_h
-from latqcdtools.math.math import logDet, normalize, isVector, checkVector, eigh, applySVDCut, isSymmetric
+from latqcdtools.math.math import logDet, normalize, isVector, isMatrix, checkVector, checkSquare, eigh, applySVDCut, \
+    isSymmetric
 from latqcdtools.base.plotting import fill_param_dict, plot_fill, plot_lines, plt, _initializePlt,\
     _add_optional, _getAxObject, _update_handles, _update_labels, set_params, ZOD
 from latqcdtools.base.utilities import appendToDocstring, unvector
@@ -422,12 +423,18 @@ def covariance(x,y) -> float:
     return np.cov(x,y,ddof=1)[0,1]
 
 
-def _inverseVarianceWeights(err) -> np.ndarray:
+def std_covariance(x,y) -> float:
     """ 
-    Weights 1/err^2 for the weighted-mean methods below. 
+    Unbiased estimator of the covariance of the mean. 
+
+    Args:
+        x (array-like)
+        y (array-like)
+
+    Returns:
+        float: cov 
     """
-    checkType(np.ndarray,err=err) 
-    return 1/err**2
+    return covariance(x,y)/len(x) 
 
 
 def weighted_mean(data, err) -> float:
@@ -437,19 +444,22 @@ def weighted_mean(data, err) -> float:
 
     Args:
         data (array-like)
-        errcov (array-like): error if 1d or cov if 2d. 
+        err (array-like): 1d array of error bars, one per data point.
 
     Returns:
-        float: weighted mean 
+        float: weighted mean
     """
-    checkType(np.ndarray,data=data) 
-    weights = _inverseVarianceWeights(err)
+    checkType(np.ndarray,data=data)
+    checkType(np.ndarray,err=err)
+    checkVector(err)
+    weights = 1/err**2
     return (weights @ data)/np.sum(weights)
 
 
 def weighted_variance(err) -> float:
     """ 
     Get variance of above weighted mean, when the weights are statistical errors. 
+    See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
 
     Args:
         err (array-like)
@@ -457,53 +467,9 @@ def weighted_variance(err) -> float:
     Returns:
         float: weighted variance 
     """
-    return 1/np.sum(_inverseVarianceWeights(err))
-
-
-def biased_sample_variance(data, err) -> float:
-    """ 
-    Compute the biased weighted sample variance, i.e. the biased variance of an 
-    individual measurement and not the variance of the mean.
-
-    Args:
-        data (array-like)
-        err (array-like)
-
-    Returns:
-        float: sample variance 
-    """
-    checkType(np.ndarray,data=data) 
-    mean = weighted_mean(data, err)
-    weights = _inverseVarianceWeights(err)
-    V1 = np.sum(weights)
-    return weights.dot((data - mean)**2) / V1
-
-
-def unbiased_sample_variance(data, err) -> float:
-    """ 
-    Compute the unbiased weighted sample variance, i.e. the unbiased variance of an individual measurement and not
-    the variance of the mean. Do not use this function if your weights are frequency weights. This assumes all
-    data share one unknown variance; err only sets the relative weights 1/err^2 (reliability weights). 
-    """
-    checkType(np.ndarray,data=data) 
-    weights = _inverseVarianceWeights(err)
-    V1 = np.sum(weights)
-    V2 = np.sum(weights**2)
-    return biased_sample_variance(data, err) / ( 1 - (V2 / V1**2))
-
-
-def unbiased_mean_variance(data, err) -> float:
-    """ 
-    Compute the unbiased variance of a weighted mean. Do not use this function if your weights are frequency
-    weights. This is more like a systematic error. The absolute size of the weights does not matter. The error is
-    constructed using the deviations of the individual data points. This assumes all data share one unknown
-    variance; err only sets the relative weights 1/err^2 (reliability weights). 
-    """
-    checkType(np.ndarray,data=data) 
-    weights = _inverseVarianceWeights(err)
-    V1 = np.sum(weights)
-    V2 = np.sum(weights**2)
-    return biased_sample_variance(data, err) * V2 / ( V1**2 - V2)
+    checkType(np.ndarray,err=err)
+    checkVector(err)
+    return 1/np.sum(1/err**2)
 
 
 def cov_to_cor(cov) -> np.ndarray:
@@ -521,14 +487,63 @@ def cov_to_cor(cov) -> np.ndarray:
     return cov / np.outer(diagonal_sqrt, diagonal_sqrt)
 
 
+def checkEdata(edata, ndata=None):
+    """
+    Check that edata can be read by the toolbox's fitting routines: it is None, a vector of errors, or a
+    covariance matrix, and no datum has zero error. With ndata, also check that edata belongs to ndata data.
+
+    Args:
+        edata (array-like or None): errors of the data, or their covariance matrix
+        ndata (int, optional): number of data. Defaults to None, which skips the length check.
+    """
+    if edata is None:
+        return
+    edata = np.asarray(edata,dtype=float)
+    if isVector(edata):
+        errors2 = edata**2
+    elif isMatrix(edata):
+        checkSquare(edata)
+        errors2 = np.diag(edata)
+    else:
+        logger.TBRaise('edata must be a vector of errors or a covariance matrix. Got ndim =',edata.ndim)
+    if np.any(errors2 == 0):
+        logger.TBRaise('Some data have zero error, which gives them infinite weight in a fit.')
+    if (ndata is not None) and (len(edata) != ndata):
+        logger.TBRaise('edata belongs to',len(edata),'data, but there are',ndata,'data.')
+
+
+def parseEdata(edata, ndata=None) -> np.ndarray:
+    """
+    Covariance matrix of data with errors edata, read the way the toolbox's fitting routines read edata: a
+    vector holds the errors of the data, a matrix is their covariance matrix, and None means unit errors.
+    See checkEdata for what is allowed.
+
+    Args:
+        edata (array-like or None): errors of the data, or their covariance matrix
+        ndata (int, optional): number of data. Needed when edata is None; otherwise used to check the length 
+          of edata. 
+
+    Returns:
+        np.ndarray: covariance matrix 
+    """
+    checkEdata(edata, ndata)
+    if edata is None:
+        if ndata is None:
+            logger.TBRaise('Need ndata when edata is None.')
+        return np.eye(ndata)
+    edata = np.asarray(edata,dtype=float)
+    if isVector(edata):
+        return np.diag(edata**2)
+    return edata
+
+
 class CovarianceDecomposition:
     """ 
     Decomposition of a covariance matrix C, following gvar/lsqfit. Write C = D cor D, with D = diag(sigma) and
-    cor the correlation matrix, and diagonalize cor = V Lambda V^T. Everything a fit needs follows from this one
-    decomposition:
+    cor the correlation matrix, and diagonalize cor = V Lambda V^T. The whitening matrix and inverse follow from
+    this decomposition:
         whitening matrix   W = Lambda^(-1/2) V^T D^(-1),
-        inverse            C^(-1) = W^T W,
-        log determinant    log det C = 2 sum_i log sigma_i + sum_i log lambda_i.
+        inverse            C^(-1) = W^T W.
     The SVD cut is applied to the eigenvalues of cor, so that it does not depend on the units of the data. 
     For a positive semidefinite matrix this is the same as regulate(cor). 
 
@@ -572,8 +587,8 @@ class CovarianceDecomposition:
         return W.T @ W
 
     def logDet(self) -> float:
-        """ log det C. """
-        return 2*np.sum(np.log(self.sigma)) + np.sum(np.log(self.eigvals))
+        """ log det C, after the SVD cut. """
+        return logDet(self.cov())
 
 
 def whiteningMatrix(cov, svdcut=None) -> np.ndarray:
@@ -1016,6 +1031,25 @@ def getModelWeights(IC) -> np.ndarray:
     return normalize(w,p=1)
 
 
+def weightedSpread(w,a) -> np.ndarray:
+    """ 
+    Weighted spread sqrt(sum_k w_k (a_k - abar)^2) of a along axis 0, with abar = sum_k w_k a_k. For a model
+    average, this is the systematic error from the spread over the models.
+
+    Args:
+        w (array-like): weights, one per entry of a along axis 0. They are normalized here. 
+        a (array-like): values, e.g. a number or an array for each model
+
+    Returns:
+        np.ndarray: weighted spread 
+    """
+    w = np.asarray(w,dtype=float)
+    a = np.asarray(a,dtype=float)
+    checkEqualLengths(w,a)
+    w = w/np.sum(w)
+    return np.sqrt(w @ (a - w @ a)**2)
+
+
 def modelAverage(data,err,IC,return_syst=False):
     """ 
     Given some fit results, corresponding error, and information criteria, compute
@@ -1036,7 +1070,7 @@ def modelAverage(data,err,IC,return_syst=False):
     pr = getModelWeights(IC)
     mean = np.sum(pr*data)
     var_stat = np.sum(pr*err**2)
-    var_syst = np.sum(pr*data**2) - mean**2
+    var_syst = weightedSpread(pr,data)**2
     var = var_stat + var_syst 
     if return_syst:
         return mean, np.sqrt(var), np.sqrt(var_syst)
@@ -1104,7 +1138,6 @@ def binSeries(data,nbins) -> np.ndarray:
     Returns:
         np.ndarray: Binned data
     """
-    logger.warn('Actually this should take a function as argument and apply that function in the bin.')
     checkTS(data)
     checkType('int',nbins=nbins)
     ndat=len(data)

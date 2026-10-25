@@ -47,6 +47,101 @@ def nerscChecksum(data, precision) -> int:
     return int(np.sum(words, dtype=np.uint64) & 0xffffffff)
 
 
+def detectConf(fileName):
+    """
+    Detect the format and lattice size of a configuration from its contents. NERSC files start with BEGIN_HEADER,
+    ILDG files with the LIME magic number, and dyniso files are one of comp, MILC, or ascii, as described in
+    DynisoReader. All of these store the lattice dimensions near the start of the file.
+
+    Args:
+        fileName (str): path to the configuration
+
+    Returns:
+        tuple: (format, Ns, Nt), where format is 'NERSC', 'ILDG', or 'dyniso'
+    """
+    checkType(str,fileName=fileName)
+    fileSize = os.path.getsize(fileName)
+    with open(fileName,'rb') as f:
+        start = f.read(512)
+
+    if start.startswith(b'BEGIN_HEADER'):
+        fmt  = 'NERSC'
+        dims = []
+        for line in start.split(b'\n'):
+            if b'=' in line:
+                key = line.split(b'=')[0].strip().upper()
+                if key in (b'DIMENSION_1', b'DIMENSION_2', b'DIMENSION_3', b'DIMENSION_4'):
+                    dims.append(int(line.split(b'=')[1]))
+        return fmt, *_cubicDims(dims, fileName)
+
+    if len(start) >= 4 and struct.unpack('>i',start[:4])[0] == LIMEMAGIC:
+        return 'ILDG', *_cubicDims(_ildgDims(fileName), fileName)
+
+    # dyniso binary formats are in the byte order of the machine that wrote them, so try both.
+    for endianness in ['<','>']:
+        ints = struct.unpack(endianness+'5i',start[:20])
+        if ints[0] == DYNISOMILCMAGIC:
+            return 'dyniso', *_cubicDims(list(ints[1:5]), fileName)
+        dims = list(ints[0:4])
+        if min(dims) > 0 and fileSize == 16 + 32*4*dims[0]*dims[1]*dims[2]*dims[3]:
+            return 'dyniso', *_cubicDims(dims, fileName)
+
+    try:
+        tokens = start.decode('ascii').split()
+        if int(tokens[0]) == DYNISOASCIIMAGIC:
+            dims = tokens[1:5]
+        else:
+            dims = tokens[0:4]
+        intDims = []
+        for dim in dims:
+            intDims.append(int(dim))
+        return 'dyniso', *_cubicDims(intDims, fileName)
+    except (UnicodeDecodeError, ValueError, IndexError):
+        logger.TBRaise('Could not detect the format of',fileName)
+
+
+def _cubicDims(dims, fileName):
+    """
+    Turn [Nx, Ny, Nz, Nt] into (Ns, Nt), checking that the spatial volume is cubic.
+    """
+    if len(dims) != 4:
+        logger.TBRaise('Could not find 4 lattice dimensions in',fileName)
+    if not (dims[0] == dims[1] == dims[2]):
+        logger.TBRaise('Only Ns^3 x Nt lattices are supported, but',fileName,'has dimensions',dims)
+    return dims[0], dims[3]
+
+
+def _ildgDims(fileName):
+    """
+    Get [Nx, Ny, Nz, Nt] from the scidac-private-file-xml or ildg-format record of a LIME file.
+    """
+    with open(fileName,'rb') as f:
+        while True:
+            header = f.read(144)
+            if len(header) < 144:
+                break
+            magi, _, _, size, rtype = struct.unpack('>ihHq128s',header)
+            if magi != LIMEMAGIC:
+                logger.TBRaise(f'lime magic number does not match, got {magi}')
+            rtype = trimNull(rtype)
+            if rtype == b'scidac-private-file-xml':
+                data = trimNull(f.read(size))
+                dims = []
+                for dim in xmlFind(data,'dims').strip().split():
+                    dims.append(int(dim))
+                return dims
+            elif rtype == b'ildg-format':
+                data = trimNull(f.read(size))
+                dims = []
+                for tag in ['lx','ly','lz','lt']:
+                    dims.append(int(xmlFind(data,tag)))
+                return dims
+            else:
+                f.seek(size,os.SEEK_CUR)
+            f.seek(7-(size+7)%8,os.SEEK_CUR)
+    logger.TBRaise('Could not find lattice dimensions in',fileName)
+
+
 class confReader:
 
     """ 

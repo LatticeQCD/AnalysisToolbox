@@ -17,11 +17,11 @@ from latqcdtools.base.plotting import plot_dots, plt
 from latqcdtools.base.readWrite import writeTable
 from latqcdtools.base.utilities import envector, isHigherDimensional, toNumpy 
 from latqcdtools.base.fileSystem import createFilePath
-from latqcdtools.math.math import invert, checkSquare, isMatrix, isVector
+from latqcdtools.math.math import invert
 from latqcdtools.math.optimize import minimize
 from latqcdtools.math.num_deriv import diff_jac, diff_fit_grad
 from latqcdtools.statistics.statistics import plot_func, error_prop_func, chisquare, logGBF, DOF, \
-    expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior, goodnessOfFit, CovarianceDecomposition
+    expandArgs, checkDomain, BAIC, AIC, AICc, checkPrior, goodnessOfFit, CovarianceDecomposition, parseEdata
 from latqcdtools.base.printErrorBars import get_err_str
 
 
@@ -200,22 +200,8 @@ class Fitter:
         self._priorval   = None 
         self._priorsigma = None 
 
-        # Check if we have the covariance matrix available. 
-        if edata is not None:
-            edata = np.array(edata)
-            if isMatrix(edata):
-                self._cov=edata
-            elif isVector(edata):
-                self._cov=np.diag(edata**2)
-            else:
-                logger.TBRaise('Expected ndim < 3. Got ndim =',edata.ndim)
-        else: 
-            # Initialize everything to one if we don't get error information. 
-            self._cov = np.diag(np.ones(len(self._ydata)))
-
-        checkSquare(self._cov)
-        if np.any(np.diag(self._cov) == 0):
-            logger.TBRaise('Some data have zero error, which gives them infinite weight in the fit.')
+        # Without error information, every datum gets error one.
+        self._cov = parseEdata(edata, len(self._ydata))
 
         # Note that if the incoming data are highly correlated, then the covariance matrix is likely to be
         # ill-conditioned. This results in numerical stability issues, most obviously when trying to invert the

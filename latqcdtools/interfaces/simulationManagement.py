@@ -6,12 +6,13 @@
 # This is some Python code to help assist with managing lattice simulations. 
 # 
 
+import numpy as np
 from latqcdtools.base.check import checkType, checkDomain
 import latqcdtools.base.logger as logger
 from latqcdtools.base.plotting import plt, plot_lines, plot_hist, set_params, clearPlot,\
     saveFigure
 from latqcdtools.statistics.statistics import std_mean, std_err, checkTS, KSTest_1side
-from latqcdtools.statistics.autocorrelation import getTauInt
+from latqcdtools.statistics.autocorrelation import getTauInt, gewekeZ
 from latqcdtools.base.printErrorBars import get_err_str
 import scipy as sp
 from latqcdtools.base.utilities import naturalSort
@@ -47,10 +48,11 @@ def countConfigurations(targetFolder,name,delimiter='.'):
 
 def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0.05,
                  showPlots=False,savePlots=False,plotNamePrefix=None,tpickMax=None,
-                 nbins=None,verbose=False,**plotargs) -> dict:
+                 nbins=None,verbose=False,gewekeCutoff=3,**plotargs) -> dict:
     """
     Do some basic analysis of a MCMC time series of measurements. We check whether the data
-    are distributed normally. Optionally you can plot the time series and/or a histogram.
+    are distributed normally, and with the Geweke test whether the chain has thermalized, see gewekeZ. 
+    Optionally you can plot the time series and/or a histogram.
 
     Args:
         MCtime (array-like): Array indexing the MC time. 
@@ -64,11 +66,14 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0
         tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.
         nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)
         verbose (bool, optional): Report your findings to screen. Defaults to False.
+        gewekeCutoff (float, optional): Threshold above which |z| of the Geweke test means "not thermalized".
+          Defaults to 3.
     """
 
     checkTS(MCtime)
     checkTS(measurements)
     checkType('real',KScutoff=KScutoff)
+    checkType('real',gewekeCutoff=gewekeCutoff)
 
     if len(plotargs)>0 and showPlots==False and savePlots==False:
         logger.TBRaise('Passed plotting keywords without wanting to plot.')
@@ -127,11 +132,22 @@ def analyzeChain(MCtime,measurements,obslabel=None,MClabel='traj no.',KScutoff=0
     res["tau_int"]     = tau_int
     res["tau_int_err"] = tau_inte
 
+    if Nmeas < 50:
+        logger.warn('Only',Nmeas,'measurements, too few for the Geweke test of thermalization.')
+        res["gewekeZ"] = None
+    else:
+        z = gewekeZ(measurements)
+        if np.abs(z) > gewekeCutoff:
+            logger.warn('Chain may not be thermalized: the mean of the first 10% of the measurements differs from',
+                        'that of the last 50% by z =',round(z,1),'standard errors.')
+        res["gewekeZ"] = z
+
     logger.info(f'  tau_int = {get_err_str(tau_int,tau_inte)}')
     if verbose:
         logger.info(f'    Nmeas = {Nmeas}')
         logger.info(f'      val = {get_err_str(mean,err)}')
         logger.info(f' KS gauss = {q}')
+        logger.info(f' Geweke z = {res["gewekeZ"]}')
 
     return res
 

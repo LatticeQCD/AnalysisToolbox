@@ -84,10 +84,12 @@ default_params = {
     'ticksintoplot': True,       # Put ticks into plotting area.
     'surroundWithTicks': True,   # Put ticks also on top and right.
     'labelsintoplot': True,      # Put xlabel and ylabel into plotting area.
-    'labelpos': 'auto',          # If labelsintoplot=True and xlabelpos/ylabelpos are not given: 'auto' picks the
-                                 #   in-plot corner for each axis label whose text box overlaps the least with
-                                 #   everything already drawn (data, error bars, lines, spans, tick labels, other
-                                 #   text, and any other Axes such as insets); 'fixed' keeps the historical corners.
+    'labelpos': 'auto',          # If labelsintoplot=True and xlabelpos/ylabelpos are not given: 'auto' moves each
+                                 #   axis label to where its text box overlaps the least with everything already
+                                 #   drawn (data, error bars, lines, spans, tick labels, legend, other text, and any
+                                 #   other Axes such as insets), as close to its axis as possible. The x-label stays
+                                 #   in the bottom-right quadrant and the y-label in the top-left quadrant. 'fixed'
+                                 #   keeps the historical corners.
     'xlabelpos': None,           # If labelsintoplot=True, shift the position (x,y) of the x-label, expressed as percent.
     'ylabelpos': None,
     'alpha_dots': None,          # Transperancy for different dots
@@ -428,27 +430,53 @@ def _add_optional(params) -> dict:
     return ret
 
 
-# Candidate (x, y, ha, va) anchors, in axes-fraction coordinates, for an in-plot axis
-# label. The first entry in each list is the historical fixed position, so labelpos='fixed'
-# -- and labelpos='auto' whenever that corner is already clear -- reproduces older output.
-_INPLOT_LABEL_CANDIDATES = {
-    'x': [
-        (0.95, 0.027, 'right',  'bottom'),
-        (0.05, 0.027, 'left',   'bottom'),
-        (0.50, 0.027, 'center', 'bottom'),
-        (0.95, 0.973, 'right',  'top'),
-        (0.05, 0.973, 'left',   'top'),
-        (0.50, 0.973, 'center', 'top'),
-    ],
-    'y': [
-        (0.025, 0.972, 'left',  'top'),
-        (0.975, 0.972, 'right', 'top'),
-        (0.025, 0.028, 'left',  'bottom'),
-        (0.975, 0.028, 'right', 'bottom'),
-        (0.025, 0.500, 'left',  'center'),
-        (0.975, 0.500, 'right', 'center'),
-    ],
+# Default (x, y, ha, va) anchor, in axes-fraction coordinates, for an in-plot axis label.
+# This is the historical fixed position, used for labelpos='fixed', and the first position
+# tried by labelpos='auto'. The x-label is anchored at its bottom-right corner and always
+# stays in the bottom-right quadrant; the y-label is anchored at its top-left corner and
+# always stays in the top-left quadrant.
+_INPLOT_LABEL_DEFAULT = {
+    'x': (0.95,  0.027, 'right', 'bottom'),
+    'y': (0.025, 0.972, 'left',  'top'),
 }
+_INPLOT_LABEL_STEP = 0.02   # Scan step, in axes fraction, for labelpos='auto'.
+
+
+def _scanSteps(start, stop, step):
+    """ 
+    Positions from start towards stop in increments of step, always including start. 
+    """
+    steps = [start]
+    if stop >= start:
+        sign = 1
+    else:
+        sign = -1
+    val = start + sign*step
+    while sign*(stop - val) >= 0:
+        steps.append(val)
+        val += sign*step
+    return steps
+
+
+def _inplotCandidates(which, w, h):
+    """ 
+    Candidate anchors for an in-plot axis label of width w and height h (axes fraction),
+    ordered so the first one is the historical corner and later ones are farther from the
+    label's own axis. The x-label moves up from the x-axis (and secondarily left) without
+    leaving the bottom-right quadrant; the y-label moves right from the y-axis (and
+    secondarily down) without leaving the top-left quadrant. 
+    """
+    x0, y0, ha, va = _INPLOT_LABEL_DEFAULT[which]
+    candidates = []
+    if which == 'x':
+        for y in _scanSteps(y0, 0.5 - h, _INPLOT_LABEL_STEP):
+            for x in _scanSteps(x0, 0.5 + w, _INPLOT_LABEL_STEP):
+                candidates.append((x, y, ha, va))
+    else:
+        for x in _scanSteps(x0, 0.5 - w, _INPLOT_LABEL_STEP):
+            for y in _scanSteps(y0, 0.5 + h, _INPLOT_LABEL_STEP):
+                candidates.append((x, y, ha, va))
+    return candidates
 
 
 def _canvasRenderer(fig):
@@ -475,8 +503,8 @@ def _inplotObstacles(ax, renderer, skip=None):
     Everything already drawn that an in-plot axis label should try not to cover, split
     into two kinds and expressed in display (pixel) coordinates:
 
-      rects  -- solid rectangles: other text, tick labels, filled spans, and every other
-                Axes in the figure (e.g. an inset) taken as one block.
+      rects  -- solid rectangles: other text, tick labels, filled spans, the legend, and
+                every other Axes in the figure (e.g. an inset) taken as one block.
       polys  -- (points, connected) for line/marker/error-bar data. The points are kept
                 rather than a bounding box: a sparse scatter or a diagonal curve leaves most
                 of its bounding box empty, and the label is allowed to sit there. 'connected'
@@ -517,6 +545,12 @@ def _inplotObstacles(ax, renderer, skip=None):
                 addRect(lab.get_window_extent(renderer))
             except Exception:
                 pass
+    leg = ax.get_legend()
+    if leg is not None and leg.get_visible():
+        try:
+            addRect(leg.get_window_extent(renderer))
+        except Exception:
+            pass
     for p in list(ax.patches):
         if not p.get_visible():
             continue
@@ -576,13 +610,15 @@ def _inplotObstacles(ax, renderer, skip=None):
 def _placeInplotLabel(ax, text, which, params):
     """ 
     Draw an in-plot x- or y-axis label. With labelpos='auto' the anchor is chosen from
-    _INPLOT_LABEL_CANDIDATES[which] to minimize overlap with everything already drawn (see
-    _inplotObstacles); with labelpos='fixed', or if the measurement fails, the first
-    (historical) candidate is used. 
+    _inplotCandidates to minimize overlap with everything already drawn (see
+    _inplotObstacles); among equally good anchors the one closest to the label's own axis
+    wins. With labelpos='fixed', or if the measurement fails, _INPLOT_LABEL_DEFAULT is used. 
     """
-    candidates = _INPLOT_LABEL_CANDIDATES[which]
-    alpha = params['alpha_xlabel'] if which == 'x' else params['alpha_ylabel']
-    x, y, ha, va = candidates[0]
+    if which == 'x':
+        alpha = params['alpha_xlabel']
+    else:
+        alpha = params['alpha_ylabel']
+    x, y, ha, va = _INPLOT_LABEL_DEFAULT[which]
     ann = ax.text(x, y, text, transform=ax.transAxes, color='black',
                   fontsize=params['font_size'], fontweight=params['font_weight'], ha=ha, va=va,
                   bbox=dict(linewidth=0, facecolor='white', edgecolor=None, alpha=alpha),
@@ -594,6 +630,8 @@ def _placeInplotLabel(ax, text, which, params):
         renderer = _canvasRenderer(ax.get_figure())
         rects, polys = _inplotObstacles(ax, renderer, skip=ann)
         axBox = ax.get_window_extent(renderer)
+        textBox = ann.get_window_extent(renderer)
+        candidates = _inplotCandidates(which, textBox.width/axBox.width, textBox.height/axBox.height)
         best, bestScore = candidates[0], None
         for cand in candidates:
             cx, cy, cha, cva = cand
@@ -629,11 +667,24 @@ def _placeInplotLabel(ax, text, which, params):
         cx, cy, cha, cva = best
     except Exception as e:
         logger.debug(f'Auto label placement failed ({e}); using default corner.')
-        cx, cy, cha, cva = candidates[0]
+        cx, cy, cha, cva = _INPLOT_LABEL_DEFAULT[which]
     ann.set_position((cx, cy))
     ann.set_horizontalalignment(cha)
     ann.set_verticalalignment(cva)
     return ann
+
+
+def _drawLegend(ax, params):
+    """ 
+    Draw the legend of ax, if there is one to draw. 
+    """
+    if LEGEND and ax in legend_handles:
+        leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
+                        title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
+                        columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'],
+                        frameon = params['legendframeon'])
+        leg.get_frame().set_alpha(params['alpha_legend'])
+        leg.set_zorder(FOREGROUND)
 
 
 def set_params(**params):
@@ -683,6 +734,12 @@ def set_params(**params):
     set_xrange(params['xmin'],params['xmax'],ax)
     set_yrange(params['ymin'],params['ymax'],ax)
 
+    # A legend at a fixed position is drawn before the axis labels, so the labels avoid it.
+    # A legend at 'best' is drawn after them, so that the legend avoids the labels instead.
+    legendFirst = (params['legendpos'] != 'best') or (params['bbox_to_anchor'] is not None)
+    if legendFirst:
+        _drawLegend(ax, params)
+
     # Axis labels are placed after the axis ranges/scales are final, so 'auto' placement
     # measures overlap against the geometry that will actually be saved. An explicit
     # xlabelpos/ylabelpos keeps its old meaning (fixed position, no overlap check).
@@ -703,13 +760,8 @@ def set_params(**params):
             getattr(ax, 'set_'+which+'label')(params[key])
             getattr(ax, which+'axis').get_label().set_fontsize(params['font_size'])
 
-    if LEGEND and ax in legend_handles:
-        leg = ax.legend(legend_handles[ax], legend_labels[ax], numpoints=1, bbox_to_anchor = params['bbox_to_anchor'],
-                        title=params['legend_title'], loc=params['legendpos'], ncol=params['legend_ncol'],
-                        columnspacing=params['legend_col_spacing'],handletextpad = params['handletextpad'],
-                        frameon = params['legendframeon'])
-        leg.get_frame().set_alpha(params['alpha_legend'])
-        leg.set_zorder(FOREGROUND)
+    if not legendFirst:
+        _drawLegend(ax, params)
 
     if params['xtick_freq'] is not None:
         start, end = ax.get_xlim()

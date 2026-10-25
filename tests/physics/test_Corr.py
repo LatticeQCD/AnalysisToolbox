@@ -4,7 +4,7 @@
 # D. Clarke
 # 
 
-from latqcdtools.physics.correlators import foldCorrelator
+from latqcdtools.physics.correlators import foldCorrelator, effectiveMass
 from latqcdtools.testing import concludeTest,print_results
 from latqcdtools.base.cleanData import clipRange
 from latqcdtools.base.initialize import TBRNG, DEFAULTSEED 
@@ -48,6 +48,16 @@ def testCorr():
     lpass *= print_results(foldCorrelator(rand),foldSimple(rand)  ,text='test against simple implementation')
     lpass *= print_results(simulate_dt(10)     ,[0,5,5]           ,text='dt=2, Nt=10')
     lpass *= print_results(simulate_dt(20)     ,[0,10,10,10,10,10],text='dt=2, Nt=20')
+
+    # A single state on a periodic lattice should give a flat periodic effective mass,
+    # whether or not the correlator is folded.
+    Nt, m    = 32, 0.1
+    ts       = np.arange(Nt)
+    cosh     = np.exp(-m*ts) + np.exp(-m*(Nt-ts))
+    meffFull = effectiveMass(cosh,algorithm='periodic',guess=0.2)
+    meffFold = effectiveMass(foldCorrelator(cosh),algorithm='periodic',guess=0.2,Nt=Nt)
+    lpass *= print_results(meffFull,m*np.ones(Nt-1)   ,text='periodic meff, unfolded',prec=1e-6)
+    lpass *= print_results(meffFold,m*np.ones(Nt//2) ,text='periodic meff, folded'  ,prec=1e-6)
 
     concludeTest(lpass)
 

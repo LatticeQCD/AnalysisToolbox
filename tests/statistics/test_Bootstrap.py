@@ -6,7 +6,7 @@
 # Quick test to make sure the bootstrap works. Do not adjust the values of any of the variables, arrays, or arguments.
 # 
 
-from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss
+from latqcdtools.statistics.bootstr import bootstr, bootstr_from_gauss, biasCorrect
 from latqcdtools.statistics.statistics import KSTest_1side, pearson
 from latqcdtools.testing import print_results, concludeTest
 from latqcdtools.base.initialize import DEFAULTSEED
@@ -72,6 +72,11 @@ def testBootstrap():
         if np.allclose(samp, samp[:,[0]]) != same_rand:
             lpass = False
             logger.TBFail('same_rand_for_obs =',same_rand,'gives wrong correlation for conf_axis=2')
+
+    # Bias correction 2 f(xbar) - <f*>, with the mean or the median over the samples
+    fstar = np.array([1., 2., 6.])
+    lpass *= print_results(biasCorrect(2., fstar), 2*2.-3., text='biasCorrect mean')
+    lpass *= print_results(biasCorrect(2., fstar, average='median'), 2*2.-2., text='biasCorrect median')
 
     concludeTest(lpass)
 
