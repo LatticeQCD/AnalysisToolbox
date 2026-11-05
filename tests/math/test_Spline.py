@@ -154,6 +154,16 @@ def testSpline():
         w[w < np.exp(-70)] = 0
         w /= np.sum(w)
         lpass *= print_results(spl(res['xspl']), w @ np.array(curves), text="lam average = evidence-weighted splines", prec=1e-8)
+    # The systematic error is the weighted spread over lam of the splines for the original data (the last w and
+    # curves of the loop above are for a bootstrap sample, so redo them).
+    w      = res['weightsModel']
+    curves = []
+    for spl in res['splinesModel']:
+        curves.append(spl(res['xspl']))
+    curves = np.array(curves)
+    lpass *= print_results(res['ysple_sys'], np.sqrt(w @ (curves - w @ curves)**2), text="lam average ysple_sys = spread over lam", prec=1e-8)
+    lpass *= print_results(res['ysple']**2, res['ysple_stat']**2 + res['ysple_sys']**2, text="lam average ysple = stat + sys", prec=1e-8)
+    lpass *= print_results(modelSpread(res, lambda s: s(res['xspl'])), res['ysple_sys'], text="lam average modelSpread reproduces ysple_sys", prec=1e-8)
 
     # posteriorSpline: the posterior covariance at fixed lam is (B^T W B + lam Omega)^-1 (Omega from 
     # Simpson above), the mean is the evidence-weighted average, and the samples reproduce the exact 

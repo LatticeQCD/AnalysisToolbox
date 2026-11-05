@@ -34,15 +34,29 @@ Returns:
 ```python
 cleanOutput(*args, label=None, sspace=20) -> str:
 """
-This method takes a bunch of args and formats them automatically for output. The idea is
-that you can use this method to ensure that columns are well lined up.
+Format arguments automatically for lined-up column output.
 
-Args:
-    *args: The numbers you want to output, separated by commas. 
-    label (str, optional): Put label to the left of your output. Defaults to None.
+Parameters
+----------
+*args : tuple
+    Values to format (scalars or strings).
+label : str, optional
+    Put label to the left of your output. Defaults to None.
+sspace : int or collections.abc.Iterable of int, optional
+    Width for string columns. Can be an integer applied to all string
+    columns, or an iterable of integers specifying per-string-column widths.
+    Defaults to 20.
 
-Returns:
-    str: formatted output string 
+Returns
+-------
+str
+    Formatted output string.
+
+Raises
+------
+ToolboxException
+    If label is not a string, or if an array-like/nested object is passed in args,
+    or if sspace is invalid or has insufficient entries.
 """
 ```
 ```python
@@ -146,11 +160,18 @@ Some arguments are None by default, and you only want to print them if they are 
 ```python
 printClean(*args, label=None, sspace=20):
 """
-Wrapper for cleanOutput that prints to screen.
+Wrapper for cleanOutput that prints formatted output to screen.
 
-Args:
-    *args: The numbers you want to output, separated by commas. 
-    label (str, optional): Put label to the left of your output. Defaults to None.
+Parameters
+----------
+*args : tuple
+    Values to format (scalars or strings).
+label : str, optional
+    Put label to the left of your output. Defaults to None.
+sspace : int or collections.abc.Iterable of int, optional
+    Width for string columns. Can be an integer applied to all string
+    columns, or an iterable of integers specifying per-string-column widths.
+    Defaults to 20.
 """
 ```
 ```python

@@ -9,11 +9,19 @@ seed to be an integer when enforcing that different bootstrap samples use differ
 """
 ```
 ```python
-_biasCorrect(fbar, sampleval):
+biasCorrect(fbar, sampleval, average='mean'):
 """
 Bias-corrected central value 2 f(xbar) - <f*>. Here f(xbar) is func of the full data, <f*> is the
-average over bootstrap samples, and <f*> - f(xbar) estimates the O(1/N) bias of f(xbar). The result
-carries a Monte Carlo error of about (bootstrap error)/sqrt(numb_samples), even for linear func. 
+average over bootstrap samples, and <f*> - f(xbar) estimates the O(1/N) bias of f(xbar).
+
+Args:
+    fbar (array-like): f(xbar), func of the full data
+    sampleval (array-like): f of each bootstrap sample, along axis 0
+    average (str, optional): 'mean' or 'median' over the samples. The median is robust against a few
+      outlying samples. Defaults to 'mean'.
+
+Returns:
+    np.ndarray: bias-corrected central value
 """
 ```
 ```python

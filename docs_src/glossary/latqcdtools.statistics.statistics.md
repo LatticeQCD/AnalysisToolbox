@@ -149,6 +149,17 @@ Args:
 """
 ```
 ```python
+checkEdata(edata, ndata=None):
+"""
+Check that edata can be read by the toolbox's fitting routines: it is None, a vector of errors, or a
+covariance matrix, and no datum has zero error. With ndata, also check that edata belongs to ndata data.
+
+Args:
+    edata (array-like or None): errors of the data, or their covariance matrix
+    ndata (int, optional): number of data. Defaults to None, which skips the length check.
+"""
+```
+```python
 checkPrior(prior, priorsigma):
 """
 Make sure prior and priorsigma status are compatible. 
@@ -500,10 +511,12 @@ parseEdata(edata, ndata=None) -> numpy.ndarray:
 """
 Covariance matrix of data with errors edata, read the way the toolbox's fitting routines read edata: a
 vector holds the errors of the data, a matrix is their covariance matrix, and None means unit errors.
+See checkEdata for what is allowed.
 
 Args:
     edata (array-like or None): errors of the data, or their covariance matrix
-    ndata (int, optional): number of data. Needed only when edata is None. 
+    ndata (int, optional): number of data. Needed when edata is None; otherwise used to check the length 
+      of edata. 
 
 Returns:
     np.ndarray: covariance matrix 
@@ -563,6 +576,19 @@ Args:
     grad (func, optional): Explicit function gradient to compute error. Defaults to None.
     swapXY (bool, optional): Swap X and Y variables in plot. Defaults to False.
     npoints (int, optional): Number of points to use for plotting. Defaults to 1000.
+"""
+```
+```python
+std_covariance(x, y) -> float:
+"""
+Unbiased estimator of the covariance of the mean. 
+
+Args:
+    x (array-like)
+    y (array-like)
+
+Returns:
+    float: cov 
 """
 ```
 ```python
@@ -651,6 +677,20 @@ Returns:
 """
 ```
 ```python
+weightedSpread(w, a) -> numpy.ndarray:
+"""
+Weighted spread sqrt(sum_k w_k (a_k - abar)^2) of a along axis 0, with abar = sum_k w_k a_k. For a model
+average, this is the systematic error from the spread over the models.
+
+Args:
+    w (array-like): weights, one per entry of a along axis 0. They are normalized here. 
+    a (array-like): values, e.g. a number or an array for each model
+
+Returns:
+    np.ndarray: weighted spread 
+"""
+```
+```python
 weighted_mean(data, err) -> float:
 """
 Compute the weighted mean. Here the weights are Gaussian error bars.
@@ -658,16 +698,17 @@ See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
 
 Args:
     data (array-like)
-    errcov (array-like): error if 1d or cov if 2d. 
+    err (array-like): 1d array of error bars, one per data point.
 
 Returns:
-    float: weighted mean 
+    float: weighted mean
 """
 ```
 ```python
 weighted_variance(err) -> float:
 """
 Get variance of above weighted mean, when the weights are statistical errors. 
+See e.g. https://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html.
 
 Args:
     err (array-like)
@@ -705,11 +746,10 @@ Returns:
 class CovarianceDecomposition(cov, svdcut=None):
 """
 Decomposition of a covariance matrix C, following gvar/lsqfit. Write C = D cor D, with D = diag(sigma) and
-cor the correlation matrix, and diagonalize cor = V Lambda V^T. Everything a fit needs follows from this one
-decomposition:
+cor the correlation matrix, and diagonalize cor = V Lambda V^T. The whitening matrix and inverse follow from
+this decomposition:
     whitening matrix   W = Lambda^(-1/2) V^T D^(-1),
-    inverse            C^(-1) = W^T W,
-    log determinant    log det C = 2 sum_i log sigma_i + sum_i log lambda_i.
+    inverse            C^(-1) = W^T W.
 The SVD cut is applied to the eigenvalues of cor, so that it does not depend on the units of the data. 
 For a positive semidefinite matrix this is the same as regulate(cor). 
 

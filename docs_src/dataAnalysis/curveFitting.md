@@ -105,9 +105,9 @@ passing a *kind* object. There are four kinds:
 
 The same kind can then be passed to each of the three main functions, which share their first four arguments:
 ```Python
-spl = getSpline(xdata, ydata, edata=None, kind=None)          # one fit, returns a TBSpline
-res = bootSpline(xdata, ydata, edata, kind=None, ...)         # bootstrap error band, returns a dict
-res = posteriorSpline(xdata, ydata, edata, kind=None, ...)    # Bayesian error band, Smoothing kinds only
+spl = getSpline(xdata, ydata, edata=None, kind=Interpolating())    # one fit, returns a TBSpline
+res = bootSpline(xdata, ydata, edata, kind=Interpolating(), ...)   # bootstrap error band, returns a dict
+res = posteriorSpline(xdata, ydata, edata, kind=Smoothing(), ...)  # Bayesian error band, Smoothing kinds only
 ```
 As in the `Fitter`, a vector `edata` is read as errors and a matrix as the covariance matrix of `ydata`.
 Every kind can take a covariance matrix. If you pass no kind, `getSpline` and `bootSpline` give
@@ -171,7 +171,7 @@ A step-by-step explanation is in `understandSplines/understandPosteriorSpline.pd
 ### Derivative constraints
 
 `Regression`, `Smoothing`, and `KnotAverage` can also be told about derivatives of the curve, e.g. a slope known from a
-model at the end of the data. Pass `deriv=(x, dy, de)` to `getSpline` or `bootSpline`: the first derivative of
+model at the end of the data. Pass `deriv=(x, dy, de)` to `getSpline`, `bootSpline`, or `posteriorSpline`: the first derivative of
 the spline at `x` should be `dy`, with error `de`. Each of these may be an array, for several constraints, and
 an optional fourth entry gives the order of each derivative, e.g. `deriv=(x, dy, de, order)` with `order=2`
 for a curvature. The constraints are soft: each adds $((S^{(n)}(x)-dy)/de)^2$ to $\chi^2$, just like a datum,
@@ -207,13 +207,11 @@ spl = getSpline(xdata, ydata, edata, KnotAverage())
 res = bootSpline(xdata, ydata, edata, KnotAverage(), nproc=8)
 ```
 In `bootSpline` the chain is rerun for every bootstrap sample, and the spread over configurations for the
-original data is added as a systematic error, see below; with the defaults, one chain takes about a second for 30 data, so use `nproc`. The chain is about
-3 times faster if you call `numbaON()` before importing `latqcdtools.math.spline`, see [here](../base/speedify.md);
-the result is the same either way. Each chain is seeded by
-`seed`, the chain index, and the data, so results are reproducible and do not depend on `nproc`. The result
-also contains diagnostics for the original data: the saved configurations `res['knotConfigs']` and their
-counts `res['knotCounts']`, the histogram of $k$ in `res['kHistogram']`, and the acceptance rates. If the
-histogram piles up at `kmax`, you get a warning. You also get a warning if a chain has not thermalized: the mean AIC
+original data is added as a systematic error, see below; with the defaults, one chain takes about half a second for 30 data, so use `nproc`.
+Each chain is seeded by
+`seed`, the chain index, and the data, so results are reproducible and do not depend on `nproc`.
+If the chain spends more than 1% of its time at `kmax` knots, you get a warning: the data may want more knots than
+allowed, or the configurations are fitting noise. You also get a warning if a chain has not thermalized: the mean AIC
 of the first 10% of its saved configurations is compared with that of the last 50% (Geweke test, errors from
 batch means), and a difference of more than 3 standard errors, or fewer than 50 saved configurations, is flagged.
 To check convergence further, compare runs with different `seed`, or longer chains.
@@ -231,14 +229,8 @@ inflection point `res['xinflect']`, `res['yinflect']`, all with errors, and, for
 res = bootSpline(xdata, ydata, edata, Regression(nknots=5))
 plot_band(res['xspl'], res['yspl']-res['ysple'], res['yspl']+res['ysple'])
 ```
-For the average over $\lambda$, the weights are recomputed in every bootstrap sample, so the error `res['ysple']`
-includes the uncertainty in $\lambda$. You also get the grid `res['lams']`, the corresponding `res['peffs']`,
-`res['weights']`, and `res['splinesLam']`, the smoothing spline at each $\lambda$ for the original data.
-`res['ysple_lam']` is the weighted spread of these splines. It is a diagnostic only: do not add it to
-`res['ysple']`, which already contains the uncertainty in $\lambda$.
-
-The spread of the bootstrap samples is the statistical error. For an average over knot configurations
-(`KnotAverage`), the weights are recomputed in every bootstrap sample, but this does not
+The spread of the bootstrap samples is the statistical error. For an average over models, i.e. over knot
+configurations (`KnotAverage`) or over $\lambda$ (`Smoothing()`), the weights are recomputed in every bootstrap sample, but this does not
 capture how much the models disagree with each other: if the weights hardly change between samples, the
 average hardly moves, however different the models are. For these kinds, the weighted spread over models for
 the original data is added as a systematic error, as in a model average of fits. Every error comes with its
@@ -262,6 +254,9 @@ its weight, then a spline from the Gaussian posterior at that $\lambda$. This is
 used once, as measured. `res['yspl']` is the posterior mean and `res['ysple']` the posterior standard deviation,
 which by the law of total variance splits into `res['ysple_stat']` (the average posterior error at fixed
 $\lambda$) and `res['ysple_sys']` (the spread over $\lambda$), with `ysple**2 = ysple_stat**2 + ysple_sys**2`.
+`res['xmax']`, `res['ymax']`, `res['xinflect']`, and `res['yinflect']` are the medians over the samples, with
+errors from their spread and, as for the curve, the spread over $\lambda$ as the `_sys` part. You also get the grid
+`res['lams']`, the corresponding effective numbers of parameters `res['peffs']`, and the weights `res['weights']`.
 For a quantity derived from the spline, e.g. an integral or a derivative, compute it for each of the samples
 in `res['splineSamples']` and take their spread. Do not add a systematic error on top of that, since the
 samples already contain the uncertainty in $\lambda$. In a test with a smooth function, both error bands
@@ -279,6 +274,6 @@ Keep in mind that this is still a model: it assumes the same smoothness everywhe
 constraints the smoothing spline has zero curvature at the ends of the data, which biases it there if your
 data curve strongly.
 
-Finally, `getSplineErr(xdata, xspline, ydata, ydatae, kind=None)` fits splines of the given kind (by default
+Finally, `getSplineErr(xdata, xspline, ydata, ydatae, kind=Interpolating())` fits splines of the given kind (by default
 `Interpolating()`) to `ydata-ydatae` and `ydata+ydatae` and returns their midpoint and half-difference on
 `xspline`. This gives a smooth band, but it is not a statistical error propagation.

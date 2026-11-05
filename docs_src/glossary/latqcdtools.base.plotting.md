@@ -21,6 +21,12 @@ that text layout and data transforms are up to date.
 """
 ```
 ```python
+_drawLegend(ax, params):
+"""
+Draw the legend of ax, if there is one to draw. 
+"""
+```
+```python
 _getAxObject(params)
 ```
 ```python
@@ -34,13 +40,23 @@ so that this only gets called once per plot.
 """
 ```
 ```python
+_inplotCandidates(which, w, h):
+"""
+Candidate anchors for an in-plot axis label of width w and height h (axes fraction),
+ordered so the first one is the historical corner and later ones are farther from the
+label's own axis. The x-label moves up from the x-axis (and secondarily left) without
+leaving the bottom-right quadrant; the y-label moves right from the y-axis (and
+secondarily down) without leaving the top-left quadrant. 
+"""
+```
+```python
 _inplotObstacles(ax, renderer, skip=None):
 """
 Everything already drawn that an in-plot axis label should try not to cover, split
 into two kinds and expressed in display (pixel) coordinates:
 
-  rects  -- solid rectangles: other text, tick labels, filled spans, and every other
-            Axes in the figure (e.g. an inset) taken as one block.
+  rects  -- solid rectangles: other text, tick labels, filled spans, the legend, and
+            every other Axes in the figure (e.g. an inset) taken as one block.
   polys  -- (points, connected) for line/marker/error-bar data. The points are kept
             rather than a bounding box: a sparse scatter or a diagonal curve leaves most
             of its bounding box empty, and the label is allowed to sit there. 'connected'
@@ -60,9 +76,9 @@ Grow a display-space Bbox by p pixels on every side.
 _placeInplotLabel(ax, text, which, params):
 """
 Draw an in-plot x- or y-axis label. With labelpos='auto' the anchor is chosen from
-_INPLOT_LABEL_CANDIDATES[which] to minimize overlap with everything already drawn (see
-_inplotObstacles); with labelpos='fixed', or if the measurement fails, the first
-(historical) candidate is used. 
+_inplotCandidates to minimize overlap with everything already drawn (see
+_inplotObstacles); among equally good anchors the one closest to the label's own axis
+wins. With labelpos='fixed', or if the measurement fails, _INPLOT_LABEL_DEFAULT is used. 
 """
 ```
 ```python
@@ -79,6 +95,12 @@ Rescale the data, taking into account there may be no data.
 Args:
     scale (float)
     data (array-like or None)
+"""
+```
+```python
+_scanSteps(start, stop, step):
+"""
+Positions from start towards stop in increments of step, always including start. 
 """
 ```
 ```python

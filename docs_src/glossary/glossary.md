@@ -19,6 +19,7 @@ latqcdtools.base.speedify.md
 latqcdtools.base.utilities.md
 latqcdtools.interfaces.collaborations.md
 latqcdtools.interfaces.confReader.md
+latqcdtools.interfaces.confWriter.md
 latqcdtools.interfaces.interfaces.md
 latqcdtools.interfaces.lime.md
 latqcdtools.interfaces.simulationManagement.md

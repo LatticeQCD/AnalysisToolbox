@@ -10,9 +10,8 @@
 #
 
 import numpy as np
-from scipy.interpolate import BSpline, make_interp_spline, splev
+from scipy.interpolate import BSpline, PPoly, make_interp_spline, splev
 from scipy.linalg import block_diag
-from scipy.optimize import brentq
 import latqcdtools.base.logger as logger
 from latqcdtools.statistics.statistics import AIC, whiteningMatrix, std_median, dev_by_dist, getModelWeights, \
     parseEdata, checkEdata, weightedSpread
@@ -172,9 +171,12 @@ def _lamGrid(X, Omega, nu, nd, nlam):
     derivative constraints. tr(H) falls monotonically with lam and does not depend on y, so we bracket the
     grid by the lam where tr(H) is close to its largest value (interpolation) and where it is close to 2
     (straight line). The largest value is nu + nd, but at most the number of coefficients, nu + 2. This
-    makes the grid independent of the units of x and y. If tr(H) does not reach a target before the normal
-    equations become too ill-conditioned to solve, which happens at very small or very large lam, the grid
-    ends there instead. Splines that far out carry practically no weight.
+    makes the grid independent of the units of x and y. Each end is found by stepping in log lam by 1 (a
+    factor e in lam) from log lam = 0 and taking the last step at or beyond the target, so the grid is at most
+    a factor e wider at each end than the targets demand. The weights there are negligible, so the ends need
+    no more precision. If tr(H) does not reach a target before the normal equations become too
+    ill-conditioned to solve, which happens at very small or very large lam, the grid ends there instead.
+    Splines that far out carry practically no weight.
     """
     if nu < 3:
         logger.TBRaise('Averaging over lam needs at least 3 unique x.')
@@ -187,20 +189,23 @@ def _lamGrid(X, Omega, nu, nd, nlam):
     def solvable(loglam):
         return np.linalg.cond(X.T @ X + np.exp(loglam)*Omega) <= _CONDMAX
 
-    # Bracket each end in steps of a factor e in lam.
+    def outside(loglam,target,step):
+        # True if loglam is at or beyond target, seen from the middle of the grid. step is -1 for the
+        # lower end, where tr(H) >= target, and +1 for the upper end, where tr(H) <= target.
+        return step*peffDiff(loglam,target) <= 0
+
     loglams = []
-    for target in [peffmax-0.1, 2.01]:
-        lo, hi = -1., 1.
-        while peffDiff(lo,target) < 0 and solvable(lo-1):
-            lo -= 1
-        while peffDiff(hi,target) > 0 and solvable(hi+1):
-            hi += 1
-        if peffDiff(lo,target) < 0:
-            loglams.append(lo)
-        elif peffDiff(hi,target) > 0:
-            loglams.append(hi)
+    for target, step in [(peffmax-0.1, -1), (2.01, 1)]:
+        loglam = 0.
+        if outside(loglam,target,step):
+            # Step toward the middle as long as the next step is still beyond the target.
+            while outside(loglam-step,target,step) and solvable(loglam-step):
+                loglam -= step
         else:
-            loglams.append(brentq(peffDiff,lo,hi,args=(target,)))
+            # Step outward until the target is reached or the next step cannot be solved.
+            while (not outside(loglam,target,step)) and solvable(loglam+step):
+                loglam += step
+        loglams.append(loglam)
     return np.exp(np.linspace(loglams[0],loglams[1],nlam))
 
 
@@ -356,10 +361,12 @@ class SplineKind:
     """
     Base class of the kinds of spline. hasAIC is False for kinds without a meaningful AIC, i.e.
     interpolation and averages over models. natural is True for kinds with zero curvature at the endpoints.
+    averaged is True for averages over models, whose fitters have details.
     """
 
-    hasAIC  = True
-    natural = False
+    hasAIC   = True
+    natural  = False
+    averaged = False
 
     def fitter(self, xdata, edata=None, deriv=None):
         logger.TBRaise('Not implemented for',self)
@@ -516,7 +523,8 @@ class KnotAverage(SplineKind):
             sample gets its own reproducible chain. Defaults to DEFAULTSEED.
     """
 
-    hasAIC = False
+    hasAIC   = False
+    averaged = True
 
     def __init__(self, kmax=None, ngrid=None, natural=False, nupdates=10000, nequi=1000, every=10, nchains=1, 
                  seed=DEFAULTSEED):
@@ -719,6 +727,23 @@ class _SmoothingFitter(_Fitter):
                             deriv=self._derivOf(dy), lam='average')
         return TBSpline(self.x, y, tck, self.kind, edata=self.edata, peff=self.peffs[0], deriv=self._derivOf(dy),
                         lam=self.lams[0], logEvidence=logEv[0])
+
+    def details(self, y, xspl, dy):
+        """
+        The smoothing spline and weight at each lam for the data y and derivative constraints dy, and the
+        weighted spreads over lam of the spline and its observables on xspl, see _modelSpreads.
+        """
+        w, logEv, c = self._coeffs(y, False, dy)
+        splines = []
+        for k in range(len(self.lams)):
+            splines.append(TBSpline(self.x, y, (self.t, c[k], 3), Smoothing(lam=float(self.lams[k])),
+                                    edata=self.edata, peff=self.peffs[k], deriv=self._derivOf(dy),
+                                    lam=self.lams[k], logEvidence=logEv[k]))
+        det = {}
+        det['splines'] = splines
+        det['weights'] = w
+        det['spread']  = _modelSpreads(splines, w, xspl)
+        return det
 
 
 def _naturalBasis(t):
@@ -1086,20 +1111,19 @@ def getSplineErr(xdata, xspline, ydata, ydatae, kind=Interpolating()):
 
 def _steepestInflection(spline, xspl):
     """
-    The inflection point (x,y) of spline on xspl where |spline'| is largest. Inflection points are where the
-    second derivative changes sign; each root is found between the two grid points that bracket it. Taking
+    The inflection point (x,y) of spline on xspl where |spline'| is largest. Inflection points are the zeros
+    of the second derivative. Between knots, the second derivative is a polynomial of degree order-2, so its
+    zeros are computed exactly from its piecewise-polynomial form. Taking
     the steepest one ignores the small wiggles a smoothed spline can have where the data are flat. A zero of
     the second derivative at an end of xspl, as for a natural spline, does not count, so the first and last
-    grid intervals are skipped; numerically that zero is not exact. Returns (nan,nan) if there is no
-    inflection point.
+    grid intervals are skipped; numerically that zero is not exact. Pieces where the second derivative
+    vanishes identically give nan roots, which are skipped. Returns (nan,nan) if there is no inflection point.
     """
-    d2     = spline(xspl,der=2)
-    change = np.where(d2[1:-2]*d2[2:-1] < 0)[0] + 1
-    if len(change) == 0:
-        return np.nan, np.nan
+    roots = PPoly.from_spline(spline.tck).derivative(2).roots(extrapolate=False)
     xbest, slopebest = np.nan, -np.inf
-    for i in change:
-        x     = brentq(lambda t: spline(t,der=2), xspl[i], xspl[i+1])
+    for x in roots:
+        if (not np.isfinite(x)) or (x <= xspl[1]) or (x >= xspl[-2]):
+            continue
         slope = abs(float(spline(x,der=1)))
         if slope > slopebest:
             xbest, slopebest = x, slope
@@ -1180,7 +1204,7 @@ def _modelSpreads(splines, w, xspl):
 def modelSpread(res, f):
     """
     Systematic error of a quantity f(spline) derived from a bootSpline result res: its weighted spread over
-    the models of the average (the knot configurations) for the original data, the same
+    the models of the average (the knot configurations, or the values of lam) for the original data, the same
     systematic error bootSpline gives its own observables. Add it in quadrature to the statistical error,
     i.e. the spread of f over res['splineBS']. Models where f is nan are dropped. For kinds that are not
     averages, there are no models, and the result is 0.
@@ -1233,8 +1257,8 @@ def bootSpline(xdata, ydata, edata, kind=Interpolating(), numb_samples=300, nsup
     drawing ydata from normal distributions of width edata, to propagate uncertainties of the data into an
     error band for the spline. Every bootstrap sample is fit with the same kind; e.g. for KnotAverage,
     the chain is rerun in every sample. This bootstrap error is the statistical error. It does
-    not contain how much the models in an average (the knot configurations) disagree with each
-    other, since the averaged spline can stay put while they disagree. For averaged kinds, the weighted
+    not contain how much the models in an average (the knot configurations, or the values of lam)
+    disagree with each other, since the averaged spline can stay put while they disagree. For averaged kinds, the weighted
     spread over models for the original data is therefore the systematic error, and every error below is
     the statistical and systematic errors added in quadrature. If edata is the covariance matrix of ydata,
     the samples are drawn from a multivariate normal, and the fits use the covariance matrix as well.
@@ -1273,9 +1297,10 @@ def bootSpline(xdata, ydata, edata, kind=Interpolating(), numb_samples=300, nsup
             splineMean: the spline fit to the original data, not an average over samples
             splineBS: the spline of each bootstrap sample
             AIC: AIC of splineMean, unless the kind is Interpolating or averaged
-        For KnotAverage also:
-            splinesModel, weightsModel: the spline of each model (knot configuration) for the original
-                data and its weight. Use modelSpread for the systematic error of your own observables.
+        For averaged kinds, KnotAverage and Smoothing(lam='average'), also:
+            splinesModel, weightsModel: the spline of each model (knot configuration or value of lam) for
+                the original data and its weight. Use modelSpread for the systematic error of your own
+                observables.
     """
     checkType("int",seed=seed)
     checkEqualLengths(xdata,ydata)
@@ -1322,7 +1347,7 @@ def bootSpline(xdata, ydata, edata, kind=Interpolating(), numb_samples=300, nsup
                                 deriv=fitter._derivOf(yBS[ndata:]),lam=spline0.lam))
 
     # Systematic errors from the spread over models for the original data. Kinds that are not averages have none.
-    if isinstance(kind,KnotAverage):
+    if kind.averaged:
         det    = fitter.details(y, xspl, fitter.dyd)
         spread = det['spread']
     else:
@@ -1355,7 +1380,7 @@ def bootSpline(xdata, ydata, edata, kind=Interpolating(), numb_samples=300, nsup
         _setErrors(res, name, name+'e', obs0[name], fBS, sys)
     if kind.hasAIC:
         res['AIC'] = spline0.get_AIC()
-    if isinstance(kind,KnotAverage):
+    if kind.averaged:
         res['splinesModel'] = det['splines']
         res['weightsModel'] = det['weights']
     return res
@@ -1423,12 +1448,8 @@ def posteriorSpline(xdata, ydata, edata, kind=Smoothing(), numb_samples=300, nsu
     w, _, c = fitter._coeffs(y, False, fitter.dyd)
     nlam    = len(fitter.lams)
     nB      = fitter.Ainv.shape[2]
-    # The posterior mean at each lam, and the systematic errors from its spread over lam
-    splinesLam = []
-    for k in range(nlam):
-        splinesLam.append(TBSpline(xdata,y,(fitter.t,c[k],3),kind,edata=edata,peff=fitter.peffs[k],
-                                   deriv=spline0.deriv,lam=fitter.lams[k]))
-    spread = _modelSpreads(splinesLam, w, xspl)
+    # The systematic errors from the spread of the posterior mean over lam
+    spread  = fitter.details(y, xspl, fitter.dyd)['spread']
 
     # At fixed lam, the posterior covariance of the coefficients is A^-1, so the posterior variance of the
     # spline on xspl is the diagonal of Bspl A^-1 Bspl^T. Average it over lam.

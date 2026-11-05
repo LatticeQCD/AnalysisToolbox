@@ -2,10 +2,11 @@ latqcdtools.interfaces.simulationManagement
 =============
 
 ```python
-analyzeChain(MCtime, measurements, obslabel=None, MClabel='traj no.', KScutoff=0.05, showPlots=False, savePlots=False, plotNamePrefix=None, tpickMax=None, nbins=None, verbose=False, **plotargs) -> dict:
+analyzeChain(MCtime, measurements, obslabel=None, MClabel='traj no.', KScutoff=0.05, showPlots=False, savePlots=False, plotNamePrefix=None, tpickMax=None, nbins=None, verbose=False, gewekeCutoff=3, **plotargs) -> dict:
 """
 Do some basic analysis of a MCMC time series of measurements. We check whether the data
-are distributed normally. Optionally you can plot the time series and/or a histogram.
+are distributed normally, and with the Geweke test whether the chain has thermalized, see gewekeZ. 
+Optionally you can plot the time series and/or a histogram.
 
 Args:
     MCtime (array-like): Array indexing the MC time. 
@@ -19,6 +20,8 @@ Args:
     tpickMax (int, optional): The largest nt where you think your estimate might become unreliable.
     nbins (int, optional): The number of jackknife bins (for estimating the error in tau_int)
     verbose (bool, optional): Report your findings to screen. Defaults to False.
+    gewekeCutoff (float, optional): Threshold above which |z| of the Geweke test means "not thermalized".
+      Defaults to 3.
 """
 ```
 ```python

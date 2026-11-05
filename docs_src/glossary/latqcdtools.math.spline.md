@@ -5,23 +5,21 @@ latqcdtools.math.spline
 _averageWeights(b, X, Omega, lams, As, occam):
 """
 Coefficients of the smoothing splines on the lam grid, which solve A_k c_k = X^T b, their weights,
-proportional to their evidence, and their log evidences. b holds the whitened data and derivative
-constraints. The arrays As and occam have the lam grid as their first axis.
+proportional to their evidence, and their log evidences log p(y|lam), up to a constant that does not
+depend on lam. b holds the whitened data and derivative constraints and X their rows, see
+_smoothingSystem. The arrays As and occam have the lam grid as their first axis. The penalty is a Gaussian
+prior on the coefficients with precision lam Omega, flat in the straight-line directions, which Omega does
+not see. Integrating out c gives
+    -2 log p(y|lam) = chi^2 + lam c^T Omega c + log det(A) - log det+(lam Omega) + const,
+evaluated at the spline c, where det+ is the product of nonzero eigenvalues (REML). The last two terms are
+-2 occam, see _smoothingAtLam.
 """
 ```
 ```python
-_batchMeanError(a, nbatch=5):
+_defined(vals, name, what):
 """
-Error of the mean of the time series a from the spread of the means of nbatch consecutive batches.
-"""
-```
-```python
-_checkEdata(xdata, edata)
-```
-```python
-_dataSeed(seed, ichain, y):
-"""
-Seed for one chain from the seed of the kind, the chain index, and the bits of the data.
+The entries of vals without nan. Warns how many of the what (e.g. samples) were dropped because the
+observable name is undefined for them.
 """
 ```
 ```python
@@ -33,12 +31,49 @@ itself when the index lands exactly on one.
 """
 ```
 ```python
+_fitRows(x, M, t, order, N, xd, od, ed):
+"""
+Rows X of the least-squares problem |X d - b|^2 of a spline of the given order with full knot vector t and
+coefficients c = N d: the whitened design matrix M B N, followed by one row B^(od)(xd) N / ed for each
+derivative constraint. The rows of b are the whitened data M y and the values dy/ed, see _Fitter._whitened.
+"""
+```
+```python
+_freePoint(idx, m):
+"""
+The m-th grid index, counting from 0, that is not in the configuration idx.
+"""
+```
+```python
 _kindSample(sample, fitter):
 """
 Fit one bootstrap sample for bootSpline: ydata, followed by the values of the derivative constraints.
 The bootstrap needs numbers, so pack what is needed to rebuild the spline into one flat array: the 
-sample, the coefficients, and the number of parameters. _unpackSample undoes this. This lives at module 
+sample, the coefficients, and the number of parameters. bootSpline unpacks it. This lives at module 
 level so that it can be pickled for nproc>1.
+"""
+```
+```python
+_knotChain(x, M, My, grid, lt, le, nu, kmax, natural, idx0, u, nequi, every, wmove, pbirth, pdeath, xd, od, ed):
+"""
+Metropolis-Hastings chain over knot configurations, starting from the configuration idx0, with u[it,:] the
+6 uniform random numbers of update it. The first nequi updates are for thermalization; after them, every
+every-th configuration is saved. xd, od, ed are the derivative constraints, see _knotFit. Returns a list
+with the configuration, AIC, and coefficients of every saved configuration.
+"""
+```
+```python
+_knotFit(x, M, My, grid, idx, natural, xd, od, ed):
+"""
+Least-squares fit of the cubic regression spline with the configuration idx to the whitened data My, see
+_lsqSystem. The last len(xd) entries of My are the whitened derivative constraints. Returns whether the fit
+is determined, its AIC, and its B-spline coefficients.
+"""
+```
+```python
+_knotValid(idx, lt, le, nu):
+"""
+Is there a unique datum strictly inside each interval of the configuration idx?
 """
 ```
 ```python
@@ -54,62 +89,49 @@ Grid of nlam values of lam, uniform in log lam, for averaging smoothing splines 
 derivative constraints. tr(H) falls monotonically with lam and does not depend on y, so we bracket the
 grid by the lam where tr(H) is close to its largest value (interpolation) and where it is close to 2
 (straight line). The largest value is nu + nd, but at most the number of coefficients, nu + 2. This
-makes the grid independent of the units of x and y. If tr(H) does not reach a target before the normal
-equations become too ill-conditioned to solve, which happens at very small or very large lam, the grid
-ends there instead. Splines that far out carry practically no weight.
-"""
-```
-```python
-_logEvidence(b, X, Omega, lam, c, occam):
-"""
-Log evidence log p(y|lam) of the smoothing spline c at lam, up to a constant that does not depend on lam.
-b holds the whitened data and derivative constraints and X their rows, see _smoothingSystem. The penalty
-is a Gaussian prior on the coefficients with precision lam Omega, flat in the straight-line directions,
-which Omega does not see. Integrating out c gives
-    -2 log p(y|lam) = chi^2 + lam c^T Omega c + log det(A) - log det+(lam Omega) + const,
-evaluated at the spline c, where det+ is the product of nonzero eigenvalues (REML). The last two terms are
--2 occam, see _smoothingAtLam.
+makes the grid independent of the units of x and y. Each end is found by stepping in log lam by 1 (a
+factor e in lam) from log lam = 0 and taking the last step at or beyond the target, so the grid is at most
+a factor e wider at each end than the targets demand. The weights there are negligible, so the ends need
+no more precision. If tr(H) does not reach a target before the normal equations become too
+ill-conditioned to solve, which happens at very small or very large lam, the grid ends there instead.
+Splines that far out carry practically no weight.
 """
 ```
 ```python
 _lsqSystem(x, M, t, order, natural, xd, od, ed):
 """
 Set up the least-squares problem |X d - b|^2 of a regression spline with full knot vector t, where
-X = M B N, b = M y, and c = N d. For a natural spline, the conditions S''(a) = S''(b) = 0 are C c = 0 and
-N is a basis of the null space of C; otherwise N = 1. Each derivative constraint adds the row
+X = M B N, b = M y, and c = N d. For a natural spline, N imposes S''(a) = S''(b) = 0, see _naturalBasis;
+otherwise N = 1. Each derivative constraint adds the row
 B^(od)(xd) N / ed to X. The solution d solves the normal equations A d = X^T b with A = X^T X. Returns
 N, X, A, and whether the fit cannot be solved: A is singular when the Schoenberg-Whitney conditions fail,
 and too ill-conditioned when derivative constraints are much more precise than the data.
 """
 ```
 ```python
-_maxOnGrid(ys, xspl):
+_modelSpreads(splines, w, xspl):
 """
-For curves ys on xspl, one per row, the x on xspl where each is largest, and its value there.
-"""
-```
-```python
-_medianBiasCorrect(f0, fBS):
-"""
-Bias-corrected central value 2 f0 - median(fBS), with f0 the observable for the original data and fBS
-its bootstrap samples along axis 0. This is _biasCorrect of the bootstrap with the median in place of
-the mean.
+Systematic errors of an average over models, e.g. knot configurations or values of lam: the weighted
+spreads over the models, with weights w, of each observable of their splines, see _observables. Models
+where an observable is undefined are dropped from its spread, see _spreadOf.
 """
 ```
 ```python
-_modelSpreads(splines, ys, w, xspl):
+_naturalBasis(t):
 """
-Systematic errors of an average over models (knot configurations): the weighted spreads over the
-models, with weights w, of each model's spline on xspl (ys holds them), its maximum (x and y on xspl), and
-its steepest inflection point. Models without an inflection point are dropped from that spread, see
-_spreadOf.
+Matrix N with c = N d for the cubic splines with S''(a) = S''(b) = 0 and full knot vector t. The free
+coefficients d are c_1,...,c_{nB-2}; the conditions fix c_0 and c_{nB-1}.
 """
 ```
 ```python
-_nparams(k, natural):
+_nparams(k, natural, order=3)
+```
+```python
+_observables(spline, xspl):
 """
-Number of parameters of a cubic regression spline with k interior knots. Natural boundary conditions
-remove 2.
+The observables of a spline that bootSpline and posteriorSpline report, keyed by their names in the result:
+the spline on xspl ('yspl'), the x on xspl where it is largest and its value there ('xmax', 'ymax'), and
+its steepest inflection point ('xinflect', 'yinflect'), which is nan if there is none.
 """
 ```
 ```python
@@ -146,7 +168,7 @@ Returns:
     A: the matrix of the normal equations
     Ainv: A^-1
     peff: effective number of parameters tr(H), where H = X A^-1 X^T maps b to the fit X c
-    occam: the part of the log evidence that does not depend on y, see _logEvidence
+    occam: the part of the log evidence that does not depend on y, see _averageWeights
 """
 ```
 ```python
@@ -167,46 +189,40 @@ Returns:
 """
 ```
 ```python
-_spreadOf(splines, w, f):
+_spreadOf(vals, w):
 """
-Weighted spread over the models splines, with weights w, of f(spline), which may be a number or an array.
-Models where f has a nan are dropped, and the remaining weights are renormalized. Returns nan if f has a
-nan for every model.
+Weighted spread over models, with weights w, of their values vals of a quantity, which may be a number or
+an array. Models where the quantity has a nan are dropped, and the remaining weights are renormalized.
+Returns nan if it has a nan for every model.
 """
 ```
 ```python
 _steepestInflection(spline, xspl):
 """
-The inflection point (x,y) of spline on xspl where |spline'| is largest. Inflection points are where the
-second derivative changes sign; each root is found between the two grid points that bracket it. Taking
+The inflection point (x,y) of spline on xspl where |spline'| is largest. Inflection points are the zeros
+of the second derivative. Between knots, the second derivative is a polynomial of degree order-2, so its
+zeros are computed exactly from its piecewise-polynomial form. Taking
 the steepest one ignores the small wiggles a smoothed spline can have where the data are flat. A zero of
 the second derivative at an end of xspl, as for a natural spline, does not count, so the first and last
-grid intervals are skipped; numerically that zero is not exact. Returns (nan,nan) if there is no
-inflection point.
+grid intervals are skipped; numerically that zero is not exact. Pieces where the second derivative
+vanishes identically give nan roots, which are skipped. Returns (nan,nan) if there is no inflection point.
 """
 ```
 ```python
-_unpackSample(sample, nsample):
+_values(obs, name):
 """
-The sample (ydata and derivative values, nsample in all), the coefficients, and the number of parameters 
-from an array packed by _kindSample.
-"""
-```
-```python
-_weightedSpread(w, a):
-"""
-Spread sqrt(sum_k w_k (a_k - abar)^2) of a along axis 0, with abar = sum_k w_k a_k and normalized w.
+The values of the observable name in the list obs of observables, see _observables.
 """
 ```
 ```python
-bootSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, seed=7271978, nproc=1, deriv=None) -> dict:
+bootSpline(xdata, ydata, edata, kind=Interpolating(), numb_samples=300, nsupport=301, seed=7271978, nproc=1, deriv=None) -> dict:
 """
 Given xdata, ydata, edata, create a spline of the given kind. Use a Gaussian (parametric) bootstrap,
 drawing ydata from normal distributions of width edata, to propagate uncertainties of the data into an
 error band for the spline. Every bootstrap sample is fit with the same kind; e.g. for KnotAverage,
 the chain is rerun in every sample. This bootstrap error is the statistical error. It does
-not contain how much the models in an average (the knot configurations) disagree with each
-other, since the averaged spline can stay put while they disagree. For averaged kinds, the weighted
+not contain how much the models in an average (the knot configurations, or the values of lam)
+disagree with each other, since the averaged spline can stay put while they disagree. For averaged kinds, the weighted
 spread over models for the original data is therefore the systematic error, and every error below is
 the statistical and systematic errors added in quadrature. If edata is the covariance matrix of ydata,
 the samples are drawn from a multivariate normal, and the fits use the covariance matrix as well.
@@ -245,25 +261,14 @@ Returns:
         splineMean: the spline fit to the original data, not an average over samples
         splineBS: the spline of each bootstrap sample
         AIC: AIC of splineMean, unless the kind is Interpolating or averaged
-    For Smoothing(lam='average') also, for the original data:
-        lams, peffs, weights, logEvidences: the grid of lam, the effective numbers of parameters, the
-            weights, and the log evidences.
-        splinesLam: the smoothing spline at each lam.
-        ysple_lam, xmaxe_lam: the weighted spreads over lam. They are diagnostics only: every bootstrap
-            sample recomputes the weights, so the bootstrap already contains the uncertainty in lam, and
-            adding them to ysple or xmaxe would count it twice.
-    For KnotAverage also, for the original data:
-        knotConfigs, knotCounts: the distinct saved knot configurations and how often each was saved.
-        kHistogram: how often each number of knots 0,...,kmax was saved.
-        acceptance: acceptance rates of birth, death, and move proposals.
-        ngrid, kmax: the number of candidate knots and the largest number of knots.
-    For averaged kinds also:
-        splinesModel, weightsModel: the spline of each model (knot configuration) for the original
-            data and its weight. Use modelSpread for the systematic error of your own observables.
+    For averaged kinds, KnotAverage and Smoothing(lam='average'), also:
+        splinesModel, weightsModel: the spline of each model (knot configuration or value of lam) for
+            the original data and its weight. Use modelSpread for the systematic error of your own
+            observables.
 """
 ```
 ```python
-getSpline(xdata, ydata, edata=None, kind=None, deriv=None):
+getSpline(xdata, ydata, edata=None, kind=Interpolating(), deriv=None):
 """
 Fit a spline of the given kind to the data.
 
@@ -285,18 +290,18 @@ Returns:
 """
 ```
 ```python
-getSplineErr(xdata, xspline, ydata, ydatae, kind=None):
+getSplineErr(xdata, xspline, ydata, ydatae, kind=Interpolating()):
 """
 Fit unweighted splines of the given kind to ydata-ydatae and ydata+ydatae, evaluate them at xspline,
 and return their midpoint and half-difference. This gives a smooth band, but it is not a statistical
-error propagation; for that use bootSpline. kind defaults to Interpolating().
+error propagation; for that use bootSpline.
 """
 ```
 ```python
 modelSpread(res, f):
 """
 Systematic error of a quantity f(spline) derived from a bootSpline result res: its weighted spread over
-the models of the average (the knot configurations) for the original data, the same
+the models of the average (the knot configurations, or the values of lam) for the original data, the same
 systematic error bootSpline gives its own observables. Add it in quadrature to the statistical error,
 i.e. the spread of f over res['splineBS']. Models where f is nan are dropped. For kinds that are not
 averages, there are no models, and the result is 0.
@@ -310,7 +315,7 @@ Returns:
 """
 ```
 ```python
-posteriorSpline(xdata, ydata, edata, kind=None, numb_samples=300, nsupport=301, seed=7271978, deriv=None) -> dict:
+posteriorSpline(xdata, ydata, edata, kind=Smoothing(lam='average', nlam=100), numb_samples=300, nsupport=301, seed=7271978, deriv=None) -> dict:
 """
 Smoothing spline and its Bayesian error band. The smoothing spline at fixed lam is the posterior mean
 of a Bayesian model, in which the curvature penalty is a Gaussian prior on the B-spline coefficients.
@@ -353,10 +358,10 @@ Returns:
         xmax, xmaxe: median and spread (dev_by_dist) over the samples of the x on xspl where the
             spline is largest. xmaxe_sys is the weighted spread over lam of the xmax of the
             posterior means, and xmaxe_stat = sqrt(xmaxe^2 - xmaxe_sys^2).
-        lams, peffs, weights, logEvidences: the grid of lam, the effective numbers of parameters,
-            the weights, and the log evidences.
-        splinesLam: the smoothing spline at each lam, i.e. the posterior mean at fixed lam. Each
-            has covPost, the posterior covariance of its coefficients.
+        ymax, ymaxe, xinflect, xinflecte, yinflect, yinflecte: the same for the spline at xmax and for the
+            inflection point with the largest |slope|. Samples without an inflection point are dropped,
+            and all are nan if no sample has one.
+        lams, peffs, weights: the grid of lam, the effective numbers of parameters, and the weights.
 """
 ```
 ```python
@@ -446,6 +451,7 @@ class SplineKind():
 """
 Base class of the kinds of spline. hasAIC is False for kinds without a meaningful AIC, i.e.
 interpolation and averages over models. natural is True for kinds with zero curvature at the endpoints.
+averaged is True for averages over models, whose fitters have details.
 """
 ```
 ```python
@@ -465,8 +471,7 @@ class _Fitter(kind, xdata, edata, deriv=None):
 """
 Base class of the fitters. Every fitter has fit(y, warn, dy), which returns a TBSpline; warn turns on
 warnings about the fit, where a fitter has any, and dy replaces the values of the derivative
-constraints, which bootSpline draws like data. Fitters of averaged kinds also have details(y, xspl),
-which returns the models of the average for the data y and their weighted spreads.
+constraints, which bootSpline draws like data. Each subclass implements _fit(y, warn, dy).
 """
 ```
 ```python
