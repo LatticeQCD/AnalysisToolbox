@@ -57,6 +57,12 @@ def testStatPhys():
         Y = data[1]
         return reweight(X,xRW,x0,Y)
     
+    # At the simulation point all weights are equal, so N_eff = N.
+    _, Neff = reweight(M0,p0,p0,S,returnNeff=True)
+    if not np.isclose(Neff,len(M0)):
+        logger.TBFail('N_eff at simulation point')
+        lpass = False
+
     for filename in ls('RWcontrol/T*.d'):
     
         T          = float(filename[11:-2])

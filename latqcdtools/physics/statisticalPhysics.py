@@ -381,8 +381,8 @@ class S4_2d(UniversalityClass):
     eta   = 1/4
 
 
-def reweight(X, pRW, p0, S):
-    """ 
+def reweight(X, pRW, p0, S, returnNeff=False):
+    """
     Reweight an observable X computed at a simulation point p0 to a nearby
     simulation point pRW. We assume the action depends linearly on the simulation
     parameter, i.e. S' ~ p S
@@ -391,18 +391,34 @@ def reweight(X, pRW, p0, S):
     where a response function is maximized, make sure you pick enough reweighting
     points to properly resolve where the maximum is.
 
+    The overlap diagnostic is the effective sample size N_eff = (sum w)^2/sum w^2,
+    where w are the reweighting weights. It equals len(X) when pRW=p0 and drops
+    toward 1 as a few configurations come to dominate. A small N_eff/len(X) means
+    the distribution at pRW is poorly sampled at p0, and the result should not
+    be trusted.
+
     Args:
-        X (np.array): Measurements to reweight. 
-        pRW (float): Reweight to this target. 
+        X (np.array): Measurements to reweight.
+        pRW (float): Reweight to this target.
         p0 (float): Simulation point.
-        S (np.array): Measurements of the action (extensive) divided by parameter p. 
+        S (np.array): Measurements of the action (extensive) divided by parameter p.
+        returnNeff (bool, optional): Also return the effective sample size N_eff. Defaults to False.
+
+    Returns:
+        float: Reweighted expectation value of X. If returnNeff, returns (float, float),
+        the reweighted expectation value of X and N_eff.
     """
     checkType(np.ndarray,X=X)
     checkType(np.ndarray,S=S)
+    checkType(bool,returnNeff=returnNeff)
     arg = (pRW-p0)*S
     # Subtracting by np.max(arg) is a trick to avoid overflow and improve
     # numerical stability.
-    Z_i = np.exp( arg-np.max(arg) ) 
+    Z_i = np.exp( arg-np.max(arg) )
     Z   = np.sum(Z_i)
-    return np.sum(X*Z_i/Z)
+    XRW = np.sum(X*Z_i/Z)
+    if returnNeff:
+        Neff = Z**2/np.sum(Z_i**2)
+        return XRW, Neff
+    return XRW
 

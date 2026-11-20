@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python3
 
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
