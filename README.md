@@ -37,7 +37,7 @@ QCD workflow can be found in [this data publication](https://pub.uni-bielefeld.d
 More information can be found in [the documentation](https://latticeqcd.github.io/AnalysisToolbox).
 
 
-To use the AnalysisToolbox, make sure you have Python 3.9+. You should then be able to
+To use the AnalysisToolbox, make sure you have Python 3.10+. You should then be able to
 conveniently install it using
 ```bash
 pip install latqcdtools

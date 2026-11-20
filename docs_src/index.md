@@ -34,7 +34,7 @@ We would love it if you are interested in helping develop the AnalysisToolbox! P
 
 # Setting up the AnalysisToolbox
 
-To use the AnalysisToolbox, make sure you have Python 3.9+. You should then be able to
+To use the AnalysisToolbox, make sure you have Python 3.10+. You should then be able to
 conveniently install it using
 ```bash
 pip install latqcdtools
@@ -45,7 +45,7 @@ to have LaTeX installed on your system. We recommend installing TeXLive-Full.
 
 ## What if pip install fails?
 
-If the `pip install` doesn't work for you, for example because you don't have access to Python 3.9,
+If the `pip install` doesn't work for you, for example because you don't have access to Python 3.10,
 you should be able to get something to work by cloning the AnalysisToolbox git.
 You can set up the AnalysisToolbox using either a [Python virtual environment](https://realpython.com/python-virtual-environments-a-primer/)
 or by modifying the Python on your local machine. You can set up the former or the latter by adjusting the user preferences
