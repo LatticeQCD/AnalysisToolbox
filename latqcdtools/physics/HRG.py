@@ -165,26 +165,75 @@ class HRG(HRGbase):
         """
         return (self.Mass[k]/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*np.pi**2*n**2)
 
+    def _stateSum(self, T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel):
+        """ 
+        Sum over all states k and all kept orders n of the logarithm expansion of
+            weight(n) * factor(k,n,T) * z_k^n * kernel(n, m_k, x),   x = n m_k/T,
+        vectorized over states, temperatures, and chemical potentials. The sum over n runs up to Nmax-1, as before.
+
+        Args:
+            T (float or array-like): temperature.
+            muB_div_T (float or array-like): muB/T.
+            muQ_div_T (float or array-like): muQ/T.
+            muS_div_T (float or array-like): muS/T.
+            muC_div_T (float or array-like): muC/T.
+            weight (func): charge weights of all states at order n, called as weight(n), returning an array
+                over states.
+            kernel (func): called as kernel(n, m, x, T), with m and x broadcast over states and the input shape,
+                and T broadcast to the input shape.
+
+        Returns:
+            float or array-like: the sum, with the broadcast shape of T and the chemical potentials.
+        """
+        T, muB, muQ, muS, muC = np.broadcast_arrays(*[np.asarray(a, dtype=float) for a in
+                                                      (T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)])
+        shape  = T.shape
+        expand = (slice(None),) + (np.newaxis,)*len(shape)
+        Mass   = np.asarray(self.Mass, dtype=float)
+        g      = np.asarray(self.g, dtype=float)
+        w      = np.asarray(self.w, dtype=float)
+        light  = Mass < APPROX_KAON_MASS
+        result = np.zeros(shape)
+        for group, nmax in ((light, self.NMAX_light), (~light, self.NMAX_heavy)):
+            if not np.any(group):
+                continue
+            m      = Mass[group][expand]
+            expo   = ( np.asarray(self.B, dtype=float)[group][expand]*muB + np.asarray(self.Q, dtype=float)[group][expand]*muQ
+                     + np.asarray(self.S, dtype=float)[group][expand]*muS + np.asarray(self.C, dtype=float)[group][expand]*muC )
+            for n in range(1, nmax):
+                x       = n*m/T
+                factor  = (m/T)**2 * g[group][expand] * w[group][expand]**(n+1) / (2*np.pi**2*n**2)
+                result += np.sum( weight(n)[group][expand] * factor * np.exp(n*expo) * kernel(n, m, x, T), axis=0 )
+        return result[()]
+
+    def _chargeWeight(self, B_order, S_order, Q_order, C_order, I_order):
+        """ 
+        Charge weights (B n)^B_order (S n)^S_order (Q n)^Q_order (C n)^C_order (I3 n)^I_order as a function of n. 
+        """
+        B  = np.asarray(self.B, dtype=float)
+        S  = np.asarray(self.S, dtype=float)
+        Q  = np.asarray(self.Q, dtype=float)
+        C  = np.asarray(self.C, dtype=float)
+        I3 = np.asarray(self.I3, dtype=float)
+        def weight(n):
+            return (B*n)**B_order * (S*n)**S_order * (Q*n)**Q_order * (C*n)**C_order * (I3*n)**I_order
+        return weight
+
     def P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
-        P = 0.
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                P += self.factor(k, n, T) \
-                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                        * kn(2, (n * self.Mass[k] / T))
-        return P
+        def weight(n):
+            return np.ones(len(self.Mass))
+        def kernel(n, m, x, T):
+            return kn(2, x)
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
-        eps = 0.
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                x = self.Mass[k]*n/T
-                eps += self.factor(k, n, T) \
-                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T,muI_div_T=muI_div_T)**n \
-                        * (kn(2, x) * 3 + kn(1, x) * x)
-        return eps
+        def weight(n):
+            return np.ones(len(self.Mass))
+        def kernel(n, m, x, T):
+            return kn(2, x)*3 + kn(1, x)*x
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def theta_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
@@ -209,33 +258,25 @@ class HRG(HRGbase):
 
     def ddT_E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        d(E/T^4)/dT at fixed mu/T 
+        d(E/T^4)/dT at fixed mu/T
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
-        eps = 0.
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                m = self.Mass[k]
-                x = m*n/T
-                eps += self.factor(k, n, T)*m*n \
-                        * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                        * (kn(0, x)*n*m + kn(1, x)*T)/T**3
-        return eps
+        def weight(n):
+            return np.ones(len(self.Mass))
+        def kernel(n, m, x, T):
+            return m*n*(kn(0, x)*n*m + kn(1, x)*T)/T**3
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def ddT_P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        d(P/T^4)/dT at fixed mu/T 
+        d(P/T^4)/dT at fixed mu/T
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
-        P = 0.
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                m = self.Mass[k]
-                x = m*n/T
-                P += self.factor(k, n, T) \
-                        * self.z(k, muB_div_T=muB_div_T,muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                        * m*n*kn(1, x) / T**2
-        return P
+        def weight(n):
+            return np.ones(len(self.Mass))
+        def kernel(n, m, x, T):
+            return m*n*kn(1, x)/T**2
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def CV_div_T3_mu0(self, T):
         """ 
@@ -264,81 +305,58 @@ class HRG(HRGbase):
 
     def gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        chi_BQSC 
+        chi_BQSC
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
-        chi = 0.0
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                zn_Kn = self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n * kn(2, (n*self.Mass[k]/T))
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * (self.I3[k]*n)**I_order * self.factor(k, n, T) * zn_Kn
-        return chi
+        weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
+        def kernel(n, m, x, T):
+            return kn(2, x)
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        d(chi_BQSC)/dT at fixed mu/T 
+        d(chi_BQSC)/dT at fixed mu/T
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
-        chi = 0.0
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                m = self.Mass[k]
-                x = m*n/T
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * (self.I3[k]*n)**I_order \
-                                              * self.factor(k, n, T) \
-                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                                              * m*n*kn(1, x) / T**2
-        return chi
+        weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
+        def kernel(n, m, x, T):
+            return m*n*kn(1, x)/T**2
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        d^2(chi_BQSC)/dT^2 at fixed mu/T 
+        d^2(chi_BQSC)/dT^2 at fixed mu/T
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
-        chi = 0.0
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                m = self.Mass[k]
-                x = m*n/T
-                chi += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order *(self.I3[k]*n)**I_order \
-                                              * self.factor(k, n, T) * m*n \
-                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T,muI_div_T=muI_div_T)**n \
-                                              * (m*n*kn(0, x)/T**4 - 3*kn(1, x)/T**3)
-        return chi
+        weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
+        def kernel(n, m, x, T):
+            return m*n*(m*n*kn(0, x)/T**4 - 3*kn(1, x)/T**3)
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        Arbitrary mu/T derivatives of E/T^4 at fixed T 
+        Arbitrary mu/T derivatives of E/T^4 at fixed T
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
-        eps = 0.
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                x = self.Mass[k]*n/T
-                eps += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order *(self.I3[k]*n)**I_order \
-                                              * self.factor(k, n, T) \
-                                              * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                                              * (kn(2, x)*3 + kn(1, x)*x)
-        return eps
+        weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
+        def kernel(n, m, x, T):
+            return kn(2, x)*3 + kn(1, x)*x
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def gen_ddmuh_P_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
-        Arbitrary mu/T derivatives of P/T^4 at fixed T 
+        Arbitrary mu/T derivatives of P/T^4 at fixed T
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
-        P = 0.
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                P += (self.B[k]*n)**B_order * (self.S[k]*n)**S_order * (self.Q[k]*n)**Q_order * (self.C[k]*n)**C_order * (self.I3[k]*n)**I_order \
-                                            * self.factor(k, n, T) \
-                                            * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                                            * kn(2, (n*self.Mass[k]/T))
-        return P
+        weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
+        def kernel(n, m, x, T):
+            return kn(2, x)
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def gen_ddmuh_S_div_T3(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
         """ 
@@ -410,17 +428,15 @@ class HRG(HRGbase):
         """
         _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
         logger.warn('HRGFlavor basis is not yet tested for finite mu...')
-        chi = 0.0
-        for k in range(len(self.Mass)):
-            for n in range(1, self.Nmax(k)):
-                chi += ((self.B[k]+self.Q[k]-self.C[k])*n)**u_order \
-                    * ((2.0*self.B[k]-self.Q[k]+self.S[k])*n)**d_order \
-                    * (-self.S[k]*n)**s_order \
-                    * (self.C[k]*n)**c_order \
-                    * self.factor(k, n, T) \
-                    * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                    * kn(2, (n*self.Mass[k]/T))
-        return chi
+        B = np.asarray(self.B, dtype=float)
+        Q = np.asarray(self.Q, dtype=float)
+        S = np.asarray(self.S, dtype=float)
+        C = np.asarray(self.C, dtype=float)
+        def weight(n):
+            return ((B+Q-C)*n)**u_order * ((2.0*B-Q+S)*n)**d_order * (-S*n)**s_order * (C*n)**c_order
+        def kernel(n, m, x, T):
+            return kn(2, x)
+        return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 # TODO: gen_chi can be implemented using multi-dimensional Leibniz rule
 
 

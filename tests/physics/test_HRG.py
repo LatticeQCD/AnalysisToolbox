@@ -220,7 +220,7 @@ def testHRG():
             numerical = diff_deriv(T,ddT_chiBQ11)
             lpass2 *= print_results(exact, numerical, prec=EPSILON, text="d^2(chi11BQ)/dT^2")
     
-            return lpass2
+        return lpass2
     
     lpass *= np.all( parallel_function_eval(compareAtmuB,muBList,nproc=DEFAULTTHREADS) )
     
