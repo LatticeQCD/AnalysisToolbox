@@ -10,7 +10,7 @@
 #
 import numpy as np
 import argparse
-from latqcdtools.physics.HRG import HRG, EVHRG, LCP_init_NS0
+from latqcdtools.physics.HRG import HRG, EVHRG, LCP_init_NS0, solveLCP
 from latqcdtools.base.utilities import getArgs, printArg
 import latqcdtools.base.logger as logger
 from latqcdtools.base.readWrite import readTable, writeTable
@@ -110,11 +110,18 @@ for model in models:
         logger.details('muB/T = %8.e',muBh[i])
 
         muQhi, muShi = muQh[i-1], muSh[i-1]
-        try:
-            muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi), tol=1e-9)
-        except:
-            logger.warn("No algorithm converged--giving up at muB=",muB[i])
-            break
+        if model=='QM':
+            try:
+                muQhi, muShi = solveLCP(QMhrg, t[i], muBh[i], r, start=(muQhi, muShi))
+            except Exception:
+                logger.warn("solveLCP did not converge--giving up at muB=",muB[i])
+                break
+        else:
+            try:
+                muQhi, muShi = persistentSolve(lambda p: strangeness_neutral_equations(p,muBh[i],t[i],model), (muQhi, muShi), tol=1e-9)
+            except:
+                logger.warn("No algorithm converged--giving up at muB=",muB[i])
+                break
 
         # A quick check that the solver worked correctly.
         NB = QMhrg.gen_chi(t[i], B_order=1, muB_div_T=muBh[i], muQ_div_T=muQhi, muS_div_T=muShi)

@@ -10,6 +10,8 @@
 import numpy as np
 import sympy as sy
 import warnings
+import functools
+from mpmath import mp
 from scipy.special import lambertw, kn
 from sympy import Sum, symbols, Indexed, lambdify, LambertW, exp
 import latqcdtools.base.logger as logger
@@ -148,6 +150,33 @@ class HRG(HRGbase):
     def __repr__(self) -> str:
         return "HRG"
 
+    # Numerical backend. HRG works in double precision; HRG_mp overrides these to work in arbitrary precision.
+    _PI = np.pi
+
+    def _asarray(self, a):
+        """ 
+        Convert input to an array of the backend number type. 
+        """
+        return np.asarray(a, dtype=float)
+
+    def _zeros(self, shape):
+        """ 
+        Array of zeros of the backend number type. 
+        """
+        return np.zeros(shape)
+
+    def _exp(self, x):
+        """ 
+        Elementwise exponential of the backend. 
+        """
+        return np.exp(x)
+
+    def _kn(self, nu, x):
+        """ 
+        Elementwise modified Bessel function of the second kind K_nu(x), integer nu, of the backend. 
+        """
+        return kn(nu, x)
+
     def Nmax(self, k):
         """ Keep Nmax terms of the Taylor expansion. """
         if self.Mass[k] < APPROX_KAON_MASS:
@@ -185,15 +214,15 @@ class HRG(HRGbase):
         Returns:
             float or array-like: the sum, with the broadcast shape of T and the chemical potentials.
         """
-        T, muB, muQ, muS, muC = np.broadcast_arrays(*[np.asarray(a, dtype=float) for a in
+        T, muB, muQ, muS, muC = np.broadcast_arrays(*[self._asarray(a) for a in
                                                       (T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T)])
         shape  = T.shape
         expand = (slice(None),) + (np.newaxis,)*len(shape)
-        Mass   = np.asarray(self.Mass, dtype=float)
+        light  = np.asarray(self.Mass, dtype=float) < APPROX_KAON_MASS
+        Mass   = self._asarray(self.Mass)
         g      = np.asarray(self.g, dtype=float)
         w      = np.asarray(self.w, dtype=float)
-        light  = Mass < APPROX_KAON_MASS
-        result = np.zeros(shape)
+        result = self._zeros(shape)
         for group, nmax in ((light, self.NMAX_light), (~light, self.NMAX_heavy)):
             if not np.any(group):
                 continue
@@ -202,8 +231,8 @@ class HRG(HRGbase):
                      + np.asarray(self.S, dtype=float)[group][expand]*muS + np.asarray(self.C, dtype=float)[group][expand]*muC )
             for n in range(1, nmax):
                 x       = n*m/T
-                factor  = (m/T)**2 * g[group][expand] * w[group][expand]**(n+1) / (2*np.pi**2*n**2)
-                result += np.sum( weight(n)[group][expand] * factor * np.exp(n*expo) * kernel(n, m, x, T), axis=0 )
+                factor  = (m/T)**2 * g[group][expand] * w[group][expand]**(n+1) / (2*self._PI**2*n**2)
+                result += np.sum( weight(n)[group][expand] * factor * self._exp(n*expo) * kernel(n, m, x, T), axis=0 )
         return result[()]
 
     def _chargeWeight(self, B_order, S_order, Q_order, C_order, I_order):
@@ -224,7 +253,7 @@ class HRG(HRGbase):
         def weight(n):
             return np.ones(len(self.Mass))
         def kernel(n, m, x, T):
-            return kn(2, x)
+            return self._kn(2, x)
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def E_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -232,7 +261,7 @@ class HRG(HRGbase):
         def weight(n):
             return np.ones(len(self.Mass))
         def kernel(n, m, x, T):
-            return kn(2, x)*3 + kn(1, x)*x
+            return self._kn(2, x)*3 + self._kn(1, x)*x
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def theta_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -264,7 +293,7 @@ class HRG(HRGbase):
         def weight(n):
             return np.ones(len(self.Mass))
         def kernel(n, m, x, T):
-            return m*n*(kn(0, x)*n*m + kn(1, x)*T)/T**3
+            return m*n*(self._kn(0, x)*n*m + self._kn(1, x)*T)/T**3
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def ddT_P_div_T4(self, T, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -275,7 +304,7 @@ class HRG(HRGbase):
         def weight(n):
             return np.ones(len(self.Mass))
         def kernel(n, m, x, T):
-            return m*n*kn(1, x)/T**2
+            return m*n*self._kn(1, x)/T**2
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def CV_div_T3_mu0(self, T):
@@ -311,7 +340,7 @@ class HRG(HRGbase):
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
         def kernel(n, m, x, T):
-            return kn(2, x)
+            return self._kn(2, x)
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def ddT_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -322,7 +351,7 @@ class HRG(HRGbase):
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
         def kernel(n, m, x, T):
-            return m*n*kn(1, x)/T**2
+            return m*n*self._kn(1, x)/T**2
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def d2dT2_gen_chi(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -333,7 +362,7 @@ class HRG(HRGbase):
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
         def kernel(n, m, x, T):
-            return m*n*(m*n*kn(0, x)/T**4 - 3*kn(1, x)/T**3)
+            return m*n*(m*n*self._kn(0, x)/T**4 - 3*self._kn(1, x)/T**3)
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def gen_ddmuh_E_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -344,7 +373,7 @@ class HRG(HRGbase):
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
         def kernel(n, m, x, T):
-            return kn(2, x)*3 + kn(1, x)*x
+            return self._kn(2, x)*3 + self._kn(1, x)*x
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def gen_ddmuh_P_div_T4(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -355,7 +384,7 @@ class HRG(HRGbase):
         _checkOrders(B=B_order,Q=Q_order,S=S_order,C=C_order,I=I_order)
         weight = self._chargeWeight(B_order, S_order, Q_order, C_order, I_order)
         def kernel(n, m, x, T):
-            return kn(2, x)
+            return self._kn(2, x)
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 
     def gen_ddmuh_S_div_T3(self, T, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muS_div_T=0., muQ_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -401,7 +430,7 @@ class HRG(HRGbase):
                                                   * (self.I3[k]*n)**I_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[0]/T)**2 \
                                                   * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                                                  * kn(2, (n*rms_mass[0]/T)) / (np.pi*n)**2 / 2
+                                                  * self._kn(2, (n*rms_mass[0]/T)) / (np.pi*n)**2 / 2
             elif 500 >= self.Mass[k] >= 490:
                 for n in range(1, 10):
                     chi += (self.B[k]*n)**B_order * (self.S[k]*n )**S_order \
@@ -410,7 +439,7 @@ class HRG(HRGbase):
                                                   * (self.I3[k]*n)**I_order \
                                                   * self.w[k]**(n+1) * self.g[k] * (rms_mass[1]/T)**2 \
                                                   * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                                                  * kn(2, (n*rms_mass[1]/T)) / (np.pi*n)**2 / 2
+                                                  * self._kn(2, (n*rms_mass[1]/T)) / (np.pi*n)**2 / 2
             else:
                 for n in range(1, 2):
                     chi += (self.B[k]*n)**B_order * (self.S[k]*n )**S_order \
@@ -419,7 +448,7 @@ class HRG(HRGbase):
                                                   * (self.I3[k]*n)**I_order \
                                                   * self.factor(k, n, T) \
                                                   * self.z(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T)**n \
-                                                  * kn(2, (n*self.Mass[k]/T))
+                                                  * self._kn(2, (n*self.Mass[k]/T))
         return chi
 
     def genChiFlavor(self, T, u_order=0, d_order=0, s_order=0, c_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
@@ -435,9 +464,223 @@ class HRG(HRGbase):
         def weight(n):
             return ((B+Q-C)*n)**u_order * ((2.0*B-Q+S)*n)**d_order * (-S*n)**s_order * (C*n)**c_order
         def kernel(n, m, x, T):
-            return kn(2, x)
+            return self._kn(2, x)
         return self._stateSum(T, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, weight, kernel)
 # TODO: gen_chi can be implemented using multi-dimensional Leibniz rule
+
+
+DEFAULT_DPS = 50   # Default number of decimal digits for HRG_mp.
+
+
+def suggestedDps(T, deltaM, digits=16):
+    """ 
+    Suggest a working precision for HRG_mp. The exponent range of mpmath numbers is unbounded, so Boltzmann
+    factors never underflow, whatever the precision. Precision is needed only when a result comes out of a
+    cancellation. If terms of size A cancel to leave a result of size A exp(-deltaM/T), about deltaM/(T ln 10)
+    digits are lost. Example: along a strangeness-neutral line with fixed nQ/nB at low T, nQ is a pi+/pi-
+    cancellation that must leave something of the size of the nucleon contribution, so deltaM ~ m_N - m_pi. 
+
+    Args:
+        T (float): temperature in [MeV].
+        deltaM (float): mass scale in [MeV] controlling the cancellation.
+        digits (int, optional): digits wanted in the result. Defaults to 16.
+
+    Returns:
+        int: suggested number of decimal digits.
+    """
+    return int(np.ceil(deltaM/(T*np.log(10)))) + digits
+
+
+@functools.lru_cache(maxsize=2**16)
+def _besselK_mp(nu, x, prec):
+    """ 
+    Cached mpmath K_nu(x) at binary precision prec, for integer nu >= 0. Orders above 1 use the recurrence
+    K_nu(x) = K_{nu-2}(x) + 2(nu-1)/x K_{nu-1}(x), which is exact, adds only positive terms, and saves the
+    slow integer-order evaluation in mpmath. 
+    """
+    with mp.workprec(prec):
+        if nu < 2:
+            return mp.besselk(nu, x)
+        return _besselK_mp(nu-2, x, prec) + 2*(nu-1)/x * _besselK_mp(nu-1, x, prec)
+
+
+def _besselK_mpScalar(nu, x):
+    """ 
+    mpmath K_nu(x) at the current precision. 
+    """
+    return _besselK_mp(int(nu), mp.mpf(x), mp.prec)
+
+
+def _exp_mpScalar(x):
+    """ 
+    mpmath exp(x) at the current precision. 
+    """
+    return mp.exp(x)
+
+
+def _mpf_scalar(x):
+    """ 
+    Convert to an mpmath float at the current precision. 
+    """
+    return mp.mpf(x)
+
+
+_besselK_mpArray = np.frompyfunc(_besselK_mpScalar, 2, 1)
+_exp_mpArray     = np.frompyfunc(_exp_mpScalar, 1, 1)
+_mpf_array       = np.frompyfunc(_mpf_scalar, 1, 1)
+
+
+def _withPrecision(method):
+    """ 
+    Run an HRG_mp method at the instance's precision. 
+    """
+    @functools.wraps(method)
+    def wrapped(self, *args, **kwargs):
+        with mp.workdps(self.dps):
+            return method(self, *args, **kwargs)
+    return wrapped
+
+
+class HRG_mp(HRG):
+    """ 
+    HRG in arbitrary precision using mpmath. Same physics and methods as HRG, but every number is an mpmath
+    float, so Boltzmann factors like exp(-m_N/T) never underflow, and cancellations can be resolved by raising
+    the precision. Use it when double precision fails, e.g. for T below about 10 MeV. It is much slower than
+    HRG. Results are mpmath floats (scalar input) or numpy object arrays of mpmath floats (array input). 
+
+    Each method runs at dps decimal digits, without changing mpmath's global precision. Arithmetic you do with
+    the results afterwards happens at the global precision mp.dps, so if your own combinations of results
+    involve cancellations, do them inside "with mp.workdps(hrg.dps):". See suggestedDps for choosing dps.
+
+    K_nu(x) is cached across calls, which pays off when many quantities are computed at the same T.
+    """
+
+    def __init__(self, Mass, g, w, B, S, Q, C=None, NMAX_light=21, NMAX_heavy=2, dps=DEFAULT_DPS):
+        HRG.__init__(self, Mass, g, w, B, S, Q, C, NMAX_light, NMAX_heavy)
+        checkType("int", dps=dps)
+        self.dps = dps
+
+    def __repr__(self) -> str:
+        return "HRG_mp"
+
+    _PI = mp.pi
+
+    def _asarray(self, a):
+        return np.array(_mpf_array(np.asarray(a, dtype=object)), dtype=object)
+
+    def _zeros(self, shape):
+        return np.full(shape, mp.mpf(0), dtype=object)
+
+    def _exp(self, x):
+        return _exp_mpArray(x)
+
+    def _kn(self, nu, x):
+        return _besselK_mpArray(nu, x)
+
+    def factor(self, k, n, T):
+        """ 
+        (m/T)^2 g eta^(n+1) / 2pi^2 n^2 
+        """
+        return (mp.mpf(self.Mass[k])/T)**2 * self.g[k] * self.w[k]**(n+1) / (2*mp.pi**2*n**2)
+
+    def z(self, k, muB_div_T, muQ_div_T, muS_div_T, muC_div_T, muI_div_T):
+        """ 
+        e^(mu_X*N_X/T) , X = (B,Q,S,C,I) 
+        """
+        _checkMus(muB=muB_div_T,muQ=muQ_div_T,muS=muS_div_T,muC=muC_div_T,muI=muI_div_T)
+        return mp.exp(self.muN_div_T(k, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T, muC_div_T=muC_div_T, muI_div_T=muI_div_T))
+
+    def gen_chi_RMS(self, T, Nt, B_order=0, S_order=0, Q_order=0, C_order=0, I_order=0, muB_div_T=0., muQ_div_T=0., muS_div_T=0., muC_div_T=0., muI_div_T=0.):
+        logger.TBRaise('gen_chi_RMS is not implemented for HRG_mp. Taste-split masses matter near Tpc, where HRG suffices.')
+
+
+# Every public method of HRG_mp runs at the instance's precision.
+for _name in dir(HRG_mp):
+    if not _name.startswith('_') and callable(getattr(HRG_mp, _name)):
+        setattr(HRG_mp, _name, _withPrecision(getattr(HRG_mp, _name)))
+
+
+
+def solveLCP(hrg, T, muB_div_T, rQ, start=None, tol=1e-12, maxiter=100):
+    """ 
+    Solve NS = 0 and NQ/NB = rQ for muQ/T and muS/T at fixed T and muB/T. Works for HRG and HRG_mp.
+
+    The equations are solved as NS/NB = 0 and NQ/NB - rQ = 0, which are of order one at every T. (Densities
+    carry a factor ~exp(-m_N/T), so at low T an absolute criterion on NS and NQ - rQ NB would accept any guess.)
+    The Jacobian is exact, since d NX/d(muY/T) are second-order cumulants, and each Newton step solves the 2x2
+    system by Cramer's rule, halving the step until the residual decreases. At low T the solutions are
+    exponentially small, and NQ comes from a pi+/pi- cancellation, so there you need HRG_mp with enough digits;
+    see suggestedDps. Tracking a line down in T works best by using each solution as start for the next T.
+
+    Args:
+        hrg (HRG): HRG or HRG_mp object.
+        T (float): temperature in [MeV].
+        muB_div_T (float): muB/T.
+        rQ (float): NQ/NB.
+        start (tuple, optional): starting guess (muQ/T, muS/T). Defaults to LCP_init_NS0(muB_div_T).
+        tol (float, optional): tolerance on both residuals. Defaults to 1e-12.
+        maxiter (int, optional): maximum number of Newton steps. Defaults to 100.
+
+    Raises:
+        Exception: no convergence within maxiter steps.
+
+    Returns:
+        tuple: muQ/T, muS/T
+    """
+    checkType("real", rQ=rQ)
+    checkType("int", maxiter=maxiter)
+    if start is None:
+        start = LCP_init_NS0(muB_div_T)
+    if isinstance(hrg, HRG_mp):
+        with mp.workdps(hrg.dps):
+            return _solveLCP(hrg, mp.mpf(T), mp.mpf(muB_div_T), mp.mpf(rQ), mp.mpf(start[0]), mp.mpf(start[1]), tol, maxiter)
+    return _solveLCP(hrg, T, muB_div_T, rQ, start[0], start[1], tol, maxiter)
+
+
+def _LCPresiduals(hrg, T, muB_div_T, muQ_div_T, muS_div_T, rQ):
+    """ 
+    (NS/NB, NQ/NB - rQ) and the densities NB, NQ, NS. 
+    """
+    NB = hrg.gen_chi(T, B_order=1, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T)
+    NQ = hrg.gen_chi(T, Q_order=1, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T)
+    NS = hrg.gen_chi(T, S_order=1, muB_div_T=muB_div_T, muQ_div_T=muQ_div_T, muS_div_T=muS_div_T)
+    return NS/NB, NQ/NB - rQ, NB, NQ, NS
+
+
+def _solveLCP(hrg, T, muB_div_T, rQ, muQ_div_T, muS_div_T, tol, maxiter):
+    """ 
+    Newton iteration for solveLCP. 
+    """
+    resS, resQ, NB, NQ, NS = _LCPresiduals(hrg, T, muB_div_T, muQ_div_T, muS_div_T, rQ)
+    for _ in range(maxiter):
+        size = max(abs(resS), abs(resQ))
+        if size < tol:
+            return muQ_div_T, muS_div_T
+        mus  = {"muB_div_T": muB_div_T, "muQ_div_T": muQ_div_T, "muS_div_T": muS_div_T}
+        X11BQ = hrg.gen_chi(T, B_order=1, Q_order=1, **mus)
+        X11BS = hrg.gen_chi(T, B_order=1, S_order=1, **mus)
+        X2Q   = hrg.gen_chi(T, Q_order=2, **mus)
+        X11QS = hrg.gen_chi(T, Q_order=1, S_order=1, **mus)
+        X2S   = hrg.gen_chi(T, S_order=2, **mus)
+        # Jacobian of (NS/NB, NQ/NB) w.r.t. (muQ/T, muS/T), using d NX/d(muY/T) = chi_11^XY
+        JSQ = (X11QS*NB - NS*X11BQ)/NB**2
+        JSS = (X2S  *NB - NS*X11BS)/NB**2
+        JQQ = (X2Q  *NB - NQ*X11BQ)/NB**2
+        JQS = (X11QS*NB - NQ*X11BS)/NB**2
+        det = JSQ*JQS - JSS*JQQ
+        dQ  = (-resS*JQS + resQ*JSS)/det
+        dS  = (-resQ*JSQ + resS*JQQ)/det
+        step = 1
+        for _ in range(30):
+            newResS, newResQ, newNB, newNQ, newNS = _LCPresiduals(hrg, T, muB_div_T, muQ_div_T + step*dQ, muS_div_T + step*dS, rQ)
+            if max(abs(newResS), abs(newResQ)) < size:
+                break
+            step = step/2
+        muQ_div_T, muS_div_T = muQ_div_T + step*dQ, muS_div_T + step*dS
+        resS, resQ, NB, NQ, NS = newResS, newResQ, newNB, newNQ, newNS
+    if max(abs(resS), abs(resQ)) < tol:
+        return muQ_div_T, muS_div_T
+    logger.TBRaise(f"LCP not solved at T = {float(T)}, muB/T = {float(muB_div_T)}: NS/NB = {float(resS):.3e}, NQ/NB - rQ = {float(resQ):.3e}")
 
 
 class EVHRG(HRGbase):

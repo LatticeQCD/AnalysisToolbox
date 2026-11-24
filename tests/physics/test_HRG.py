@@ -16,7 +16,8 @@ from latqcdtools.base.plotting import plot_lines, plot_file, set_params, colors,
 from latqcdtools.base.utilities import timer
 from latqcdtools.base.speedify import parallel_function_eval, DEFAULTTHREADS 
 from latqcdtools.math.num_deriv import diff_deriv
-from latqcdtools.physics.HRG import HRG, EVHRG
+from mpmath import mp
+from latqcdtools.physics.HRG import HRG, EVHRG, HRG_mp
 
 
 def testHRG():
@@ -254,5 +255,77 @@ def testHRG():
     concludeTest(lpass)
 
 
+def testHRGmp():
+
+    lpass = True
+
+    times = timer()
+
+    hadrons, M, Q, B, S, _, g, w = readTable("../../latqcdtools/physics/HRGtables/QM_hadron_list_ext_strange_2020.txt",
+                                             usecols=(0,1,2,3,4,5,6,7),dtype="U11,f8,i8,i8,i8,i8,i8,i8")
+    QMhrg   = HRG(M,g,w,B,S,Q)
+    QMhrgmp = HRG_mp(M,g,w,B,S,Q)
+    globalDps = mp.dps
+
+    # The backend tests do not need the whole list, and mpmath Bessel functions are slow.
+    light   = M < 1000
+    hrg     = HRG(M[light],g[light],w[light],B[light],S[light],Q[light])
+    hrgmp   = HRG_mp(M[light],g[light],w[light],B[light],S[light],Q[light])
+
+    #
+    # Test: At ordinary temperatures, HRG_mp agrees with HRG to double precision.
+    #
+    T = np.array([100.,150.])
+    for label, method, kwargs in [ ("P/T^4"            , "P_div_T4"     , {}),
+                                   ("s/T^3"            , "S_div_T3"     , {"muB_div_T":1.}),
+                                   ("chi11BQ"          , "gen_chi"      , {"B_order":1,"Q_order":1,"muB_div_T":1.,"muS_div_T":0.3}),
+                                   ("d(chi2B)/dT"      , "ddT_gen_chi"  , {"B_order":2,"muB_div_T":1.}),
+                                   ("d^2(chi11BQ)/dT^2", "d2dT2_gen_chi", {"B_order":1,"Q_order":1,"muB_div_T":1.}) ]:
+        double    = getattr(hrg,method)(T,**kwargs)
+        arbitrary = getattr(hrgmp,method)(T,**kwargs)
+        lpass *= print_results(arbitrary.astype(float), double, prec=1e-13, text=f"HRG_mp vs HRG {label}")
+
+    #
+    # Test: At T = 1 MeV, double precision underflows. chi2B is then the Boltzmann nucleon and antinucleon
+    #       contribution, with corrections of relative size exp(-(m_Lambda-m_N)/T) ~ 1e-77.
+    #
+    T = 1.
+    lpass *= print_results(QMhrg.gen_chi(T,B_order=2), 0., abs_prec=1e-300, text="HRG chi2B underflows at 1 MeV")
+    chi2B = QMhrgmp.gen_chi(T,B_order=2)
+    with mp.workdps(QMhrgmp.dps):
+        nucleons = 0
+        for k in range(len(M)):
+            if (B[k]!=0) and (M[k]<1000):
+                x = mp.mpf(M[k])/T
+                nucleons += g[k] * x**2 * mp.besselk(2,x) / (2*mp.pi**2)
+        relErr = float(abs(chi2B/nucleons-1))
+    lpass *= print_results(relErr, 0., abs_prec=1e-45, text="HRG_mp chi2B at 1 MeV vs Boltzmann nucleons")
+
+    #
+    # Test: The requested precision is really used. dps=60 and dps=100 must agree to well beyond double
+    #       precision, while dps=15 must not.
+    #
+    hrg15  = HRG_mp(M[light],g[light],w[light],B[light],S[light],Q[light],dps=15)
+    hrg60  = HRG_mp(M[light],g[light],w[light],B[light],S[light],Q[light],dps=60)
+    hrg100 = HRG_mp(M[light],g[light],w[light],B[light],S[light],Q[light],dps=100)
+    s15    = hrg15.S_div_T3(5.,muB_div_T=1.)
+    s60    = hrg60.S_div_T3(5.,muB_div_T=1.)
+    s100   = hrg100.S_div_T3(5.,muB_div_T=1.)
+    with mp.workdps(100):
+        relErr60 = float(abs(s60/s100-1))
+        relErr15 = float(abs(s15/s100-1))
+    lpass *= print_results(relErr60, 0., abs_prec=1e-55, text="HRG_mp dps=60 vs dps=100")
+    if relErr15 < 1e-20:
+        logger.TBFail("HRG_mp dps=15 agrees with dps=100 beyond 15 digits, so dps is not being used")
+        lpass = False
+
+    lpass *= print_results(mp.dps, globalDps, text="HRG_mp leaves global precision unchanged")
+
+    times.printTiming()
+
+    concludeTest(lpass)
+
+
 if __name__ == '__main__':
     testHRG()
+    testHRGmp()
