@@ -35,7 +35,7 @@ def _pareAxis(data,axis,nblocks):
     return data[tuple(indices)]
 
 
-def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False, args=()):
+def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False, args=(), biasCorrect=True):
     """ 
     Carry out a jackknife of an arbitrary function f of some data.
 
@@ -49,17 +49,22 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
           have a deleterious impact on performance when f is a fast function. When f is slower, for
           example if you are doing curve fits or integrating in the block, increasing nproc may
           improve performance. Feel free to benchmark it for your use-case. 
-        return_sample (bool, optional): Return pseudovalues? Defaults to False.
+        return_sample (bool, optional): Return the jackknife sample? Defaults to False.
         args (tuple, optional)
+        biasCorrect (bool, optional): If True, work with the pseudovalues n*f(data) - (n-1)*J_i, whose mean
+          is the bias-corrected jackknife estimator. If False, the central value is the mean of the
+          leave-one-block-out estimates J_i, and the returned sample is the J_i themselves. The error
+          is the same in both cases. Defaults to True.
 
     Returns:
-        jackknife mean and error (optionally pseudovalues) 
+        jackknife mean and error (optionally the sample: pseudovalues, or J_i if biasCorrect=False) 
     """
 
     checkType('int',numb_blocks=numb_blocks)
     checkType('int',conf_axis=conf_axis)
     checkType('int',nproc=nproc)
     checkType(bool,return_sample=return_sample)
+    checkType(bool,biasCorrect=biasCorrect)
     if type(data) is tuple:
         logger.TBRaise('Does not support tuple data. Use latqcdtools.legacy.jackknife if you need this.')
     if numb_blocks <= 1:
@@ -81,9 +86,17 @@ def jackknife(f, data, numb_blocks=20, conf_axis=1, nproc=1, return_sample=False
         return f(sub_data, *args)
 
     J    = np.array(parallel_function_eval(fJ,range(numb_blocks),nproc=nproc))
-    bins = _pseudobins(J,fbar)
+
+    if biasCorrect:
+        bins = _pseudobins(J,fbar)
+        mean = std_mean(bins)
+        err  = std_err(bins)
+    else:
+        bins = J
+        mean = std_mean(J)
+        err  = np.sqrt( (numb_blocks-1)/numb_blocks*np.sum((J-mean)**2,axis=0) )
 
     if return_sample:
-        return bins, std_mean(bins), std_err(bins) 
+        return bins, mean, err
     else:
-        return std_mean(bins), std_err(bins) 
+        return mean, err
