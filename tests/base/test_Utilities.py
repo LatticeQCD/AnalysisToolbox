@@ -1,7 +1,7 @@
 # 
 # test_Utilities.py                                                               
 # 
-# D. Clarke, K. Ebira
+# D. Clarke, K. Ebira, Google Antigravity
 # 
 # Test some of the methods in the utilities module.
 # 
@@ -151,13 +151,14 @@ def testUtilities():
     except ToolboxException:
         pass
 
-    # Test cleanOutput rejects bool as sspace
-    try:
-        cleanOutput('s1', sspace=True)
-        logger.TBFail('cleanOutput failed to raise on sspace=True')
-        lpass = False
-    except ToolboxException:
-        pass
+    # Test cleanOutput rejects bool, dict, set, bytes, and non-positive integers as sspace
+    for bad_sspace in (True, 0, -10, {10: 'x'}, {10, 20}, b'ab', [10, -5]):
+        try:
+            cleanOutput('s1', sspace=bad_sspace)
+            logger.TBFail('cleanOutput failed to raise on invalid sspace:', bad_sspace)
+            lpass = False
+        except ToolboxException:
+            pass
 
     # Test isIntType and cleanOutput on unsigned numpy integers
     lpass *= isIntType(np.uint32(42))
@@ -166,6 +167,19 @@ def testUtilities():
     out_uint = cleanOutput(np.uint32(42))
     if '4.20000000e+01' not in out_uint:
         logger.TBFail('cleanOutput failed to format np.uint32:', repr(out_uint))
+        lpass = False
+
+    # Test cleanOutput backwards compatibility on bool, np.bool_, and 0-d numpy arrays
+    out_bool = cleanOutput(True, np.bool_(False))
+    expected_bool = '%15.8e  %15.8e' % (1.0, 0.0)
+    if out_bool != expected_bool:
+        logger.TBFail('cleanOutput bool compat: got', repr(out_bool), 'expected', repr(expected_bool))
+        lpass = False
+
+    out_0d = cleanOutput(np.array(5.0))
+    expected_0d = '%15.8e' % 5.0
+    if out_0d != expected_0d:
+        logger.TBFail('cleanOutput 0-d ndarray compat: got', repr(out_0d), 'expected', repr(expected_0d))
         lpass = False
 
     # Test printClean executes cleanly

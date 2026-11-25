@@ -113,6 +113,7 @@ us out by citing
 - Thanks to Claude code for: helping iron out some issues with running on MACOS; initial implementation of a Pade approximant framework;
 overhaul of `plotting.py` for x- and y-label locations to be chosen automatically when `labelsintoplot=True`; bug fixes in `countParams`
 for splines; fixed AICc formula.
+- Google Antigravity was used by KE for: flexible string column widths in `cleanOutput`; and NERSC gauge configuration writing, checksum verification, and tests.
 - DAC acknowledges helpful discussions with 
 [C. DeTar](https://github.com/detar),
 [X.-Y. Jin](https://github.com/jxy),

@@ -1,7 +1,7 @@
 #
 # utilities.py
 #
-# D. Clarke, K. Ebira
+# D. Clarke, K. Ebira, Google Antigravity
 #
 # Some utilities that you might use in any program.
 #
@@ -232,15 +232,17 @@ def cleanOutput(*args,label=None,sspace=20) -> str:
         or if sspace is invalid or has insufficient entries.
     """
     if isIntType(sspace):
+        if sspace <= 0:
+            logger.TBRaise('sspace must be a positive integer.')
         sspace_list = None
         single_sspace = sspace
-    elif not isinstance(sspace, str) and (isArrayLike(sspace) or hasattr(sspace, '__iter__')):
+    elif not isinstance(sspace, (str, bytes, bytearray, dict, set)) and (isArrayLike(sspace) or hasattr(sspace, '__iter__')):
         sspace_list = list(sspace)
         for s in sspace_list:
-            if not isIntType(s):
-                logger.TBRaise('sspace elements must be integers.')
+            if not isIntType(s) or s <= 0:
+                logger.TBRaise('sspace elements must be positive integers.')
     else:
-        logger.TBRaise('sspace must be an integer or iterable of integers.')
+        logger.TBRaise('sspace must be a positive integer or iterable of positive integers.')
 
     data = ()
     form = ''
@@ -255,6 +257,8 @@ def cleanOutput(*args,label=None,sspace=20) -> str:
 
     str_idx = 0
     for col in args:
+        if isinstance(col, np.ndarray) and col.ndim == 0:
+            col = col.item()
         if col is None:
             data += ('',)
             form += spacing+'%15s'
@@ -272,10 +276,8 @@ def cleanOutput(*args,label=None,sspace=20) -> str:
             data += (col.real,)
             data += (col.imag,)
             form += spacing+'%15.8e  %15.8e'
-        elif isArrayLike(col) or hasattr(col, '__iter__') or isinstance(col, (list, tuple, np.ndarray, set, dict, range)):
-            logger.TBRaise('Expected scalars or strings rather than array-like objects.')
-        elif isScalar(col):
-            data += (col,)
+        elif isScalar(col) or isinstance(col, (bool, np.bool_)):
+            data += (float(col) if isinstance(col, (bool, np.bool_)) else col,)
             form += spacing+'%15.8e'
         else:
             logger.TBRaise('Expected scalars or strings rather than array-like objects.')
