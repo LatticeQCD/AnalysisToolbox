@@ -8,15 +8,19 @@ please make sure it starts with `main_`.
 Given a reference scale, $N_\tau$, and $T$ in [MeV], this script calculates the corresponding $\beta$. An
 example calling is
 ```shell
-./main_getTempandSpacing.py --Nt 8 --scale r0 --T 300 
+./main_getBeta.py --Nt 8 --scale r0 --T 300 
 ```
+By default, omitting `--Nf` uses pure gauge (`None`, 2017 parameterization) for `r0` and `21` for `fk`/`r1`;
+you can pass `--Nf` explicitly (including `--Nf None` or `--Nf 0` for pure gauge) and, for `fk`, choose the
+physical-units world with `--physWorld` (`nature`, `Nf2`, `Nf21`, or `Nf211`).
 
 ## main_getTempAndSpacing.py
 Given a reference scale, $N_\tau$, and $\beta$ value, this script calculates $T$ in [MeV] and $a$ in [fm]. An
 example calling is
 ```shell
-./main_getTempandSpacing.py --Nt 8 --beta 6.285 --scale fk
+./main_getTempAndSpacing.py --Nt 8 --beta 6.285 --scale fk
 ```
+It accepts the same `--Nf`, `--paramYear`, `--scaleYear`, and `--physWorld` options as `main_getBeta.py`.
 For more details about the scale setting, please look into the 
 [reference scales](../physicsAnalysis/referenceScales.md) article.
 

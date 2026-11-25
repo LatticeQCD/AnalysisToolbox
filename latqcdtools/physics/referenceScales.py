@@ -1,11 +1,14 @@
 #
 # referenceScales.py
 #
+# D. Clarke, K. Ebira, Google Antigravity
+#
 # A collection of scales computed as a function of beta. 
 #
 
 import numpy as np
 import latqcdtools.base.logger as logger
+from latqcdtools.base.utilities import isIntType
 from latqcdtools.math.polynomials import Polynomial, Rational
 from latqcdtools.physics.runningCoupling import beta_func, b0, b1
 
@@ -29,6 +32,42 @@ CY_param = {
             'r0' : 2017,
             't0' : 2015 
             }
+
+# Authoritative mapping from (scaleType, year) to the QCD world in which the a(beta) parameterization was fitted.
+_SCALE_PARAM_WORLDS = {
+    'r0': {'2012': 'Nf21', '2015': 'Nf0', '2017': 'Nf0'},
+    'r1': {'2012': 'Nf21', '2014': 'Nf21', '2018': 'Nf21', '2021': 'Nf21'},
+    'fk': {'2012': 'Nf21', '2014': 'Nf21', '2021': 'Nf21'},
+    't0': {'2015': 'Nf0'},
+}
+
+
+def get_aWorld(scaleType, year=None) -> str:
+    """
+    Get the underlying QCD world ('Nf21', 'Nf0', etc.) for a given scale parameterization.
+
+    Args:
+        scaleType (str): Name of reference scale ('fk', 'r1', 'r0', 't0').
+        year (int or str, optional): Parameterization year. Defaults to CY_param[scaleType].
+
+    Returns:
+        str: World identifier ('Nf21' or 'Nf0').
+    """
+    stype = str(scaleType).lower()
+    if stype not in _SCALE_PARAM_WORLDS:
+        logger.TBRaise(f"Unknown scaleType '{scaleType}'.")
+    if year is None:
+        year = CY_param[stype]
+    if isIntType(year):
+        syear = str(int(year))
+    elif isinstance(year, str):
+        syear = year.strip()
+    else:
+        logger.TBRaise(f"Expected int or str for year, got {type(year).__name__}: {year!r}")
+    worlds_for_scale = _SCALE_PARAM_WORLDS[stype]
+    if syear not in worlds_for_scale:
+        logger.TBRaise(f"No {stype} fit parameters for year {year}")
+    return worlds_for_scale[syear]
 
 
 def ignoreBetaRange():
