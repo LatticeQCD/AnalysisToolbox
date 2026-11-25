@@ -15,7 +15,8 @@ as input and returns $a\,f_K(\beta)$
 using a parameterization specified by the year `year`. In this particular instance, there
 exists parameterizations from 2021, 2014, and 2012.
 Please note that the parameterizations for $a$ have closed intervals $[\beta_{\rm min},~\beta_{\rm max}]$ in
-which they are valid.
+which they are valid. You can inspect which QCD world (`'Nf21'` or `'Nf0'`) a given parameterization was fitted
+in using `get_aWorld(scaleType, year=None)`.
 
 
 ## Physical constants
