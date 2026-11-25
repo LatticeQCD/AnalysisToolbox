@@ -1,7 +1,7 @@
 # 
 # lime.py                                                               
 # 
-# D. Clarke, X.-Y. Jin, K. Ebira
+# D. Clarke, X.-Y. Jin, K. Ebira, Google Antigravity
 # 
 # Some tools for working with the LIME format. This is a port of X.-Y. Jin's original Python code,
 # which can be found here: https://github.com/nftqcd/nthmc/blob/master/lib/fieldio.py. Information

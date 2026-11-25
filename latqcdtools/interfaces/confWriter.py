@@ -1,12 +1,11 @@
 # 
 # confWriter.py                                                               
 # 
-# K. Ebira, D. Clarke
+# K. Ebira, D. Clarke, Google Antigravity
 # 
 # Tools for writing gauge configurations in Python.
 #
 
-import numpy as np
 import latqcdtools.base.logger as logger
 from latqcdtools.base.check import checkType
 from latqcdtools.base.fileSystem import createFilePath

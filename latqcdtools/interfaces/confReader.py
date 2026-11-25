@@ -1,7 +1,7 @@
 # 
 # confReader.py                                                               
 # 
-# D. Clarke, K. Ebira
+# D. Clarke, K. Ebira, Google Antigravity
 # 
 # Tools for reading gauge configurations in Python. To interact with binary configurations, we can use
 # Python's built-in struct module. More info on that: https://docs.python.org/3.7/library/struct.html. NERSC reader inspired
@@ -243,70 +243,74 @@ class NERSCReader(confReader):
 
         self.file = open(fileName,'rb')
 
-        # Extract offset.
-        header = self.file.read()
-        minOffset = 78 # Minimal number of characters for the entries above, not including what comes on RHS.
-        self.offset = header.find(b'END_HEADER\n')+11
-        if self.offset < minOffset:
-            logger.TBRaise(fileName,'not in NERSC format.')
-
-        # Convert header to metaData dictionary.
-        entries = header[:self.offset-1].split(b'\n')[1:-1]
-        metaData = {}
-        for entry in entries:
-            if b'=' in entry:
-                LHS = entry.split(b'=')[0].strip().upper()
-                RHS = entry.split(b'=')[1].strip()
-                metaData[LHS] = RHS
-
-        # Check that the header was read correctly.
-        Nx = int(metaData[b'DIMENSION_1'])
-        Ny = int(metaData[b'DIMENSION_2'])
-        Nz = int(metaData[b'DIMENSION_3'])
-        Nt = int(metaData[b'DIMENSION_4'])
-        self.checkLatDims(Nx, Ny, Nz, Nt)
-
-        # Extract endianness
-        fp = metaData[b'FLOATING_POINT'].upper()
-        if fp.endswith(b'SMALL') or fp.endswith(b'LITTLE'):
-            self.endianness = '<'
-        elif fp.endswith(b'BIG') or fp in (b'IEEE32', b'IEEE64'):
-            # Like SIMULATeQCD, treat a missing endianness suffix as big endian.
-            self.endianness = '>'
-        else:
-            logger.TBRaise('Unrecognized endianness.')
-
-        # Extract precision
-        if fp.startswith(b'IEEE32'):
-            self.precision = 'f'
-        elif fp.startswith(b'IEEE64'):
-            self.precision = 'd'
-        else:
-            logger.TBRaise('Unrecognized precision.')
-
-        # Extract number of rows
-        if metaData[b'DATATYPE'].endswith(b'3x3'):
-            self.rows = 3
-        else:
-            self.rows = 2
-
-        # Extract trace of average link
         try:
-            self.linkTrace = float( metaData[b'LINK_TRACE'] )
-        except:
-            pass
+            # Extract offset.
+            header = self.file.read()
+            minOffset = 78 # Minimal number of characters for the entries above, not including what comes on RHS.
+            self.offset = header.find(b'END_HEADER\n')+11
+            if self.offset < minOffset:
+                logger.TBRaise(fileName,'not in NERSC format.')
 
-        # Extract average plaquette
-        try:
-            self.plaquette = float( metaData[b'PLAQUETTE'] )
-        except:
-            pass
+            # Convert header to metaData dictionary.
+            entries = header[:self.offset-1].split(b'\n')[1:-1]
+            metaData = {}
+            for entry in entries:
+                if b'=' in entry:
+                    LHS = entry.split(b'=')[0].strip().upper()
+                    RHS = entry.split(b'=')[1].strip()
+                    metaData[LHS] = RHS
 
-        # Extract checksum
-        try:
-            self.checksum = metaData[b'CHECKSUM'].decode('ascii').strip()
-        except:
-            self.checksum = None
+            # Check that the header was read correctly.
+            Nx = int(metaData[b'DIMENSION_1'])
+            Ny = int(metaData[b'DIMENSION_2'])
+            Nz = int(metaData[b'DIMENSION_3'])
+            Nt = int(metaData[b'DIMENSION_4'])
+            self.checkLatDims(Nx, Ny, Nz, Nt)
+
+            # Extract endianness
+            fp = metaData[b'FLOATING_POINT'].upper()
+            if fp.endswith(b'SMALL') or fp.endswith(b'LITTLE'):
+                self.endianness = '<'
+            elif fp.endswith(b'BIG') or fp in (b'IEEE32', b'IEEE64'):
+                # Like SIMULATeQCD, treat a missing endianness suffix as big endian.
+                self.endianness = '>'
+            else:
+                logger.TBRaise('Unrecognized endianness.')
+
+            # Extract precision
+            if fp.startswith(b'IEEE32'):
+                self.precision = 'f'
+            elif fp.startswith(b'IEEE64'):
+                self.precision = 'd'
+            else:
+                logger.TBRaise('Unrecognized precision.')
+
+            # Extract number of rows (case-insensitive to accept both 3x3 and 3X3)
+            if metaData[b'DATATYPE'].lower().endswith(b'3x3'):
+                self.rows = 3
+            else:
+                self.rows = 2
+
+            # Extract trace of average link
+            try:
+                self.linkTrace = float( metaData[b'LINK_TRACE'] )
+            except:
+                pass
+
+            # Extract average plaquette
+            try:
+                self.plaquette = float( metaData[b'PLAQUETTE'] )
+            except:
+                pass
+
+            # Extract checksum
+            try:
+                self.checksum = metaData[b'CHECKSUM'].decode('ascii').strip()
+            except:
+                self.checksum = None
+        except Exception:
+            self.file.close()
+            raise
 
 
     def readConf(self, fileName):
@@ -338,11 +342,17 @@ class NERSCReader(confReader):
         dtype_str = f'{self.endianness}c{latprec}'
         vol = (self.Ns**3) * self.Nt
         total_elements = vol * self.Nd * self.rows * 3
+        expected_bytes = total_elements * latprec
+        if len(payload) < expected_bytes:
+            logger.TBRaise(f'Corrupt configuration {fileName}: expected at least {expected_bytes} payload bytes, got {len(payload)}.')
         raw = np.frombuffer(payload, dtype=dtype_str, count=total_elements)
 
         # Validate checksum against header if present
         if self.checksum is not None:
-            expected_checksum = int(self.checksum, 16)
+            try:
+                expected_checksum = int(self.checksum, 16)
+            except ValueError:
+                logger.TBRaise(f"Invalid hex CHECKSUM '{self.checksum}' in {fileName}.")
             computed_checksum = nerscChecksum(raw, self.precision)
             if expected_checksum != computed_checksum:
                 logger.TBRaise(f'Checksum error: expected {expected_checksum:08x}, computed {computed_checksum:08x}')

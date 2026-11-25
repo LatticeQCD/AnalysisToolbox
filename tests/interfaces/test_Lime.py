@@ -1,10 +1,11 @@
 # 
 # test_Lime.py                                                               
 # 
-# D. Clarke, K. Ebira
+# D. Clarke, K. Ebira, Google Antigravity
 # 
 # Testing the Lime interface. 
 # 
+import struct
 from latqcdtools.interfaces.lime import limeHeader, trimNull
 from latqcdtools.testing import print_results,concludeTest
 import latqcdtools.base.logger as logger
@@ -22,7 +23,6 @@ def testLime():
         lpass = False
         logger.TBFail('null trim')
 
-    import struct
     # Issue #18: Verify mbeg and mend flags are preserved when both are True
     hdr_both = limeHeader(1, 1, 100, b'both')
     m_both = struct.unpack('>ihHq128s', hdr_both)[2]

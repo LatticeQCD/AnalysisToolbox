@@ -9,7 +9,8 @@ In this module we collect a bunch of useful, general utilities.
 - `printDict`: Prints a dictionary out with each key-value pair getting a line. This is more readable than the standard print.
 - `cleanOutput`: Often one wants to print multiple different numbers on one line, for example a row of a table. It helps
 readability if all these use the same indentation and have the same width on the screen. You can create formatted strings
-that have the same convention by passing values separated by commas to `cleanOutput`.
+that have the same convention by passing values separated by commas to `cleanOutput` (and optionally setting string column
+width(s) via `sspace`, either as a single positive integer or a list of per-column widths).
 - `printClean`: This is a wrapper for `cleanOutput` that puts the result to screen instead of giving you a string. (You may
 want the string if, e.g., you are writing a custom output to file.)
 
