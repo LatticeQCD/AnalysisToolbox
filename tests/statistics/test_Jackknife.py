@@ -51,6 +51,19 @@ def testJackknife():
         TESTm, TESTe = jackknife( std_mean, binSeries(A,iblock), numb_blocks=iblock, conf_axis=0) 
         lpass *= print_results(TESTm, REFm, TESTe, REFe, f"linear Nblock remove-1 vs remove Nblock {iblock}", EPSILON)
 
+    # biasCorrect=False: mean of the leave-one-block-out estimates J_i, same error as with correction.
+    # For f = mean**2 and delete-1, J_bar - f(data) = -var(data,ddof=1)/(N*(N-1)) exactly.
+    N = len(testdata)
+    def meansq(data):
+        return std_mean(data)**2
+    BCm, BCe = jackknife(meansq, testdata, numb_blocks=N, conf_axis=0)
+    J, TESTm, TESTe = jackknife(meansq, testdata, numb_blocks=N, conf_axis=0, biasCorrect=False, return_sample=True)
+    REFJ = np.array([std_mean(np.delete(testdata,i))**2 for i in range(N)])
+    REFm = meansq(testdata) + np.var(testdata,ddof=1)/(N*(N-1)) 
+    lpass *= print_results(J, REFJ, text='biasCorrect=False sample', prec=EPSILON)
+    lpass *= print_results(TESTm, REFm, TESTe, BCe, 'biasCorrect=False mean, error', EPSILON)
+    lpass *= print_results(BCm, meansq(testdata) - np.var(testdata,ddof=1)/N, text='biasCorrect=True mean of mean**2 is unbiased', prec=EPSILON)
+
     concludeTest(lpass)
 
 
